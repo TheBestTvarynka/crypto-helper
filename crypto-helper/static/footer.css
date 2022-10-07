@@ -1,0 +1,17 @@
+footer {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-top: 2px solid black;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+footer>span {
+    text-align: center;
+}
+
+footer>span:first-child {
+    margin-top: 1em;
+}
