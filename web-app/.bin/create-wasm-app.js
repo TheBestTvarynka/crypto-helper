@@ -12,7 +12,7 @@ if (process.argv.length >= 3) {
   }
 }
 
-const clone = spawn("git", ["clone", "https://github.com/rustwasm/create-wasm-app.git", folderName]);
+const clone = spawn("git", ["clone", "https://github.com/arnauorriols/create-wasm-webpack-app.git", folderName]);
 
 clone.on("close", code => {
   if (code !== 0) {

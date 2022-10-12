@@ -1,11 +1,98 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Hello wasm-pack!</title>
-  </head>
-  <body>
-    <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
-    <script src="./bootstrap.js"></script>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>Crypto helper</title>
+
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/header.css">
+  <link rel="stylesheet" href="styles/footer.css">
+  <link rel="stylesheet" href="styles/crypto_helper/style.css">
+  <link rel="stylesheet" href="styles/input.css">
+
+  <script src="scripts/crypto_helper/script.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Source+Code+Pro:wght@300&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <a href="#">Crypto helper</a>
+    <a href="#">JWT/JWE</a>
+    <a href="#">About</a>
+  </header>
+  <article>
+    <div class="wide">
+      <div class="horizontal">
+        <div class="vertical">
+          <!-- <span>Algo:</span> -->
+          <select id="algorithm" onchange="onAlgorithmChange()" class="base-input">
+            <option value="sha1" selected>SHA1</option>
+            <option value="sha256">SHA256</option>
+            <option value="sha512">SHA512</option>
+            <option value="aes256-cts-hmac-sha1-96">AES128-CTS-HMAC-SHA1-96</option>
+          </select>
+        </div>
+
+        <div class="selectable-info">
+          <span id="current-algorithm-info" name="sha1-info">Hash hex-encoded input using SHA1 hashing
+            function.<a href="https://www.rfc-editor.org/rfc/rfc3174">RFC</a>.</span>
+          <span name="sha256-info">Hash hex-encoded input using SHA256 hashing function.<a
+              href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
+          <span name="sha512-info">Hash hex-encoded input using SHA512 hashing function.<a
+              href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
+          <span name="aes256-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
+            using AES128-CTS-HMAC-SHA1-96 algorithm.<a
+              href="https://www.rfc-editor.org/rfc/rfc3961.html">RFC</a>.</span>
+        </div>
+      </div>
+
+      <div class="selectable-in">
+        <div id="current-algorithm-in" name="sha1-in">
+          <textarea class="base-input" rows="2" placeholder="sha1 in"></textarea>
+        </div>
+        <div name="sha256-in">
+          <textarea class="base-input" rows="2" placeholder="sha256 in"></textarea>
+        </div>
+        <div name="sha512-in">
+          <textarea class="base-input" rows="2" placeholder="sha512 in"></textarea>
+        </div>
+        <div name="aes256-cts-hmac-sha1-96-in">
+          <input placeholder="aes256-cts-hmac-sha1-96 in key">
+          <input placeholder="aes256-cts-hmac-sha1-96 in plaintext">
+        </div>
+      </div>
+
+      <div class="selectable-out">
+        <div id="current-algorithm-out" name="sha1-out" class="output">
+          <span>SHA1 out</span>
+        </div>
+        <div name="sha256-out" class="output">
+          <span>SHA256 out</span>
+        </div>
+        <div name="sha512-out" class="output">
+          <span>SHA512 out</span>
+        </div>
+        <div name="aes256-cts-hmac-sha1-96-out" class="output">
+          <span>cipher</span><span>hmac</span>
+        </div>
+      </div>
+    </div>
+  </article>
+  <footer>
+    <span>Crypto helper Copyright © 2022 Pavlo Myroniuk; released as <a
+        href="https://github.com/TheBestTvarynka/crypto-helper">open source</a> under the
+      <a href="https://github.com/TheBestTvarynka/crypto-helper/blob/main/LICENSE">MIT</a>
+      license.</span>
+    <span>Icons by: <a href="https://icons8.com">icons8.com</a></span>
+  </footer>
+  <noscript>This page contains webassembly and javascript content, please enable javascript in your
+    browser.</noscript>
+  <script src="./bootstrap.js"></script>
+</body>
+
 </html>
