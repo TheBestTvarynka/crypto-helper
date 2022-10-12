@@ -2,7 +2,9 @@ const CURRENT_ALGORITHM_INFO = 'current-algorithm-info';
 const CURRENT_ALGORITHM_IN = 'current-algorithm-in';
 const CURRENT_ALGORITHM_OUT = 'current-algorithm-out';
 
-const onAlgorithmChange = () => setAlgorithm(document.getElementById('algorithm').selectedOptions[0].value);
+const getAlgorithm = () => document.getElementById('algorithm').selectedOptions[0].value;
+
+const onAlgorithmChange = () => setAlgorithm(getAlgorithm());
 
 const setAlgorithm = algorithm => {
   // set info elements

@@ -29,7 +29,6 @@
     <div class="wide">
       <div class="horizontal">
         <div class="vertical">
-          <!-- <span>Algo:</span> -->
           <select id="algorithm" onchange="onAlgorithmChange()" class="base-input">
             <option value="sha1" selected>SHA1</option>
             <option value="sha256">SHA256</option>
@@ -53,7 +52,7 @@
 
       <div class="selectable-in">
         <div id="current-algorithm-in" name="sha1-in">
-          <textarea class="base-input" rows="2" placeholder="sha1 in"></textarea>
+          <textarea class="base-input" rows="2" placeholder="sha1 in" id="sha1-indata"></textarea>
         </div>
         <div name="sha256-in">
           <textarea class="base-input" rows="2" placeholder="sha256 in"></textarea>
@@ -67,9 +66,13 @@
         </div>
       </div>
 
+      <div>
+        <button id="go">Go!</button>
+      </div>
+
       <div class="selectable-out">
         <div id="current-algorithm-out" name="sha1-out" class="output">
-          <span>SHA1 out</span>
+          <span id="sha1-outdata">--SHA1 out--</span>
         </div>
         <div name="sha256-out" class="output">
           <span>SHA256 out</span>
