@@ -1,0 +1,21 @@
+
+.base-input {
+    font-family: 'JetBrains Mono', monospace;
+    background: #dbcfbf;
+    padding: 0.2em 0 0.2em 0.2em;
+    width: calc(100% - 0.4em);
+    color: #50437f;
+    border: 3px solid transparent;
+    border-radius: 3px;
+    font-size: 0.9em;
+    resize: vertical;
+}
+
+.wide-input {
+    width: 100%;
+}
+
+.base-input:focus {
+    border-bottom: 3px solid #7d5541;
+    outline: none;
+}
