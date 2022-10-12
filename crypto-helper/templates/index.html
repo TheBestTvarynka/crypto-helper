@@ -1,7 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  This is my blog made with Zola.
-</h1>
+<div>
+  <link rel="stylesheet" href="crypto_helper/style.css">
+  <script src="crypto_helper/script.js"></script>
+
+  <div class="horizontal">
+    <div class="vertical">
+      <span>Algo:</span>
+      <select id="algorithm" onchange="onAlgorithmChange()">
+        <option value="sha1" selected>SHA1</option>
+        <option value="sha256">SHA256</option>
+        <option value="sha512">SHA512</option>
+        <option value="aes256-cts-hmac-sha1-96">AES128-CTS-HMAC-SHA1-96</option>
+      </select>
+    </div>
+
+    <div class="selectable-info">
+      <span id="current-algorithm-info" name="sha1-info">Algo info sha1</span>
+      <span name="sha256-info">Algo info sha256</span>
+      <span name="sha512-info">Algo info sha512</span>
+      <span name="aes256-cts-hmac-sha1-96-info">Algo info AES128-CTS-HMAC-SHA1-96</span>
+    </div>
+  </div>
+
+  <div class="selectable-in">
+    <div id="current-algorithm-in" name="sha1-in">
+      <input placeholder="sha1 in">
+    </div>
+    <div name="sha256-in">
+      <input placeholder="sha256 in">
+    </div>
+  </div>
+
+  <div class="selectable-out">
+    <div id="current-algorithm-out" name="sha1-out">
+      <input placeholder="sha1 out">
+    </div>
+    <div name="sha256-out">
+      <input placeholder="sha256 out">
+    </div>
+  </div>
+</div>
 {% endblock content %}

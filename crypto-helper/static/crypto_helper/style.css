@@ -1,0 +1,24 @@
+
+.vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
+.selectable-info > :not(#current-algorithm-info) {
+    display: none;
+}
+
+.selectable-in div:not(#current-algorithm-in) {
+    display: none;
+}
+
+.selectable-out div:not(#current-algorithm-out) {
+    display: none;
+}
