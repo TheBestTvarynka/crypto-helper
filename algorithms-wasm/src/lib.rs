@@ -1,4 +1,5 @@
 mod utils;
+mod hashing;
 
 use wasm_bindgen::prelude::*;
 
@@ -21,4 +22,11 @@ pub fn greet() {
 #[wasm_bindgen]
 pub fn simple_hash(data: &str) -> String {
     format!("this data `{}` was hashed!", data)
+}
+
+#[wasm_bindgen]
+pub fn sha1(payload: &str) -> String {
+    let payload = hex::decode(payload).unwrap();
+
+    hex::encode(hashing::sha1(&payload))
 }
