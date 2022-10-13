@@ -43,11 +43,18 @@
 }
 
 .selectable-out {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
     width: 100%;
 }
 
 .selectable-out div:not(#current-algorithm-out) {
     display: none;
+}
+
+.selectable-out span {
+    overflow-wrap: break-word;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .output {
@@ -56,4 +63,9 @@
     border-top: 3px solid #c45f52;
     background: #edd5ce;
     border-radius: 0.2em;
+}
+
+button {
+    font-family: 'JetBrains Mono', monospace;
+    width: fit-content;
 }

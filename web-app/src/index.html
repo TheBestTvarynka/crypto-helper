@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="styles/header.css">
   <link rel="stylesheet" href="styles/footer.css">
   <link rel="stylesheet" href="styles/crypto_helper/style.css">
+  <link rel="stylesheet" href="styles/crypto_helper/sha.css">
   <link rel="stylesheet" href="styles/input.css">
 
   <script src="scripts/crypto_helper/script.js"></script>
@@ -55,10 +56,10 @@
           <textarea class="base-input" rows="2" placeholder="sha1 in" id="sha1-indata"></textarea>
         </div>
         <div name="sha256-in">
-          <textarea class="base-input" rows="2" placeholder="sha256 in"></textarea>
+          <textarea class="base-input" rows="2" placeholder="sha256 in" id="sha256-indata"></textarea>
         </div>
         <div name="sha512-in">
-          <textarea class="base-input" rows="2" placeholder="sha512 in"></textarea>
+          <textarea class="base-input" rows="2" placeholder="sha512 in" id="sha512-indata"></textarea>
         </div>
         <div name="aes256-cts-hmac-sha1-96-in">
           <input placeholder="aes256-cts-hmac-sha1-96 in key">
@@ -66,19 +67,22 @@
         </div>
       </div>
 
-      <div>
+      <div class="horizontal">
         <button id="go">Go!</button>
+        <label for="autoConvert">
+          <input id="autoConvert" name="autoConvert" type="checkbox" checked><span>auto convert</span>
+        </label>
       </div>
 
       <div class="selectable-out">
         <div id="current-algorithm-out" name="sha1-out" class="output">
-          <span id="sha1-outdata">--SHA1 out--</span>
+          <span id="sha1-outdata" class="sha-digest">--SHA1 out--</span>
         </div>
         <div name="sha256-out" class="output">
-          <span>SHA256 out</span>
+          <span id="sha256-outdata" class="sha-digest">--SHA256 out--</span>
         </div>
         <div name="sha512-out" class="output">
-          <span>SHA512 out</span>
+          <span id="sha512-outdata" class="sha-digest">--SHA512 out--</span>
         </div>
         <div name="aes256-cts-hmac-sha1-96-out" class="output">
           <span>cipher</span><span>hmac</span>

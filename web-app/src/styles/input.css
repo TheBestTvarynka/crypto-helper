@@ -2,10 +2,11 @@
 .base-input {
     font-family: 'JetBrains Mono', monospace;
     background: #dbcfbf;
-    padding: 0.2em 0 0.2em 0.2em;
+    padding: 0.2em;
+    margin: 0;
     width: calc(100% - 0.4em);
     color: #50437f;
-    border: 3px solid transparent;
+    border: 3px solid #dbcfbf;
     border-radius: 3px;
     font-size: 0.9em;
     resize: vertical;
