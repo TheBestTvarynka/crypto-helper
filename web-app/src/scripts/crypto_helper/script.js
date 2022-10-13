@@ -28,3 +28,12 @@ const setAlgorithm = algorithm => {
   const newAlgorithmOut = document.getElementsByName(algorithm + '-out')[0];
   newAlgorithmOut.setAttribute('id', CURRENT_ALGORITHM_OUT);
 };
+
+const copyOutputData = () => {
+  const algorithm = getAlgorithm();
+  if (algorithm.startsWith('sha')) {
+    const outputData = document.getElementById(`${algorithm}-outdata`).innerText;
+    console.log(outputData);
+    navigator.clipboard.writeText(outputData);
+  }
+};

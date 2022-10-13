@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: row;
     gap: 0.5em;
+    align-items: center;
 }
 
 .selectable-info > :not(#current-algorithm-info) {
@@ -24,6 +25,7 @@
     text-decoration: underline;
     padding: 0 0.2em 0 0.2em;
     border-radius: 0.2em;
+    transition: all 0.2s;
 }
 
 .selectable-info a:hover {
@@ -44,7 +46,7 @@
 
 .selectable-out {
     margin-bottom: 0.5em;
-    margin-top: 0.5em;
+    margin-top: 0.8em;
     width: 100%;
 }
 
@@ -68,4 +70,23 @@
 button {
     font-family: 'JetBrains Mono', monospace;
     width: fit-content;
+}
+
+.tool {
+    display: inline-flex;
+    cursor: pointer;
+    height: 1.8em;
+    width: fit-content;
+    padding: 0.1em;
+    border-radius: 0.2em;
+    justify-content: center;
+    align-items: center;
+}
+
+.tool:hover {
+    background-color: aliceblue;
+}
+
+.tool > img {
+    height: 90%;
 }

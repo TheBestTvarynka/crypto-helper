@@ -8,10 +8,24 @@ footer {
     margin-bottom: 2em;
 }
 
-footer>span {
+footer > span {
     text-align: center;
 }
 
-footer>span:first-child {
+footer > span:first-child {
     margin-top: 1em;
+}
+
+footer a {
+    color: inherit;
+    text-decoration: underline;
+    padding: 0 0.2em 0 0.2em;
+    border-radius: 0.2em;
+    transition: all 0.2s;
+}
+
+footer a:hover {
+    background-color: #50437f;
+    color: #dbcfbf;
+    cursor: pointer;
 }

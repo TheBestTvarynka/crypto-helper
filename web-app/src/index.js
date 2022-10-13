@@ -42,25 +42,29 @@ const go = () => {
   }
 };
 
+const toggleAutoConvert = () => {
+  const algorithm = getAlgorithm();
+  if (document.getElementById('autoConvert').checked) {
+    if (algorithm.startsWith('sha')) {
+      const indata = document.getElementById(`${algorithm}-indata`);
+      indata.addEventListener('change', go);
+      indata.addEventListener('input', go);
+    }
+  } else {
+    if (algorithm.startsWith('sha')) {
+      const indata = document.getElementById(`${algorithm}-indata`);
+      indata.removeEventListener('change', go);
+      indata.removeEventListener('change', go);
+    }
+  }
+};
+
 document
   .getElementById('go')
   .addEventListener('click', go);
 
 document
   .getElementById('autoConvert')
-  .addEventListener('change', () => {
-    const algorithm = getAlgorithm();
-    if (document.getElementById('autoConvert').checked) {
-      if (algorithm.startsWith('sha')) {
-        const indata = document.getElementById(`${algorithm}-indata`);
-        indata.addEventListener('change', go);
-        indata.addEventListener('input', go);
-      }
-    } else {
-      if (algorithm.startsWith('sha')) {
-        const indata = document.getElementById(`${algorithm}-indata`);
-        indata.removeEventListener('change', go);
-        indata.removeEventListener('change', go);
-      }
-    }
-  })
+  .addEventListener('change', toggleAutoConvert);
+
+toggleAutoConvert();
