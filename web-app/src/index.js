@@ -38,20 +38,19 @@ const go = () => {
     const dataOut = wasm[getAlgorithmFn(algorithm)](...dataIn);
     setData(algorithm, dataOut);
   } catch(e) {
-    console.error(e);
+    console.warn(e);
   }
 };
 
 const toggleAutoConvert = () => {
-  const algorithm = getAlgorithm();
   if (document.getElementById('autoConvert').checked) {
-    if (algorithm.startsWith('sha')) {
+    for (const algorithm of ['sha1', 'sha256', 'sha512']) {
       const indata = document.getElementById(`${algorithm}-indata`);
       indata.addEventListener('change', go);
       indata.addEventListener('input', go);
     }
   } else {
-    if (algorithm.startsWith('sha')) {
+    for (const algorithm of ['sha1', 'sha256', 'sha512']) {
       const indata = document.getElementById(`${algorithm}-indata`);
       indata.removeEventListener('change', go);
       indata.removeEventListener('change', go);
