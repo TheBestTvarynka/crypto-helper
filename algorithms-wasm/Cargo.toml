@@ -15,6 +15,9 @@ default = ["console_error_panic_hook"]
 wasm-bindgen = "0.2.63"
 hex = "0.4.3"
 sha1 = "0.10.5"
+sha256 = "1.0.3"
+hmac-sha512 = "1.1.2"
+# picky-krb = "0.4.0"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires

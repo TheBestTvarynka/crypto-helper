@@ -8,3 +8,7 @@ pub fn set_panic_hook() {
     #[cfg(feature = "console_error_panic_hook")]
     console_error_panic_hook::set_once();
 }
+
+pub fn hex_to_vec(data: impl AsRef<[u8]>) -> Result<Vec<u8>, String> {
+    hex::decode(data).map_err(|e| format!("Invalid hex data: {:?}", e))
+}
