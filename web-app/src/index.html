@@ -76,22 +76,22 @@
 
       <div class="selectable-out">
         <div id="current-algorithm-out" name="sha1-out" class="output">
-          <span id="sha1-outdata" class="sha-digest">--SHA1 out--</span>
+          <span id="sha1-outdata" class="sha-digest" onclick="copyOutputData()">--SHA1 out--</span>
+          <span class="total">total: 20</span>
         </div>
         <div name="sha256-out" class="output">
-          <span id="sha256-outdata" class="sha-digest">--SHA256 out--</span>
+          <span id="sha256-outdata" class="sha-digest" onclick="copyOutputData()">--SHA256 out--</span>
+          <span class="total">total: 32</span>
         </div>
         <div name="sha512-out" class="output">
-          <span id="sha512-outdata" class="sha-digest">--SHA512 out--</span>
+          <span id="sha512-outdata" class="sha-digest" onclick="copyOutputData()">--SHA512 out--</span>
+          <span class="total">total: 64</span>
         </div>
         <div name="aes256-cts-hmac-sha1-96-out" class="output">
           <span>cipher</span><span>hmac</span>
         </div>
       </div>
       <div class="horizontal">
-        <div class="tool" onclick="copyOutputData()">
-          <img src="img/copy.png" alt="copy" />
-        </div>
         <div id="share" class="tool" onclick="share()">
           <img src="img/share.png" alt="share" />
         </div>

@@ -31,7 +31,6 @@ const setData = (algorithm, data) => {
 };
 
 const go = () => {
-  console.log('go');
   const algorithm = getAlgorithm();
   const dataIn = collectData(algorithm);
   try {
@@ -67,3 +66,4 @@ document
   .addEventListener('change', toggleAutoConvert);
 
 toggleAutoConvert();
+go();

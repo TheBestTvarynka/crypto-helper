@@ -27,6 +27,8 @@ const setAlgorithm = algorithm => {
 
   const newAlgorithmOut = document.getElementsByName(algorithm + '-out')[0];
   newAlgorithmOut.setAttribute('id', CURRENT_ALGORITHM_OUT);
+
+  document.getElementById('go').click();
 };
 
 const copyOutputData = () => {
