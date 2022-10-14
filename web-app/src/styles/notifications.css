@@ -8,7 +8,7 @@
 }
 
 .info {
-  background-color: #c0ebdd;
+  background-color: #91c7b5;
 }
 
 .warn {
@@ -21,7 +21,7 @@
 
 .notification {
   cursor: pointer;
-  padding: 1em;
+  padding: 0.6em;
   border-radius: 0.5em;
   display: flex;
   flex-direction: column;

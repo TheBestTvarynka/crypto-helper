@@ -10,13 +10,25 @@ try {
   console.dir({ e });
 }
 
-const getAlgorithmFn = algorithm => algorithm;
+const getAlgorithmFn = algorithm => {
+  if (algorithm.startsWith('sha')) {
+    return algorithm;
+  } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
+    return 'aes256_cts_hmac_sha1_96_encrypt';
+  }
+};
 
 const getAlgorithm = () => document.getElementById('algorithm').selectedOptions[0].value;
 
 const collectData = algorithm => {
   if (algorithm.startsWith('sha')) {
     return [document.getElementById(`${algorithm}-indata`).value];
+  } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
+    const key = document.getElementById(`${algorithm}-key-input`).value;
+    const usage = +document.getElementById(`${algorithm}-inusage`).value;
+    const payload = document.getElementById(`${algorithm}-payload-input`).value;
+
+    return [key, usage, payload];
   } else {
     showNotification({ type: 'error', text: `${algorithm} not implemented yet` })
     throw new Error('not implemented yet');
@@ -26,6 +38,12 @@ const collectData = algorithm => {
 const setData = (algorithm, data) => {
   if (algorithm.startsWith('sha')) {
     document.getElementById(`${algorithm}-outdata`).innerText = data;
+  } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
+    const len = data.length;
+    document.getElementById(`${algorithm}-cipher`).innerText = data.substring(0, len - 24);
+    document.getElementById(`${algorithm}-hmac`).innerText = data.substring(len - 24);
+    document.getElementById(`${algorithm}-total-len`).innerText = len / 2;
+    document.getElementById(`${algorithm}-cipher-len`).innerText = (len / 2) - 12;
   } else {
     showNotification({ type: 'error', text: `${algorithm} not implemented yet` })
     throw new Error('not implemented yet');
@@ -74,4 +92,4 @@ document.addEventListener('keypress', event => {
 });
 
 toggleAutoConvert();
-go();
+// go();

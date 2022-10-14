@@ -40,7 +40,7 @@
     width: 100%;
 }
 
-.selectable-in div:not(#current-algorithm-in) {
+.selectable-in > div:not(#current-algorithm-in) {
     display: none;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .total {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #4c5159;
 }
 

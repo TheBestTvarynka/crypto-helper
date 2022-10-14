@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles/footer.css">
   <link rel="stylesheet" href="styles/crypto_helper/style.css">
   <link rel="stylesheet" href="styles/crypto_helper/sha.css">
+  <link rel="stylesheet" href="styles/crypto_helper/krbEnc.css">
   <link rel="stylesheet" href="styles/input.css">
   <link rel="stylesheet" href="styles/notifications.css">
 
@@ -32,29 +33,29 @@
     <div class="wide">
       <div class="horizontal">
         <div class="vertical">
-          <select id="algorithm" onchange="onAlgorithmChange()" class="base-input">
-            <option value="sha1" selected>SHA1</option>
+          <select id="algorithm" onchange="onAlgorithmChange()" class="base-input" style="width: auto;">
+            <option value="sha1">SHA1</option>
             <option value="sha256">SHA256</option>
             <option value="sha512">SHA512</option>
-            <option value="aes256-cts-hmac-sha1-96">AES128-CTS-HMAC-SHA1-96</option>
+            <option value="aes256-cts-hmac-sha1-96" selected>AES128-CTS-HMAC-SHA1-96</option>
           </select>
         </div>
 
         <div class="selectable-info">
-          <span id="current-algorithm-info" name="sha1-info">Hash hex-encoded input using SHA1 hashing
+          <span name="sha1-info">Hash hex-encoded input using SHA1 hashing
             function.<a href="https://www.rfc-editor.org/rfc/rfc3174">RFC</a>.</span>
           <span name="sha256-info">Hash hex-encoded input using SHA256 hashing function.<a
               href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
           <span name="sha512-info">Hash hex-encoded input using SHA512 hashing function.<a
               href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
-          <span name="aes256-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
+          <span id="current-algorithm-info" name="aes256-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
             using AES128-CTS-HMAC-SHA1-96 algorithm.<a
               href="https://www.rfc-editor.org/rfc/rfc3961.html">RFC</a>.</span>
         </div>
       </div>
 
       <div class="selectable-in">
-        <div id="current-algorithm-in" name="sha1-in">
+        <div name="sha1-in">
           <textarea class="base-input" rows="2" placeholder="sha1 in" id="sha1-indata"></textarea>
         </div>
         <div name="sha256-in">
@@ -63,9 +64,37 @@
         <div name="sha512-in">
           <textarea class="base-input" rows="2" placeholder="sha512 in" id="sha512-indata"></textarea>
         </div>
-        <div name="aes256-cts-hmac-sha1-96-in">
-          <input placeholder="aes256-cts-hmac-sha1-96 in key">
-          <input placeholder="aes256-cts-hmac-sha1-96 in plaintext">
+        <div id="current-algorithm-in" name="aes256-cts-hmac-sha1-96-in" class="enc-params">
+          <div class="vertical">
+            <input
+              placeholder="key"
+              class="base-input"
+              id="aes256-cts-hmac-sha1-96-key-input"
+              onchange="onLenChange('aes256-cts-hmac-sha1-96', 'key')"
+              oninput="onLenChange('aes256-cts-hmac-sha1-96', 'key')"
+            >
+            <span class="total">len: <span id="aes256-cts-hmac-sha1-96-key-len">0</span></span>
+          </div>
+          <div class="vertical">
+            <input
+              placeholder="usage number"
+              class="base-input"
+              id="aes256-cts-hmac-sha1-96-inusage"
+              onchange="onKeyUsageChange('aes256-cts-hmac-sha1-96')"
+              oninput="onKeyUsageChange('aes256-cts-hmac-sha1-96')"
+            >
+            <span class="total" id="aes256-cts-hmac-sha1-96-usage">?unknown?</span>
+          </div>
+          <div class="vertical">
+            <input
+              placeholder="payload"
+              class="base-input"
+              id="aes256-cts-hmac-sha1-96-payload-input"
+              onchange="onLenChange('aes256-cts-hmac-sha1-96', 'payload')"
+              oninput="onLenChange('aes256-cts-hmac-sha1-96', 'payload')"
+            >
+            <span class="total">len: <span id="aes256-cts-hmac-sha1-96-payload-len">0</span></span>
+          </div>
         </div>
       </div>
 
@@ -77,7 +106,7 @@
       </div>
 
       <div class="selectable-out">
-        <div id="current-algorithm-out" name="sha1-out" class="output">
+        <div name="sha1-out" class="output">
           <span id="sha1-outdata" class="sha-digest" onclick="copyOutputData()">--SHA1 out--</span>
           <span class="total">total: 20</span>
         </div>
@@ -89,8 +118,11 @@
           <span id="sha512-outdata" class="sha-digest" onclick="copyOutputData()">--SHA512 out--</span>
           <span class="total">total: 64</span>
         </div>
-        <div name="aes256-cts-hmac-sha1-96-out" class="output">
-          <span>cipher</span><span>hmac</span>
+        <div id="current-algorithm-out" name="aes256-cts-hmac-sha1-96-out" class="output">
+          <span onclick="copyOutputData()" class="full-cipher">
+            <span class="cipher" id="aes256-cts-hmac-sha1-96-cipher">00</span><span class="hmac" id="aes256-cts-hmac-sha1-96-hmac">00</span>
+          </span>
+          <span class="total">total: <span id="aes256-cts-hmac-sha1-96-total-len">0</span>. cipher: <span id="aes256-cts-hmac-sha1-96-cipher-len">0</span>. hmac: <span>12</span>.</span>
         </div>
       </div>
       <div class="horizontal">
