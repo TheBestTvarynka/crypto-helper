@@ -1,7 +1,7 @@
 mod hashing;
 mod utils;
 
-// use picky_krb::crypto::CipherSuite;
+use picky_krb::crypto::CipherSuite;
 use utils::hex_to_vec;
 use wasm_bindgen::prelude::*;
 
@@ -41,32 +41,32 @@ pub fn sha512(payload: &str) -> Result<String, String> {
     Ok(hex::encode(hmac_sha512::Hash::hash(&hex_to_vec(payload)?)))
 }
 
-// #[wasm_bindgen]
-// pub fn aes256_cts_hmac_sha1_96_encrypt(
-//     key: &str,
-//     key_usage: i32,
-//     payload: &str,
-// ) -> Result<Vec<u8>, String> {
-//     let key = hex_to_vec(key)?;
-//     let payload = hex_to_vec(payload)?;
+#[wasm_bindgen]
+pub fn aes256_cts_hmac_sha1_96_encrypt(
+    key: &str,
+    key_usage: i32,
+    payload: &str,
+) -> Result<String, String> {
+    let key = hex_to_vec(key)?;
+    let payload = hex_to_vec(payload)?;
 
-//     Ok(CipherSuite::Aes256CtsHmacSha196
-//         .cipher()
-//         .encrypt(&key, key_usage, &payload)
-//         .map_err(|e| format!("{:?}", e))?)
-// }
+    Ok(hex::encode(CipherSuite::Aes256CtsHmacSha196
+        .cipher()
+        .encrypt(&key, key_usage, &payload)
+        .map_err(|e| format!("{:?}", e))?))
+}
 
-// #[wasm_bindgen]
-// pub fn aes256_cts_hmac_sha1_96_decrypt(
-//     key: &str,
-//     key_usage: i32,
-//     payload: &str,
-// ) -> Result<Vec<u8>, String> {
-//     let key = hex_to_vec(key)?;
-//     let payload = hex_to_vec(payload)?;
+#[wasm_bindgen]
+pub fn aes256_cts_hmac_sha1_96_decrypt(
+    key: &str,
+    key_usage: i32,
+    payload: &str,
+) -> Result<String, String> {
+    let key = hex_to_vec(key)?;
+    let payload = hex_to_vec(payload)?;
 
-//     Ok(CipherSuite::Aes256CtsHmacSha196
-//         .cipher()
-//         .decrypt(&key, key_usage, &payload)
-//         .map_err(|e| format!("{:?}", e))?)
-// }
+    Ok(hex::encode(CipherSuite::Aes256CtsHmacSha196
+        .cipher()
+        .decrypt(&key, key_usage, &payload)
+        .map_err(|e| format!("{:?}", e))?))
+}
