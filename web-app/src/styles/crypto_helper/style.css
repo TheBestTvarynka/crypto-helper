@@ -14,6 +14,7 @@
     flex-direction: row;
     gap: 0.5em;
     align-items: center;
+    justify-content: flex-start;
 }
 
 .selectable-info > :not(#current-algorithm-info) {

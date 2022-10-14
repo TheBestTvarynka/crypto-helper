@@ -1,0 +1,82 @@
+.knobs,
+.layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.button {
+    position: relative;
+    top: 50%;
+    width: 43px;
+    height: 24px;
+    margin: -20px 0 0 0;
+    overflow: hidden;
+}
+
+.button.r,
+.button.r .layer {
+    border-radius: 75px;
+}
+
+.button.b2 {
+    border-radius: 2px;
+}
+
+.checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.knobs {
+    z-index: 2;
+}
+
+.layer {
+    width: 100%;
+    background-color: #ccc9af;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+#button-1 .knobs:before {
+    content: " ";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 6px;
+    color: #ccc9af;
+    font-size: 6px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 6px 3px;
+    background-color: blueviolet;
+    border-radius: 50%;
+    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+#button-1 .checkbox:checked+.knobs:before {
+    content: " ";
+    left: 22px;
+    background-color: mediumvioletred;
+}
+
+#button-1 .checkbox:checked~.layer {
+    background-color: #ccc9af;
+}
+
+#button-1 .knobs,
+#button-1 .knobs:before,
+#button-1 .layer {
+    transition: 0.3s ease all;
+}

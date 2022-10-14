@@ -3,7 +3,8 @@
     word-wrap: break-word;
     width: fit-content;
     max-width: calc(100% - 0.4em);
-    color: #1a3a6e;
+    /* color: #1a3a6e; */
+    color: blueviolet;
     transition: all 0.3s;
     padding: 0.2em;
 }
