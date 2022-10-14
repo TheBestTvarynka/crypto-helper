@@ -18,6 +18,7 @@ const collectData = algorithm => {
   if (algorithm.startsWith('sha')) {
     return [document.getElementById(`${algorithm}-indata`).value];
   } else {
+    showNotification({ type: 'error', text: `${algorithm} not implemented yet` })
     throw new Error('not implemented yet');
   }
 };
@@ -26,6 +27,7 @@ const setData = (algorithm, data) => {
   if (algorithm.startsWith('sha')) {
     document.getElementById(`${algorithm}-outdata`).innerText = data;
   } else {
+    showNotification({ type: 'error', text: `${algorithm} not implemented yet` })
     throw new Error('not implemented yet');
   }
 };
@@ -37,7 +39,7 @@ const go = () => {
     const dataOut = wasm[getAlgorithmFn(algorithm)](...dataIn);
     setData(algorithm, dataOut);
   } catch(e) {
-    console.warn(e);
+    showNotification({ type: 'error', text: e });
   }
 };
 
@@ -52,7 +54,7 @@ const toggleAutoConvert = () => {
     for (const algorithm of ['sha1', 'sha256', 'sha512']) {
       const indata = document.getElementById(`${algorithm}-indata`);
       indata.removeEventListener('change', go);
-      indata.removeEventListener('change', go);
+      indata.removeEventListener('input', go);
     }
   }
 };
@@ -64,6 +66,12 @@ document
 document
   .getElementById('autoConvert')
   .addEventListener('change', toggleAutoConvert);
+
+document.addEventListener('keypress', event => {
+    if (event.ctrlKey && event.code === 'Enter') {
+        go();
+    }
+});
 
 toggleAutoConvert();
 go();
