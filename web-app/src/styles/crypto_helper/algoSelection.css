@@ -1,0 +1,33 @@
+
+.search-result {
+    /* border-right: 3px solid #c45f52;
+    border-bottom: 3px solid #c45f52;
+    border-left: 3px solid #c45f52; */
+    border-radius: 0.2em;
+    background: #edd5ce;
+    padding: 0.2em;
+    font-size: 0.8em;
+    position: relative;
+    top: -0.6em;
+}
+
+.search-result span {
+    padding: 0.2em;
+    transition: all 0.3s;
+}
+
+.search-result span:hover {
+    cursor: pointer;
+    background-color: #9cb8e6;
+    border-radius: 0.2em;
+}
+
+.search-result .no-algo {
+    font-size: 0.7em;
+    color: #4c5159;
+}
+
+.search-result .no-algo:hover {
+    cursor: default;
+    background-color: inherit;
+}

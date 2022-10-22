@@ -56,7 +56,7 @@ const KEY_USAGE_NAMES = {
   '5': 'TGS-REQ KDC-REQ-BODY AuthData (authenticator subkey)',
   '6': 'TGS-REQ PA-TGS-REQ padata AP-REQ Authenticator cksum (session key)',
   '7': 'TGS-REQ PA-TGS-REQ padata AP-REQ Authenticator (session key)',
-  '8': 'TGS-REP enc part (sessino key)',
+  '8': 'TGS-REP enc part (session key)',
   '9': 'TGS-REP enc part (authenticator subkey)',
   '10': 'AP-REQ Authenticator cksum (session key)',
   '11': 'AP-REQ Authenticator (session key)',

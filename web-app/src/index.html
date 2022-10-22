@@ -12,11 +12,13 @@
   <link rel="stylesheet" href="styles/crypto_helper/sha.css">
   <link rel="stylesheet" href="styles/crypto_helper/krbEnc.css">
   <link rel="stylesheet" href="styles/crypto_helper/switch.css">
+  <link rel="stylesheet" href="styles/crypto_helper/algoSelection.css">
   <link rel="stylesheet" href="styles/input.css">
   <link rel="stylesheet" href="styles/notifications.css">
 
   <script src="scripts/crypto_helper/script.js"></script>
   <script src="scripts/crypto_helper/aesCtsHmac.js"></script>
+  <script src="scripts/crypto_helper/algoSearch.js"></script>
   <script src="scripts/notifications.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,16 +35,28 @@
   </header>
   <article>
     <div class="wide">
+      <span class="danger">In active development now. Please, be careful.</span>
       <div class="horizontal">
         <div class="vertical">
-          <select id="algorithm" onchange="onAlgorithmChange()" class="base-input" style="width: auto;">
-            <option value="md5">MD5</option>
-            <option value="sha1">SHA1</option>
-            <option value="sha256">SHA256</option>
-            <option value="sha512">SHA512</option>
-            <option value="aes128-cts-hmac-sha1-96" selected>AES128-CTS-HMAC-SHA1-96</option>
-            <option value="aes256-cts-hmac-sha1-96">AES256-CTS-HMAC-SHA1-96</option>
-          </select>
+          <div class="horizontal">
+            <select id="algorithm" onchange="onAlgorithmChange()" class="base-input" style="width: auto;">
+              <option value="md5">MD5</option>
+              <option value="sha1">SHA1</option>
+              <option value="sha256">SHA256</option>
+              <option value="sha512">SHA512</option>
+              <option value="aes128-cts-hmac-sha1-96" selected>AES128-CTS-HMAC-SHA1-96</option>
+              <option value="aes256-cts-hmac-sha1-96">AES256-CTS-HMAC-SHA1-96</option>
+            </select>
+            <input type="checkbox" checked id="algo-search" onchange="onSearchCheckboxChange()"><label for="algo-search">S</label>
+          </div>
+          <div class="vertical" id="algo-search-block">
+            <input placeholder="algo name" class="base-input" id="algo-name-pattern" onchange="onPatternChange()" oninput="onPatternChange()" onkeydown="onPatternSubmit(event)">
+            <div class="vertical search-result" id="algo-search-results">
+              <!-- <span onclick="onAlgoSelect('md5')">MD5</span>
+              <span onclick="onAlgoSelect('aes128-cts-hmac-sha1-96')">AES128-CTS-HMAC-SHA1-96</span>
+              <span onclick="onAlgoSelect('aes256-cts-hmac-sha1-96')">AES256-CTS-HMAC-SHA1-96</span> -->
+            </div>
+          </div>
         </div>
 
         <div class="selectable-info">
