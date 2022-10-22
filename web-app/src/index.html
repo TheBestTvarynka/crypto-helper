@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="styles/notifications.css">
 
   <script src="scripts/crypto_helper/script.js"></script>
+  <script src="scripts/crypto_helper/aesCtsHmac.js"></script>
   <script src="scripts/notifications.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,9 +98,12 @@
             <span class="total">len: <span id="aes256-cts-hmac-sha1-96-payload-len">0</span></span>
           </div>
           <div class="horizontal">
-            <span>encrypt</span>
-            <input type="checkbox" id="switch" class="switch_input" /><label class="switch_label" for="switch">Toggle</label>
-            <span>decrypt</span>
+            <span class="total">encrypt</span>
+            <span class="switch_span">
+              <input type="checkbox" id="aes256-cts-hmac-sha1-96-operation" class="switch_input" onchange="onEncDec('aes256-cts-hmac-sha1-96')">
+              <label class="switch_label" for="aes256-cts-hmac-sha1-96-operation">Toggle</label>
+            </span>
+            <span class="total">decrypt</span>
           </div>
         </div>
       </div>
@@ -128,7 +132,11 @@
           <span onclick="copyOutputData()" class="full-cipher">
             <span class="cipher" id="aes256-cts-hmac-sha1-96-cipher">00</span><span class="hmac" id="aes256-cts-hmac-sha1-96-hmac">00</span>
           </span>
-          <span class="total">total: <span id="aes256-cts-hmac-sha1-96-total-len">0</span>. cipher: <span id="aes256-cts-hmac-sha1-96-cipher-len">0</span>. hmac: <span>12</span>.</span>
+          <span class="total">
+            total: <span id="aes256-cts-hmac-sha1-96-total-len">0</span>.
+            <span id="aes256-cts-hmac-sha1-96-cipher-len">cipher: <span id="aes256-cts-hmac-sha1-96-cipher-len-value">0</span>.</span>
+            <span id="aes256-cts-hmac-sha1-96-hmac-len">hmac: <span>12</span>.</span>
+          </span>
         </div>
       </div>
       <div class="horizontal">

@@ -1,44 +1,56 @@
 
 /* can be replaced with: https://codepen.io/alvarotrigo/pen/abVPyaJ */
 
+.switch_span {
+    display: inline-flex;
+    /* height: 1.8em; */
+    width: fit-content;
+    /* padding: 0.1em; */
+    /* border-radius: 0.2em; */
+    justify-content: center;
+    align-items: center;
+}
+
 .switch_input[type=checkbox]{
 	height: 0;
 	width: 0;
+    padding: 0;
+    margin: 0;
 	visibility: hidden;
 }
 
 .switch_label {
 	cursor: pointer;
 	text-indent: -9999px;
-	width: 3em;
-	height: 1.5em;
-	background: grey;
+	width: 2em;
+	height: 1em;
+	background: #a562e3;
 	display: block;
-	border-radius: 1.5em;
+	border-radius: 1em;
 	position: relative;
 }
 
 .switch_label:after {
 	content: '';
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: 1.5em;
-	height: 1.5em;
-	background: #fff;
-	border-radius: 1.5em;
+	top: 0.15em;
+	left: 0.15em;
+	width: 0.7em;
+	height: 0.7em;
+	background: #ebdcd8;
+	border-radius: 0.7em;
 	transition: 0.3s;
 }
 
 .switch_input:checked + .switch_label {
-	background: #bada55;
+	background: mediumvioletred;
 }
 
 .switch_input:checked + .switch_label:after {
-	left: calc(100%);
+	left: calc(100% - 0.15em);
 	transform: translateX(-100%);
 }
 
 .switch_label:active:after {
-	width: 1.95em;
+	width: 1.3em;
 }

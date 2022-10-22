@@ -10,6 +10,7 @@
     border-radius: 3px;
     font-size: 0.9em;
     resize: vertical;
+    transition: all 0.2s;
 }
 
 .wide-input {

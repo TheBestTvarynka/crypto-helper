@@ -43,7 +43,7 @@ const setData = (algorithm, data) => {
     document.getElementById(`${algorithm}-cipher`).innerText = data.substring(0, len - 24);
     document.getElementById(`${algorithm}-hmac`).innerText = data.substring(len - 24);
     document.getElementById(`${algorithm}-total-len`).innerText = len / 2;
-    document.getElementById(`${algorithm}-cipher-len`).innerText = (len / 2) - 12;
+    document.getElementById(`${algorithm}-cipher-len-value`).innerText = (len / 2) - 12;
   } else {
     showNotification({ type: 'error', text: `${algorithm} not implemented yet` })
     throw new Error('not implemented yet');
