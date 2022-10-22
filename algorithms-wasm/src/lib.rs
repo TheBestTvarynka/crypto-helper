@@ -55,10 +55,12 @@ pub fn aes256_cts_hmac_sha1_96_encrypt(
     let key = hex_to_vec(key)?;
     let payload = hex_to_vec(payload)?;
 
-    Ok(hex::encode(CipherSuite::Aes256CtsHmacSha196
-        .cipher()
-        .encrypt(&key, key_usage, &payload)
-        .map_err(|e| format!("{:?}", e))?))
+    Ok(hex::encode(
+        CipherSuite::Aes256CtsHmacSha196
+            .cipher()
+            .encrypt(&key, key_usage, &payload)
+            .map_err(|e| format!("{:?}", e))?,
+    ))
 }
 
 #[wasm_bindgen]
@@ -70,8 +72,25 @@ pub fn aes256_cts_hmac_sha1_96_decrypt(
     let key = hex_to_vec(key)?;
     let payload = hex_to_vec(payload)?;
 
-    Ok(hex::encode(CipherSuite::Aes256CtsHmacSha196
-        .cipher()
-        .decrypt(&key, key_usage, &payload)
-        .map_err(|e| format!("{:?}", e))?))
+    Ok(hex::encode(
+        CipherSuite::Aes256CtsHmacSha196
+            .cipher()
+            .decrypt(&key, key_usage, &payload)
+            .map_err(|e| format!("{:?}", e))?,
+    ))
+}
+
+#[wasm_bindgen]
+pub fn krb_generate_key_from_password(
+    algo: usize,
+    password: &str,
+    salt: &str,
+) -> Result<String, String> {
+    Ok(hex::encode(
+        CipherSuite::try_from(algo)
+            .map_err(|e| format!("{:?}", e))?
+            .cipher()
+            .generate_key_from_password(password.as_bytes(), salt.as_bytes())
+            .map_err(|e| format!("{:?}", e))?,
+    ))
 }

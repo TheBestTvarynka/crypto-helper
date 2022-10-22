@@ -103,13 +103,37 @@
             >
             <span class="total">len: <span id="aes256-cts-hmac-sha1-96-payload-len">0</span></span>
           </div>
-          <div class="horizontal">
+          <div class="horizontal krbEncOpts">
             <span class="total">encrypt</span>
             <span class="switch_span">
               <input type="checkbox" id="aes256-cts-hmac-sha1-96-operation" class="switch_input" onchange="onEncDec('aes256-cts-hmac-sha1-96')">
               <label class="switch_label" for="aes256-cts-hmac-sha1-96-operation">Toggle</label>
             </span>
             <span class="total">decrypt</span>
+            <span class="total">|</span>
+            <span class="total">raw key</span>
+            <span class="switch_span">
+              <input type="checkbox" id="aes256-cts-hmac-sha1-96-gen-key" class="switch_input" onchange="onPassOpts('aes256-cts-hmac-sha1-96')">
+              <label class="switch_label" for="aes256-cts-hmac-sha1-96-gen-key">Toggle</label>
+            </span>
+            <span class="total">key from password</span>
+          </div>
+          <div class="horizontal generateKeyOpts" id="aes256-cts-hmac-sha1-96-pass-opts" style="display: none;">
+            <div>
+              <input
+                placeholder="password"
+                class="base-input"
+                id="aes256-cts-hmac-sha1-96-password"
+              >
+            </div>
+            <div>
+              <input
+                placeholder="salt"
+                class="base-input"
+                id="aes256-cts-hmac-sha1-96-salt"
+              >
+            </div>
+            <button id="aes256-cts-hmac-sha1-96-gen-key-btn">Generate key</button>
           </div>
         </div>
       </div>

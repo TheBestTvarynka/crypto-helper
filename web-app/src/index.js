@@ -99,5 +99,21 @@ document.addEventListener('keypress', event => {
     }
 });
 
+const KRB_CIPHER_CONSTANTS = {
+  'aes256-cts-hmac-sha1-96': 18,
+  'aes128-cts-hmac-sha1-96': 17,
+};
+
+for (const algo of ['aes256-cts-hmac-sha1-96']) {
+  document.getElementById(`${algo}-gen-key-btn`).addEventListener('click', () => {
+    const password = document.getElementById(`${algo}-password`).value;
+    const salt = document.getElementById(`${algo}-salt`).value;
+
+    const keyInput = document.getElementById(`${algo}-key-input`);
+    keyInput.value = wasm.krb_generate_key_from_password(KRB_CIPHER_CONSTANTS[algo], password, salt);
+    keyInput.dispatchEvent(new Event("change"));
+  })
+}
+
 toggleAutoConvert();
 // go();

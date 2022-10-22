@@ -27,3 +27,13 @@
     background: #9cb8e6;
     border-radius: 0.2em;
 }
+
+.krbEncOpts {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.generateKeyOpts {
+    grid-column-start: 1;
+    grid-column-end: 4;
+}

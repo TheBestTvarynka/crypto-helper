@@ -12,3 +12,13 @@ const onEncDec = id => {
         document.getElementById(`${id}-hmac-len`).style.display = 'inline';
     }
 };
+
+const onPassOpts = id => {
+    const checkbox = document.getElementById(`${id}-gen-key`).checked;
+    
+    if (checkbox) {
+        document.getElementById(`${id}-pass-opts`).style.display = 'flex';
+    } else {
+        document.getElementById(`${id}-pass-opts`).style.display = 'none';
+    }
+};
