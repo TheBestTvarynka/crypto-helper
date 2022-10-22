@@ -17,6 +17,7 @@ hex = "0.4.3"
 sha1 = "0.10.5"
 sha256 = "1.0.3"
 hmac-sha512 = "1.1.2"
+md5 = "0.7.0"
 picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", branch = "wasm" }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by

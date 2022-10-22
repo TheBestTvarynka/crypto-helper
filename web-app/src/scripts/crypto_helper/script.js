@@ -33,7 +33,7 @@ const setAlgorithm = algorithm => {
 
 const copyOutputData = () => {
   const algorithm = getAlgorithm();
-  if (algorithm.startsWith('sha')) {
+  if (algorithm.startsWith('sha') || algorithm.startsWith('md5')) {
     const outputData = document.getElementById(`${algorithm}-outdata`).innerText;
     console.log(outputData);
     navigator.clipboard.writeText(outputData);
@@ -69,6 +69,7 @@ const KEY_USAGE_NAMES = {
   '23': 'KG-USAGE-ACCEPTOR-SIGN',
   '24': 'KG-USAGE-INITIATOR-SEAL',
   '25': 'KG-USAGE-INITIATOR-SIGN',
+  '41': 'PKU2U_KRB_FINISHED',
 };
 
 const onKeyUsageChange = algorithm => {

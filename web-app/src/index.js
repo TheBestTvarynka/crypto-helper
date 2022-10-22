@@ -11,7 +11,7 @@ try {
 }
 
 const getAlgorithmFn = algorithm => {
-  if (algorithm.startsWith('sha')) {
+  if (algorithm.startsWith('sha') || algorithm === 'md5') {
     return algorithm;
   } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
     if (document.getElementById('aes256-cts-hmac-sha1-96-operation').checked) {
@@ -25,7 +25,7 @@ const getAlgorithmFn = algorithm => {
 const getAlgorithm = () => document.getElementById('algorithm').selectedOptions[0].value;
 
 const collectData = algorithm => {
-  if (algorithm.startsWith('sha')) {
+  if (algorithm.startsWith('sha') || algorithm === 'md5') {
     return [document.getElementById(`${algorithm}-indata`).value];
   } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
     const key = document.getElementById(`${algorithm}-key-input`).value;
@@ -40,7 +40,7 @@ const collectData = algorithm => {
 };
 
 const setData = (algorithm, data) => {
-  if (algorithm.startsWith('sha')) {
+  if (algorithm.startsWith('sha') || algorithm === 'md5') {
     document.getElementById(`${algorithm}-outdata`).innerText = data;
   } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
     const len = data.length;
@@ -71,13 +71,13 @@ const go = () => {
 
 const toggleAutoConvert = () => {
   if (document.getElementById('autoConvert').checked) {
-    for (const algorithm of ['sha1', 'sha256', 'sha512']) {
+    for (const algorithm of ['md5', 'sha1', 'sha256', 'sha512']) {
       const indata = document.getElementById(`${algorithm}-indata`);
       indata.addEventListener('change', go);
       indata.addEventListener('input', go);
     }
   } else {
-    for (const algorithm of ['sha1', 'sha256', 'sha512']) {
+    for (const algorithm of ['md5', 'sha1', 'sha256', 'sha512']) {
       const indata = document.getElementById(`${algorithm}-indata`);
       indata.removeEventListener('change', go);
       indata.removeEventListener('input', go);

@@ -27,6 +27,11 @@ pub fn simple_hash(data: &str) -> Result<String, String> {
 }
 
 #[wasm_bindgen]
+pub fn md5(payload: &str) -> Result<String, String> {
+    Ok(hex::encode(md5::compute(&hex_to_vec(payload)?).as_ref()))
+}
+
+#[wasm_bindgen]
 pub fn sha1(payload: &str) -> Result<String, String> {
     Ok(hex::encode(hashing::sha1(&hex_to_vec(payload)?)))
 }

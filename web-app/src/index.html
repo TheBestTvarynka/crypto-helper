@@ -36,6 +36,7 @@
       <div class="horizontal">
         <div class="vertical">
           <select id="algorithm" onchange="onAlgorithmChange()" class="base-input" style="width: auto;">
+            <option value="md5">MD5</option>
             <option value="sha1">SHA1</option>
             <option value="sha256">SHA256</option>
             <option value="sha512">SHA512</option>
@@ -44,6 +45,8 @@
         </div>
 
         <div class="selectable-info">
+          <span name="md5-info">Hash hex-encoded input using MD5 hashing
+            function.<a href="https://www.ietf.org/rfc/rfc1321.txt">RFC</a>.</span>
           <span name="sha1-info">Hash hex-encoded input using SHA1 hashing
             function.<a href="https://www.rfc-editor.org/rfc/rfc3174">RFC</a>.</span>
           <span name="sha256-info">Hash hex-encoded input using SHA256 hashing function.<a
@@ -57,6 +60,9 @@
       </div>
 
       <div class="selectable-in">
+        <div name="md5-in">
+          <textarea class="base-input" rows="2" placeholder="md5 in" id="md5-indata"></textarea>
+        </div>
         <div name="sha1-in">
           <textarea class="base-input" rows="2" placeholder="sha1 in" id="sha1-indata"></textarea>
         </div>
@@ -116,6 +122,10 @@
       </div>
 
       <div class="selectable-out">
+        <div name="md5-out" class="output">
+          <span id="md5-outdata" class="sha-digest" onclick="copyOutputData()">--MD5 out--</span>
+          <span class="total">total: 16</span>
+        </div>
         <div name="sha1-out" class="output">
           <span id="sha1-outdata" class="sha-digest" onclick="copyOutputData()">--SHA1 out--</span>
           <span class="total">total: 20</span>
