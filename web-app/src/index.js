@@ -19,6 +19,12 @@ const getAlgorithmFn = algorithm => {
     } else {
       return 'aes256_cts_hmac_sha1_96_encrypt';
     }
+  } else if (algorithm === 'aes128-cts-hmac-sha1-96') {
+    if (document.getElementById('aes128-cts-hmac-sha1-96-operation').checked) {
+      return 'aes128_cts_hmac_sha1_96_decrypt';
+    } else {
+      return 'aes128_cts_hmac_sha1_96_encrypt';
+    }
   }
 };
 
@@ -27,7 +33,7 @@ const getAlgorithm = () => document.getElementById('algorithm').selectedOptions[
 const collectData = algorithm => {
   if (algorithm.startsWith('sha') || algorithm === 'md5') {
     return [document.getElementById(`${algorithm}-indata`).value];
-  } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
+  } else if (algorithm.endsWith('-cts-hmac-sha1-96')) {
     const key = document.getElementById(`${algorithm}-key-input`).value;
     const usage = +document.getElementById(`${algorithm}-inusage`).value;
     const payload = document.getElementById(`${algorithm}-payload-input`).value;
@@ -42,10 +48,10 @@ const collectData = algorithm => {
 const setData = (algorithm, data) => {
   if (algorithm.startsWith('sha') || algorithm === 'md5') {
     document.getElementById(`${algorithm}-outdata`).innerText = data;
-  } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
+  } else if (algorithm.endsWith('-cts-hmac-sha1-96')) {
     const len = data.length;
     document.getElementById(`${algorithm}-total-len`).innerText = len / 2;
-    if (document.getElementById('aes256-cts-hmac-sha1-96-operation').checked) {
+    if (document.getElementById(`${algorithm}-operation`).checked) {
       document.getElementById(`${algorithm}-cipher`).innerText = data;
     } else {
       document.getElementById(`${algorithm}-cipher`).innerText = data.substring(0, len - 24);
@@ -104,14 +110,19 @@ const KRB_CIPHER_CONSTANTS = {
   'aes128-cts-hmac-sha1-96': 17,
 };
 
-for (const algo of ['aes256-cts-hmac-sha1-96']) {
+for (const algo of ['aes256-cts-hmac-sha1-96', 'aes128-cts-hmac-sha1-96']) {
   document.getElementById(`${algo}-gen-key-btn`).addEventListener('click', () => {
     const password = document.getElementById(`${algo}-password`).value;
     const salt = document.getElementById(`${algo}-salt`).value;
 
     const keyInput = document.getElementById(`${algo}-key-input`);
-    keyInput.value = wasm.krb_generate_key_from_password(KRB_CIPHER_CONSTANTS[algo], password, salt);
-    keyInput.dispatchEvent(new Event("change"));
+    try {
+      keyInput.value = wasm.krb_generate_key_from_password(KRB_CIPHER_CONSTANTS[algo], password, salt);
+      keyInput.dispatchEvent(new Event("change"));
+    } catch (e) {
+      console.error(e);
+      showNotification({ text: e, type: 'error' });
+    }
   })
 }
 

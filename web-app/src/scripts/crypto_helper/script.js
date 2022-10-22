@@ -39,7 +39,7 @@ const copyOutputData = () => {
     navigator.clipboard.writeText(outputData);
 
     showNotification({ type: 'info', text: 'Copied!' });
-  } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
+  } else if (algorithm.endsWith('-cts-hmac-sha1-96')) {
     let cipher = document.getElementById(`${algorithm}-cipher`).innerText;
     let hmac = document.getElementById(`${algorithm}-hmac`).innerText;
     navigator.clipboard.writeText(cipher + hmac);

@@ -40,7 +40,8 @@
             <option value="sha1">SHA1</option>
             <option value="sha256">SHA256</option>
             <option value="sha512">SHA512</option>
-            <option value="aes256-cts-hmac-sha1-96" selected>AES256-CTS-HMAC-SHA1-96</option>
+            <option value="aes128-cts-hmac-sha1-96" selected>AES128-CTS-HMAC-SHA1-96</option>
+            <option value="aes256-cts-hmac-sha1-96">AES256-CTS-HMAC-SHA1-96</option>
           </select>
         </div>
 
@@ -53,7 +54,10 @@
               href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
           <span name="sha512-info">Hash hex-encoded input using SHA512 hashing function.<a
               href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
-          <span id="current-algorithm-info" name="aes256-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
+          <span id="current-algorithm-info" name="aes128-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
+            using AES128-CTS-HMAC-SHA1-96 algorithm.<a
+              href="https://www.rfc-editor.org/rfc/rfc3961.html">RFC</a>.</span>
+          <span name="aes256-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
             using AES256-CTS-HMAC-SHA1-96 algorithm.<a
               href="https://www.rfc-editor.org/rfc/rfc3961.html">RFC</a>.</span>
         </div>
@@ -72,7 +76,71 @@
         <div name="sha512-in">
           <textarea class="base-input" rows="2" placeholder="sha512 in" id="sha512-indata"></textarea>
         </div>
-        <div id="current-algorithm-in" name="aes256-cts-hmac-sha1-96-in" class="enc-params">
+        <div id="current-algorithm-in" name="aes128-cts-hmac-sha1-96-in" class="enc-params">
+          <div class="vertical">
+            <input
+              placeholder="key"
+              class="base-input"
+              id="aes128-cts-hmac-sha1-96-key-input"
+              onchange="onLenChange('aes128-cts-hmac-sha1-96', 'key')"
+              oninput="onLenChange('aes128-cts-hmac-sha1-96', 'key')"
+            >
+            <span class="total">len: <span id="aes128-cts-hmac-sha1-96-key-len">0</span></span>
+          </div>
+          <div class="vertical">
+            <input
+              placeholder="usage number"
+              class="base-input"
+              id="aes128-cts-hmac-sha1-96-inusage"
+              onchange="onKeyUsageChange('aes128-cts-hmac-sha1-96')"
+              oninput="onKeyUsageChange('aes128-cts-hmac-sha1-96')"
+            >
+            <span class="total" id="aes128-cts-hmac-sha1-96-usage">?unknown?</span>
+          </div>
+          <div class="vertical">
+            <input
+              placeholder="payload"
+              class="base-input"
+              id="aes128-cts-hmac-sha1-96-payload-input"
+              onchange="onLenChange('aes128-cts-hmac-sha1-96', 'payload')"
+              oninput="onLenChange('aes128-cts-hmac-sha1-96', 'payload')"
+            >
+            <span class="total">len: <span id="aes128-cts-hmac-sha1-96-payload-len">0</span></span>
+          </div>
+          <div class="horizontal krbEncOpts">
+            <span class="total">encrypt</span>
+            <span class="switch_span">
+              <input type="checkbox" id="aes128-cts-hmac-sha1-96-operation" class="switch_input" onchange="onEncDec('aes128-cts-hmac-sha1-96')">
+              <label class="switch_label" for="aes128-cts-hmac-sha1-96-operation">Toggle</label>
+            </span>
+            <span class="total">decrypt</span>
+            <span class="total">|</span>
+            <span class="total">raw key</span>
+            <span class="switch_span">
+              <input type="checkbox" id="aes128-cts-hmac-sha1-96-gen-key" class="switch_input" onchange="onPassOpts('aes128-cts-hmac-sha1-96')">
+              <label class="switch_label" for="aes128-cts-hmac-sha1-96-gen-key">Toggle</label>
+            </span>
+            <span class="total">key from password</span>
+          </div>
+          <div class="horizontal generateKeyOpts" id="aes128-cts-hmac-sha1-96-pass-opts" style="display: none;">
+            <div>
+              <input
+                placeholder="password"
+                class="base-input"
+                id="aes128-cts-hmac-sha1-96-password"
+              >
+            </div>
+            <div>
+              <input
+                placeholder="salt"
+                class="base-input"
+                id="aes128-cts-hmac-sha1-96-salt"
+              >
+            </div>
+            <button id="aes128-cts-hmac-sha1-96-gen-key-btn">Generate key</button>
+          </div>
+        </div>
+        <div name="aes256-cts-hmac-sha1-96-in" class="enc-params">
           <div class="vertical">
             <input
               placeholder="key"
@@ -162,7 +230,17 @@
           <span id="sha512-outdata" class="sha-digest" onclick="copyOutputData()">--SHA512 out--</span>
           <span class="total">total: 64</span>
         </div>
-        <div id="current-algorithm-out" name="aes256-cts-hmac-sha1-96-out" class="output">
+        <div id="current-algorithm-out" name="aes128-cts-hmac-sha1-96-out" class="output">
+          <span onclick="copyOutputData()" class="full-cipher">
+            <span class="cipher" id="aes128-cts-hmac-sha1-96-cipher">00</span><span class="hmac" id="aes128-cts-hmac-sha1-96-hmac">00</span>
+          </span>
+          <span class="total">
+            total: <span id="aes128-cts-hmac-sha1-96-total-len">0</span>.
+            <span id="aes128-cts-hmac-sha1-96-cipher-len">cipher: <span id="aes128-cts-hmac-sha1-96-cipher-len-value">0</span>.</span>
+            <span id="aes128-cts-hmac-sha1-96-hmac-len">hmac: <span>12</span>.</span>
+          </span>
+        </div>
+        <div name="aes256-cts-hmac-sha1-96-out" class="output">
           <span onclick="copyOutputData()" class="full-cipher">
             <span class="cipher" id="aes256-cts-hmac-sha1-96-cipher">00</span><span class="hmac" id="aes256-cts-hmac-sha1-96-hmac">00</span>
           </span>

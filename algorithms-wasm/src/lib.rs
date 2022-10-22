@@ -81,6 +81,40 @@ pub fn aes256_cts_hmac_sha1_96_decrypt(
 }
 
 #[wasm_bindgen]
+pub fn aes128_cts_hmac_sha1_96_encrypt(
+    key: &str,
+    key_usage: i32,
+    payload: &str,
+) -> Result<String, String> {
+    let key = hex_to_vec(key)?;
+    let payload = hex_to_vec(payload)?;
+
+    Ok(hex::encode(
+        CipherSuite::Aes128CtsHmacSha196
+            .cipher()
+            .encrypt(&key, key_usage, &payload)
+            .map_err(|e| format!("{:?}", e))?,
+    ))
+}
+
+#[wasm_bindgen]
+pub fn aes128_cts_hmac_sha1_96_decrypt(
+    key: &str,
+    key_usage: i32,
+    payload: &str,
+) -> Result<String, String> {
+    let key = hex_to_vec(key)?;
+    let payload = hex_to_vec(payload)?;
+
+    Ok(hex::encode(
+        CipherSuite::Aes128CtsHmacSha196
+            .cipher()
+            .decrypt(&key, key_usage, &payload)
+            .map_err(|e| format!("{:?}", e))?,
+    ))
+}
+
+#[wasm_bindgen]
 pub fn krb_generate_key_from_password(
     algo: usize,
     password: &str,
