@@ -14,7 +14,11 @@ const getAlgorithmFn = algorithm => {
   if (algorithm.startsWith('sha')) {
     return algorithm;
   } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
-    return 'aes256_cts_hmac_sha1_96_encrypt';
+    if (document.getElementById('aes256-cts-hmac-sha1-96-operation').checked) {
+      return 'aes256_cts_hmac_sha1_96_decrypt';
+    } else {
+      return 'aes256_cts_hmac_sha1_96_encrypt';
+    }
   }
 };
 
@@ -40,10 +44,14 @@ const setData = (algorithm, data) => {
     document.getElementById(`${algorithm}-outdata`).innerText = data;
   } else if (algorithm === 'aes256-cts-hmac-sha1-96') {
     const len = data.length;
-    document.getElementById(`${algorithm}-cipher`).innerText = data.substring(0, len - 24);
-    document.getElementById(`${algorithm}-hmac`).innerText = data.substring(len - 24);
     document.getElementById(`${algorithm}-total-len`).innerText = len / 2;
-    document.getElementById(`${algorithm}-cipher-len-value`).innerText = (len / 2) - 12;
+    if (document.getElementById('aes256-cts-hmac-sha1-96-operation').checked) {
+      document.getElementById(`${algorithm}-cipher`).innerText = data;
+    } else {
+      document.getElementById(`${algorithm}-cipher`).innerText = data.substring(0, len - 24);
+      document.getElementById(`${algorithm}-hmac`).innerText = data.substring(len - 24);
+      document.getElementById(`${algorithm}-cipher-len-value`).innerText = (len / 2) - 12;
+    }
   } else {
     showNotification({ type: 'error', text: `${algorithm} not implemented yet` })
     throw new Error('not implemented yet');
