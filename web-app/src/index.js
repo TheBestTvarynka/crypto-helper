@@ -111,19 +111,20 @@ const KRB_CIPHER_CONSTANTS = {
 };
 
 for (const algo of ['aes256-cts-hmac-sha1-96', 'aes128-cts-hmac-sha1-96']) {
-  document.getElementById(`${algo}-gen-key-btn`).addEventListener('click', () => {
-    const password = document.getElementById(`${algo}-password`).value;
-    const salt = document.getElementById(`${algo}-salt`).value;
+  const button = document.getElementById(`${algo}-gen-key-btn`);
+  button.addEventListener('click', () => {
+      const password = document.getElementById(`${algo}-password`).value;
+      const salt = document.getElementById(`${algo}-salt`).value;
 
-    const keyInput = document.getElementById(`${algo}-key-input`);
-    try {
-      keyInput.value = wasm.krb_generate_key_from_password(KRB_CIPHER_CONSTANTS[algo], password, salt);
-      keyInput.dispatchEvent(new Event("change"));
-    } catch (e) {
-      console.error(e);
-      showNotification({ text: e, type: 'error' });
-    }
-  })
+      const keyInput = document.getElementById(`${algo}-key-input`);
+      try {
+        keyInput.value = wasm.krb_generate_key_from_password(KRB_CIPHER_CONSTANTS[algo], password, salt);
+        keyInput.dispatchEvent(new Event("change"));
+      } catch (e) {
+        console.error(e);
+        showNotification({ text: e, type: 'error' });
+      }
+    });
 }
 
 toggleAutoConvert();

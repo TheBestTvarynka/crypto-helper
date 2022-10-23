@@ -145,7 +145,7 @@
             </span>
             <span class="total">key from password</span>
           </div>
-          <div class="horizontal generateKeyOpts" id="aes128-cts-hmac-sha1-96-pass-opts" style="display: none;">
+          <form class="horizontal generateKeyOpts" id="aes128-cts-hmac-sha1-96-pass-opts" style="display: none;" onsubmit="event.preventDefault()">
             <div>
               <input
                 placeholder="password"
@@ -160,8 +160,8 @@
                 id="aes128-cts-hmac-sha1-96-salt"
               >
             </div>
-            <button id="aes128-cts-hmac-sha1-96-gen-key-btn">Generate key</button>
-          </div>
+            <button id="aes128-cts-hmac-sha1-96-gen-key-btn" type="submit">Generate key</button>
+          </form>
         </div>
         <div name="aes256-cts-hmac-sha1-96-in" class="enc-params">
           <div class="vertical">
@@ -209,7 +209,7 @@
             </span>
             <span class="total">key from password</span>
           </div>
-          <div class="horizontal generateKeyOpts" id="aes256-cts-hmac-sha1-96-pass-opts" style="display: none;">
+          <form class="horizontal generateKeyOpts" id="aes256-cts-hmac-sha1-96-pass-opts" style="display: none;" onsubmit="event.preventDefault()">
             <div>
               <input
                 placeholder="password"
@@ -225,7 +225,7 @@
               >
             </div>
             <button id="aes256-cts-hmac-sha1-96-gen-key-btn">Generate key</button>
-          </div>
+          </form>
         </div>
       </div>
 
