@@ -47,14 +47,23 @@
               <option value="aes128-cts-hmac-sha1-96" selected>AES128-CTS-HMAC-SHA1-96</option>
               <option value="aes256-cts-hmac-sha1-96">AES256-CTS-HMAC-SHA1-96</option>
             </select>
-            <input type="checkbox" checked id="algo-search" onchange="onSearchCheckboxChange()"><label for="algo-search">S</label>
+            <input type="checkbox" checked id="algo-search" onchange="onSearchCheckboxChange()" class="search-input">
+            <label class="search-button" for="algo-search"><img src="img/icons8-search.svg"></label>
           </div>
           <div class="vertical" id="algo-search-block">
-            <input placeholder="algo name" class="base-input" id="algo-name-pattern" onchange="onPatternChange()" oninput="onPatternChange()" onkeydown="onPatternSubmit(event)">
-            <div class="vertical search-result" id="algo-search-results">
-              <!-- <span onclick="onAlgoSelect('md5')">MD5</span>
-              <span onclick="onAlgoSelect('aes128-cts-hmac-sha1-96')">AES128-CTS-HMAC-SHA1-96</span>
-              <span onclick="onAlgoSelect('aes256-cts-hmac-sha1-96')">AES256-CTS-HMAC-SHA1-96</span> -->
+            <input
+              placeholder="algo name"
+              class="base-input"
+              id="algo-name-pattern"
+              onchange="onPatternChange()"
+              oninput="onPatternChange()"
+              onkeydown="onPatternSubmit(event)"
+              onfocus="onPatternChange()"
+              onfocusout="removeFoundChild()"
+            >
+            <div class="search-result-container">
+              <div class="vertical search-result" id="algo-search-results">
+              </div>
             </div>
           </div>
         </div>

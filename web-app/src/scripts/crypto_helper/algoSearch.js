@@ -26,13 +26,18 @@ const SUPPORTED_ALGORITHMS = [
     'aes256-cts-hmac-sha1-96',
 ]
 
-const onPatternChange = () => {
-    const pattern = document.getElementById('algo-name-pattern').value;
-
+const removeFoundChild = () => {
     const container = document.getElementById('algo-search-results');
     while (container.childNodes.length > 0) {
         container.removeChild(container.childNodes[0]);
     }
+};
+
+const onPatternChange = () => {
+    const pattern = document.getElementById('algo-name-pattern').value;
+
+    const container = document.getElementById('algo-search-results');
+    removeFoundChild();
 
     if (pattern.length === 0) {
         return;
