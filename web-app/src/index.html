@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="styles/header.css">
   <link rel="stylesheet" href="styles/footer.css">
   <link rel="stylesheet" href="styles/crypto_helper/style.css">
+  <link rel="stylesheet" href="styles/crypto_helper/compare.css">
   <link rel="stylesheet" href="styles/crypto_helper/sha.css">
   <link rel="stylesheet" href="styles/crypto_helper/krbEnc.css">
   <link rel="stylesheet" href="styles/crypto_helper/switch.css">
@@ -19,6 +20,7 @@
   <script src="scripts/crypto_helper/script.js"></script>
   <script src="scripts/crypto_helper/aesCtsHmac.js"></script>
   <script src="scripts/crypto_helper/algoSearch.js"></script>
+  <script src="scripts/crypto_helper/compare.js"></script>
   <script src="scripts/notifications.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,10 +43,10 @@
           <div class="horizontal">
             <select id="algorithm" onchange="onAlgorithmChange()" class="base-input" style="width: auto;">
               <option value="md5">MD5</option>
-              <option value="sha1">SHA1</option>
+              <option value="sha1" selected>SHA1</option>
               <option value="sha256">SHA256</option>
               <option value="sha512">SHA512</option>
-              <option value="aes128-cts-hmac-sha1-96" selected>AES128-CTS-HMAC-SHA1-96</option>
+              <option value="aes128-cts-hmac-sha1-96">AES128-CTS-HMAC-SHA1-96</option>
               <option value="aes256-cts-hmac-sha1-96">AES256-CTS-HMAC-SHA1-96</option>
             </select>
             <input type="checkbox" checked id="algo-search" onchange="onSearchCheckboxChange()" class="search-input">
@@ -71,13 +73,13 @@
         <div class="selectable-info">
           <span name="md5-info">Hash hex-encoded input using MD5 hashing
             function.<a href="https://www.ietf.org/rfc/rfc1321.txt">RFC</a>.</span>
-          <span name="sha1-info">Hash hex-encoded input using SHA1 hashing
+          <span id="current-algorithm-info" name="sha1-info">Hash hex-encoded input using SHA1 hashing
             function.<a href="https://www.rfc-editor.org/rfc/rfc3174">RFC</a>.</span>
           <span name="sha256-info">Hash hex-encoded input using SHA256 hashing function.<a
               href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
           <span name="sha512-info">Hash hex-encoded input using SHA512 hashing function.<a
               href="https://datatracker.ietf.org/doc/html/rfc4634">RFC</a>.</span>
-          <span id="current-algorithm-info" name="aes128-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
+          <span name="aes128-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
             using AES128-CTS-HMAC-SHA1-96 algorithm.<a
               href="https://www.rfc-editor.org/rfc/rfc3961.html">RFC</a>.</span>
           <span name="aes256-cts-hmac-sha1-96-info">Encrypt hex-encoded data with the provided or derived key
@@ -90,7 +92,7 @@
         <div name="md5-in">
           <textarea class="base-input" rows="2" placeholder="md5 in" id="md5-indata"></textarea>
         </div>
-        <div name="sha1-in">
+        <div id="current-algorithm-in" name="sha1-in">
           <textarea class="base-input" rows="2" placeholder="sha1 in" id="sha1-indata"></textarea>
         </div>
         <div name="sha256-in">
@@ -99,7 +101,7 @@
         <div name="sha512-in">
           <textarea class="base-input" rows="2" placeholder="sha512 in" id="sha512-indata"></textarea>
         </div>
-        <div id="current-algorithm-in" name="aes128-cts-hmac-sha1-96-in" class="enc-params">
+        <div name="aes128-cts-hmac-sha1-96-in" class="enc-params">
           <div class="vertical">
             <input
               placeholder="key"
@@ -241,7 +243,7 @@
           <span id="md5-outdata" class="sha-digest" onclick="copyOutputData()">--MD5 out--</span>
           <span class="total">total: 16</span>
         </div>
-        <div name="sha1-out" class="output">
+        <div id="current-algorithm-out" name="sha1-out" class="output">
           <span id="sha1-outdata" class="sha-digest" onclick="copyOutputData()">--SHA1 out--</span>
           <span class="total">total: 20</span>
         </div>
@@ -253,7 +255,7 @@
           <span id="sha512-outdata" class="sha-digest" onclick="copyOutputData()">--SHA512 out--</span>
           <span class="total">total: 64</span>
         </div>
-        <div id="current-algorithm-out" name="aes128-cts-hmac-sha1-96-out" class="output">
+        <div name="aes128-cts-hmac-sha1-96-out" class="output">
           <span onclick="copyOutputData()" class="full-cipher">
             <span class="cipher" id="aes128-cts-hmac-sha1-96-cipher">00</span><span class="hmac" id="aes128-cts-hmac-sha1-96-hmac">00</span>
           </span>
@@ -278,6 +280,11 @@
         <div id="share" class="tool" onclick="share()">
           <img src="img/share.png" alt="share" />
         </div>
+        <input type="checkbox" id="compare-out" onchange="onCompareCheckboxChange(event)" class="compare-input">
+        <label class="compare-button" for="compare-out"><img src="img/compare-2.png"></label>
+      </div>
+      <div class="compare-container" id="compare-container" style="display: none;">
+        <textarea id="compare-value" class="compare-input-success base-input" rows="3" onchange="compare()" oninput="compare()">00</textarea>
       </div>
     </div>
   </article>
@@ -289,8 +296,7 @@
     <span>Icons by: <a href="https://icons8.com">icons8.com</a></span>
   </footer>
   <div id="notifications" class="notifications"></div>
-  <noscript>This page contains webassembly and javascript content, please enable javascript in your
-    browser.</noscript>
+  <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
   <script src="./bootstrap.js"></script>
 </body>
 

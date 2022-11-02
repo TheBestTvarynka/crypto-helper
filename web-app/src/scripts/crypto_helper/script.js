@@ -31,21 +31,23 @@ const setAlgorithm = algorithm => {
   document.getElementById('go').click();
 };
 
-const copyOutputData = () => {
+const getOutputData = () => {
   const algorithm = getAlgorithm();
   if (algorithm.startsWith('sha') || algorithm.startsWith('md5')) {
-    const outputData = document.getElementById(`${algorithm}-outdata`).innerText;
-    console.log(outputData);
-    navigator.clipboard.writeText(outputData);
-
-    showNotification({ type: 'info', text: 'Copied!' });
+    return document.getElementById(`${algorithm}-outdata`).innerText;
   } else if (algorithm.endsWith('-cts-hmac-sha1-96')) {
-    let cipher = document.getElementById(`${algorithm}-cipher`).innerText;
-    let hmac = document.getElementById(`${algorithm}-hmac`).innerText;
-    navigator.clipboard.writeText(cipher + hmac);
+    const cipher = document.getElementById(`${algorithm}-cipher`).innerText;
+    const hmac = document.getElementById(`${algorithm}-hmac`).innerText;
 
-    showNotification({ type: 'info', text: 'Copied!' });
+    return cipher + hmac;
   }
+  return '';
+};
+
+const copyOutputData = () => {
+  navigator.clipboard.writeText(getOutputData());
+
+  showNotification({ type: 'info', text: 'Copied!' });
 };
 
 const KEY_USAGE_NAMES = {

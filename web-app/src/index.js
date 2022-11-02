@@ -70,6 +70,7 @@ const go = () => {
   try {
     const dataOut = wasm[getAlgorithmFn(algorithm)](...dataIn);
     setData(algorithm, dataOut);
+    compare();
   } catch(e) {
     showNotification({ type: 'error', text: e });
   }
