@@ -13,7 +13,11 @@ impl Component for Header {
 
     fn view(&self, _ctx: &yew::Context<Self>) -> yew::Html {
         html!{
-            <header>{"header"}</header>
+            <header>
+                <a href="/">{"Crypto helper"}</a>
+                <a href="/jwt">{"JWT/JWE"}</a>
+                <a href="/about">{"About"}</a>
+            </header>
         }
     }
 }
