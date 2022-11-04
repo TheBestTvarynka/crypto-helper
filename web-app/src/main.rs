@@ -1,4 +1,10 @@
+mod footer;
+mod header;
+
 use yew::prelude::*;
+
+use header::Header;
+use footer::Footer;
 
 enum Msg {
     AddOne,
@@ -32,8 +38,10 @@ impl Component for Model {
         let link = ctx.link();
         html! {
             <div>
+                <Header />
                 <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
                 <p>{ self.value }</p>
+                <Footer />
             </div>
         }
     }

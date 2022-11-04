@@ -1,0 +1,26 @@
+header {
+    border: none;
+    margin-top: 0;
+    width: calc(100% - 2em);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #403735;
+    padding: 1em;
+    color: #ccc9af;
+}
+
+header > a {
+    padding: 0 0.7em 0 0.7em;
+    color: inherit;
+    text-decoration: none;
+}
+
+header > a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+header > a > img {
+    height: 2em;
+}
