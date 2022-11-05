@@ -1,0 +1,16 @@
+.enc-params {
+    display: grid;
+    gap: 0.5em;
+    width: 100%;
+    grid-template-columns: 25% 35% 40%;
+}
+
+.krbEncOpts {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.generateKeyOpts {
+    grid-column-start: 1;
+    grid-column-end: 4;
+}

@@ -1,4 +1,5 @@
 mod crypto_helper;
+mod common;
 mod footer;
 mod header;
 
