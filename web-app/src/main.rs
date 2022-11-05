@@ -1,46 +1,28 @@
+mod crypto_helper;
 mod footer;
 mod header;
 
-use yew::prelude::*;
-
-use header::Header;
+use crypto_helper::CryptoHelper;
 use footer::Footer;
+use header::Header;
 
-enum Msg {
-    AddOne,
-}
+use yew::{classes, html, Component, Context, Html};
 
-struct Model {
-    value: i64,
-}
+struct App;
 
-impl Component for Model {
-    type Message = Msg;
+impl Component for App {
+    type Message = ();
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            value: 0,
-        }
+        App
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::AddOne => {
-                self.value += 1;
-
-                true
-            }
-        }
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let link = ctx.link();
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <div class={classes!("body")}>
                 <Header />
-                <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
-                <p>{ self.value }</p>
+                <CryptoHelper />
                 <Footer />
             </div>
         }
@@ -48,5 +30,7 @@ impl Component for Model {
 }
 
 fn main() {
-    yew::start_app::<Model>();
+    wasm_logger::init(wasm_logger::Config::default());
+
+    yew::Renderer::<App>::new().render();
 }

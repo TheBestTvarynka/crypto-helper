@@ -1,4 +1,4 @@
-use yew::{Component, html};
+use yew::{html, Component};
 
 pub struct Header;
 
@@ -12,7 +12,7 @@ impl Component for Header {
     }
 
     fn view(&self, _ctx: &yew::Context<Self>) -> yew::Html {
-        html!{
+        html! {
             <header>
                 <a href="/">{"Crypto helper"}</a>
                 <a href="/jwt">{"JWT/JWE"}</a>
