@@ -1,4 +1,4 @@
-use yew::{html, Html, function_component, use_state};
+use yew::{html, Html, function_component, use_state, classes};
 
 mod algorithm;
 mod info;
@@ -16,10 +16,10 @@ pub fn crypto_helper() -> Html {
     let algorithm = use_state(|| Algorithm::Sha1);
 
     html!{
-        <div>
+        <article class={classes!("vertical")}>
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
             <Input algorithm={(*algorithm).clone()} />
             <Output algorithm={(*algorithm).clone()} />
-        </div>
+        </article>
     }
 }

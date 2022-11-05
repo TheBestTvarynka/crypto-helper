@@ -17,3 +17,39 @@ body {
     flex-direction: column;
     align-items: center;
 }
+
+article {
+    margin-top: 1em;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.algo-info a {
+    color: inherit;
+    text-decoration: underline;
+    padding: 0 0.2em 0 0.2em;
+    border-radius: 0.2em;
+    transition: all 0.2s;
+}
+.algo-info a:hover {
+    background-color: #50437f;
+    color: #dbcfbf;
+    cursor: pointer;
+}
+
+.vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    align-items: center;
+    justify-content: flex-start;
+}
