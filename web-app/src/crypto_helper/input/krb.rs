@@ -1,4 +1,5 @@
-use web_sys::{HtmlInputElement, InputEvent};
+use picky_krb::crypto::CipherSuite;
+use web_sys::{HtmlInputElement, InputEvent, MouseEvent};
 use yew::{
     classes, function_component, html, use_effect, use_state, Callback, Html, Properties,
     TargetCast, UseStateSetter,
@@ -48,10 +49,20 @@ fn gen_on_input_handle(setter: UseStateSetter<String>) -> Callback<InputEvent> {
     })
 }
 
+fn generate_key(cipher: &CipherSuite, password: &str, salt: &str) -> String {
+    hex::encode(
+        cipher
+            .cipher()
+            .generate_key_from_password(password.as_bytes(), salt.as_bytes())
+            .unwrap(),
+    )
+}
+
 #[derive(Debug, Properties, PartialEq)]
 pub struct KrbInputProps {
     pub krb_input: KerberosInput,
     pub krb_input_setter: Callback<KerberosInput>,
+    pub krb_algo: CipherSuite,
 }
 
 #[function_component(KrbInput)]
@@ -90,6 +101,15 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
             key_usage: usage_number_value,
             payload: payload_value,
         });
+    });
+
+    let key_setter = key.setter();
+    let cipher = props.krb_algo.clone();
+    let password_value = (*password).clone();
+    let salt_value = (*salt).clone();
+    let generate_key_from_password = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        key_setter.set(generate_key(&cipher, &password_value, &salt_value))
     });
 
     html! {
@@ -151,7 +171,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
                                     oninput={gen_on_input_handle(salt.setter())}
                                 />
                             </div>
-                            <button type={"submit"}>{"Generate key"}</button>
+                            <button type={"submit"} onclick={generate_key_from_password}>{"Generate key"}</button>
                         </form>
                     }
                 } else {
@@ -165,8 +185,9 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
 pub fn build_krb_input(
     krb_input: KerberosInput,
     krb_input_setter: Callback<KerberosInput>,
+    krb_algo: CipherSuite,
 ) -> Html {
     html! {
-        <KrbInput krb_input={krb_input} krb_input_setter={krb_input_setter} />
+        <KrbInput krb_input={krb_input} krb_input_setter={krb_input_setter} krb_algo={krb_algo} />
     }
 }

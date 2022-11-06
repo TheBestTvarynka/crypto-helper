@@ -1,6 +1,7 @@
 mod krb;
 mod simple;
 
+use picky_krb::crypto::CipherSuite;
 use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
 
 use self::{krb::build_krb_input, simple::build_simple_input};
@@ -31,12 +32,14 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
             Callback::from(move |kerberos_input| {
                 setter.set(Algorithm::Aes128CtsHmacSha196(kerberos_input))
             }),
+            CipherSuite::Aes128CtsHmacSha196,
         ),
         Algorithm::Aes256CtsHmacSha196(kerberos_input) => build_krb_input(
             kerberos_input.clone(),
             Callback::from(move |kerberos_input| {
                 setter.set(Algorithm::Aes256CtsHmacSha196(kerberos_input))
             }),
+            CipherSuite::Aes256CtsHmacSha196,
         ),
     }
 }

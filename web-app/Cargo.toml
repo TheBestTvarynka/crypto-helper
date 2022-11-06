@@ -21,3 +21,4 @@ log = "0.4.17"
 hex = "0.4.3"
 
 # crypto
+picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", branch = "wasm" }
