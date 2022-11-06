@@ -1,8 +1,10 @@
 use yew::{classes, html, Html};
 
+use crate::crypto_helper::algorithm::KrbInput;
+
 const HMAC_LEN: usize = 12;
 
-pub fn build_krb_output(output: &[u8]) -> Html {
+pub fn build_krb_output(krb_input: &KrbInput, output: &[u8]) -> Html {
     let len = output.len();
 
     let (cipher_len, hmac_len, cipher, hmac) = if len < HMAC_LEN {
@@ -23,7 +25,17 @@ pub fn build_krb_output(output: &[u8]) -> Html {
                 <span class={classes!("cipher")}>{cipher}</span>
                 <span class={classes!("hmac")}>{hmac}</span>
             </span>
-            <span class={classes!("total")}>{format!("total: {}. cipher: {}. hmac: {}.", len, cipher_len, hmac_len)}</span>
+            {
+                if krb_input.mode {
+                    html!{ <span class={classes!("total")}>{format!("total: {}.", len)}</span> }
+                } else {
+                    html!{
+                        <span class={classes!("total")}>
+                            {format!("total: {}. cipher: {}. hmac: {}.", len, cipher_len, hmac_len)}
+                        </span>
+                    }
+                }
+            }
         </div>
     }
 }

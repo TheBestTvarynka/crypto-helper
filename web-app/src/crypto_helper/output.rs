@@ -13,8 +13,8 @@ fn get_output_components(algorithm: &Algorithm, output: &[u8]) -> Html {
         Algorithm::Sha1(_) => build_simple_output(output),
         Algorithm::Sha256(_) => build_simple_output(output),
         Algorithm::Sha512(_) => build_simple_output(output),
-        Algorithm::Aes128CtsHmacSha196(_) => build_krb_output(output),
-        Algorithm::Aes256CtsHmacSha196(_) => build_krb_output(output),
+        Algorithm::Aes128CtsHmacSha196(input) => build_krb_output(input, output),
+        Algorithm::Aes256CtsHmacSha196(input) => build_krb_output(input, output),
     }
 }
 

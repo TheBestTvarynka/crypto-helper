@@ -50,12 +50,6 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
 
 #[function_component(Info)]
 pub fn info(props: &InfoProps) -> Html {
-    // let oninput = Callback::from(move |event: InputEvent| {
-    //     let input: HtmlInputElement = event.target_unchecked_into();
-    //     let value = input.value();
-    //     log::info!("{:?}", value);
-    // });
-
     let set_algorithm = props.set_algorithm.clone();
     let onchange = Callback::from(move |event: Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
@@ -72,7 +66,7 @@ pub fn info(props: &InfoProps) -> Html {
                 SUPPORTED_ALGORITHMS
                     .iter()
                     .map(|algo| html!{
-                        <option selected={false} value={*algo}>{algo}</option>
+                        <option selected={ &props.algorithm == *algo} value={*algo}>{algo}</option>
                     })
                     .collect::<Vec<_>>()
             }</select>
