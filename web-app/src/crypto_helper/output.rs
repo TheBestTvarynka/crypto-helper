@@ -1,6 +1,6 @@
 mod simple;
 
-use yew::{html, Html, Properties, function_component};
+use yew::{function_component, html, Html, Properties};
 
 use super::Algorithm;
 

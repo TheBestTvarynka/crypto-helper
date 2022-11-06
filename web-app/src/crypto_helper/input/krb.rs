@@ -1,6 +1,7 @@
 use web_sys::{HtmlInputElement, InputEvent};
 use yew::{
-    classes, function_component, html, use_state, Callback, Html, TargetCast, UseStateSetter, Properties, use_effect, use_effect_with_deps,
+    classes, function_component, html, use_effect, use_state, Callback, Html, Properties,
+    TargetCast, UseStateSetter,
 };
 
 use crate::common::Switch;
@@ -75,7 +76,13 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     let payload_value = (*payload).clone();
     let input_setter = props.krb_input_setter.clone();
     use_effect(move || {
-        log::debug!("use_effect: {}, {}, {}, {}", mode_value, key_value, usage_number_value, payload_value);
+        log::debug!(
+            "use_effect: {}, {}, {}, {}",
+            mode_value,
+            key_value,
+            usage_number_value,
+            payload_value
+        );
 
         input_setter.emit(KerberosInput {
             mode: mode_value,
@@ -155,7 +162,10 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     }
 }
 
-pub fn build_krb_input(krb_input: KerberosInput, krb_input_setter: Callback<KerberosInput>) -> Html {
+pub fn build_krb_input(
+    krb_input: KerberosInput,
+    krb_input_setter: Callback<KerberosInput>,
+) -> Html {
     html! {
         <KrbInput krb_input={krb_input} krb_input_setter={krb_input_setter} />
     }

@@ -1,5 +1,8 @@
 use web_sys::HtmlInputElement;
-use yew::{html::onchange::Event, html, Callback, Html, Properties, function_component, UseStateSetter, TargetCast, classes};
+use yew::{
+    classes, function_component, html, html::onchange::Event, Callback, Html, Properties,
+    TargetCast, UseStateSetter,
+};
 
 use super::algorithm::{Algorithm, SUPPORTED_ALGORITHMS};
 
@@ -11,7 +14,7 @@ pub struct InfoProps {
 
 fn get_algorithm_info(algorithm: &Algorithm) -> Html {
     match algorithm {
-        Algorithm::Md5(_) => html!{
+        Algorithm::Md5(_) => html! {
             <span>
             {"Hash hex-encoded input using MD5 hashing function. "}
             <a href={"https://www.ietf.org/rfc/rfc1321.txt"}>{"RFC"}</a>{"."}
@@ -56,10 +59,10 @@ pub fn info(props: &InfoProps) -> Html {
     let set_algorithm = props.set_algorithm.clone();
     let onchange = Callback::from(move |event: Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
-        
+
         if let Ok(algorithm) = input.value().as_str().try_into() {
             log::info!("set new algorithm: {:?}", algorithm);
-            set_algorithm.set(algorithm); 
+            set_algorithm.set(algorithm);
         }
     });
 

@@ -1,4 +1,4 @@
-use yew::{Html, function_component, html, classes, Properties, UseStateSetter, Callback};
+use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
 
 #[derive(Properties, PartialEq, Debug, Clone)]
 pub struct SwitchProps {
