@@ -2,6 +2,7 @@ mod common;
 mod crypto_helper;
 mod footer;
 mod header;
+mod notification;
 
 use crypto_helper::CryptoHelper;
 use footer::Footer;

@@ -32,6 +32,8 @@ impl TryFrom<&str> for Algorithm {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
+        log::debug!("try from: {}", value);
+
         if value == SUPPORTED_ALGORITHMS[0] {
             return Ok(Algorithm::Md5(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[1] {
