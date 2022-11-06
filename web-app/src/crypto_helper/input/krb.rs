@@ -42,7 +42,7 @@ fn gen_on_input_handle(setter: UseStateSetter<String>) -> Callback<InputEvent> {
         let input: HtmlInputElement = event.target_unchecked_into();
 
         let value = input.value();
-        log::debug!("new key value: {}", value);
+        log::debug!("new value: {}", value);
 
         setter.set(value);
     })
