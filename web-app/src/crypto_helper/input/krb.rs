@@ -56,9 +56,9 @@ pub struct KrbInputProps {
 
 #[function_component(KrbInput)]
 pub fn krb_input(props: &KrbInputProps) -> Html {
-    let key = use_state(|| String::new());
-    let usage_number = use_state(|| String::new());
-    let payload = use_state(|| String::new());
+    let key = use_state(String::new);
+    let usage_number = use_state(String::new);
+    let payload = use_state(String::new);
 
     // false - encrypt
     // true - decrypt
@@ -67,8 +67,8 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     // false - user provides the key by yourself
     // true - generate key from the password
     let key_source = use_state(|| false);
-    let password = use_state(|| String::new());
-    let salt = use_state(|| String::new());
+    let password = use_state(String::new);
+    let salt = use_state(String::new);
 
     let mode_value = *mode;
     let key_value = (*key).clone();
@@ -108,7 +108,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
                     type={"number"}
                     class={classes!("base-input")}
                     placeholder={"usage number"}
-                    value={format!("{}", *usage_number)}
+                    value={usage_number.to_string()}
                     oninput={gen_on_input_handle(usage_number.setter())}
                 />
                 <span class={classes!("total")}>{get_usage_number_name((*usage_number).as_str())}</span>

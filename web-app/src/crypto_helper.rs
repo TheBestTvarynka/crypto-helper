@@ -14,13 +14,14 @@ use self::algorithm::Algorithm;
 #[function_component(CryptoHelper)]
 pub fn crypto_helper() -> Html {
     //
-    let algorithm = use_state(|| Algorithm::default());
+    let algorithm = use_state(Algorithm::default);
+    let output = use_state(Vec::new);
 
     html! {
         <article class={classes!("vertical")}>
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
-            <Output algorithm={(*algorithm).clone()} />
+            <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
         </article>
     }
 }
