@@ -1,3 +1,5 @@
+mod simple;
+
 use yew::{html, Html, Properties, function_component};
 
 use super::Algorithm;

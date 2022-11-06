@@ -13,12 +13,13 @@ use self::algorithm::Algorithm;
 
 #[function_component(CryptoHelper)]
 pub fn crypto_helper() -> Html {
-    let algorithm = use_state(|| Algorithm::Sha1);
+    // 
+    let algorithm = use_state(|| Algorithm::default());
 
     html!{
         <article class={classes!("vertical")}>
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
-            <Input algorithm={(*algorithm).clone()} />
+            <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
             <Output algorithm={(*algorithm).clone()} />
         </article>
     }

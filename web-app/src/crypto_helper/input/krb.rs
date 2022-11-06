@@ -1,9 +1,10 @@
 use web_sys::{HtmlInputElement, InputEvent};
 use yew::{
-    classes, function_component, html, use_state, Callback, Html, TargetCast, UseStateSetter,
+    classes, function_component, html, use_state, Callback, Html, TargetCast, UseStateSetter, Properties, use_effect, use_effect_with_deps,
 };
 
 use crate::common::Switch;
+use crate::crypto_helper::algorithm::KrbInput as KerberosInput;
 
 fn get_usage_number_name(usage_number: &str) -> &str {
     match usage_number.parse::<u32>() {
@@ -46,8 +47,14 @@ fn gen_on_input_handle(setter: UseStateSetter<String>) -> Callback<InputEvent> {
     })
 }
 
+#[derive(Debug, Properties, PartialEq)]
+pub struct KrbInputProps {
+    pub krb_input: KerberosInput,
+    pub krb_input_setter: Callback<KerberosInput>,
+}
+
 #[function_component(KrbInput)]
-pub fn krb_input() -> Html {
+pub fn krb_input(props: &KrbInputProps) -> Html {
     let key = use_state(|| String::new());
     let usage_number = use_state(|| String::new());
     let payload = use_state(|| String::new());
@@ -61,6 +68,22 @@ pub fn krb_input() -> Html {
     let key_source = use_state(|| false);
     let password = use_state(|| String::new());
     let salt = use_state(|| String::new());
+
+    let mode_value = *mode;
+    let key_value = (*key).clone();
+    let usage_number_value = (*usage_number).clone();
+    let payload_value = (*payload).clone();
+    let input_setter = props.krb_input_setter.clone();
+    use_effect(move || {
+        log::debug!("use_effect: {}, {}, {}, {}", mode_value, key_value, usage_number_value, payload_value);
+
+        input_setter.emit(KerberosInput {
+            mode: mode_value,
+            key: key_value,
+            key_usage: usage_number_value,
+            payload: payload_value,
+        });
+    });
 
     html! {
         <div class={classes!("enc-params")}>
@@ -132,8 +155,8 @@ pub fn krb_input() -> Html {
     }
 }
 
-pub fn build_krb_input() -> Html {
+pub fn build_krb_input(krb_input: KerberosInput, krb_input_setter: Callback<KerberosInput>) -> Html {
     html! {
-        <KrbInput />
+        <KrbInput krb_input={krb_input} krb_input_setter={krb_input_setter} />
     }
 }
