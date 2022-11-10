@@ -11,6 +11,8 @@ use info::Info;
 use input::Input;
 use output::Output;
 
+use crate::notification::Notifications;
+
 use self::algorithm::Algorithm;
 
 fn from_hex(input: &str) -> Vec<u8> {
@@ -94,6 +96,7 @@ pub fn crypto_helper() -> Html {
                 </label>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
+            <Notifications />
         </article>
     }
 }

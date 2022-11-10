@@ -3,31 +3,22 @@ mod crypto_helper;
 mod footer;
 mod header;
 mod notification;
+mod utils;
+
+use yew::{classes, function_component, html, Html};
 
 use crypto_helper::CryptoHelper;
-use footer::Footer;
-use header::Header;
+use footer::footer;
+use header::header;
 
-use yew::{classes, html, Component, Context, Html};
-
-struct App;
-
-impl Component for App {
-    type Message = ();
-    type Properties = ();
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        App
-    }
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        html! {
-            <div class={classes!("body")}>
-                <Header />
-                <CryptoHelper />
-                <Footer />
-            </div>
-        }
+#[function_component(App)]
+pub fn app() -> Html {
+    html! {
+        <div class={classes!("body")}>
+            {header()}
+            <CryptoHelper />
+            {footer()}
+        </div>
     }
 }
 
