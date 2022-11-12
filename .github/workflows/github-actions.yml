@@ -22,6 +22,9 @@ jobs:
     - name: 'Trunk Check'
       uses: jetli/trunk-action@v0.1.0
 
+    - name: 'Clippy'
+      run: 'cargo clippy -- -D warnings'
+
     - id: 'auth'
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0'
