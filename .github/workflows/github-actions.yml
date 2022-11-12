@@ -31,11 +31,11 @@ jobs:
     - name: 'Add WASM target'
       run: 'rustup target add wasm32-unknown-unknown'
 
-    - name: 'Build & Deploy'
+    - name: 'Build'
       run: 'trunk build --release'
-
-    - name: 'Obserce'
-      run: 'ls -l -a && ls -l -a dist'
 
     - name: 'Set up Cloud SDK'
       uses: google-github-actions/setup-gcloud@v0
+
+    - name: 'Deploy'
+      run: 'gsutil -h "Cache-Control:no-store" -m cp -r dist/* gs://${GCP_BUCKET}'
