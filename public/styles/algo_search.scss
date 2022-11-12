@@ -58,3 +58,18 @@
     height: 1.1em;
     width: 1.1em;
 }
+
+.algo-search-background {
+    background-color: transparent;
+    // opacity: 0.5;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10;
+}
+
+.sr {
+    z-index: 15;
+}

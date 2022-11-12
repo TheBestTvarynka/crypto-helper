@@ -72,14 +72,9 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
         algos_setter.set(search_algorithms(pattern_value.clone()));
     });
 
-    let onfocus_d = Callback::from(move |_| {
-        log::debug!("focus in");
-    });
-
-    let _algos_setter = algos.setter();
-    let onfocusout_d = Callback::from(move |_| {
-        log::debug!("focus out");
-        // algos_setter.set(Vec::new());
+    let algos_setter = algos.setter();
+    let on_background_click = Callback::from(move |_| {
+        algos_setter.set(Vec::new());
     });
 
     let algos_value = (*algos).clone();
@@ -95,7 +90,7 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
     });
 
     html! {
-        <div class={classes!("vertical")} onfocus={onfocus_d} onfocusout={onfocusout_d}>
+        <div class={classes!("vertical")}>
             <input
                 placeholder={"algo name"}
                 class={classes!("base-input")}
@@ -108,10 +103,17 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
             <div class={classes!("search-result-container")}>
                 <div class={classes!("vertical", "search-result")}>
                 {
+                    if !(*algos).is_empty() {
+                        html! { <div class={classes!("algo-search-background")} onclick={on_background_click} /> }
+                    } else {
+                        html! {}
+                    }
+                }
+                {
                     (*algos)
                         .iter()
                         .map(|algo| html!{
-                            <span onclick={get_onclick_hangle(algo, props.set_algorithm.clone(), algos.setter())}>{algo}</span>
+                            <span class={classes!("sr")} onclick={get_onclick_hangle(algo, props.set_algorithm.clone(), algos.setter())}>{algo}</span>
                         })
                         .collect::<Vec<_>>()
                 }
