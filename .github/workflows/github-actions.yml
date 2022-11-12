@@ -33,5 +33,6 @@ jobs:
 
     - name: 'Build & Deploy'
       run: 'trunk build --release'
-      run: 'ls -l -a'
-      run: 'ls -l -a dist'
+
+    - name: 'Obserce'
+      run: 'ls -l -a && ls -l -a dist'
