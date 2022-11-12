@@ -1,16 +1,14 @@
-use std::{cell::RefCell, rc::Rc};
-
 use time::OffsetDateTime;
+use uuid::Uuid;
 use web_sys::MouseEvent;
 use yew::{classes, function_component, html, Callback, Html, Properties};
-use uuid::Uuid;
 
 use crate::utils::format_date_time;
 
-// Indicates how much notification will live on the page: 3s
-pub const NOTIFICATION_DURATION: u32 = 3_000;
+// Indicates how much notification will live on the page: 5s
+pub const NOTIFICATION_DURATION: u32 = 5_000;
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum NotificationType {
     Info,
     Warn,
@@ -27,7 +25,7 @@ impl From<&NotificationType> for &str {
     }
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Notification {
     pub id: Uuid,
     pub notification_type: NotificationType,
@@ -50,7 +48,10 @@ pub fn notification(props: &NotificationProps) -> Html {
     }
 }
 
-pub fn get_new_notifications(id: &Uuid, notifications: &[Notification]) -> Option<Vec<Notification>> {
+pub fn get_new_notifications(
+    id: &Uuid,
+    notifications: &[Notification],
+) -> Option<Vec<Notification>> {
     log::debug!("notifications len: {}", notifications.len());
 
     for (index, notification) in notifications.iter().enumerate() {
@@ -65,59 +66,26 @@ pub fn get_new_notifications(id: &Uuid, notifications: &[Notification]) -> Optio
     None
 }
 
-fn get_index_to_remove(id: &Uuid, notifications: &[Notification]) -> Option<usize> {
-    for (index, notification) in notifications.iter().enumerate() {
-        if notification.id == *id {
-            return Some(index);
-        }
-    }
-
-    None
-}
-
 #[derive(PartialEq, Properties)]
 pub struct NotificationsProps {
-    pub notifications: Rc<RefCell<Vec<Notification>>>,
-    pub setter: Callback<Vec<Notification>>,
+    pub notifications: Vec<Notification>,
+    pub delete_notification: Callback<Uuid>,
 }
 
 #[function_component(Notifications)]
 pub fn notifications(props: &NotificationsProps) -> Html {
     let mut tn = Vec::new();
-    for n in &*props.notifications.borrow() {
+    for n in &*props.notifications {
         let notification_id = n.id;
 
-        // let timeout_notifications = (*notifications).clone();
-        // let setter = notifications.setter();
-        // let timeout = Timeout::new(5_000, move || {
-        //     if let Some(notifications) = new_notifications(&notification_id, &timeout_notifications) {
-        //         setter.set(notifications);
-        //     }
-        // });
-        // timeout.forget();
-        
-        let onclick_notifications = props.notifications.clone();
-        // let setter = props.setter.clone();
+        let delete_notification = props.delete_notification.clone();
         let onclick = Callback::from(move |_: MouseEvent| {
-            let index = get_index_to_remove(&notification_id, &*onclick_notifications.borrow());
-
-            log::debug!("remove: {:?}", index);
-            if index.is_none() {
-                return;
-            }
-
-            let mut ns = onclick_notifications.borrow_mut();
-            ns.remove(index.unwrap());
-            
-            // if let Some(notifications) = get_new_notifications(&notification_id, &onclick_notifications) {
-            //     setter.emit(notifications);
-            // }
+            delete_notification.emit(notification_id);
         });
 
         tn.push(html! {
             <NotificationBadge notification={n.clone()} onclick={onclick} />
         });
-
     }
 
     html! {

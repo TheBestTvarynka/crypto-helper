@@ -1,10 +1,8 @@
-use std::{cell::RefCell, rc::Rc};
-
 use gloo_timers::callback::Timeout;
 use picky_krb::crypto::CipherSuite;
 use sha1::{Digest, Sha1};
 use uuid::Uuid;
-use yew::{classes, function_component, html, use_state, Callback, Html};
+use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
 
 mod algorithm;
 mod info;
@@ -15,7 +13,9 @@ use info::Info;
 use input::Input;
 use output::Output;
 
-use crate::notification::{Notifications, Notification, NotificationType, get_new_notifications, NOTIFICATION_DURATION};
+use crate::notification::{
+    get_new_notifications, Notification, NotificationType, Notifications, NOTIFICATION_DURATION,
+};
 
 use self::algorithm::Algorithm;
 
@@ -83,8 +83,23 @@ pub fn crypto_helper() -> Html {
     let algorithm = use_state(Algorithm::default);
     let output = use_state(Vec::new);
 
-    let notifications = use_state(|| Rc::new(RefCell::new(Vec::<Notification>::new())));
+    let notifications = use_state(Vec::<Notification>::new);
     let notification_to_delete = use_state(|| Option::None);
+
+    let notifications_setter = notifications.setter();
+    use_effect_with_deps(
+        move |(notification_id, notifications)| {
+            log::debug!("in use effect: {:?}", notification_id);
+            if let Some(id) = **notification_id {
+                if let Some(new_notifications) = get_new_notifications(&id, notifications) {
+                    notifications_setter.set(new_notifications);
+                } else {
+                    log::debug!("nothing to delete: unable to find needed notification");
+                }
+            }
+        },
+        (notification_to_delete.clone(), notifications.clone()),
+    );
 
     let output_setter = output.setter();
     let notifications_setter = notifications.setter();
@@ -102,28 +117,23 @@ pub fn crypto_helper() -> Html {
                     text: err,
                 };
 
-                let mut new_notifications = onclick_notifications.borrow().clone();
+                let mut new_notifications = onclick_notifications.clone();
                 new_notifications.push(new_notificaion);
-                let new_notifications = RefCell::new(new_notifications);
-                let timeout_notifications = new_notifications.clone();
                 notifications_setter.set(new_notifications);
 
-                let notifications_setter_timeout = notifications_setter.clone();
+                let notification_to_delete_setter = notification_to_delete_setter.clone();
                 let timeout = Timeout::new(NOTIFICATION_DURATION, move || {
                     log::debug!("in notification timeout handler: {:?}", id);
-                    if let Some(notifications) = get_new_notifications(&id, &*timeout_notifications.borrow()) {
-                        log::debug!("remove notification with id: {:?}", id);
-                        notifications_setter_timeout.set(RefCell::new(notifications));
-                    }
+                    notification_to_delete_setter.set(Some(id));
                 });
                 timeout.forget();
-            },
+            }
         };
     });
 
-    let notifications_setter = notifications.setter();
-    let notifications_setter_callback = Callback::from(move |new_notifications| {
-        // notifications_setter.set(RefCell::new(new_notifications));
+    let notification_to_delete_setter = notification_to_delete.setter();
+    let notifications_setter_callback = Callback::from(move |id| {
+        notification_to_delete_setter.set(Some(id));
     });
 
     html! {
@@ -137,7 +147,7 @@ pub fn crypto_helper() -> Html {
                 </label>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
-            <Notifications notifications={(*notifications).clone()} setter={notifications_setter_callback} />
+            <Notifications notifications={(*notifications).clone()} delete_notification={notifications_setter_callback} />
         </article>
     }
 }

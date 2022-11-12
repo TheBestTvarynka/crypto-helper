@@ -7,7 +7,7 @@ use yew::{
 use crate::crypto_helper::algorithm::{Algorithm, SUPPORTED_ALGORITHMS};
 
 fn search_algorithms<'a>(pattern: String) -> Vec<&'a str> {
-    if pattern == "" {
+    if pattern.is_empty() {
         return Vec::new();
     }
 
@@ -87,7 +87,7 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
     let algos_setter = algos.setter();
     let onkeydown = Callback::from(move |event: KeyboardEvent| {
         if event.key() == "Enter" {
-            if let Some(algo) = algos_value.get(0) {
+            if let Some(algo) = algos_value.first() {
                 algo_setter.set((*algo).try_into().unwrap_or_default());
                 algos_setter.set(Vec::new());
             }
