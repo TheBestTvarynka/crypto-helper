@@ -24,6 +24,12 @@ pub struct KrbInput {
     pub data: KrbInputData,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
+pub struct RsaInput {
+    // false - sign
+    // true - validate
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Algorithm {
     Md5(String),
