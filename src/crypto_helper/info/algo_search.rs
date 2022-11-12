@@ -15,7 +15,7 @@ fn search_algorithms<'a>(pattern: String) -> Vec<&'a str> {
 
     let pattern = pattern.to_uppercase();
     for algorithm in SUPPORTED_ALGORITHMS.iter() {
-        if algorithm.starts_with(&pattern) {
+        if algorithm.contains(&pattern) {
             algorithms.push(*algorithm);
         }
     }

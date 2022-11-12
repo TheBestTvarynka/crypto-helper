@@ -101,7 +101,7 @@ pub fn info(props: &InfoProps) -> Html {
         <div class={classes!("horizontal")}>
             <div class={classes!("vertical")}>
                 <div class={classes!("horizontal")}>
-                    <select onchange={onchange} class={classes!("base-input")} value={<&str>::from(&props.algorithm)}>{
+                    <select onchange={onchange} class={classes!("base-input")}>{
                         SUPPORTED_ALGORITHMS
                             .iter()
                             .map(|algo| {
