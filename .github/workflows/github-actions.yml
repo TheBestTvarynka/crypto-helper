@@ -28,11 +28,14 @@ jobs:
       with:
         credentials_json: '${{ secrets.GCP_SERVICE_KEY }}'
 
-    - name: 'Set up Cloud SDK'
-      uses: google-github-actions/setup-gcloud@v0
+    - name: 'Add WASM target'
+      run: 'rustup target add wasm32-unknown-unknown'
 
     - name: 'Build & Deploy'
       run: 'trunk build --release'
 
     - name: 'Obserce'
       run: 'ls -l -a && ls -l -a dist'
+
+    - name: 'Set up Cloud SDK'
+      uses: google-github-actions/setup-gcloud@v0
