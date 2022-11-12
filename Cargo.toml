@@ -24,7 +24,7 @@ gloo-timers = "0.2.4"
 uuid = { version = "1.2.1", features = ["v4", "js"] }
 
 # crypto
-picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", branch = "wasm" }
+picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", rev = "604a246" }
 md5 = "0.7.0"
 sha1 = "0.10.5"
 hmac-sha256 = "1.1.5"

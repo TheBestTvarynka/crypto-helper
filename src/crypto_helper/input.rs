@@ -6,7 +6,7 @@ use yew::{classes, function_component, html, Callback, Html, Properties, UseStat
 
 use self::{krb::build_krb_input, simple::build_simple_input};
 
-use super::Algorithm;
+use super::{algorithm::KrbInput, Algorithm};
 
 fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm>) -> Html {
     let setter = setter.clone();
@@ -33,6 +33,7 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
                 setter.set(Algorithm::Aes128CtsHmacSha196(kerberos_input))
             }),
             CipherSuite::Aes128CtsHmacSha196,
+            true,
         ),
         Algorithm::Aes256CtsHmacSha196(kerberos_input) => build_krb_input(
             kerberos_input.clone(),
@@ -40,6 +41,29 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
                 setter.set(Algorithm::Aes256CtsHmacSha196(kerberos_input))
             }),
             CipherSuite::Aes256CtsHmacSha196,
+            true,
+        ),
+        Algorithm::HmacSha196Aes128(kerberos_input) => build_krb_input(
+            KrbInput {
+                data: kerberos_input.clone(),
+                mode: false,
+            },
+            Callback::from(move |kerberos_input: KrbInput| {
+                setter.set(Algorithm::HmacSha196Aes128(kerberos_input.data))
+            }),
+            CipherSuite::Aes128CtsHmacSha196,
+            false,
+        ),
+        Algorithm::HmacSha196Aes256(kerberos_input) => build_krb_input(
+            KrbInput {
+                data: kerberos_input.clone(),
+                mode: false,
+            },
+            Callback::from(move |kerberos_input: KrbInput| {
+                setter.set(Algorithm::HmacSha196Aes256(kerberos_input.data))
+            }),
+            CipherSuite::Aes256CtsHmacSha196,
+            false,
         ),
     }
 }

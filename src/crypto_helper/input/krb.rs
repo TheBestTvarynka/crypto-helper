@@ -6,7 +6,7 @@ use yew::{
 };
 
 use crate::common::Switch;
-use crate::crypto_helper::algorithm::KrbInput as KerberosInput;
+use crate::crypto_helper::algorithm::{KrbInput as KerberosInput, KrbInputData};
 
 fn get_usage_number_name(usage_number: &str) -> &str {
     match usage_number.parse::<u32>() {
@@ -62,7 +62,11 @@ fn generate_key(cipher: &CipherSuite, password: &str, salt: &str) -> String {
 pub struct KrbInputProps {
     pub krb_input: KerberosInput,
     pub krb_input_setter: Callback<KerberosInput>,
+    // needs it for the key generation algorithm
     pub krb_algo: CipherSuite,
+
+    // options
+    pub with_mode: bool,
 }
 
 #[function_component(KrbInput)]
@@ -97,9 +101,11 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
 
         input_setter.emit(KerberosInput {
             mode: mode_value,
-            key: key_value,
-            key_usage: usage_number_value,
-            payload: payload_value,
+            data: KrbInputData {
+                key: key_value,
+                key_usage: usage_number_value,
+                payload: payload_value,
+            },
         });
     });
 
@@ -142,15 +148,23 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
                 />
                 <span class={classes!("total")}>{"len: "}<span>{(*payload).len() / 2}</span></span>
             </div>
-            <div class={classes!("horizontal", "krbEncOpts")}>
-                <span class="total">{"encrypt"}</span>
-                <Switch id={"1"} setter={mode.setter()} state={*mode} />
-                <span class="total">{"decrypt"}</span>
-                <span class="total">{"|"}</span>
-                <span class="total">{"raw key"}</span>
-                <Switch id={"2"} setter={key_source.setter()} state={*key_source} />
-                <span class="total">{"key from password"}</span>
-            </div>
+            {if props.with_mode { html! {
+                <div class={classes!("horizontal", "krbEncOpts")}>
+                    <span class="total">{"encrypt"}</span>
+                    <Switch id={"1"} setter={mode.setter()} state={*mode} />
+                    <span class="total">{"decrypt"}</span>
+                    <span class="total">{"|"}</span>
+                    <span class="total">{"raw key"}</span>
+                    <Switch id={"2"} setter={key_source.setter()} state={*key_source} />
+                    <span class="total">{"key from password"}</span>
+                </div>
+            }} else { html! {
+                <div class={classes!("horizontal", "krbEncOpts")}>
+                    <span class="total">{"raw key"}</span>
+                    <Switch id={"2"} setter={key_source.setter()} state={*key_source} />
+                    <span class="total">{"key from password"}</span>
+                </div>
+            }}}
             {
                 if *key_source {
                     html!{
@@ -186,8 +200,9 @@ pub fn build_krb_input(
     krb_input: KerberosInput,
     krb_input_setter: Callback<KerberosInput>,
     krb_algo: CipherSuite,
+    with_mode: bool,
 ) -> Html {
     html! {
-        <KrbInput krb_input={krb_input} krb_input_setter={krb_input_setter} krb_algo={krb_algo} />
+        <KrbInput krb_input={krb_input} krb_input_setter={krb_input_setter} krb_algo={krb_algo} with_mode={with_mode} />
     }
 }

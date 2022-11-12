@@ -1,5 +1,5 @@
 use gloo_timers::callback::Timeout;
-use picky_krb::crypto::CipherSuite;
+use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
 use uuid::Uuid;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
@@ -38,18 +38,28 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
                 CipherSuite::Aes128CtsHmacSha196
                     .cipher()
                     .decrypt(
-                        &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-                        input.key_usage.parse::<i32>().unwrap_or_default(),
-                        &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
+                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
+                        input
+                            .data
+                            .key_usage
+                            .parse::<i32>()
+                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                        &from_hex(&input.data.payload)
+                            .map_err(|err| format!("payload: {}", err))?,
                     )
                     .map_err(|err| err.to_string())
             } else {
                 CipherSuite::Aes128CtsHmacSha196
                     .cipher()
                     .encrypt(
-                        &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-                        input.key_usage.parse::<i32>().unwrap_or_default(),
-                        &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
+                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
+                        input
+                            .data
+                            .key_usage
+                            .parse::<i32>()
+                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                        &from_hex(&input.data.payload)
+                            .map_err(|err| format!("payload: {}", err))?,
                     )
                     .map_err(|err| err.to_string())
             }
@@ -59,22 +69,54 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
                 CipherSuite::Aes256CtsHmacSha196
                     .cipher()
                     .decrypt(
-                        &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-                        input.key_usage.parse::<i32>().unwrap_or_default(),
-                        &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
+                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
+                        input
+                            .data
+                            .key_usage
+                            .parse::<i32>()
+                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                        &from_hex(&input.data.payload)
+                            .map_err(|err| format!("payload: {}", err))?,
                     )
                     .map_err(|err| err.to_string())
             } else {
                 CipherSuite::Aes256CtsHmacSha196
                     .cipher()
                     .encrypt(
-                        &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-                        input.key_usage.parse::<i32>().unwrap_or_default(),
-                        &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
+                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
+                        input
+                            .data
+                            .key_usage
+                            .parse::<i32>()
+                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                        &from_hex(&input.data.payload)
+                            .map_err(|err| format!("payload: {}", err))?,
                     )
                     .map_err(|err| err.to_string())
             }
         }
+        Algorithm::HmacSha196Aes128(input) => ChecksumSuite::HmacSha196Aes128
+            .hasher()
+            .checksum(
+                &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
+                input
+                    .key_usage
+                    .parse::<i32>()
+                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
+            )
+            .map_err(|err| err.to_string()),
+        Algorithm::HmacSha196Aes256(input) => ChecksumSuite::HmacSha196Aes256
+            .hasher()
+            .checksum(
+                &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
+                input
+                    .key_usage
+                    .parse::<i32>()
+                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
+            )
+            .map_err(|err| err.to_string()),
     }
 }
 
@@ -142,9 +184,9 @@ pub fn crypto_helper() -> Html {
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
             <div class={classes!("horizontal")}>
                 <button onclick={onclick}>{"Go"}</button>
-                <label for={"autoConvert"}>
-                    <input type={"checkbox"} id={"autoConvert"} /><span>{"autogo"}</span>
-                </label>
+                // <label for={"autoConvert"}>
+                //     <input type={"checkbox"} id={"autoConvert"} /><span>{"autogo"}</span>
+                // </label>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
             <Notifications notifications={(*notifications).clone()} delete_notification={notifications_setter_callback} />

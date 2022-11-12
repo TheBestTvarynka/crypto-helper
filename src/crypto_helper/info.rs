@@ -49,6 +49,16 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
             <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
             </span>
         },
+        Algorithm::HmacSha196Aes128(_) => html! {
+            <span>{"Hmac with the provided or derived key using HMAC-SHA1-96-AES128 algorithm."}
+            <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
+            </span>
+        },
+        Algorithm::HmacSha196Aes256(_) => html! {
+            <span>{"Hmac with the provided or derived key using HMAC-SHA1-96-AES256 algorithm."}
+            <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
+            </span>
+        },
     }
 }
 

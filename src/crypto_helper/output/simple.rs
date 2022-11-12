@@ -7,8 +7,10 @@ pub fn build_simple_output(output: &[u8]) -> Html {
         // let window = web_sys::window().unwrap();
         // let navigator = window.navigator();
         // let clippboard = navigator.clipboard().unwrap();
-        // clippboard.writeText("");
-        // clippboard.write(&JsValue::from_str(&hex_output)).then(&Closure::new(|_| {
+        // log::debug!("clippboard here");
+        // clippboard.writeText("pasha");
+        // let res = clippboard.write(&JsValue::from_str(&hex_output));
+        // .then(&Closure::new(|_| {
         //     log::info!("copied");
         // }));
     });
