@@ -76,7 +76,7 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
         log::debug!("focus in");
     });
 
-    let algos_setter = algos.setter();
+    let _algos_setter = algos.setter();
     let onfocusout_d = Callback::from(move |_| {
         log::debug!("focus out");
         // algos_setter.set(Vec::new());
