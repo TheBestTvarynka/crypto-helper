@@ -117,6 +117,7 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
                 &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
             )
             .map_err(|err| err.to_string()),
+        Algorithm::Rsa(_input) => Err("rsa is not supported yet".into()),
     }
 }
 

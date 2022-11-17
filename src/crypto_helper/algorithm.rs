@@ -1,4 +1,6 @@
-pub const SUPPORTED_ALGORITHMS: [&str; 8] = [
+use picky::hash::HashAlgorithm;
+
+pub const SUPPORTED_ALGORITHMS: [&str; 9] = [
     "MD5",
     "SHA1",
     "SHA256",
@@ -7,6 +9,7 @@ pub const SUPPORTED_ALGORITHMS: [&str; 8] = [
     "AES256-CTS-HMAC-SHA1-96",
     "HMAC-SHA1-96-AES128",
     "HMAC-SHA1-96-AES256",
+    "RSA",
 ];
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
@@ -24,10 +27,87 @@ pub struct KrbInput {
     pub data: KrbInputData,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct RsaSignInput {
+    pub hash_algorithm: HashAlgorithm,
+    pub rsa_key: String,
+}
+
+impl Default for RsaSignInput {
+    fn default() -> Self {
+        Self {
+            hash_algorithm: HashAlgorithm::SHA1,
+            rsa_key: String::new(),
+        }
+    }
+}
+
+const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
+pub const RSA_HASH_ALGOS: [&str; 8] = [
+    "MD5", "SHA1", "SHA2_224", "SHA2_256", "SHA2_384", "SHA2_512", "SHA3_384", "SHA3_512",
+];
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum RsaAction {
+    Encrypt(String),
+    Decrypt(String),
+    Sign(RsaSignInput),
+    Verify(RsaSignInput),
+}
+
+impl RsaAction {
+    pub fn enumerate_actions() -> &'static [&'static str; 4] {
+        &RSA_ACTIONS
+    }
+}
+
+impl TryFrom<&str> for RsaAction {
+    type Error = ();
+
+    fn try_from(action_literal: &str) -> Result<Self, Self::Error> {
+        if action_literal == RSA_ACTIONS[0] {
+            Ok(RsaAction::Sign(Default::default()))
+        } else if action_literal == RSA_ACTIONS[1] {
+            Ok(RsaAction::Verify(Default::default()))
+        } else if action_literal == RSA_ACTIONS[2] {
+            Ok(RsaAction::Encrypt(Default::default()))
+        } else if action_literal == RSA_ACTIONS[3] {
+            Ok(RsaAction::Decrypt(Default::default()))
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl AsRef<str> for RsaAction {
+    fn as_ref(&self) -> &str {
+        match self {
+            RsaAction::Encrypt(_) => "Encrypt",
+            RsaAction::Decrypt(_) => "Decrypt",
+            RsaAction::Sign(_) => "Sign",
+            RsaAction::Verify(_) => "Verify",
+        }
+    }
+}
+
+impl PartialEq<&str> for RsaAction {
+    fn eq(&self, other: &&str) -> bool {
+        self.as_ref() == *other
+    }
+}
+
+impl Default for RsaAction {
+    fn default() -> Self {
+        Self::Sign(Default::default())
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct RsaInput {
     // false - sign
     // true - validate
+    pub action: RsaAction,
+    pub payload: String,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -40,6 +120,7 @@ pub enum Algorithm {
     Aes256CtsHmacSha196(KrbInput),
     HmacSha196Aes128(KrbInputData),
     HmacSha196Aes256(KrbInputData),
+    Rsa(RsaInput),
 }
 
 impl TryFrom<&str> for Algorithm {
@@ -62,6 +143,8 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::HmacSha196Aes128(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[7] {
             return Ok(Algorithm::HmacSha196Aes256(Default::default()));
+        } else if value == SUPPORTED_ALGORITHMS[8] {
+            return Ok(Algorithm::Rsa(Default::default()));
         }
 
         Err(format!("invalid algorithm name: {:?}", value))
@@ -79,6 +162,7 @@ impl From<&Algorithm> for &str {
             Algorithm::Aes256CtsHmacSha196(_) => SUPPORTED_ALGORITHMS[5],
             Algorithm::HmacSha196Aes128(_) => SUPPORTED_ALGORITHMS[6],
             Algorithm::HmacSha196Aes256(_) => SUPPORTED_ALGORITHMS[7],
+            Algorithm::Rsa(_) => SUPPORTED_ALGORITHMS[8],
         }
     }
 }
@@ -93,6 +177,6 @@ impl PartialEq<&str> for &Algorithm {
 
 impl Default for Algorithm {
     fn default() -> Self {
-        Algorithm::Sha512(Default::default())
+        Algorithm::Rsa(Default::default())
     }
 }

@@ -59,6 +59,9 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
             <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
             </span>
         },
+        Algorithm::Rsa(_) => html! {
+            <span>{"Use RSA algorithm to sign/verify/encrypt/decrypt your data."}</span>
+        },
     }
 }
 

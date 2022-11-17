@@ -1,0 +1,34 @@
+
+.rsa-actions-container {
+    display: inline-flex;
+    justify-content: flex-start;
+    gap: 0;
+}
+
+.rsa-action {
+    font-size: 0.8em;
+    color: #4c5159;
+    padding: 0.3em;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    border-radius: 0;
+}
+
+.rsa-action:first-child {
+    border-radius: 0.3em 0 0 0.3em;
+}
+
+.rsa-action:last-child {
+    border-radius: 0 0.3em 0.3em 0;
+}
+
+.rsa-action:hover {
+    cursor: pointer;
+    border: 2px solid #403735;
+}
+
+.selected-rsa-action {
+    color: #e0e0e0;
+    background-color: #403735;
+    border: 2px solid #403735;
+}

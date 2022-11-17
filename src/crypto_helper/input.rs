@@ -1,10 +1,11 @@
 mod krb;
+mod rsa;
 mod simple;
 
 use picky_krb::crypto::CipherSuite;
 use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
 
-use self::{krb::build_krb_input, simple::build_simple_input};
+use self::{krb::build_krb_input, rsa::build_rsa_input, simple::build_simple_input};
 
 use super::{algorithm::KrbInput, Algorithm};
 
@@ -64,6 +65,10 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
             }),
             CipherSuite::Aes256CtsHmacSha196,
             false,
+        ),
+        Algorithm::Rsa(input) => build_rsa_input(
+            input.clone(),
+            Callback::from(move |input| setter.set(Algorithm::Rsa(input))),
         ),
     }
 }
