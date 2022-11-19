@@ -42,6 +42,23 @@ impl Default for RsaSignInput {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct RsaVerifyInput {
+    pub hash_algorithm: HashAlgorithm,
+    pub rsa_key: String,
+    pub signature: String,
+}
+
+impl Default for RsaVerifyInput {
+    fn default() -> Self {
+        RsaVerifyInput {
+            hash_algorithm: HashAlgorithm::SHA1,
+            rsa_key: String::new(),
+            signature: String::new(),
+        }
+    }
+}
+
 const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
 pub const RSA_HASH_ALGOS: [&str; 8] = [
     "MD5", "SHA1", "SHA2_224", "SHA2_256", "SHA2_384", "SHA2_512", "SHA3_384", "SHA3_512",
@@ -52,7 +69,7 @@ pub enum RsaAction {
     Encrypt(String),
     Decrypt(String),
     Sign(RsaSignInput),
-    Verify(RsaSignInput),
+    Verify(RsaVerifyInput),
 }
 
 impl RsaAction {

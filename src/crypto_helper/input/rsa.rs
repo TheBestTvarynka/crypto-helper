@@ -1,7 +1,13 @@
 use picky::hash::HashAlgorithm;
-use yew::{classes, function_component, html, Callback, Classes, Html, Properties};
+use web_sys::{Event, HtmlInputElement};
+use yew::{classes, function_component, html, Callback, Classes, Html, Properties, TargetCast};
 
-use crate::crypto_helper::algorithm::{RsaAction, RsaInput as RsaInputData, RSA_HASH_ALGOS};
+use crate::{
+    crypto_helper::algorithm::{
+        RsaAction, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput, RSA_HASH_ALGOS,
+    },
+    utils::{compate_hash_algorithms, hash_algorithm_from_str},
+};
 
 #[derive(Debug, PartialEq, Properties)]
 pub struct RsaInputProps {
@@ -41,14 +47,32 @@ fn generate_selection_action_component(
     }
 }
 
-fn get_hash_selection_component(_hash_algorithm: &HashAlgorithm) -> Html {
+fn get_hash_selection_component(
+    hash_algorithm: &HashAlgorithm,
+    set_hash_algo: Callback<HashAlgorithm>,
+) -> Html {
+    let set_hash_algo = set_hash_algo.clone();
+    let onchange = Callback::from(move |event: Event| {
+        let input: HtmlInputElement = event.target_unchecked_into();
+
+        if let Some(hash_algorithm) = hash_algorithm_from_str(input.value().as_str()) {
+            log::info!("set new rsa hash algorithm: {:?}", hash_algorithm);
+            set_hash_algo.emit(hash_algorithm);
+        }
+    });
+
     html! {
-        <select class={classes!("base-input", "auto-width-input")}>
+        <select class={classes!("base-input", "auto-width-input")} onchange={onchange}>
             {RSA_HASH_ALGOS
                 .iter()
                 .map(|hash_algo_name| {
                     html! {
-                        <option value={hash_algo_name.to_string()}>{hash_algo_name}</option>
+                        <option
+                            selected={compate_hash_algorithms(*hash_algo_name, hash_algorithm)}
+                            value={hash_algo_name.to_string()}
+                        >
+                            {hash_algo_name}
+                        </option>
                     }
                 })
                 .collect::<Vec<_>>()}
@@ -57,68 +81,163 @@ fn get_hash_selection_component(_hash_algorithm: &HashAlgorithm) -> Html {
 }
 
 fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Html {
-    let selected_algorithm_component = generate_selection_action_component(input, set_action);
+    let selected_algorithm_component =
+        generate_selection_action_component(input, set_action.clone());
     match input {
-        RsaAction::Encrypt(_) => html! {
-            <div class={classes!("vertical")}>
-                {selected_algorithm_component}
-                <textarea
-                    rows="2"
-                    placeholder={"RSA public key"}
-                    class={classes!("base-input")}
-                />
-            </div>
-        },
-        RsaAction::Decrypt(_) => html! {
-            <div class={classes!("vertical")}>
-                {selected_algorithm_component}
-                <textarea
-                    rows="2"
-                    placeholder={"RSA private key"}
-                    class={classes!("base-input")}
-                />
-            </div>
-        },
-        RsaAction::Sign(input) => html! {
-            <div class={classes!("vertical")}>
-                {selected_algorithm_component}
-                <div class={classes!("horizontal")}>
-                    {get_hash_selection_component(&input.hash_algorithm)}
-                    <textarea
-                        rows="2"
-                        placeholder={"RSA private key"}
-                        class={classes!("base-input")}
-                    />
-                </div>
-            </div>
-        },
-        RsaAction::Verify(input) => html! {
-            <div class={classes!("vertical")}>
-                {selected_algorithm_component}
-                <div class={classes!("horizontal")}>
-                    {get_hash_selection_component(&input.hash_algorithm)}
+        RsaAction::Encrypt(input) => {
+            let set_action = set_action.clone();
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_action.emit(RsaAction::Encrypt(input.value()));
+            });
+            html! {
+                <div class={classes!("vertical")}>
+                    {selected_algorithm_component}
                     <textarea
                         rows="2"
                         placeholder={"RSA public key"}
                         class={classes!("base-input")}
+                        value={input.clone()}
+                        oninput={oninput}
                     />
                 </div>
-                <input
-                    placeholder={"hex-encoded signature"}
-                    class={classes!("base-input")}
-                />
-            </div>
-        },
+            }
+        }
+        RsaAction::Decrypt(input) => {
+            let set_action = set_action.clone();
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_action.emit(RsaAction::Decrypt(input.value()));
+            });
+            html! {
+                <div class={classes!("vertical")}>
+                    {selected_algorithm_component}
+                    <textarea
+                        rows="2"
+                        placeholder={"RSA private key"}
+                        class={classes!("base-input")}
+                        value={input.clone()}
+                        oninput={oninput}
+                    />
+                </div>
+            }
+        }
+        RsaAction::Sign(input) => {
+            let set_action_algo = set_action.clone();
+            let rsa_key = input.rsa_key.clone();
+            let set_hash_algo = Callback::from(move |hash_algorithm| {
+                set_action_algo.emit(RsaAction::Sign(RsaSignInput {
+                    hash_algorithm,
+                    rsa_key: rsa_key.clone(),
+                }));
+            });
+
+            let set_action_key = set_action.clone();
+            let hash_algorithm = input.hash_algorithm.clone();
+            let on_rsa_key_input = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_action_key.emit(RsaAction::Sign(RsaSignInput {
+                    hash_algorithm: hash_algorithm.clone(),
+                    rsa_key: input.value(),
+                }));
+            });
+
+            html! {
+                <div class={classes!("vertical")}>
+                    {selected_algorithm_component}
+                    <div class={classes!("horizontal")}>
+                        {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
+                        <textarea
+                            rows="2"
+                            placeholder={"RSA private key"}
+                            class={classes!("base-input")}
+                            value={input.rsa_key.clone()}
+                            oninput={on_rsa_key_input}
+                        />
+                    </div>
+                </div>
+            }
+        }
+        RsaAction::Verify(input) => {
+            let set_action_algo = set_action.clone();
+            let rsa_key = input.rsa_key.clone();
+            let signature = input.signature.clone();
+            let set_hash_algo = Callback::from(move |hash_algorithm| {
+                set_action_algo.emit(RsaAction::Verify(RsaVerifyInput {
+                    hash_algorithm,
+                    rsa_key: rsa_key.clone(),
+                    signature: signature.clone(),
+                }));
+            });
+
+            let set_action_key = set_action.clone();
+            let hash_algorithm = input.hash_algorithm.clone();
+            let signature = input.signature.clone();
+            let on_rsa_key_input = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_action_key.emit(RsaAction::Verify(RsaVerifyInput {
+                    hash_algorithm: hash_algorithm.clone(),
+                    rsa_key: input.value(),
+                    signature: signature.clone(),
+                }));
+            });
+
+            let set_action_signature = set_action.clone();
+            let hash_algorithm = input.hash_algorithm.clone();
+            let rsa_key = input.rsa_key.clone();
+            let on_signature_input = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_action_signature.emit(RsaAction::Verify(RsaVerifyInput {
+                    hash_algorithm: hash_algorithm.clone(),
+                    rsa_key: rsa_key.clone(),
+                    signature: input.value(),
+                }));
+            });
+
+            html! {
+                <div class={classes!("vertical")}>
+                    {selected_algorithm_component}
+                    <div class={classes!("horizontal")}>
+                        {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
+                        <textarea
+                            rows="2"
+                            placeholder={"RSA public key"}
+                            class={classes!("base-input")}
+                            value={input.rsa_key.clone()}
+                            oninput={on_rsa_key_input}
+                        />
+                    </div>
+                    <input
+                        placeholder={"hex-encoded signature"}
+                        class={classes!("base-input")}
+                        value={input.signature.clone()}
+                        oninput={on_signature_input}
+                    />
+                </div>
+            }
+        }
     }
 }
 
 #[function_component(RsaInput)]
 pub fn rsa_input(props: &RsaInputProps) -> Html {
     let setter = props.setter.clone();
+    let payload = props.input.payload.clone();
     let set_action = Callback::from(move |action| {
         setter.emit(RsaInputData {
             action,
-            payload: "".into(),
+            payload: payload.clone(),
+        });
+    });
+
+    let setter = props.setter.clone();
+    let action = props.input.action.clone();
+    let oninput = Callback::from(move |event: html::oninput::Event| {
+        let input: HtmlInputElement = event.target_unchecked_into();
+
+        setter.emit(RsaInputData {
+            action: action.clone(),
+            payload: input.value(),
         });
     });
 
@@ -129,6 +248,8 @@ pub fn rsa_input(props: &RsaInputProps) -> Html {
                 rows="2"
                 placeholder={"hex-encoded input"}
                 class={classes!("base-input")}
+                value={props.input.payload.clone()}
+                oninput={oninput}
             />
         </div>
     }
