@@ -6,7 +6,17 @@ mod output;
 pub use algorithm::RSA_HASH_ALGOS;
 
 use gloo_timers::callback::Timeout;
+use picky::{
+    key::{PrivateKey, PublicKey},
+    signature::SignatureAlgorithm,
+};
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
+use rand::SeedableRng;
+use rand_chacha::ChaCha8Rng;
+use rsa::{
+    pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey},
+    PaddingScheme, PublicKey as PublicKeyTrait, RsaPrivateKey, RsaPublicKey,
+};
 use sha1::{Digest, Sha1};
 use uuid::Uuid;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
@@ -119,7 +129,44 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
                 &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
             )
             .map_err(|err| err.to_string()),
-        Algorithm::Rsa(_input) => Err("rsa is not supported yet".into()),
+        Algorithm::Rsa(input) => {
+            let payload = from_hex(&input.payload)?;
+            match &input.action {
+                algorithm::RsaAction::Encrypt(input) => {
+                    let public_key = RsaPublicKey::from_pkcs1_der(&from_hex(input)?)
+                        .map_err(|err| err.to_string())?;
+                    let mut rng = ChaCha8Rng::from_entropy();
+                    public_key
+                        .encrypt(&mut rng, PaddingScheme::PKCS1v15Encrypt, &payload)
+                        .map_err(|err| err.to_string())
+                }
+                algorithm::RsaAction::Decrypt(input) => {
+                    let private_key = RsaPrivateKey::from_pkcs1_der(&from_hex(input)?)
+                        .map_err(|err| err.to_string())?;
+                    private_key
+                        .decrypt(PaddingScheme::PKCS1v15Encrypt, &payload)
+                        .map_err(|err| err.to_string())
+                }
+                algorithm::RsaAction::Sign(input) => {
+                    let private_key =
+                        PrivateKey::from_rsa_der(&input.rsa_key).map_err(|err| err.to_string())?;
+                    Ok(
+                        SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.clone())
+                            .sign(&payload, &private_key)
+                            .map_err(|err| err.to_string())?,
+                    )
+                }
+                algorithm::RsaAction::Verify(input) => {
+                    let signature = from_hex(&input.signature)?;
+                    let public_key =
+                        PublicKey::from_rsa_der(&input.rsa_key).map_err(|err| err.to_string())?;
+                    SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.clone())
+                        .verify(&public_key, &payload, &signature)
+                        .map(|_| vec![1])
+                        .map_err(|err| err.to_string())
+                }
+            }
+        }
     }
 }
 

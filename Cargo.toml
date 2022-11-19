@@ -22,6 +22,8 @@ time = { version = "0.3.17", features = ["local-offset", "wasm-bindgen"] }
 hex = "0.4.3"
 gloo-timers = "0.2.4"
 uuid = { version = "1.2.1", features = ["v4", "js"] }
+rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
+rand_chacha = "0.3.1"
 
 # crypto
 picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", rev = "604a246" }
@@ -30,3 +32,4 @@ md5 = "0.7.0"
 sha1 = "0.10.5"
 hmac-sha256 = "1.1.5"
 hmac-sha512 = "1.1.2"
+rsa = "0.7.2"
