@@ -51,7 +51,6 @@ fn get_hash_selection_component(
     hash_algorithm: &HashAlgorithm,
     set_hash_algo: Callback<HashAlgorithm>,
 ) -> Html {
-    let set_hash_algo = set_hash_algo.clone();
     let onchange = Callback::from(move |event: Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
@@ -68,7 +67,7 @@ fn get_hash_selection_component(
                 .map(|hash_algo_name| {
                     html! {
                         <option
-                            selected={compate_hash_algorithms(*hash_algo_name, hash_algorithm)}
+                            selected={compate_hash_algorithms(hash_algo_name, hash_algorithm)}
                             value={hash_algo_name.to_string()}
                         >
                             {hash_algo_name}
@@ -85,11 +84,11 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
         generate_selection_action_component(input, set_action.clone());
     match input {
         RsaAction::Encrypt(input) => {
-            let set_action = set_action.clone();
             let oninput = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
                 set_action.emit(RsaAction::Encrypt(input.value()));
             });
+
             html! {
                 <div class={classes!("vertical")}>
                     {selected_algorithm_component}
@@ -104,11 +103,11 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
             }
         }
         RsaAction::Decrypt(input) => {
-            let set_action = set_action.clone();
             let oninput = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
                 set_action.emit(RsaAction::Decrypt(input.value()));
             });
+
             html! {
                 <div class={classes!("vertical")}>
                     {selected_algorithm_component}
@@ -132,12 +131,11 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                 }));
             });
 
-            let set_action_key = set_action.clone();
-            let hash_algorithm = input.hash_algorithm.clone();
+            let hash_algorithm = input.hash_algorithm;
             let on_rsa_key_input = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
-                set_action_key.emit(RsaAction::Sign(RsaSignInput {
-                    hash_algorithm: hash_algorithm.clone(),
+                set_action.emit(RsaAction::Sign(RsaSignInput {
+                    hash_algorithm,
                     rsa_key: input.value(),
                 }));
             });
@@ -171,24 +169,23 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
             });
 
             let set_action_key = set_action.clone();
-            let hash_algorithm = input.hash_algorithm.clone();
+            let hash_algorithm = input.hash_algorithm;
             let signature = input.signature.clone();
             let on_rsa_key_input = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
                 set_action_key.emit(RsaAction::Verify(RsaVerifyInput {
-                    hash_algorithm: hash_algorithm.clone(),
+                    hash_algorithm,
                     rsa_key: input.value(),
                     signature: signature.clone(),
                 }));
             });
 
-            let set_action_signature = set_action.clone();
-            let hash_algorithm = input.hash_algorithm.clone();
+            let hash_algorithm = input.hash_algorithm;
             let rsa_key = input.rsa_key.clone();
             let on_signature_input = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
-                set_action_signature.emit(RsaAction::Verify(RsaVerifyInput {
-                    hash_algorithm: hash_algorithm.clone(),
+                set_action.emit(RsaAction::Verify(RsaVerifyInput {
+                    hash_algorithm,
                     rsa_key: rsa_key.clone(),
                     signature: input.value(),
                 }));
