@@ -94,7 +94,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                     {selected_algorithm_component}
                     <textarea
                         rows="2"
-                        placeholder={"RSA public key"}
+                        placeholder={"RSA public key in PEM (-----BEGIN RSA PUBLIC KEY-----)"}
                         class={classes!("base-input")}
                         value={input.clone()}
                         oninput={oninput}
@@ -113,7 +113,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                     {selected_algorithm_component}
                     <textarea
                         rows="2"
-                        placeholder={"RSA private key"}
+                        placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
                         class={classes!("base-input")}
                         value={input.clone()}
                         oninput={oninput}
@@ -147,7 +147,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                         {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
                         <textarea
                             rows="2"
-                            placeholder={"RSA private key"}
+                            placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
                             class={classes!("base-input")}
                             value={input.rsa_key.clone()}
                             oninput={on_rsa_key_input}
@@ -198,7 +198,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                         {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
                         <textarea
                             rows="2"
-                            placeholder={"RSA public key"}
+                            placeholder={"RSA public key in PEM (-----BEGIN RSA PUBLIC KEY-----)"}
                             class={classes!("base-input")}
                             value={input.rsa_key.clone()}
                             oninput={on_rsa_key_input}

@@ -18,8 +18,7 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
     let payload = from_hex(&input.payload)?;
     match &input.action {
         RsaAction::Encrypt(input) => {
-            let public_key =
-                RsaPublicKey::from_pkcs1_der(&from_hex(input)?).map_err(|err| err.to_string())?;
+            let public_key = RsaPublicKey::from_pkcs1_pem(input).map_err(|err| err.to_string())?;
             let mut rng = ChaCha8Rng::from_entropy();
             public_key
                 .encrypt(&mut rng, PaddingScheme::PKCS1v15Encrypt, &payload)
@@ -27,14 +26,14 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
         }
         RsaAction::Decrypt(input) => {
             let private_key =
-                RsaPrivateKey::from_pkcs1_der(&from_hex(input)?).map_err(|err| err.to_string())?;
+                RsaPrivateKey::from_pkcs1_pem(input).map_err(|err| err.to_string())?;
             private_key
                 .decrypt(PaddingScheme::PKCS1v15Encrypt, &payload)
                 .map_err(|err| err.to_string())
         }
         RsaAction::Sign(input) => {
             let private_key =
-                PrivateKey::from_rsa_der(&input.rsa_key).map_err(|err| err.to_string())?;
+                PrivateKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
             Ok(SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm)
                 .sign(&payload, &private_key)
                 .map_err(|err| err.to_string())?)
@@ -42,7 +41,7 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
         RsaAction::Verify(input) => {
             let signature = from_hex(&input.signature)?;
             let public_key =
-                PublicKey::from_rsa_der(&input.rsa_key).map_err(|err| err.to_string())?;
+                PublicKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
             SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm)
                 .verify(&public_key, &payload, &signature)
                 .map(|_| vec![1])
