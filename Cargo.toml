@@ -1,12 +1,16 @@
 [package]
 name = "web-app"
 version = "0.1.0"
+description = "Online app that "
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Pavlo Myroniuk <pspos.developqkation@gmail.com>"]
+readme = "README.md"
+license-file = "LICENSE"
+repository = "https://github.com/TheBestTvarynka/crypto-helper"
 
 [dependencies]
 yew = { git = "https://github.com/yewstack/yew.git", branch = "master", features = ["csr"] }
+yew-router = { git = "https://github.com/yewstack/yew.git" }
 
 # wasm
 js-sys = "0.3.60"

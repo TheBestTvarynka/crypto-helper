@@ -1,0 +1,34 @@
+.about-container {
+    margin-top: 0.5em;
+    width: 70%;
+}
+
+.about-container a {
+    color: inherit;
+    text-decoration: underline;
+    padding: 0 0.2em 0 0.2em;
+    border-radius: 0.2em;
+    transition: all 0.2s;
+}
+
+.about-container a:hover {
+    background-color: #50437f;
+    color: #dbcfbf;
+    cursor: pointer;
+}
+
+.about-container span:first-child {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+vl {
+    margin-left: 1.5em;
+}
+
+.coming-soon {
+    font-size: 0.8em;
+    color: #4c5159;
+    font-style: italic;
+}

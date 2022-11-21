@@ -383,6 +383,7 @@ version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8d5564e570a38b43d78bdc063374a0c3098c4f0d64005b12f9bbe87e869b6d7"
 dependencies = [
+ "futures-channel",
  "gloo-events",
  "js-sys",
  "wasm-bindgen",
@@ -456,6 +457,8 @@ version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fb7d06c1c8cc2a29bee7ec961009a0b2caa0793ee4900c2ffb348734ba1c8f9"
 dependencies = [
+ "futures-channel",
+ "futures-core",
  "js-sys",
  "wasm-bindgen",
 ]
@@ -1088,6 +1091,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "route-recognizer"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "afab94fb28594581f62d981211a9a4d53cc8130bbcbbb89a0440d9b8e81a7746"
+
+[[package]]
 name = "rsa"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1543,7 +1552,8 @@ dependencies = [
  "wasm-bindgen",
  "wasm-logger",
  "web-sys",
- "yew",
+ "yew 0.19.3 (git+https://github.com/yewstack/yew.git?branch=master)",
+ "yew-router",
 ]
 
 [[package]]
@@ -1577,7 +1587,31 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "yew-macro",
+ "yew-macro 0.19.3 (git+https://github.com/yewstack/yew.git?branch=master)",
+]
+
+[[package]]
+name = "yew"
+version = "0.19.3"
+source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+dependencies = [
+ "console_error_panic_hook",
+ "futures",
+ "gloo",
+ "implicit-clone",
+ "indexmap",
+ "js-sys",
+ "prokio",
+ "rustversion",
+ "serde",
+ "slab",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "yew-macro 0.19.3 (git+https://github.com/yewstack/yew.git)",
 ]
 
 [[package]]
@@ -1589,6 +1623,47 @@ dependencies = [
  "once_cell",
  "prettyplease",
  "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "yew-macro"
+version = "0.19.3"
+source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+dependencies = [
+ "boolinator",
+ "once_cell",
+ "prettyplease",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "yew-router"
+version = "0.16.0"
+source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+dependencies = [
+ "gloo",
+ "js-sys",
+ "route-recognizer",
+ "serde",
+ "serde_urlencoded",
+ "tracing",
+ "wasm-bindgen",
+ "web-sys",
+ "yew 0.19.3 (git+https://github.com/yewstack/yew.git)",
+ "yew-router-macro",
+]
+
+[[package]]
+name = "yew-router-macro"
+version = "0.16.0"
+source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+dependencies = [
  "proc-macro2",
  "quote",
  "syn",
