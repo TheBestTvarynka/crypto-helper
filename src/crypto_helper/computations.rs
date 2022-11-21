@@ -2,6 +2,7 @@ use picky::{
     key::{PrivateKey, PublicKey},
     signature::SignatureAlgorithm,
 };
+use picky_krb::crypto::{Checksum, Cipher};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 use rsa::{
@@ -10,7 +11,7 @@ use rsa::{
 };
 
 use super::{
-    algorithm::{RsaAction, RsaInput},
+    algorithm::{KrbInput, KrbInputData, RsaAction, RsaInput},
     from_hex,
 };
 
@@ -48,4 +49,48 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
                 .map_err(|err| err.to_string())
         }
     }
+}
+
+pub fn process_krb_cipher(cipher: Box<dyn Cipher>, input: &KrbInput) -> Result<Vec<u8>, String> {
+    if input.mode {
+        cipher
+            .decrypt(
+                &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
+                input
+                    .data
+                    .key_usage
+                    .parse::<i32>()
+                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                &from_hex(&input.data.payload).map_err(|err| format!("payload: {}", err))?,
+            )
+            .map_err(|err| err.to_string())
+    } else {
+        cipher
+            .encrypt(
+                &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
+                input
+                    .data
+                    .key_usage
+                    .parse::<i32>()
+                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+                &from_hex(&input.data.payload).map_err(|err| format!("payload: {}", err))?,
+            )
+            .map_err(|err| err.to_string())
+    }
+}
+
+pub fn process_krb_hmac(
+    hasher: Box<dyn Checksum>,
+    input: &KrbInputData,
+) -> Result<Vec<u8>, String> {
+    hasher
+        .checksum(
+            &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
+            input
+                .key_usage
+                .parse::<i32>()
+                .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
+            &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
+        )
+        .map_err(|err| err.to_string())
 }

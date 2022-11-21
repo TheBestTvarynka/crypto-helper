@@ -20,7 +20,10 @@ use crate::notification::{
     get_new_notifications, Notification, NotificationType, Notifications, NOTIFICATION_DURATION,
 };
 
-use self::{algorithm::Algorithm, computations::process_rsa};
+use self::{
+    algorithm::Algorithm,
+    computations::{process_krb_cipher, process_krb_hmac, process_rsa},
+};
 
 fn from_hex(input: &str) -> Result<Vec<u8>, String> {
     hex::decode(input).map_err(|err| format!("invalid hex input:{:?}", err))
@@ -37,89 +40,17 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
         Algorithm::Sha256(input) => Ok(hmac_sha256::Hash::hash(&from_hex(input)?).to_vec()),
         Algorithm::Sha512(input) => Ok(hmac_sha512::Hash::hash(&from_hex(input)?).to_vec()),
         Algorithm::Aes128CtsHmacSha196(input) => {
-            if input.mode {
-                CipherSuite::Aes128CtsHmacSha196
-                    .cipher()
-                    .decrypt(
-                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                        input
-                            .data
-                            .key_usage
-                            .parse::<i32>()
-                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                        &from_hex(&input.data.payload)
-                            .map_err(|err| format!("payload: {}", err))?,
-                    )
-                    .map_err(|err| err.to_string())
-            } else {
-                CipherSuite::Aes128CtsHmacSha196
-                    .cipher()
-                    .encrypt(
-                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                        input
-                            .data
-                            .key_usage
-                            .parse::<i32>()
-                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                        &from_hex(&input.data.payload)
-                            .map_err(|err| format!("payload: {}", err))?,
-                    )
-                    .map_err(|err| err.to_string())
-            }
+            process_krb_cipher(CipherSuite::Aes128CtsHmacSha196.cipher(), input)
         }
         Algorithm::Aes256CtsHmacSha196(input) => {
-            if input.mode {
-                CipherSuite::Aes256CtsHmacSha196
-                    .cipher()
-                    .decrypt(
-                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                        input
-                            .data
-                            .key_usage
-                            .parse::<i32>()
-                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                        &from_hex(&input.data.payload)
-                            .map_err(|err| format!("payload: {}", err))?,
-                    )
-                    .map_err(|err| err.to_string())
-            } else {
-                CipherSuite::Aes256CtsHmacSha196
-                    .cipher()
-                    .encrypt(
-                        &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                        input
-                            .data
-                            .key_usage
-                            .parse::<i32>()
-                            .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                        &from_hex(&input.data.payload)
-                            .map_err(|err| format!("payload: {}", err))?,
-                    )
-                    .map_err(|err| err.to_string())
-            }
+            process_krb_cipher(CipherSuite::Aes256CtsHmacSha196.cipher(), input)
         }
-        Algorithm::HmacSha196Aes128(input) => ChecksumSuite::HmacSha196Aes128
-            .hasher()
-            .checksum(
-                &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-                input
-                    .key_usage
-                    .parse::<i32>()
-                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
-            )
-            .map_err(|err| err.to_string()),
-        Algorithm::HmacSha196Aes256(input) => ChecksumSuite::HmacSha196Aes256
-            .hasher()
-            .checksum(
-                &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-                input
-                    .key_usage
-                    .parse::<i32>()
-                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
-            )
-            .map_err(|err| err.to_string()),
+        Algorithm::HmacSha196Aes128(input) => {
+            process_krb_hmac(ChecksumSuite::HmacSha196Aes128.hasher(), input)
+        }
+        Algorithm::HmacSha196Aes256(input) => {
+            process_krb_hmac(ChecksumSuite::HmacSha196Aes256.hasher(), input)
+        }
         Algorithm::Rsa(input) => process_rsa(input),
     }
 }
