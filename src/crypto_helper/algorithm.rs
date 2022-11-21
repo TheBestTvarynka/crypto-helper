@@ -12,6 +12,11 @@ pub const SUPPORTED_ALGORITHMS: [&str; 9] = [
     "RSA",
 ];
 
+const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
+pub const RSA_HASH_ALGOS: [&str; 8] = [
+    "MD5", "SHA1", "SHA2_224", "SHA2_256", "SHA2_384", "SHA2_512", "SHA3_384", "SHA3_512",
+];
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct KrbInputData {
     pub key: String,
@@ -27,16 +32,69 @@ pub struct KrbInput {
     pub data: KrbInputData,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct RsaHashAlgorithm(pub HashAlgorithm);
+
+impl TryFrom<&str> for RsaHashAlgorithm {
+    type Error = ();
+
+    fn try_from(raw: &str) -> Result<Self, Self::Error> {
+        if RSA_HASH_ALGOS[0] == raw {
+            Ok(Self(HashAlgorithm::MD5))
+        } else if RSA_HASH_ALGOS[1] == raw {
+            Ok(Self(HashAlgorithm::SHA1))
+        } else if RSA_HASH_ALGOS[2] == raw {
+            Ok(Self(HashAlgorithm::SHA2_224))
+        } else if RSA_HASH_ALGOS[3] == raw {
+            Ok(Self(HashAlgorithm::SHA2_256))
+        } else if RSA_HASH_ALGOS[4] == raw {
+            Ok(Self(HashAlgorithm::SHA2_384))
+        } else if RSA_HASH_ALGOS[5] == raw {
+            Ok(Self(HashAlgorithm::SHA2_512))
+        } else if RSA_HASH_ALGOS[6] == raw {
+            Ok(Self(HashAlgorithm::SHA3_384))
+        } else if RSA_HASH_ALGOS[7] == raw {
+            Ok(Self(HashAlgorithm::SHA3_512))
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl From<&RsaHashAlgorithm> for &str {
+    fn from(rsa_hash_algorithm: &RsaHashAlgorithm) -> Self {
+        match &rsa_hash_algorithm.0 {
+            HashAlgorithm::MD5 => RSA_HASH_ALGOS[0],
+            HashAlgorithm::SHA1 => RSA_HASH_ALGOS[1],
+            HashAlgorithm::SHA2_224 => RSA_HASH_ALGOS[2],
+            HashAlgorithm::SHA2_256 => RSA_HASH_ALGOS[3],
+            HashAlgorithm::SHA2_384 => RSA_HASH_ALGOS[4],
+            HashAlgorithm::SHA2_512 => RSA_HASH_ALGOS[5],
+            HashAlgorithm::SHA3_384 => RSA_HASH_ALGOS[6],
+            HashAlgorithm::SHA3_512 => RSA_HASH_ALGOS[7],
+            _ => "Other",
+        }
+    }
+}
+
+impl PartialEq<&str> for RsaHashAlgorithm {
+    fn eq(&self, other: &&str) -> bool {
+        let as_str: &str = self.into();
+
+        as_str == *other
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RsaSignInput {
-    pub hash_algorithm: HashAlgorithm,
+    pub hash_algorithm: RsaHashAlgorithm,
     pub rsa_key: String,
 }
 
 impl Default for RsaSignInput {
     fn default() -> Self {
         Self {
-            hash_algorithm: HashAlgorithm::SHA1,
+            hash_algorithm: RsaHashAlgorithm(HashAlgorithm::SHA1),
             rsa_key: String::new(),
         }
     }
@@ -44,7 +102,7 @@ impl Default for RsaSignInput {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RsaVerifyInput {
-    pub hash_algorithm: HashAlgorithm,
+    pub hash_algorithm: RsaHashAlgorithm,
     pub rsa_key: String,
     pub signature: String,
 }
@@ -52,17 +110,12 @@ pub struct RsaVerifyInput {
 impl Default for RsaVerifyInput {
     fn default() -> Self {
         RsaVerifyInput {
-            hash_algorithm: HashAlgorithm::SHA1,
+            hash_algorithm: RsaHashAlgorithm(HashAlgorithm::SHA1),
             rsa_key: String::new(),
             signature: String::new(),
         }
     }
 }
-
-const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
-pub const RSA_HASH_ALGOS: [&str; 8] = [
-    "MD5", "SHA1", "SHA2_224", "SHA2_256", "SHA2_384", "SHA2_512", "SHA3_384", "SHA3_512",
-];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum RsaAction {
@@ -163,6 +216,8 @@ impl TryFrom<&str> for Algorithm {
         } else if value == SUPPORTED_ALGORITHMS[8] {
             return Ok(Algorithm::Rsa(Default::default()));
         }
+
+        log::error!("invalid algo literal: {}", value);
 
         Err(format!("invalid algorithm name: {:?}", value))
     }

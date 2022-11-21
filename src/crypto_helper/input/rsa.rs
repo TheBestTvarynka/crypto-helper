@@ -1,12 +1,9 @@
-use picky::hash::HashAlgorithm;
 use web_sys::{Event, HtmlInputElement};
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties, TargetCast};
 
-use crate::{
-    crypto_helper::algorithm::{
-        RsaAction, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput, RSA_HASH_ALGOS,
-    },
-    utils::{compate_hash_algorithms, hash_algorithm_from_str},
+use crate::crypto_helper::algorithm::{
+    RsaAction, RsaHashAlgorithm, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput,
+    RSA_HASH_ALGOS,
 };
 
 #[derive(Debug, PartialEq, Properties)]
@@ -48,13 +45,13 @@ fn generate_selection_action_component(
 }
 
 fn get_hash_selection_component(
-    hash_algorithm: &HashAlgorithm,
-    set_hash_algo: Callback<HashAlgorithm>,
+    hash_algorithm: &RsaHashAlgorithm,
+    set_hash_algo: Callback<RsaHashAlgorithm>,
 ) -> Html {
     let onchange = Callback::from(move |event: Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Some(hash_algorithm) = hash_algorithm_from_str(input.value().as_str()) {
+        if let Ok(hash_algorithm) = input.value().as_str().try_into() {
             log::info!("set new rsa hash algorithm: {:?}", hash_algorithm);
             set_hash_algo.emit(hash_algorithm);
         }
@@ -67,7 +64,7 @@ fn get_hash_selection_component(
                 .map(|hash_algo_name| {
                     html! {
                         <option
-                            selected={compate_hash_algorithms(hash_algo_name, hash_algorithm)}
+                            selected={hash_algorithm == hash_algo_name}
                             value={hash_algo_name.to_string()}
                         >
                             {hash_algo_name}

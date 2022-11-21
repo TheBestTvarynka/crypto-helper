@@ -35,7 +35,7 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
         RsaAction::Sign(input) => {
             let private_key =
                 PrivateKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
-            Ok(SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm)
+            Ok(SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
                 .sign(&payload, &private_key)
                 .map_err(|err| err.to_string())?)
         }
@@ -43,7 +43,7 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
             let signature = from_hex(&input.signature)?;
             let public_key =
                 PublicKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
-            SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm)
+            SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
                 .verify(&public_key, &payload, &signature)
                 .map(|_| vec![1])
                 .map_err(|err| err.to_string())

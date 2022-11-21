@@ -108,6 +108,7 @@ pub fn info(props: &InfoProps) -> Html {
                         SUPPORTED_ALGORITHMS
                             .iter()
                             .map(|algo| {
+                                log::trace!("selected: {}, value: {}", &props.algorithm == *algo, *algo);
                                 html!{
                                     <option selected={ &props.algorithm == *algo } value={*algo}>{algo}</option>
                                 }
