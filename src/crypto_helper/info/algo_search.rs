@@ -96,9 +96,9 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
                 class={classes!("base-input")}
                 onfocus={onfocus}
                 value={(*pattern).clone()}
-                oninput={oninput}
-                onchange={onchange}
-                onkeydown={onkeydown}
+                {oninput}
+                {onchange}
+                {onkeydown}
             />
             <div class={classes!("search-result-container")}>
                 <div class={classes!("vertical", "search-result")}>
@@ -113,7 +113,12 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
                     (*algos)
                         .iter()
                         .map(|algo| html!{
-                            <span class={classes!("sr")} onclick={get_onclick_hangle(algo, props.set_algorithm.clone(), algos.setter())}>{algo}</span>
+                            <span
+                                class={classes!("sr")}
+                                onclick={get_onclick_hangle(algo, props.set_algorithm.clone(), algos.setter())}
+                            >
+                                {algo}
+                            </span>
                         })
                         .collect::<Vec<_>>()
                 }

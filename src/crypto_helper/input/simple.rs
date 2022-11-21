@@ -25,7 +25,7 @@ pub fn simple_input(props: &SimpleInputProps) -> Html {
             placeholder={"hex-encoded input"}
             class={classes!("base-input")}
             value={props.input.clone()}
-            oninput={oninput}
+            {oninput}
         />
     }
 }

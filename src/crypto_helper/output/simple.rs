@@ -16,7 +16,7 @@ pub fn build_simple_output(output: &[u8]) -> Html {
     });
 
     html! {
-        <div class={classes!("output")} onclick={onclick}>
+        <div class={classes!("output")} {onclick}>
             <span class={classes!("simple-digest")}>{hex::encode(output)}</span>
             <span class={classes!("total")}>{format!("total: {}", output.len())}</span>
         </div>

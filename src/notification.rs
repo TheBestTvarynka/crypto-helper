@@ -84,7 +84,7 @@ pub fn notifications(props: &NotificationsProps) -> Html {
         });
 
         tn.push(html! {
-            <NotificationBadge notification={n.clone()} onclick={onclick} />
+            <NotificationBadge notification={n.clone()} {onclick} />
         });
     }
 

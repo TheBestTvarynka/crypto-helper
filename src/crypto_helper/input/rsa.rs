@@ -58,7 +58,7 @@ fn get_hash_selection_component(
     });
 
     html! {
-        <select class={classes!("base-input", "auto-width-input")} onchange={onchange}>
+        <select class={classes!("base-input", "auto-width-input")} {onchange}>
             {RSA_HASH_ALGOS
                 .iter()
                 .map(|hash_algo_name| {
@@ -94,7 +94,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                         placeholder={"RSA public key in PEM (-----BEGIN RSA PUBLIC KEY-----)"}
                         class={classes!("base-input")}
                         value={input.clone()}
-                        oninput={oninput}
+                        {oninput}
                     />
                 </div>
             }
@@ -113,7 +113,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                         placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
                         class={classes!("base-input")}
                         value={input.clone()}
-                        oninput={oninput}
+                        {oninput}
                     />
                 </div>
             }
@@ -243,7 +243,7 @@ pub fn rsa_input(props: &RsaInputProps) -> Html {
                 placeholder={"hex-encoded input"}
                 class={classes!("base-input")}
                 value={props.input.payload.clone()}
-                oninput={oninput}
+                {oninput}
             />
         </div>
     }

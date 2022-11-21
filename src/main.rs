@@ -7,7 +7,7 @@ mod notification;
 mod utils;
 
 use yew::{classes, function_component, html, Html};
-use yew_router::{Routable, BrowserRouter, Switch};
+use yew_router::{BrowserRouter, Routable, Switch};
 
 use about::About;
 use crypto_helper::CryptoHelper;
@@ -33,9 +33,9 @@ fn _switch(routes: Route) -> Html {
     match routes {
         Route::Home => html! { <CryptoHelper /> },
         Route::CryptoHelper => html! { <CryptoHelper /> },
-        Route::Jwt => html!{ <span>{"Jw(t/e)"}</span> },
-        Route::About => html!{ <span>{"About"}</span> },
-        Route::NotFound => html!{ <span>{"Error: not found"}</span> },
+        Route::Jwt => html! { <span>{"Jw(t/e)"}</span> },
+        Route::About => html! { <span>{"About"}</span> },
+        Route::NotFound => html! { <span>{"Error: not found"}</span> },
     }
 }
 

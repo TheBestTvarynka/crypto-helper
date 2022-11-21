@@ -118,7 +118,7 @@ pub fn crypto_helper() -> Html {
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
             <div class={classes!("horizontal")}>
-                <button onclick={onclick}>{"Go"}</button>
+                <button {onclick}>{"Go"}</button>
                 // <label for={"autoConvert"}>
                 //     <input type={"checkbox"} id={"autoConvert"} /><span>{"autogo"}</span>
                 // </label>
