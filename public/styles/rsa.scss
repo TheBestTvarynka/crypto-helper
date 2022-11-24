@@ -12,14 +12,18 @@
     border: 2px solid transparent;
     transition: all 0.2s;
     border-radius: 0;
+    border-top: 2px solid #403735;
+    border-bottom: 2px solid #403735;
 }
 
 .rsa-action:first-child {
     border-radius: 0.3em 0 0 0.3em;
+    border-left: 2px solid #403735;
 }
 
 .rsa-action:last-child {
     border-radius: 0 0.3em 0.3em 0;
+    border-right: 2px solid #403735;
 }
 
 .rsa-action:hover {

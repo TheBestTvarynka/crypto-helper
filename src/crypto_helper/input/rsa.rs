@@ -90,7 +90,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                 <div class={classes!("vertical")}>
                     {selected_algorithm_component}
                     <textarea
-                        rows="2"
+                        rows="4"
                         placeholder={"RSA public key in PEM (-----BEGIN RSA PUBLIC KEY-----)"}
                         class={classes!("base-input")}
                         value={input.clone()}
@@ -109,7 +109,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                 <div class={classes!("vertical")}>
                     {selected_algorithm_component}
                     <textarea
-                        rows="2"
+                        rows="4"
                         placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
                         class={classes!("base-input")}
                         value={input.clone()}
@@ -143,7 +143,7 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                     <div class={classes!("horizontal")}>
                         {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
                         <textarea
-                            rows="2"
+                            rows="4"
                             placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
                             class={classes!("base-input")}
                             value={input.rsa_key.clone()}
@@ -194,14 +194,15 @@ fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Htm
                     <div class={classes!("horizontal")}>
                         {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
                         <textarea
-                            rows="2"
+                            rows="4"
                             placeholder={"RSA public key in PEM (-----BEGIN RSA PUBLIC KEY-----)"}
                             class={classes!("base-input")}
                             value={input.rsa_key.clone()}
                             oninput={on_rsa_key_input}
                         />
                     </div>
-                    <input
+                    <textarea
+                        rows="3"
                         placeholder={"hex-encoded signature"}
                         class={classes!("base-input")}
                         value={input.signature.clone()}
