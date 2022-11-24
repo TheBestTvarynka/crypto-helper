@@ -1552,7 +1552,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-logger",
  "web-sys",
- "yew 0.19.3 (git+https://github.com/yewstack/yew.git?branch=master)",
+ "yew",
  "yew-router",
 ]
 
@@ -1569,7 +1569,7 @@ dependencies = [
 [[package]]
 name = "yew"
 version = "0.19.3"
-source = "git+https://github.com/yewstack/yew.git?branch=master#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+source = "git+https://github.com/yewstack/yew.git?rev=5355b65ff5f9747cbad801d4b337a5ac7a94d0f4#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
 dependencies = [
  "console_error_panic_hook",
  "futures",
@@ -1587,51 +1587,13 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "yew-macro 0.19.3 (git+https://github.com/yewstack/yew.git?branch=master)",
-]
-
-[[package]]
-name = "yew"
-version = "0.19.3"
-source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
-dependencies = [
- "console_error_panic_hook",
- "futures",
- "gloo",
- "implicit-clone",
- "indexmap",
- "js-sys",
- "prokio",
- "rustversion",
- "serde",
- "slab",
- "thiserror",
- "tokio",
- "tracing",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "yew-macro 0.19.3 (git+https://github.com/yewstack/yew.git)",
+ "yew-macro",
 ]
 
 [[package]]
 name = "yew-macro"
 version = "0.19.3"
-source = "git+https://github.com/yewstack/yew.git?branch=master#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
-dependencies = [
- "boolinator",
- "once_cell",
- "prettyplease",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "yew-macro"
-version = "0.19.3"
-source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+source = "git+https://github.com/yewstack/yew.git?rev=5355b65ff5f9747cbad801d4b337a5ac7a94d0f4#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
 dependencies = [
  "boolinator",
  "once_cell",
@@ -1645,7 +1607,7 @@ dependencies = [
 [[package]]
 name = "yew-router"
 version = "0.16.0"
-source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+source = "git+https://github.com/yewstack/yew.git?rev=5355b65ff5f9747cbad801d4b337a5ac7a94d0f4#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
 dependencies = [
  "gloo",
  "js-sys",
@@ -1655,14 +1617,14 @@ dependencies = [
  "tracing",
  "wasm-bindgen",
  "web-sys",
- "yew 0.19.3 (git+https://github.com/yewstack/yew.git)",
+ "yew",
  "yew-router-macro",
 ]
 
 [[package]]
 name = "yew-router-macro"
 version = "0.16.0"
-source = "git+https://github.com/yewstack/yew.git#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
+source = "git+https://github.com/yewstack/yew.git?rev=5355b65ff5f9747cbad801d4b337a5ac7a94d0f4#5355b65ff5f9747cbad801d4b337a5ac7a94d0f4"
 dependencies = [
  "proc-macro2",
  "quote",
