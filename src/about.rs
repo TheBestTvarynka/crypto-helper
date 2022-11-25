@@ -14,7 +14,7 @@ pub fn about() -> Html {
                 <li>{"RSA"}</li>
                 <li class={classes!("coming-soon")}>{"Coming soon: JWT/JWE debugger."}</li>
             </vl>
-            <span>{"All computations perform on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a "}<a href={"https://bf.qkation.com"}>{"byte-formatter"}</a>{" to transform input to the hex format."}</span>
+            <span>{"All computations are performed on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a "}<a href={"https://bf.qkation.com"}>{"byte-formatter"}</a>{" to transform input to the hex format."}</span>
             <span>{"Authors: "}<a href={"https://github.com/TheBestTvarynka"}>{"Pavlo Myroniuk (@TheBestTvarynka)"}</a></span>
             <span>{"GitHub: "}<a href={"https://github.com/TheBestTvarynka/crypto-helper"}>{"https://github.com/TheBestTvarynka/crypto-helper"}</a></span>
         </div>
