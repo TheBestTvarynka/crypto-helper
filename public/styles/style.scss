@@ -86,17 +86,17 @@ article {
     word-wrap: break-word;
     width: fit-content;
     max-width: calc(100% - 0.4em);
-    /* color: #1a3a6e; */
+    // color: #1a3a6e;
     color: blueviolet;
     transition: all 0.3s;
     padding: 0.2em;
 }
 
-// .simple-digest:hover {
-//     cursor: pointer;
-//     background: #b5c9eb;
-//     border-radius: 0.2em;
-// }
+.simple-digest:hover {
+    cursor: pointer;
+    background: #b5c9eb;
+    border-radius: 0.2em;
+}
 
 .notifications {
   position: absolute;

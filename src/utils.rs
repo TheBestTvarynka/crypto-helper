@@ -11,3 +11,7 @@ pub fn format_date_time(datetime: &OffsetDateTime) -> String {
         datetime.year()
     )
 }
+
+pub fn gen_copy_func(hex_data: &str) -> String {
+    format!("navigator.clipboard.writeText('{}');", hex_data)
+}

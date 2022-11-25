@@ -88,14 +88,14 @@ pub fn crypto_helper() -> Html {
             Ok(output) => output_setter.set(output),
             Err(err) => {
                 let id = Uuid::new_v4();
-                let new_notificaion = Notification {
+                let new_notification = Notification {
                     id,
                     notification_type: NotificationType::Error,
                     text: err,
                 };
 
                 let mut new_notifications = onclick_notifications.clone();
-                new_notifications.push(new_notificaion);
+                new_notifications.push(new_notification);
                 notifications_setter.set(new_notifications);
 
                 let notification_to_delete_setter = notification_to_delete_setter.clone();
@@ -113,17 +113,31 @@ pub fn crypto_helper() -> Html {
         notification_to_delete_setter.set(Some(id));
     });
 
+    let onclick_notifications = (*notifications).clone();
+    let notification_to_delete_setter = notification_to_delete.setter();
+    let notifications_setter = notifications.setter();
+    let add_notification = Callback::from(move |new_notification: Notification| {
+        let id = new_notification.id;
+        let mut new_notifications = onclick_notifications.clone();
+        new_notifications.push(new_notification);
+        notifications_setter.set(new_notifications);
+
+        let notification_to_delete_setter = notification_to_delete_setter.clone();
+        let timeout = Timeout::new(NOTIFICATION_DURATION, move || {
+            log::debug!("in notification timeout handler: {:?}", id);
+            notification_to_delete_setter.set(Some(id));
+        });
+        timeout.forget();
+    });
+
     html! {
         <article class={classes!("vertical")}>
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
             <div class={classes!("horizontal")}>
                 <button {onclick}>{"Go"}</button>
-                // <label for={"autoConvert"}>
-                //     <input type={"checkbox"} id={"autoConvert"} /><span>{"autogo"}</span>
-                // </label>
             </div>
-            <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
+            <Output algorithm={(*algorithm).clone()} output={(*output).clone()} {add_notification} />
             <Notifications notifications={(*notifications).clone()} delete_notification={notifications_setter_callback} />
         </article>
     }
