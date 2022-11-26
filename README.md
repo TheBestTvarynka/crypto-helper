@@ -4,7 +4,7 @@
 
 ![](/public/img/example.png)
 
-The crypto-helper is an online app that helps to work with the diferent crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/veridy the data.
+The crypto-helper is an online app that helps to work with the diferent crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
 
 All computations are performed on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a [byte-formatter](https://bf.qkation.com) to transform input to the hex format.
 
