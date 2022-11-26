@@ -1,6 +1,6 @@
 ## crypoto-helper
 
-![deploy](https://github.com/TheBestTvarynka/crypoto-helper/actions/workflows/github-actions.yml/badge.svg)
+![deploy](https://github.com/TheBestTvarynka/crypto-helper/actions/workflows/github-actions.yml/badge.svg)
 
 ![](/public/img/example.png)
 
