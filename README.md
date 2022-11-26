@@ -21,9 +21,9 @@ Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
 
 ### Meta
 
-Pavlo Myroniuk - [pspos.developqkation@gmail.com](mailto:pspos.developqkation@gmail.com).
+[Pavlo Myroniuk](https://github.com/TheBestTvarynka) - [pspos.developqkation@gmail.com](mailto:pspos.developqkation@gmail.com).
 
-Distributed under the [MIT](https://github.com/TheBestTvarynka/bytes-formatter/blob/main/LICENSE) license.
+Distributed under the [MIT](https://github.com/TheBestTvarynka/crypto-helper/blob/main/LICENSE) license.
 
 ### Contributing
 
