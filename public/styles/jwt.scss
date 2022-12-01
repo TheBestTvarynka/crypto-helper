@@ -1,0 +1,22 @@
+.jwt-page {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    width: 100%;
+}
+
+.jwt-header {
+    color: #a562e3;
+}
+
+.jwt-payload {
+    color: mediumvioletred;
+}
+
+.jwt-signature {
+    color: #70a66c;
+}
+
+.jwt-dot {
+    background-color: #403735;
+    color: #ccc9af;
+}
