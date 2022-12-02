@@ -37,7 +37,7 @@ fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => html! { <Jwt /> },
         Route::CryptoHelper => html! { <CryptoHelper /> },
-        Route::Jwt => html!{ <Jwt /> },
+        Route::Jwt => html! { <Jwt /> },
         Route::About => html! { <About /> },
         Route::NotFound => not_found(),
     }

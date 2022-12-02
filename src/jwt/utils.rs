@@ -1,4 +1,4 @@
-use yew::{function_component, Html, html, classes};
+use yew::{classes, function_component, html, Html};
 
 #[function_component(Utils)]
 pub fn utils() -> Html {

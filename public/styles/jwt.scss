@@ -7,6 +7,7 @@
 
 .jwt-header {
     color: #a562e3;
+    word-wrap: break-word;
 }
 
 .jwt-header:hover {
@@ -16,6 +17,7 @@
 
 .jwt-payload {
     color: mediumvioletred;
+    word-wrap: break-word;
 }
 
 .jwt-payload:hover {
@@ -25,6 +27,7 @@
 
 .jwt-signature {
     color: #70a66c;
+    word-wrap: break-word;
 }
 
 .jwt-signature:hover {

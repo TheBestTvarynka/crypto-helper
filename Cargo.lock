@@ -1534,6 +1534,7 @@ dependencies = [
 name = "web-app"
 version = "0.8.0"
 dependencies = [
+ "base64",
  "gloo-timers",
  "hex",
  "hmac-sha256",
