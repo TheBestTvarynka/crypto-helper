@@ -1,7 +1,6 @@
 use js_sys::Function;
 use uuid::Uuid;
 use wasm_bindgen::JsValue;
-// use wasm_bindgen::{JsValue, prelude::Closure};
 use yew::{classes, html, Callback, Html};
 
 use crate::{

@@ -1,5 +1,11 @@
+mod utils;
+
 use web_sys::HtmlInputElement;
 use yew::{classes, html, Html, function_component, use_state, Callback, TargetCast};
+
+use crate::jwt::utils::Utils;
+
+// eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY3MDAwNDI1NCwiaWF0IjoxNjcwMDA0MjU0fQ.ZGsN42vr-bM4uxXowtlNl7xRerkdKu6i29VS8DFQ4Tw
 
 #[function_component(Jwt)]
 pub fn jwt() -> Html {
@@ -43,6 +49,9 @@ pub fn jwt() -> Html {
                         <textarea rows="2" class={classes!("base-input")} />
                     </div>
                 </div>
+            </div>
+            <div class={classes!("container")}>
+                <Utils />
             </div>
         </article>
     }
