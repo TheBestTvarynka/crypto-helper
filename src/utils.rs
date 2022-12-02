@@ -1,4 +1,8 @@
+use js_sys::Function;
 use time::OffsetDateTime;
+use wasm_bindgen::JsValue;
+use web_sys::MouseEvent;
+use yew::Callback;
 
 pub fn format_date_time(datetime: &OffsetDateTime) -> String {
     format!(
@@ -12,8 +16,17 @@ pub fn format_date_time(datetime: &OffsetDateTime) -> String {
     )
 }
 
-pub fn gen_copy_func(hex_data: &str) -> String {
-    format!("navigator.clipboard.writeText('{}');", hex_data)
+pub fn gen_copy_func(data: &str) -> String {
+    format!("navigator.clipboard.writeText('{}');", data)
+}
+
+pub fn gen_onclick(data: String) -> Callback<MouseEvent> {
+    Callback::from(move |_| {
+        let function = Function::new_no_args(&gen_copy_func(&data));
+        if let Err(err) = function.call0(&JsValue::null()) {
+            log::error!("error oncopy: {:?}", err);
+        }
+    })
 }
 
 pub fn decode_base64(input: &str) -> Result<Vec<u8>, String> {

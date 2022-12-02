@@ -2,23 +2,15 @@ use std::str::FromStr;
 
 use crate::utils::decode_base64;
 
-#[derive(Default)]
-pub struct Jwt {
-    pub raw_header: String,
-    pub parsed_header: String,
+use super::jwt::Jwt;
 
-    pub raw_payload: String,
-    pub parsed_payload: String,
-
-    pub raw_signature: String,
-    pub parsed_signature: String,
-}
-
-#[derive(Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct Jwe {}
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Jwte {
     Jwt(Jwt),
+    #[allow(dead_code)]
     Jwe(Jwe),
 }
 
