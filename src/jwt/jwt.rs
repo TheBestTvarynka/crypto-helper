@@ -3,7 +3,7 @@ use serde_json::Value;
 pub mod editor;
 pub mod viewer;
 
-const JWT_SIGNATURE_ALGORITHMS: [&'static str; 1] = ["HS256"];
+const JWT_SIGNATURE_ALGORITHMS: [&str; 1] = ["HS256"];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum JwtSignatureAlgorithm {

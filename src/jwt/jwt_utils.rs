@@ -1,4 +1,4 @@
-use yew::{classes, function_component, html, use_state, Callback, Html, Properties};
+use yew::{classes, function_component, html, Callback, Html, Properties};
 
 use crate::common::build_simple_input;
 
@@ -26,9 +26,9 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
         <div class={classes!("vertical")}>
             {get_input_component(&props.jwt.signature_algorithm)}
             <div class={classes!("horizontal")}>
-                <button>{"Validate signature"}</button>
-                <button>{"Generate signature"}</button>
-                <button>{"Generate new JWT"}</button>
+                <button class={classes!("jwt-util-button")}>{"Validate signature"}</button>
+                <button class={classes!("jwt-util-button")}>{"Recalculate signature"}</button>
+                <button class={classes!("jwt-util-button")}>{"Regenerate JWT"}</button>
             </div>
         </div>
     }

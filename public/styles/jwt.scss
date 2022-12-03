@@ -85,8 +85,17 @@
     padding: 0.2em 0.4em 0.2em 0.4em;
     border-radius: 0.3em;
     font-family: 'JetBrains Mono', monospace;
+    border: 1px solid transparent;
+    transition: 0.3s;
 }
 
 .jwt-util-button:hover {
     cursor: pointer;
+    transition: 0.3s;
+    color: #e0e0e0;
+    background-color: #403735;
+}
+
+.jwt-util-button:focus {
+    box-shadow: 0 0 0 2px #736664;
 }
