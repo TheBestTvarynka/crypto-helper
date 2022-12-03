@@ -132,3 +132,29 @@ article {
   font-size: 0.7em;
   color: #4c5159;
 }
+
+.bytes-container {
+    background-color: #403735;
+    padding: 0.2em;
+    border-radius: 3px;
+}
+
+.byte-null {
+    color: red;
+}
+
+.byte-printable {
+    color: cyan;
+}
+
+.byte-whitespace {
+    color: green;
+}
+
+.byte-ascii {
+    color: rgb(232, 52, 210);
+}
+
+.byte-other {
+    color: yellow;
+}

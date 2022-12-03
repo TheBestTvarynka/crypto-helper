@@ -20,7 +20,7 @@ pub fn gen_copy_func(data: &str) -> String {
     format!("navigator.clipboard.writeText('{}');", data)
 }
 
-pub fn gen_onclick(data: String) -> Callback<MouseEvent> {
+pub fn gen_copy_onclick(data: String) -> Callback<MouseEvent> {
     Callback::from(move |_| {
         let function = Function::new_no_args(&gen_copy_func(&data));
         if let Err(err) = function.call0(&JsValue::null()) {

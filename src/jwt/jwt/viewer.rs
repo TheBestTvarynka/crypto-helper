@@ -1,6 +1,6 @@
 use yew::{classes, function_component, html, Html, Properties};
 
-use crate::utils::gen_onclick;
+use crate::utils::gen_copy_onclick;
 
 use super::Jwt;
 
@@ -17,11 +17,11 @@ pub fn jwt_viewer(props: &JwtViewerProps) -> Html {
 
     html! {
         <div>
-            <span class={classes!("jwt-header")} onclick={gen_onclick(header.clone())}>{header}</span>
+            <span class={classes!("jwt-header")} onclick={gen_copy_onclick(header.clone())}>{header}</span>
             <span class={classes!("jwt-dot")}>{"."}</span>
-            <span class={classes!("jwt-payload")} onclick={gen_onclick(payload.clone())}>{payload}</span>
+            <span class={classes!("jwt-payload")} onclick={gen_copy_onclick(payload.clone())}>{payload}</span>
             <span class={classes!("jwt-dot")}>{"."}</span>
-            <span class={classes!("jwt-signature")} onclick={gen_onclick(signature.clone())}>{signature}</span>
+            <span class={classes!("jwt-signature")} onclick={gen_copy_onclick(signature.clone())}>{signature}</span>
         </div>
     }
 }

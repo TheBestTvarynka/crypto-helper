@@ -1,6 +1,6 @@
 mod jwt;
+mod jwt_utils;
 mod jwte;
-mod utils;
 
 use std::str::FromStr;
 
@@ -9,8 +9,8 @@ use yew::{classes, function_component, html, use_state, Callback, Html, TargetCa
 
 use crate::jwt::{
     jwt::{editor::JwtEditor, viewer::JwtViewer},
+    jwt_utils::JwtUtils,
     jwte::Jwte,
-    utils::Utils,
 };
 
 const TEST_JWT: &str = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY3MDAwNDI1NCwiaWF0IjoxNjcwMDA0MjU0fQ.ZGsN42vr-bM4uxXowtlNl7xRerkdKu6i29VS8DFQ4Tw";
@@ -51,9 +51,14 @@ pub fn jwt() -> Html {
                 },
                 Jwte::Jwe(_jwe) => html! {},
             }}
-            <div class={classes!("container")}>
-                <Utils />
-            </div>
+            {match &(*jwte) {
+                Jwte::Jwt(jwt) => html! {
+                    <div class={classes!("container")}>
+                        <JwtUtils jwt={jwt.clone()} />
+                    </div>
+                },
+                Jwte::Jwe(_jwe) => html! {},
+            }}
         </article>
     }
 }
