@@ -17,11 +17,24 @@ pub fn format_date_time(datetime: &OffsetDateTime) -> String {
 }
 
 pub fn gen_copy_func(data: &str) -> String {
+    let data = data
+        .chars()
+        .map(|c| {
+            if c == '\n' {
+                "\\n".to_owned()
+            } else if c == '\\' {
+                "\\\\".to_owned()
+            } else {
+                c.to_string()
+            }
+        })
+        .collect::<String>();
     format!("navigator.clipboard.writeText('{}');", data)
 }
 
 pub fn gen_copy_onclick(data: String) -> Callback<MouseEvent> {
     Callback::from(move |_| {
+        log::debug!("data to copy: `{}`", data);
         let function = Function::new_no_args(&gen_copy_func(&data));
         if let Err(err) = function.call0(&JsValue::null()) {
             log::error!("error oncopy: {:?}", err);
