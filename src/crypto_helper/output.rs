@@ -1,11 +1,10 @@
 mod krb;
-mod simple;
 
 use yew::{classes, function_component, html, Callback, Html, Properties};
 
-use crate::notification::Notification;
+use crate::{common::build_simple_output, notification::Notification};
 
-use self::{krb::build_krb_output, simple::build_simple_output};
+use self::krb::build_krb_output;
 
 use super::Algorithm;
 

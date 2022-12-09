@@ -13,9 +13,7 @@ pub fn simple_input(props: &SimpleInputProps) -> Html {
     let setter = props.setter.clone();
     let oninput = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
-
         let value = input.value();
-        log::debug!("simple input value: {}", value);
 
         setter.emit(value);
     });

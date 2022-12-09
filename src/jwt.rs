@@ -38,6 +38,8 @@ pub fn jwt() -> Html {
         jwte_setter.set(Jwte::Jwt(jwt));
     });
 
+    let jwte_setter = jwte.setter();
+
     html! {
         <article class={classes!("vertical")}>
             <textarea
@@ -60,7 +62,7 @@ pub fn jwt() -> Html {
             {match &(*jwte) {
                 Jwte::Jwt(jwt) => html! {
                     <div class={classes!("container")}>
-                        <JwtUtils jwt={jwt.clone()} />
+                        <JwtUtils jwt={jwt.clone()} set_jwt={Callback::from(move |jwt| jwte_setter.set(Jwte::Jwt(jwt)))} />
                     </div>
                 },
                 Jwte::Jwe(_jwe) => html! {},
