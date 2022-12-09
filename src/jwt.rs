@@ -27,8 +27,9 @@ pub fn jwt() -> Html {
         jwt_setter.set(input.value());
     });
 
+    let raw_jwt = (*jwt).clone();
     let jwte_setter = jwte.setter();
-    let onclick = Callback::from(move |_| match Jwte::from_str(TEST_JWT) {
+    let onclick = Callback::from(move |_| match Jwte::from_str(&raw_jwt) {
         Ok(jwte) => jwte_setter.set(jwte),
         Err(error) => log::error!("{}", error),
     });
