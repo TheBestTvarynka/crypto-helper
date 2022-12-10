@@ -1,6 +1,6 @@
 use serde_json::{to_string_pretty, Value};
-use web_sys::MouseEvent;
-use yew::{classes, function_component, html, Callback, Html, Properties};
+use web_sys::{HtmlInputElement, MouseEvent};
+use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
 
 use crate::utils::gen_copy_onclick;
 
@@ -47,6 +47,28 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
         }),
     );
 
+    let set_jwt = props.set_jwt.clone();
+    let jwt = props.jwt.clone();
+    let on_header_input = Callback::from(move |event: html::oninput::Event| {
+        let input: HtmlInputElement = event.target_unchecked_into();
+        let value = input.value();
+
+        let mut jwt = jwt.clone();
+        jwt.parsed_header = value;
+        set_jwt.emit(jwt);
+    });
+
+    let set_jwt = props.set_jwt.clone();
+    let jwt = props.jwt.clone();
+    let on_payload_input = Callback::from(move |event: html::oninput::Event| {
+        let input: HtmlInputElement = event.target_unchecked_into();
+        let value = input.value();
+
+        let mut jwt = jwt.clone();
+        jwt.parsed_payload = value;
+        set_jwt.emit(jwt);
+    });
+
     html! {
         <div class={classes!("vertical")}>
             <div class={classes!("vertical")}>
@@ -54,19 +76,18 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
                     <span class={classes!("jwt-header")} onclick={gen_copy_onclick(header.clone())}>{"Header"}</span>
                     <button onclick={header_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
                 </div>
-                <textarea rows="4" class={classes!("base-input")} value={header} />
+                <textarea rows="4" class={classes!("base-input")} value={header} oninput={on_header_input} />
             </div>
             <div class={classes!("vertical")}>
                 <div class={classes!("horizontal")}>
                     <span class={classes!("jwt-payload")} onclick={gen_copy_onclick(payload.clone())}>{"Payload"}</span>
                     <button onclick={payload_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
                 </div>
-                <textarea rows="6" class={classes!("base-input")} value={payload} />
+                <textarea rows="6" class={classes!("base-input")} value={payload} oninput={on_payload_input} />
             </div>
             <div class={classes!("vertical")}>
                 <span class={classes!("jwt-signature")} onclick={gen_copy_onclick(signature.clone())}>{"Signature"}</span>
-                <textarea rows="2" class={classes!("base-input")} value={signature} />
-                // <BytesViewer bytes={props.jwt.signature.clone()} />
+                <textarea rows="2" class={classes!("base-input")} value={signature} readonly={true} />
             </div>
         </div>
     }
