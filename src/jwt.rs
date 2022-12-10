@@ -18,25 +18,28 @@ const TEST_JWT: &str = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJ
 
 #[function_component(Jwt)]
 pub fn jwt() -> Html {
-    let jwt = use_state(|| TEST_JWT.to_owned());
-    let jwte = use_state(Jwte::default);
+    let raw_jwt = use_state(|| TEST_JWT.to_owned());
+    let jwte = use_state(|| None);
 
-    let jwt_setter = jwt.setter();
+    let jwt_setter = raw_jwt.setter();
     let oninput = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
         jwt_setter.set(input.value());
     });
 
-    let raw_jwt = (*jwt).clone();
+    let raw = (*raw_jwt).clone();
     let jwte_setter = jwte.setter();
-    let onclick = Callback::from(move |_| match Jwte::from_str(&raw_jwt) {
-        Ok(jwte) => jwte_setter.set(jwte),
-        Err(error) => log::error!("{}", error),
+    let onclick = Callback::from(move |_| match Jwte::from_str(&raw) {
+        Ok(jwte) => jwte_setter.set(Some(jwte)),
+        Err(error) => {
+            jwte_setter.set(None);
+            log::error!("{}", error);
+        }
     });
 
     let jwte_setter = jwte.setter();
     let set_jwt = Callback::from(move |jwt| {
-        jwte_setter.set(Jwte::Jwt(jwt));
+        jwte_setter.set(Some(Jwte::Jwt(jwt)));
     });
 
     let jwte_setter = jwte.setter();
@@ -47,26 +50,32 @@ pub fn jwt() -> Html {
                 rows="5"
                 placeholder={"base64 encoded JWT(JWE)"}
                 class={classes!("base-input")}
-                value={(*jwt).clone()}
+                value={(*raw_jwt).clone()}
                 {oninput}
             />
             <button {onclick}>{"Process"}</button>
-            {match &(*jwte) {
-                Jwte::Jwt(jwt) => html! {
-                    <div class={classes!("jwt-page")}>
-                        <JwtViewer jwt={jwt.clone()} />
-                        <JwtEditor jwt={jwt.clone()} {set_jwt} />
-                    </div>
-                },
-                Jwte::Jwe(_jwe) => html! {},
+            {if let Some(jwte) = &(*jwte) {
+                match jwte {
+                    Jwte::Jwt(jwt) => html! {
+                        <div class={classes!("jwt-page")}>
+                            <JwtViewer jwt={jwt.clone()} />
+                            <JwtEditor jwt={jwt.clone()} {set_jwt} />
+                        </div>
+                    },
+                    Jwte::Jwe(_jwe) => html! {},
+            }} else {
+                html! {}
             }}
-            {match &(*jwte) {
-                Jwte::Jwt(jwt) => html! {
-                    <div class={classes!("container")}>
-                        <JwtUtils jwt={jwt.clone()} set_jwt={Callback::from(move |jwt| jwte_setter.set(Jwte::Jwt(jwt)))} />
-                    </div>
-                },
-                Jwte::Jwe(_jwe) => html! {},
+            {if let Some(jwte) = &(*jwte) {
+                match jwte {
+                    Jwte::Jwt(jwt) => html! {
+                        <div class={classes!("container")}>
+                            <JwtUtils jwt={jwt.clone()} set_jwt={Callback::from(move |jwt| jwte_setter.set(Some(Jwte::Jwt(jwt))))} />
+                        </div>
+                    },
+                    Jwte::Jwe(_jwe) => html! {},
+            }} else {
+                html! {}
             }}
         </article>
     }

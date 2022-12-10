@@ -9,7 +9,7 @@ use yew::{
 
 use crate::{
     notification::{Notification, NotificationType},
-    utils::{gen_copy_func, gen_copy_onclick},
+    utils::gen_copy_func,
 };
 
 #[derive(PartialEq, Eq, Clone)]
@@ -51,7 +51,9 @@ fn get_set_format_callback(
     format: BytesFormat,
     set_format: UseStateSetter<BytesFormat>,
 ) -> Callback<MouseEvent> {
+    log::debug!("get format click");
     Callback::from(move |_event| {
+        log::debug!("format click");
         set_format.set(format.clone());
     })
 }
@@ -82,9 +84,11 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
         bytes_format.clone(),
     );
 
-    let hex_output = hex::encode(&output);
+    let encoded_bytes = encode_bytes(&output, &bytes_format);
+
+    let encoded = encoded_bytes.clone();
     let onclick = Callback::from(move |_| {
-        let function = Function::new_no_args(&gen_copy_func(&hex_output));
+        let function = Function::new_no_args(&gen_copy_func(&encoded));
         if function.call0(&JsValue::null()).is_ok() {
             add_notification.emit(Notification {
                 id: Uuid::new_v4(),
@@ -94,10 +98,8 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
         }
     });
 
-    let encoded_bytes = encode_bytes(&output, &bytes_format);
-
     html! {
-        <div class={classes!("output")} {onclick}>
+        <div class={classes!("output")}>
             <div class={classes!("formats-container")}>{
                 BYTES_FORMATS.iter().map(|format| {
                     html! {
@@ -110,7 +112,7 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
                     }
                 }).collect::<Html>()
             }</div>
-            <span class={classes!("simple-digest")} onclick={gen_copy_onclick(encoded_bytes.clone())}>{encoded_bytes}</span>
+            <span class={classes!("simple-digest")} onclick={onclick}>{encoded_bytes}</span>
             <span class={classes!("total")}>{format!("total: {}", output.len())}</span>
         </div>
     }
