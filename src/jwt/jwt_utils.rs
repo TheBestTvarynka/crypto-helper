@@ -1,7 +1,7 @@
 use web_sys::MouseEvent;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties};
 
-use crate::common::{build_simple_input, build_simple_output};
+use crate::common::{build_simple_input, build_simple_output, BytesFormat};
 
 use super::jwt::{Jwt, JwtSignatureAlgorithm};
 
@@ -40,6 +40,10 @@ fn calculate_signature(jwt: &Jwt) -> Vec<u8> {
                 return Default::default();
             };
 
+            if key.is_empty() {
+                return Default::default();
+            }
+
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
         }
         _ => Default::default(),
@@ -47,8 +51,11 @@ fn calculate_signature(jwt: &Jwt) -> Vec<u8> {
 }
 
 fn validate_signature(jwt: &Jwt) -> bool {
-    let data_to_sign =
-        base64::encode(format!("{}.{}", jwt.parsed_header, jwt.parsed_payload).as_bytes());
+    let data_to_sign = format!(
+        "{}.{}",
+        base64::encode(jwt.parsed_header.as_bytes()),
+        base64::encode(jwt.parsed_payload.as_bytes())
+    );
 
     let calculated_signature = match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::Hs256(key) => {
@@ -59,12 +66,32 @@ fn validate_signature(jwt: &Jwt) -> bool {
                 return false;
             };
 
+            if key.is_empty() {
+                return Default::default();
+            }
+
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
         }
         _ => return false,
     };
 
     jwt.signature == calculated_signature
+}
+
+fn generate_jwt(jwt: &Jwt) -> Vec<u8> {
+    let signature = calculate_signature(jwt);
+
+    if signature.is_empty() {
+        return Default::default();
+    }
+
+    let header = base64::encode_config(jwt.parsed_header.as_bytes(), base64::URL_SAFE_NO_PAD);
+    let payload = base64::encode_config(jwt.parsed_payload.as_bytes(), base64::URL_SAFE_NO_PAD);
+    let signature = base64::encode_config(signature, base64::URL_SAFE_NO_PAD);
+
+    let jwt = format!("{}.{}.{}", header, payload, signature);
+
+    jwt.as_bytes().to_vec()
 }
 
 #[function_component(JwtUtils)]
@@ -84,6 +111,12 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
         data_setter.set(vec![validate_signature(&jwt) as u8]);
     });
 
+    let data_setter = data.setter();
+    let jwt = props.jwt.clone();
+    let generate = Callback::from(move |_event: MouseEvent| {
+        data_setter.set(generate_jwt(&jwt));
+    });
+
     let jwt = props.jwt.clone();
     let set_jwt = props.set_jwt.clone();
 
@@ -98,10 +131,10 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
             <div class={classes!("horizontal")}>
                 <button class={classes!("jwt-util-button")} onclick={validate}>{"Validate signature"}</button>
                 <button class={classes!("jwt-util-button")} onclick={recalculate}>{"Recalculate signature"}</button>
-                <button class={classes!("jwt-util-button")}>{"Regenerate JWT"}</button>
+                <button class={classes!("jwt-util-button")} onclick={generate}>{"Regenerate JWT"}</button>
             </div>
             {if !(*data).is_empty() {
-                build_simple_output((*data).as_ref(), Callback::from(|_| {}))
+                build_simple_output((*data).clone(),  BytesFormat::Hex, Callback::from(|_| {}))
             } else { html! {} }}
         </div>
     }

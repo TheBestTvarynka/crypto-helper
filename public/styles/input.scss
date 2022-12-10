@@ -76,3 +76,30 @@
 .switch_label:active:after {
 	width: 1.3em;
 }
+
+.formats-container {
+	display: inline-flex;
+	justify-content: flex-start;
+	gap: 0.1em;
+}
+
+.format-button {
+    font-size: 0.7em;
+    color: #403735;
+    background-color: transparent;
+    padding: 0.2em 0.2em 0.2em 0.2em;
+    border-radius: 0.2em;
+    border: 2px solid transparent;
+    font-family: 'JetBrains Mono', monospace;
+    transition: 0.3s;
+}
+
+.format-button:hover {
+    cursor: pointer;
+    border: 2px solid #736664;
+}
+
+.format-button-selected {
+    color: #e0e0e0;
+    background-color: #736664;
+}
