@@ -12,7 +12,7 @@ pub fn about() -> Html {
                 <li>{"Kerberos ciphers: AES128-CTS-HMAC-SHA1-96/AES256-CTS-HMAC-SHA1-96"}</li>
                 <li>{"Kerberos HMAC: HMAC-SHA1-96-AES128/HMAC-SHA1-96-AES256"}</li>
                 <li>{"RSA"}</li>
-                <li class={classes!("coming-soon")}>{"Coming soon: JWT/JWE debugger."}</li>
+                <li class={classes!("coming-soon")}>{"In progress: JWT/JWE debugger."}</li>
             </vl>
             <span>{"All computations are performed on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a "}<a href={"https://bf.qkation.com"}>{"byte-formatter"}</a>{" to transform input to the hex format."}</span>
             <span>{"Authors: "}<a href={"https://github.com/TheBestTvarynka"}>{"Pavlo Myroniuk (@TheBestTvarynka)"}</a></span>
