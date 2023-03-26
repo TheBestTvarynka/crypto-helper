@@ -21,7 +21,7 @@ Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
 
 ### Meta
 
-[Pavlo Myroniuk](https://github.com/TheBestTvarynka) - [pspos.developqkation@gmail.com](mailto:pspos.developqkation@gmail.com).
+[Pavlo Myroniuk](https://github.com/TheBestTvarynka) - [the.best.tvarynka@gmail.com](mailto:the.best.tvarynka@gmail.com).
 
 Distributed under the [MIT](https://github.com/TheBestTvarynka/crypto-helper/blob/main/LICENSE) license.
 
@@ -29,7 +29,7 @@ Distributed under the [MIT](https://github.com/TheBestTvarynka/crypto-helper/blo
 
 Feel free to contribute.
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
+1. Fork it (<https://github.com/TheBestTvarynka/crypto-helper/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
