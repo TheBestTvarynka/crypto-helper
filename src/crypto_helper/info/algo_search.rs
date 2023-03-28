@@ -1,7 +1,7 @@
 use web_sys::{Event, FocusEvent, HtmlInputElement, InputEvent, KeyboardEvent, MouseEvent};
 use yew::{
-    classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties,
-    TargetCast, UseStateSetter,
+    classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties, TargetCast,
+    UseStateSetter,
 };
 
 use crate::crypto_helper::algorithm::{Algorithm, SUPPORTED_ALGORITHMS};

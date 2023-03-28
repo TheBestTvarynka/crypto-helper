@@ -4,10 +4,8 @@ use wasm_bindgen::JsValue;
 // use wasm_bindgen::{JsValue, prelude::Closure};
 use yew::{classes, html, Callback, Html};
 
-use crate::{
-    notification::{Notification, NotificationType},
-    utils::gen_copy_func,
-};
+use crate::notification::{Notification, NotificationType};
+use crate::utils::gen_copy_func;
 
 pub fn build_simple_output(output: &[u8], add_notification: Callback<Notification>) -> Html {
     let hex_output = hex::encode(output);

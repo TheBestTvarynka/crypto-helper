@@ -48,10 +48,7 @@ pub fn notification(props: &NotificationProps) -> Html {
     }
 }
 
-pub fn get_new_notifications(
-    id: &Uuid,
-    notifications: &[Notification],
-) -> Option<Vec<Notification>> {
+pub fn get_new_notifications(id: &Uuid, notifications: &[Notification]) -> Option<Vec<Notification>> {
     log::debug!("notifications len: {}", notifications.len());
 
     for (index, notification) in notifications.iter().enumerate() {

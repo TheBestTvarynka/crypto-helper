@@ -3,19 +3,13 @@ use uuid::Uuid;
 use wasm_bindgen::JsValue;
 use yew::{classes, html, Callback, Html};
 
-use crate::{
-    crypto_helper::algorithm::KrbInput,
-    notification::{Notification, NotificationType},
-    utils::gen_copy_func,
-};
+use crate::crypto_helper::algorithm::KrbInput;
+use crate::notification::{Notification, NotificationType};
+use crate::utils::gen_copy_func;
 
 const HMAC_LEN: usize = 12;
 
-pub fn build_krb_output(
-    krb_input: &KrbInput,
-    output: &[u8],
-    add_notification: Callback<Notification>,
-) -> Html {
+pub fn build_krb_output(krb_input: &KrbInput, output: &[u8], add_notification: Callback<Notification>) -> Html {
     let len = output.len();
 
     let (cipher_len, hmac_len, cipher, hmac) = if len < HMAC_LEN {

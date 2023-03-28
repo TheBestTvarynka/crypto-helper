@@ -9,8 +9,8 @@ license-file = "LICENSE"
 repository = "https://github.com/TheBestTvarynka/crypto-helper"
 
 [dependencies]
-yew = { git = "https://github.com/yewstack/yew.git", rev = "5355b65ff5f9747cbad801d4b337a5ac7a94d0f4", features = ["csr"] }
-yew-router = { git = "https://github.com/yewstack/yew.git", rev = "5355b65ff5f9747cbad801d4b337a5ac7a94d0f4" }
+yew = { version = "0.20", features = ["csr"] }
+yew-router = "0.17.0"
 
 # wasm
 js-sys = "0.3.60"
