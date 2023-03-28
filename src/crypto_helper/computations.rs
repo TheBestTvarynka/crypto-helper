@@ -1,19 +1,13 @@
-use picky::{
-    key::{PrivateKey, PublicKey},
-    signature::SignatureAlgorithm,
-};
+use picky::key::{PrivateKey, PublicKey};
+use picky::signature::SignatureAlgorithm;
 use picky_krb::crypto::{Checksum, Cipher};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
-use rsa::{
-    pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey},
-    PaddingScheme, PublicKey as PublicKeyTrait, RsaPrivateKey, RsaPublicKey,
-};
+use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
+use rsa::{PaddingScheme, PublicKey as PublicKeyTrait, RsaPrivateKey, RsaPublicKey};
 
-use super::{
-    algorithm::{KrbInput, KrbInputData, RsaAction, RsaInput},
-    from_hex,
-};
+use super::algorithm::{KrbInput, KrbInputData, RsaAction, RsaInput};
+use super::from_hex;
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
     let payload = from_hex(&input.payload)?;
@@ -26,23 +20,20 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
                 .map_err(|err| err.to_string())
         }
         RsaAction::Decrypt(input) => {
-            let private_key =
-                RsaPrivateKey::from_pkcs1_pem(input).map_err(|err| err.to_string())?;
+            let private_key = RsaPrivateKey::from_pkcs1_pem(input).map_err(|err| err.to_string())?;
             private_key
                 .decrypt(PaddingScheme::PKCS1v15Encrypt, &payload)
                 .map_err(|err| err.to_string())
         }
         RsaAction::Sign(input) => {
-            let private_key =
-                PrivateKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
+            let private_key = PrivateKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
             Ok(SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
                 .sign(&payload, &private_key)
                 .map_err(|err| err.to_string())?)
         }
         RsaAction::Verify(input) => {
             let signature = from_hex(&input.signature)?;
-            let public_key =
-                PublicKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
+            let public_key = PublicKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
             SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
                 .verify(&public_key, &payload, &signature)
                 .map(|_| vec![1])
@@ -79,10 +70,7 @@ pub fn process_krb_cipher(cipher: Box<dyn Cipher>, input: &KrbInput) -> Result<V
     }
 }
 
-pub fn process_krb_hmac(
-    hasher: Box<dyn Checksum>,
-    input: &KrbInputData,
-) -> Result<Vec<u8>, String> {
+pub fn process_krb_hmac(hasher: Box<dyn Checksum>, input: &KrbInputData) -> Result<Vec<u8>, String> {
     hasher
         .checksum(
             &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,

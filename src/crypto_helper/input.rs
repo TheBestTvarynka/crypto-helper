@@ -5,9 +5,11 @@ mod simple;
 use picky_krb::crypto::CipherSuite;
 use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
 
-use self::{krb::build_krb_input, rsa::build_rsa_input, simple::build_simple_input};
-
-use super::{algorithm::KrbInput, Algorithm};
+use self::krb::build_krb_input;
+use self::rsa::build_rsa_input;
+use self::simple::build_simple_input;
+use super::algorithm::KrbInput;
+use super::Algorithm;
 
 fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm>) -> Html {
     let setter = setter.clone();
@@ -30,17 +32,13 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
         ),
         Algorithm::Aes128CtsHmacSha196(kerberos_input) => build_krb_input(
             kerberos_input.clone(),
-            Callback::from(move |kerberos_input| {
-                setter.set(Algorithm::Aes128CtsHmacSha196(kerberos_input))
-            }),
+            Callback::from(move |kerberos_input| setter.set(Algorithm::Aes128CtsHmacSha196(kerberos_input))),
             CipherSuite::Aes128CtsHmacSha196,
             true,
         ),
         Algorithm::Aes256CtsHmacSha196(kerberos_input) => build_krb_input(
             kerberos_input.clone(),
-            Callback::from(move |kerberos_input| {
-                setter.set(Algorithm::Aes256CtsHmacSha196(kerberos_input))
-            }),
+            Callback::from(move |kerberos_input| setter.set(Algorithm::Aes256CtsHmacSha196(kerberos_input))),
             CipherSuite::Aes256CtsHmacSha196,
             true,
         ),

@@ -5,11 +5,7 @@ mod footer;
 mod header;
 mod jwt;
 mod not_found;
-mod notification;
 mod utils;
-
-use yew::{classes, function_component, html, Html};
-use yew_router::{BrowserRouter, Routable, Switch};
 
 use about::About;
 use crypto_helper::CryptoHelper;
@@ -17,6 +13,9 @@ use footer::footer;
 use header::Header;
 use jwt::jwt;
 use not_found::not_found;
+use yew::{classes, function_component, html, Html};
+use yew_notifications::{Notification, NotificationFactory, NotificationsProvider};
+use yew_router::{BrowserRouter, Routable, Switch};
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
@@ -45,13 +44,17 @@ fn switch(routes: Route) -> Html {
 
 #[function_component(App)]
 pub fn app() -> Html {
+    let component_creator = NotificationFactory::default();
+
     html! {
         <BrowserRouter>
-            <div class={classes!("body")}>
-                <Header />
-                <Switch<Route> render={switch} />
-                {footer()}
-            </div>
+            <NotificationsProvider<Notification, NotificationFactory> {component_creator}>
+                <div class={classes!("body")}>
+                    <Header />
+                    <Switch<Route> render={switch} />
+                    {footer()}
+                </div>
+            </NotificationsProvider<Notification, NotificationFactory>>
         </BrowserRouter>
     }
 }

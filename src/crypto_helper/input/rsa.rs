@@ -2,8 +2,7 @@ use web_sys::{Event, HtmlInputElement};
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties, TargetCast};
 
 use crate::crypto_helper::algorithm::{
-    RsaAction, RsaHashAlgorithm, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput,
-    RSA_HASH_ALGOS,
+    RsaAction, RsaHashAlgorithm, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput, RSA_HASH_ALGOS,
 };
 
 #[derive(Debug, PartialEq, Properties)]
@@ -20,10 +19,7 @@ fn get_action_classes(is_selected: bool) -> Classes {
     }
 }
 
-fn generate_selection_action_component(
-    action: &RsaAction,
-    set_action: Callback<RsaAction>,
-) -> Html {
+fn generate_selection_action_component(action: &RsaAction, set_action: Callback<RsaAction>) -> Html {
     html! {
         <div class={classes!("rsa-actions-container")}>
             {RsaAction::enumerate_actions()
@@ -44,10 +40,7 @@ fn generate_selection_action_component(
     }
 }
 
-fn get_hash_selection_component(
-    hash_algorithm: &RsaHashAlgorithm,
-    set_hash_algo: Callback<RsaHashAlgorithm>,
-) -> Html {
+fn get_hash_selection_component(hash_algorithm: &RsaHashAlgorithm, set_hash_algo: Callback<RsaHashAlgorithm>) -> Html {
     let onchange = Callback::from(move |event: Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
@@ -77,8 +70,7 @@ fn get_hash_selection_component(
 }
 
 fn generate_rsa_input(input: &RsaAction, set_action: Callback<RsaAction>) -> Html {
-    let selected_algorithm_component =
-        generate_selection_action_component(input, set_action.clone());
+    let selected_algorithm_component = generate_selection_action_component(input, set_action.clone());
     match input {
         RsaAction::Encrypt(input) => {
             let oninput = Callback::from(move |event: html::oninput::Event| {

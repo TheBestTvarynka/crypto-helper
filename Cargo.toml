@@ -9,8 +9,9 @@ license-file = "LICENSE"
 repository = "https://github.com/TheBestTvarynka/crypto-helper"
 
 [dependencies]
-yew = { git = "https://github.com/yewstack/yew.git", rev = "5355b65ff5f9747cbad801d4b337a5ac7a94d0f4", features = ["csr"] }
-yew-router = { git = "https://github.com/yewstack/yew.git", rev = "5355b65ff5f9747cbad801d4b337a5ac7a94d0f4" }
+yew = { version = "0.20", features = ["csr"] }
+yew-router = "0.17.0"
+yew-notifications = { git = "https://github.com/TheBestTvarynka/yew-notifications.git", features = ["standard-notification"] }
 
 # wasm
 js-sys = "0.3.60"
@@ -22,10 +23,8 @@ wasm-logger = "0.2.0"
 log = "0.4.17"
 
 # utils
-time = { version = "0.3.17", features = ["local-offset", "wasm-bindgen"] }
 hex = "0.4.3"
 gloo-timers = "0.2.4"
-uuid = { version = "1.2.1", features = ["v4", "js"] }
 rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
 rand_chacha = "0.3.1"
 
