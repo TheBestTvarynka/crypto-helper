@@ -1,8 +1,7 @@
 use picky_krb::crypto::CipherSuite;
 use web_sys::{HtmlInputElement, InputEvent, MouseEvent};
 use yew::{
-    classes, function_component, html, use_effect, use_state, Callback, Html, Properties,
-    TargetCast, UseStateSetter,
+    classes, function_component, html, use_effect, use_state, Callback, Html, Properties, TargetCast, UseStateSetter,
 };
 
 use crate::common::Switch;

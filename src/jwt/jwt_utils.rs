@@ -1,9 +1,8 @@
 use web_sys::MouseEvent;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties};
 
-use crate::common::{build_simple_input, build_simple_output, BytesFormat};
-
 use super::jwt::{Jwt, JwtSignatureAlgorithm};
+use crate::common::{build_simple_input, build_simple_output, BytesFormat};
 
 #[derive(PartialEq, Properties)]
 pub struct JwtUtilsProps {
@@ -28,8 +27,7 @@ fn get_input_component(
 }
 
 fn calculate_signature(jwt: &Jwt) -> Vec<u8> {
-    let data_to_sign =
-        base64::encode(format!("{}.{}", jwt.parsed_header, jwt.parsed_payload).as_bytes());
+    let data_to_sign = base64::encode(format!("{}.{}", jwt.parsed_header, jwt.parsed_payload).as_bytes());
 
     match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::Hs256(key) => {

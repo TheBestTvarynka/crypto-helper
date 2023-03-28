@@ -5,24 +5,19 @@ mod input;
 mod output;
 
 pub use algorithm::RSA_HASH_ALGOS;
-
 use gloo_timers::callback::Timeout;
+use info::Info;
+use input::Input;
+use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
 use uuid::Uuid;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
 
-use info::Info;
-use input::Input;
-use output::Output;
-
+use self::algorithm::Algorithm;
+use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
 use crate::notification::{
     get_new_notifications, Notification, NotificationType, Notifications, NOTIFICATION_DURATION,
-};
-
-use self::{
-    algorithm::Algorithm,
-    computations::{process_krb_cipher, process_krb_hmac, process_rsa},
 };
 
 fn from_hex(input: &str) -> Result<Vec<u8>, String> {
@@ -39,18 +34,10 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
         }
         Algorithm::Sha256(input) => Ok(hmac_sha256::Hash::hash(&from_hex(input)?).to_vec()),
         Algorithm::Sha512(input) => Ok(hmac_sha512::Hash::hash(&from_hex(input)?).to_vec()),
-        Algorithm::Aes128CtsHmacSha196(input) => {
-            process_krb_cipher(CipherSuite::Aes128CtsHmacSha196.cipher(), input)
-        }
-        Algorithm::Aes256CtsHmacSha196(input) => {
-            process_krb_cipher(CipherSuite::Aes256CtsHmacSha196.cipher(), input)
-        }
-        Algorithm::HmacSha196Aes128(input) => {
-            process_krb_hmac(ChecksumSuite::HmacSha196Aes128.hasher(), input)
-        }
-        Algorithm::HmacSha196Aes256(input) => {
-            process_krb_hmac(ChecksumSuite::HmacSha196Aes256.hasher(), input)
-        }
+        Algorithm::Aes128CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes128CtsHmacSha196.cipher(), input),
+        Algorithm::Aes256CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes256CtsHmacSha196.cipher(), input),
+        Algorithm::HmacSha196Aes128(input) => process_krb_hmac(ChecksumSuite::HmacSha196Aes128.hasher(), input),
+        Algorithm::HmacSha196Aes256(input) => process_krb_hmac(ChecksumSuite::HmacSha196Aes256.hasher(), input),
         Algorithm::Rsa(input) => process_rsa(input),
     }
 }

@@ -2,9 +2,8 @@ use serde_json::{to_string_pretty, Value};
 use web_sys::{HtmlInputElement, MouseEvent};
 use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
 
-use crate::utils::gen_copy_onclick;
-
 use super::Jwt;
+use crate::utils::gen_copy_onclick;
 
 #[derive(PartialEq, Properties)]
 pub struct JwtEditorProps {

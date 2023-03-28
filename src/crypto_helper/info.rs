@@ -1,14 +1,11 @@
 mod algo_search;
 
 use web_sys::HtmlInputElement;
-use yew::{
-    classes, function_component, html, html::onchange::Event, use_state, Callback, Html,
-    Properties, TargetCast, UseStateSetter,
-};
-
-use crate::crypto_helper::info::algo_search::AlgoSearch;
+use yew::html::onchange::Event;
+use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast, UseStateSetter};
 
 use super::algorithm::{Algorithm, SUPPORTED_ALGORITHMS};
+use crate::crypto_helper::info::algo_search::AlgoSearch;
 
 #[derive(PartialEq, Properties)]
 pub struct InfoProps {

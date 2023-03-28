@@ -17,12 +17,8 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
     fn try_from(value: &Value) -> Result<Self, Self::Error> {
         match value {
             Value::Null => Err("Invalid jwt signature algorithm: null but string extpected".into()),
-            Value::Bool(_) => {
-                Err("Invalid jwt signature algorithm: bool but string extpected".into())
-            }
-            Value::Number(_) => {
-                Err("Invalid jwt signature algorithm: number but string extpected".into())
-            }
+            Value::Bool(_) => Err("Invalid jwt signature algorithm: bool but string extpected".into()),
+            Value::Number(_) => Err("Invalid jwt signature algorithm: number but string extpected".into()),
             Value::String(value) => {
                 if value == JWT_SIGNATURE_ALGORITHMS[0] {
                     Ok(Self::Hs256(Default::default()))
@@ -30,12 +26,8 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
                     Ok(Self::Unsupported)
                 }
             }
-            Value::Array(_) => {
-                Err("Invalid jwt signature algorithm: array but string extpected".into())
-            }
-            Value::Object(_) => {
-                Err("Invalid jwt signature algorithm: object but string extpected".into())
-            }
+            Value::Array(_) => Err("Invalid jwt signature algorithm: array but string extpected".into()),
+            Value::Object(_) => Err("Invalid jwt signature algorithm: object but string extpected".into()),
         }
     }
 }

@@ -1,8 +1,7 @@
 use yew::{classes, function_component, html, Html, Properties};
 
-use crate::utils::gen_copy_onclick;
-
 use super::Jwt;
+use crate::utils::gen_copy_onclick;
 
 #[derive(PartialEq, Eq, Properties)]
 pub struct JwtViewerProps {

@@ -3,14 +3,12 @@ use uuid::Uuid;
 use wasm_bindgen::JsValue;
 use web_sys::MouseEvent;
 use yew::{
-    classes, function_component, html, use_effect_with_deps, use_state, Callback, Classes, Html,
-    Properties, UseStateSetter,
+    classes, function_component, html, use_effect_with_deps, use_state, Callback, Classes, Html, Properties,
+    UseStateSetter,
 };
 
-use crate::{
-    notification::{Notification, NotificationType},
-    utils::gen_copy_func,
-};
+use crate::notification::{Notification, NotificationType};
+use crate::utils::gen_copy_func;
 
 #[derive(PartialEq, Eq, Clone)]
 pub enum BytesFormat {
@@ -29,8 +27,7 @@ impl From<&BytesFormat> for &str {
     }
 }
 
-pub const BYTES_FORMATS: [BytesFormat; 3] =
-    [BytesFormat::Hex, BytesFormat::Base64, BytesFormat::Ascii];
+pub const BYTES_FORMATS: [BytesFormat; 3] = [BytesFormat::Hex, BytesFormat::Base64, BytesFormat::Ascii];
 
 fn encode_bytes(bytes: &[u8], format: &BytesFormat) -> String {
     match format {
@@ -47,10 +44,7 @@ pub struct SimpleOutputProps {
     add_notification: Callback<Notification>,
 }
 
-fn get_set_format_callback(
-    format: BytesFormat,
-    set_format: UseStateSetter<BytesFormat>,
-) -> Callback<MouseEvent> {
+fn get_set_format_callback(format: BytesFormat, set_format: UseStateSetter<BytesFormat>) -> Callback<MouseEvent> {
     log::debug!("get format click");
     Callback::from(move |_event| {
         log::debug!("format click");
@@ -118,11 +112,7 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
     }
 }
 
-pub fn build_simple_output(
-    output: Vec<u8>,
-    format: BytesFormat,
-    add_notification: Callback<Notification>,
-) -> Html {
+pub fn build_simple_output(output: Vec<u8>, format: BytesFormat, add_notification: Callback<Notification>) -> Html {
     html! {
         <SimpleOutput {output} {format} {add_notification} />
     }

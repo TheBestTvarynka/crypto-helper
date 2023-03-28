@@ -8,15 +8,14 @@ mod not_found;
 mod notification;
 mod utils;
 
-use yew::{classes, function_component, html, Html};
-use yew_router::{BrowserRouter, Routable, Switch};
-
 use about::About;
 use crypto_helper::CryptoHelper;
 use footer::footer;
 use header::Header;
 use jwt::Jwt;
 use not_found::not_found;
+use yew::{classes, function_component, html, Html};
+use yew_router::{BrowserRouter, Routable, Switch};
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
