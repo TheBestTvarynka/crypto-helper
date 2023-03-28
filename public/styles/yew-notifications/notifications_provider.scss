@@ -1,0 +1,28 @@
+.notifications {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  font-family: 'JetBrains Mono', monospace;
+  src: url("https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Source+Code+Pro:wght@300&display=swap");
+}
+
+.notifications-provider-bottom-right {
+  right: 2em;
+  bottom: 2em;
+}
+
+.notifications-provider-top-right {
+  right: 2em;
+  top: 2em;
+}
+
+.notifications-provider-bottom-left {
+  left: 2em;
+  bottom: 2em;
+}
+
+.notifications-provider-top-left {
+  left: 2em;
+  top: 2em;
+}

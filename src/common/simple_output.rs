@@ -1,13 +1,12 @@
 use js_sys::Function;
-use uuid::Uuid;
 use wasm_bindgen::JsValue;
 use web_sys::MouseEvent;
 use yew::{
     classes, function_component, html, use_effect_with_deps, use_state, Callback, Classes, Html, Properties,
     UseStateSetter,
 };
+use yew_notifications::{Notification, NotificationType};
 
-use crate::notification::{Notification, NotificationType};
 use crate::utils::gen_copy_func;
 
 #[derive(PartialEq, Eq, Clone)]
@@ -84,11 +83,10 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
     let onclick = Callback::from(move |_| {
         let function = Function::new_no_args(&gen_copy_func(&encoded));
         if function.call0(&JsValue::null()).is_ok() {
-            add_notification.emit(Notification {
-                id: Uuid::new_v4(),
-                notification_type: NotificationType::Info,
-                text: "Output copied".into(),
-            })
+            add_notification.emit(Notification::from_description_and_type(
+                NotificationType::Info,
+                "output copied",
+            ))
         }
     });
 

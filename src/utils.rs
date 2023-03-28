@@ -1,20 +1,7 @@
 use js_sys::Function;
-use time::OffsetDateTime;
 use wasm_bindgen::JsValue;
 use web_sys::MouseEvent;
 use yew::Callback;
-
-pub fn format_date_time(datetime: &OffsetDateTime) -> String {
-    format!(
-        "{}:{}:{} {}.{}.{}",
-        datetime.hour(),
-        datetime.minute(),
-        datetime.second(),
-        datetime.day(),
-        datetime.month(),
-        datetime.year()
-    )
-}
 
 pub fn gen_copy_func(data: &str) -> String {
     let data = data
