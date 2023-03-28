@@ -5,20 +5,16 @@ mod input;
 mod output;
 
 pub use algorithm::RSA_HASH_ALGOS;
-use gloo_timers::callback::Timeout;
 use info::Info;
 use input::Input;
 use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
-use uuid::Uuid;
-use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
+use yew::{classes, function_component, html, use_state, Callback, Html};
+use yew_notifications::{use_notification, Notification, NotificationType};
 
 use self::algorithm::Algorithm;
 use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
-use crate::notification::{
-    get_new_notifications, Notification, NotificationType, Notifications, NOTIFICATION_DURATION,
-};
 
 fn from_hex(input: &str) -> Result<Vec<u8>, String> {
     hex::decode(input).map_err(|err| format!("invalid hex input:{:?}", err))
@@ -44,77 +40,18 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
 
 #[function_component(CryptoHelper)]
 pub fn crypto_helper() -> Html {
+    let notification_manager = use_notification::<Notification>();
+
     let algorithm = use_state(Algorithm::default);
     let output = use_state(Vec::new);
 
-    let notifications = use_state(Vec::<Notification>::new);
-    let notification_to_delete = use_state(|| Option::None);
-
-    let notifications_setter = notifications.setter();
-    use_effect_with_deps(
-        move |(notification_id, notifications)| {
-            log::debug!("in use effect: {:?}", notification_id);
-            if let Some(id) = **notification_id {
-                if let Some(new_notifications) = get_new_notifications(&id, notifications) {
-                    notifications_setter.set(new_notifications);
-                } else {
-                    log::debug!("nothing to delete: unable to find needed notification");
-                }
-            }
-        },
-        (notification_to_delete.clone(), notifications.clone()),
-    );
-
     let output_setter = output.setter();
-    let notifications_setter = notifications.setter();
     let algorithm_data = (*algorithm).clone();
-    let onclick_notifications = (*notifications).clone();
-    let notification_to_delete_setter = notification_to_delete.setter();
     let onclick = Callback::from(move |_| {
         match convert(&algorithm_data) {
             Ok(output) => output_setter.set(output),
-            Err(err) => {
-                let id = Uuid::new_v4();
-                let new_notification = Notification {
-                    id,
-                    notification_type: NotificationType::Error,
-                    text: err,
-                };
-
-                let mut new_notifications = onclick_notifications.clone();
-                new_notifications.push(new_notification);
-                notifications_setter.set(new_notifications);
-
-                let notification_to_delete_setter = notification_to_delete_setter.clone();
-                let timeout = Timeout::new(NOTIFICATION_DURATION, move || {
-                    log::debug!("in notification timeout handler: {:?}", id);
-                    notification_to_delete_setter.set(Some(id));
-                });
-                timeout.forget();
-            }
+            Err(err) => notification_manager.spawn(Notification::new(NotificationType::Error, "Processing error", err)),
         };
-    });
-
-    let notification_to_delete_setter = notification_to_delete.setter();
-    let notifications_setter_callback = Callback::from(move |id| {
-        notification_to_delete_setter.set(Some(id));
-    });
-
-    let onclick_notifications = (*notifications).clone();
-    let notification_to_delete_setter = notification_to_delete.setter();
-    let notifications_setter = notifications.setter();
-    let add_notification = Callback::from(move |new_notification: Notification| {
-        let id = new_notification.id;
-        let mut new_notifications = onclick_notifications.clone();
-        new_notifications.push(new_notification);
-        notifications_setter.set(new_notifications);
-
-        let notification_to_delete_setter = notification_to_delete_setter.clone();
-        let timeout = Timeout::new(NOTIFICATION_DURATION, move || {
-            log::debug!("in notification timeout handler: {:?}", id);
-            notification_to_delete_setter.set(Some(id));
-        });
-        timeout.forget();
     });
 
     html! {
@@ -124,8 +61,7 @@ pub fn crypto_helper() -> Html {
             <div class={classes!("horizontal")}>
                 <button {onclick}>{"Go"}</button>
             </div>
-            <Output algorithm={(*algorithm).clone()} output={(*output).clone()} {add_notification} />
-            <Notifications notifications={(*notifications).clone()} delete_notification={notifications_setter_callback} />
+            <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
         </article>
     }
 }

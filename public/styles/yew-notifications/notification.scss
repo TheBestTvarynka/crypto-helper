@@ -1,0 +1,35 @@
+
+.notification {
+  cursor: pointer;
+  padding: 0.6em;
+  border-radius: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  border: 2px solid transparent;
+}
+
+.notification > .time {
+  font-size: 0.7em;
+  color: #4c5159;
+}
+
+.notification > .notification-title {
+  font-weight: bold;
+}
+
+.error {
+  background-color: #f08694;
+}
+
+.warn {
+  background-color: #9cb8e6;
+}
+
+.info {
+  background-color: #91c7b5;
+}
+
+.paused {
+  border: 2px solid grey;
+}
