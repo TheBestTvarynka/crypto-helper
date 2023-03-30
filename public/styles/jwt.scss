@@ -1,7 +1,8 @@
 .jwt-page {
     display: grid;
     grid-template-columns: 40% 60%;
-    width: 100%;
+    width: calc(100% - 0.5em);
+    gap: 0.5em;
     transition: all 0.3s;
 }
 

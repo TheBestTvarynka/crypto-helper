@@ -1,6 +1,7 @@
 use serde_json::{to_string_pretty, Value};
 use web_sys::{HtmlInputElement, MouseEvent};
 use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
+use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::Jwt;
 use crate::utils::gen_copy_onclick;
@@ -11,10 +12,40 @@ pub struct JwtEditorProps {
     pub set_jwt: Callback<Jwt>,
 }
 
-fn get_onclick_prettify(json: Value, set_data: Callback<String>) -> Callback<MouseEvent> {
-    Callback::from(move |_| match to_string_pretty(&json) {
-        Ok(pretty_json_string) => set_data.emit(pretty_json_string),
-        Err(error) => log::error!("{:?}", error),
+fn get_onclick_prettify(
+    value: impl Into<String>,
+    name: impl Into<String>,
+    set_data: Callback<String>,
+    notify: Callback<Notification>,
+) -> Callback<MouseEvent> {
+    let name = name.into();
+    let value = value.into();
+
+    Callback::from(move |_| {
+        let value: Value = match serde_json::from_str(&value).map_err(|err| format!("{:?}", err)) {
+            Ok(value) => value,
+            Err(error) => {
+                log::error!("{:?}", error);
+                notify.emit(Notification::new(
+                    NotificationType::Error,
+                    name.clone(),
+                    format!("Content is not a valid JSON: {:?}", error),
+                ));
+                return;
+            }
+        };
+
+        match to_string_pretty(&value) {
+            Ok(pretty_json_string) => set_data.emit(pretty_json_string),
+            Err(error) => {
+                log::error!("{:?}", error);
+                notify.emit(Notification::new(
+                    NotificationType::Error,
+                    name.clone(),
+                    format!("Can not prettify content: {:?}", error),
+                ));
+            }
+        }
     })
 }
 
@@ -26,24 +57,30 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
 
     let set_jwt = props.set_jwt.clone();
     let jwt = props.jwt.clone();
+    let notifications = use_notification::<Notification>();
     let header_on_pretty = get_onclick_prettify(
-        props.jwt.header.clone(),
+        header.clone(),
+        "Header",
         Callback::from(move |json| {
             let mut jwt = jwt.clone();
             jwt.parsed_header = json;
             set_jwt.emit(jwt);
         }),
+        Callback::from(move |notification| notifications.spawn(notification)),
     );
 
     let set_jwt = props.set_jwt.clone();
     let jwt = props.jwt.clone();
+    let notifications = use_notification::<Notification>();
     let payload_on_pretty = get_onclick_prettify(
-        props.jwt.payload.clone(),
+        payload.clone(),
+        "Payload",
         Callback::from(move |json| {
             let mut jwt = jwt.clone();
             jwt.parsed_payload = json;
             set_jwt.emit(jwt);
         }),
+        Callback::from(move |notification| notifications.spawn(notification)),
     );
 
     let set_jwt = props.set_jwt.clone();

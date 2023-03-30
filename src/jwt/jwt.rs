@@ -42,11 +42,9 @@ impl Default for JwtSignatureAlgorithm {
 pub struct Jwt {
     pub raw_header: String,
     pub parsed_header: String,
-    pub header: Value,
 
     pub raw_payload: String,
     pub parsed_payload: String,
-    pub payload: Value,
 
     pub raw_signature: String,
     pub parsed_signature: String,

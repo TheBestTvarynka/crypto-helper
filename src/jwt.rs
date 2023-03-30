@@ -7,6 +7,7 @@ use std::str::FromStr;
 
 use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_state, Callback, Html, TargetCast};
+use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::jwt::jwt::editor::JwtEditor;
 use crate::jwt::jwt::viewer::JwtViewer;
@@ -17,6 +18,8 @@ const TEST_JWT: &str = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJ
 
 #[function_component(Jwt)]
 pub fn jwt() -> Html {
+    let notifications = use_notification::<Notification>();
+
     let raw_jwt = use_state(|| TEST_JWT.to_owned());
     let jwte = use_state(|| None);
 
@@ -33,6 +36,8 @@ pub fn jwt() -> Html {
         Err(error) => {
             jwte_setter.set(None);
             log::error!("{}", error);
+
+            notifications.spawn(Notification::new(NotificationType::Error, "Invalid token", error));
         }
     });
 
