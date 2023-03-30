@@ -4,6 +4,7 @@ use yew::{classes, function_component, html, Callback, Html, Properties, TargetC
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::Jwt;
+use crate::common::{build_simple_output, BytesFormat};
 use crate::utils::gen_copy_onclick;
 
 #[derive(PartialEq, Properties)]
@@ -54,6 +55,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
     let header = props.jwt.parsed_header.clone();
     let payload = props.jwt.parsed_payload.clone();
     let signature = props.jwt.parsed_signature.clone();
+    let signature_bytes = props.jwt.signature.clone();
 
     let set_jwt = props.set_jwt.clone();
     let jwt = props.jwt.clone();
@@ -105,6 +107,8 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
         set_jwt.emit(jwt);
     });
 
+    let notifications = use_notification::<Notification>();
+
     html! {
         <div class={classes!("vertical")}>
             <div class={classes!("vertical")}>
@@ -123,7 +127,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
             </div>
             <div class={classes!("vertical")}>
                 <span class={classes!("jwt-signature")} onclick={gen_copy_onclick(signature.clone())}>{"Signature"}</span>
-                <textarea rows="2" class={classes!("base-input")} value={signature} readonly={true} />
+                {build_simple_output(signature_bytes, BytesFormat::Hex, Callback::from(move |notification| notifications.spawn(notification)))}
             </div>
         </div>
     }

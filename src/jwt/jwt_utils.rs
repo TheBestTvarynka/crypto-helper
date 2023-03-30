@@ -1,5 +1,6 @@
 use web_sys::MouseEvent;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties};
+use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::{Jwt, JwtSignatureAlgorithm};
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
@@ -26,19 +27,33 @@ fn get_input_component(
     }
 }
 
-fn calculate_signature(jwt: &Jwt) -> Vec<u8> {
+fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Vec<u8> {
     let data_to_sign = base64::encode(format!("{}.{}", jwt.parsed_header, jwt.parsed_payload).as_bytes());
+
+    log::debug!("recalc");
 
     match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::Hs256(key) => {
-            let key = if let Ok(key) = hex::decode(key) {
-                key
-            } else {
-                log::error!("invalid HMAC SHA256 key: {}", key);
-                return Default::default();
+            let key = match hex::decode(key) {
+                Ok(key) => key,
+                Err(error) => {
+                    log::error!("invalid HMAC SHA256 key: {}", key);
+                    spawn_notification.emit(Notification::new(
+                        NotificationType::Error,
+                        "Invalid HMAC SHA256 key",
+                        format!("{:?}", error),
+                    ));
+
+                    return Default::default();
+                }
             };
 
             if key.is_empty() {
+                spawn_notification.emit(Notification::from_description_and_type(
+                    NotificationType::Error,
+                    "Input key is empty.",
+                ));
+
                 return Default::default();
             }
 
@@ -48,7 +63,7 @@ fn calculate_signature(jwt: &Jwt) -> Vec<u8> {
     }
 }
 
-fn validate_signature(jwt: &Jwt) -> bool {
+fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> bool {
     let data_to_sign = format!(
         "{}.{}",
         base64::encode(jwt.parsed_header.as_bytes()),
@@ -65,6 +80,11 @@ fn validate_signature(jwt: &Jwt) -> bool {
             };
 
             if key.is_empty() {
+                spawn_notification.emit(Notification::from_description_and_type(
+                    NotificationType::Error,
+                    "Input key is empty.",
+                ));
+
                 return Default::default();
             }
 
@@ -76,8 +96,8 @@ fn validate_signature(jwt: &Jwt) -> bool {
     jwt.signature == calculated_signature
 }
 
-fn generate_jwt(jwt: &Jwt) -> Vec<u8> {
-    let signature = calculate_signature(jwt);
+fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Vec<u8> {
+    let signature = calculate_signature(jwt, spawn_notification);
 
     if signature.is_empty() {
         return Default::default();
@@ -98,25 +118,42 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
 
     let data_setter = data.setter();
     let jwt = props.jwt.clone();
+    let notifications = use_notification::<Notification>();
     let recalculate = Callback::from(move |_event: MouseEvent| {
-        let signature = calculate_signature(&jwt);
+        let notifications = notifications.clone();
+        let signature = calculate_signature(
+            &jwt,
+            Callback::from(move |notification| notifications.spawn(notification)),
+        );
         data_setter.set(signature);
     });
 
     let data_setter = data.setter();
     let jwt = props.jwt.clone();
+    let notifications = use_notification::<Notification>();
     let validate = Callback::from(move |_event: MouseEvent| {
-        data_setter.set(vec![validate_signature(&jwt) as u8]);
+        let notifications = notifications.clone();
+        data_setter.set(vec![validate_signature(
+            &jwt,
+            Callback::from(move |notification| notifications.spawn(notification)),
+        ) as u8]);
     });
 
     let data_setter = data.setter();
     let jwt = props.jwt.clone();
+    let notifications = use_notification::<Notification>();
     let generate = Callback::from(move |_event: MouseEvent| {
-        data_setter.set(generate_jwt(&jwt));
+        let notifications = notifications.clone();
+        data_setter.set(generate_jwt(
+            &jwt,
+            Callback::from(move |notification| notifications.spawn(notification)),
+        ));
     });
 
     let jwt = props.jwt.clone();
     let set_jwt = props.set_jwt.clone();
+
+    let notifications = use_notification::<Notification>();
 
     html! {
         <div class={classes!("vertical")}>
@@ -132,7 +169,7 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
                 <button class={classes!("jwt-util-button")} onclick={generate}>{"Regenerate JWT"}</button>
             </div>
             {if !(*data).is_empty() {
-                build_simple_output((*data).clone(),  BytesFormat::Hex, Callback::from(|_| {}))
+                build_simple_output((*data).clone(),  BytesFormat::Hex, Callback::from(move |notification| notifications.spawn(notification)))
             } else { html! {} }}
         </div>
     }
