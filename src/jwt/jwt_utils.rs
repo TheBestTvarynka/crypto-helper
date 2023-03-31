@@ -18,6 +18,11 @@ fn get_input_component(
     set_signature_algo: Callback<JwtSignatureAlgorithm>,
 ) -> Html {
     match signature_algo {
+        JwtSignatureAlgorithm::None => {
+            html! {
+                <span>{"none signature algorithm doesn't need any key."}</span>
+            }
+        }
         JwtSignatureAlgorithm::Hs256(key) => build_simple_input(
             key.clone(),
             "HMAC SHA256 hex-encoded key".into(),
@@ -40,10 +45,11 @@ fn get_input_component(
     }
 }
 
-fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Vec<u8> {
+fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {
     let data_to_sign = base64::encode(format!("{}.{}", jwt.parsed_header, jwt.parsed_payload).as_bytes());
 
     match &jwt.signature_algorithm {
+        JwtSignatureAlgorithm::None => Some(Vec::new()),
         JwtSignatureAlgorithm::Hs256(key) => {
             let key = check_symmetric_key!(
                 key: key,
@@ -52,7 +58,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
+            Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec())
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             let key = check_symmetric_key!(
@@ -62,7 +68,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
+            Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec())
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
@@ -70,12 +76,12 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 format!("Unsupported signature algorithm: {}.", algo_name,),
             ));
 
-            Default::default()
+            None
         }
     }
 }
 
-fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> bool {
+fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<bool> {
     let data_to_sign = format!(
         "{}.{}",
         base64::encode(jwt.parsed_header.as_bytes()),
@@ -83,6 +89,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
     );
 
     let calculated_signature = match &jwt.signature_algorithm {
+        JwtSignatureAlgorithm::None => Vec::new(),
         JwtSignatureAlgorithm::Hs256(key) => {
             let key = check_symmetric_key!(
                 key: key,
@@ -109,19 +116,15 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 format!("Unsupported signature algorithm: {}.", algo_name,),
             ));
 
-            return false;
+            return None;
         }
     };
 
-    jwt.signature == calculated_signature
+    Some(jwt.signature == calculated_signature)
 }
 
-fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Vec<u8> {
-    let signature = calculate_signature(jwt, spawn_notification);
-
-    if signature.is_empty() {
-        return Default::default();
-    }
+fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {
+    let signature = calculate_signature(jwt, spawn_notification)?;
 
     let header = base64::encode_config(jwt.parsed_header.as_bytes(), base64::URL_SAFE_NO_PAD);
     let payload = base64::encode_config(jwt.parsed_payload.as_bytes(), base64::URL_SAFE_NO_PAD);
@@ -129,12 +132,12 @@ fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Vec<u8
 
     let jwt = format!("{}.{}.{}", header, payload, signature);
 
-    jwt.as_bytes().to_vec()
+    Some(jwt.as_bytes().to_vec())
 }
 
 #[function_component(JwtUtils)]
 pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
-    let data = use_state(Vec::<u8>::new);
+    let data = use_state(|| None);
 
     let data_setter = data.setter();
     let jwt = props.jwt.clone();
@@ -153,10 +156,13 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
     let notifications = use_notification::<Notification>();
     let validate = Callback::from(move |_event: MouseEvent| {
         let notifications = notifications.clone();
-        data_setter.set(vec![validate_signature(
-            &jwt,
-            Callback::from(move |notification| notifications.spawn(notification)),
-        ) as u8]);
+        data_setter.set(
+            validate_signature(
+                &jwt,
+                Callback::from(move |notification| notifications.spawn(notification)),
+            )
+            .map(|v| vec![v as u8]),
+        );
     });
 
     let data_setter = data.setter();
@@ -188,9 +194,11 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
                 <button class={classes!("jwt-util-button")} onclick={recalculate}>{"Recalculate signature"}</button>
                 <button class={classes!("jwt-util-button")} onclick={generate}>{"Regenerate JWT"}</button>
             </div>
-            {if !(*data).is_empty() {
+            {if let Some(data) = (*data).as_ref() {
                 build_simple_output((*data).clone(),  BytesFormat::Hex, Callback::from(move |notification| notifications.spawn(notification)))
-            } else { html! {} }}
+            } else {
+                html! {}
+            }}
         </div>
     }
 }

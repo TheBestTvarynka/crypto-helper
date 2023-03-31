@@ -2,10 +2,11 @@ use std::fmt::{self, Display};
 
 use serde_json::Value;
 
-const JWT_SIGNATURE_ALGORITHMS: [&str; 2] = ["HS256", "HS512"];
+const JWT_SIGNATURE_ALGORITHMS: [&str; 3] = ["HS256", "HS512", "none"];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum JwtSignatureAlgorithm {
+    None,
     Hs256(String),
     Hs512(String),
     Unsupported(String),
@@ -16,6 +17,7 @@ pub enum JwtSignatureAlgorithm {
 impl JwtSignatureAlgorithm {
     pub fn key_len_hint(&self) -> Option<usize> {
         match self {
+            JwtSignatureAlgorithm::None => Some(0),
             JwtSignatureAlgorithm::Hs256(_) => Some(32),
             JwtSignatureAlgorithm::Hs512(_) => Some(64),
             JwtSignatureAlgorithm::Unsupported(_) => None,
@@ -36,6 +38,8 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
                     Ok(Self::Hs256(Default::default()))
                 } else if value == JWT_SIGNATURE_ALGORITHMS[1] {
                     Ok(Self::Hs512(Default::default()))
+                } else if value == JWT_SIGNATURE_ALGORITHMS[2] {
+                    Ok(Self::None)
                 } else {
                     Ok(Self::Unsupported(value.clone()))
                 }
@@ -55,6 +59,7 @@ impl Default for JwtSignatureAlgorithm {
 impl Display for JwtSignatureAlgorithm {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            JwtSignatureAlgorithm::None => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[2]),
             JwtSignatureAlgorithm::Hs256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[0]),
             JwtSignatureAlgorithm::Hs512(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[1]),
             JwtSignatureAlgorithm::Unsupported(algo) => write!(f, "{}", algo),
