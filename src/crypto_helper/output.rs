@@ -1,24 +1,23 @@
 mod krb;
-mod simple;
 
 use yew::{classes, function_component, html, Callback, Html, Properties};
 use yew_notifications::{use_notification, Notification};
 
 use self::krb::build_krb_output;
-use self::simple::build_simple_output;
 use super::Algorithm;
+use crate::common::{build_simple_output, BytesFormat};
 
 fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification: Callback<Notification>) -> Html {
     match algorithm {
-        Algorithm::Md5(_) => build_simple_output(output, add_notification),
-        Algorithm::Sha1(_) => build_simple_output(output, add_notification),
-        Algorithm::Sha256(_) => build_simple_output(output, add_notification),
-        Algorithm::Sha512(_) => build_simple_output(output, add_notification),
+        Algorithm::Md5(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::Sha1(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::Sha256(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::Sha512(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::Aes128CtsHmacSha196(input) => build_krb_output(input, output, add_notification),
         Algorithm::Aes256CtsHmacSha196(input) => build_krb_output(input, output, add_notification),
-        Algorithm::HmacSha196Aes128(_) => build_simple_output(output, add_notification),
-        Algorithm::HmacSha196Aes256(_) => build_simple_output(output, add_notification),
-        Algorithm::Rsa(_) => build_simple_output(output, add_notification),
+        Algorithm::HmacSha196Aes128(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::HmacSha196Aes256(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::Rsa(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
     }
 }
 

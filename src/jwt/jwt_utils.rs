@@ -34,7 +34,7 @@ fn get_input_component(
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             log::error!("Unsupported signature algo: {:?}", algo_name);
 
-            if algo_name.len() > 0 {
+            if !algo_name.is_empty() {
                 html! {
                     <span>{format!("Unsupported signature algo: {}", algo_name)}</span>
                 }
@@ -58,7 +58,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec())
+            Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             let key = check_symmetric_key!(
@@ -68,7 +68,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec())
+            Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
@@ -98,7 +98,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
+            hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             let key = check_symmetric_key!(
@@ -108,7 +108,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
+            hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(

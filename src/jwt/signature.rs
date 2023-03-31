@@ -25,10 +25,7 @@ impl JwtSignatureAlgorithm {
     }
 
     pub fn is_supported(&self) -> bool {
-        match self {
-            JwtSignatureAlgorithm::Unsupported(_) => false,
-            _ => true,
-        }
+        !matches!(self, JwtSignatureAlgorithm::Unsupported(_))
     }
 }
 
