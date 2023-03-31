@@ -2,6 +2,7 @@
 mod jwt;
 mod jwt_utils;
 mod jwte;
+mod signature;
 
 use std::str::FromStr;
 

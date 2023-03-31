@@ -2,7 +2,8 @@ use std::str::FromStr;
 
 use serde_json::Value;
 
-use super::jwt::{Jwt, JwtSignatureAlgorithm};
+use super::jwt::Jwt;
+use super::signature::JwtSignatureAlgorithm;
 use crate::utils::decode_base64;
 
 #[derive(Debug, PartialEq, Eq, Default)]

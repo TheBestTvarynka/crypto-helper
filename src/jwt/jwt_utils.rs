@@ -2,7 +2,8 @@ use web_sys::MouseEvent;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use super::jwt::{Jwt, JwtSignatureAlgorithm};
+use super::jwt::Jwt;
+use super::signature::JwtSignatureAlgorithm;
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
 
 #[derive(PartialEq, Properties)]
@@ -55,6 +56,19 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 ));
 
                 return Default::default();
+            }
+
+            if let Some(key_len) = jwt.signature_algorithm.key_len_hint() {
+                if key_len > key.len() {
+                    spawn_notification.emit(Notification::from_description_and_type(
+                        NotificationType::Warn,
+                        format!(
+                            "Input key is too short. Got {}, but expected at least {}.",
+                            key.len(),
+                            key_len
+                        ),
+                    ));
+                }
             }
 
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
