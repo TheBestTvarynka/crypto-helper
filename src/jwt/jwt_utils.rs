@@ -4,6 +4,7 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
+use crate::check_symmetric_key;
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
 
 #[derive(PartialEq, Properties)]
@@ -24,56 +25,53 @@ fn get_input_component(
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs256(key));
             }),
         ),
-        _ => html! {},
+        JwtSignatureAlgorithm::Hs512(key) => build_simple_input(
+            key.clone(),
+            "HMAC SHA512 hex-encoded key".into(),
+            Callback::from(move |key| {
+                set_signature_algo.emit(JwtSignatureAlgorithm::Hs512(key));
+            }),
+        ),
+        JwtSignatureAlgorithm::Unsupported(algo_name) => {
+            log::error!("Unsupported signature algo: {:?}", algo_name);
+
+            html! {}
+        }
     }
 }
 
 fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Vec<u8> {
     let data_to_sign = base64::encode(format!("{}.{}", jwt.parsed_header, jwt.parsed_payload).as_bytes());
 
-    log::debug!("recalc");
-
     match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::Hs256(key) => {
-            let key = match hex::decode(key) {
-                Ok(key) => key,
-                Err(error) => {
-                    log::error!("invalid HMAC SHA256 key: {}", key);
-                    spawn_notification.emit(Notification::new(
-                        NotificationType::Error,
-                        "Invalid HMAC SHA256 key",
-                        format!("{:?}", error),
-                    ));
-
-                    return Default::default();
-                }
-            };
-
-            if key.is_empty() {
-                spawn_notification.emit(Notification::from_description_and_type(
-                    NotificationType::Error,
-                    "Input key is empty.",
-                ));
-
-                return Default::default();
-            }
-
-            if let Some(key_len) = jwt.signature_algorithm.key_len_hint() {
-                if key_len > key.len() {
-                    spawn_notification.emit(Notification::from_description_and_type(
-                        NotificationType::Warn,
-                        format!(
-                            "Input key is too short. Got {}, but expected at least {}.",
-                            key.len(),
-                            key_len
-                        ),
-                    ));
-                }
-            }
+            let key = check_symmetric_key!(
+                key: key,
+                len_hint: jwt.signature_algorithm.key_len_hint(),
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification
+            );
 
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
         }
-        _ => Default::default(),
+        JwtSignatureAlgorithm::Hs512(key) => {
+            let key = check_symmetric_key!(
+                key: key,
+                len_hint: jwt.signature_algorithm.key_len_hint(),
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification
+            );
+
+            hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
+        }
+        JwtSignatureAlgorithm::Unsupported(algo_name) => {
+            spawn_notification.emit(Notification::from_description_and_type(
+                NotificationType::Warn,
+                format!("Unsupported signature algorithm: {}.", algo_name,),
+            ));
+
+            Default::default()
+        }
     }
 }
 
@@ -86,25 +84,33 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
 
     let calculated_signature = match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::Hs256(key) => {
-            let key = if let Ok(key) = hex::decode(key) {
-                key
-            } else {
-                log::error!("invalid HMAC SHA256 key: {}", key);
-                return false;
-            };
-
-            if key.is_empty() {
-                spawn_notification.emit(Notification::from_description_and_type(
-                    NotificationType::Error,
-                    "Input key is empty.",
-                ));
-
-                return Default::default();
-            }
+            let key = check_symmetric_key!(
+                key: key,
+                len_hint: jwt.signature_algorithm.key_len_hint(),
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification
+            );
 
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
         }
-        _ => return false,
+        JwtSignatureAlgorithm::Hs512(key) => {
+            let key = check_symmetric_key!(
+                key: key,
+                len_hint: jwt.signature_algorithm.key_len_hint(),
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification
+            );
+
+            hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), &key).to_vec()
+        }
+        JwtSignatureAlgorithm::Unsupported(algo_name) => {
+            spawn_notification.emit(Notification::from_description_and_type(
+                NotificationType::Warn,
+                format!("Unsupported signature algorithm: {}.", algo_name,),
+            ));
+
+            return false;
+        }
     };
 
     jwt.signature == calculated_signature
