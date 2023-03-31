@@ -23,6 +23,13 @@ impl JwtSignatureAlgorithm {
             JwtSignatureAlgorithm::Unsupported(_) => None,
         }
     }
+
+    pub fn is_supported(&self) -> bool {
+        match self {
+            JwtSignatureAlgorithm::Unsupported(_) => false,
+            _ => true,
+        }
+    }
 }
 
 impl TryFrom<&Value> for JwtSignatureAlgorithm {

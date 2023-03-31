@@ -7,12 +7,6 @@ use super::signature::JwtSignatureAlgorithm;
 use crate::check_symmetric_key;
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
 
-#[derive(PartialEq, Properties)]
-pub struct JwtUtilsProps {
-    pub jwt: Jwt,
-    pub set_jwt: Callback<Jwt>,
-}
-
 fn get_input_component(
     signature_algo: &JwtSignatureAlgorithm,
     set_signature_algo: Callback<JwtSignatureAlgorithm>,
@@ -40,7 +34,13 @@ fn get_input_component(
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             log::error!("Unsupported signature algo: {:?}", algo_name);
 
-            html! {}
+            if algo_name.len() > 0 {
+                html! {
+                    <span>{format!("Unsupported signature algo: {}", algo_name)}</span>
+                }
+            } else {
+                html! {}
+            }
         }
     }
 }
@@ -135,6 +135,12 @@ fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option
     Some(jwt.as_bytes().to_vec())
 }
 
+#[derive(PartialEq, Properties)]
+pub struct JwtUtilsProps {
+    pub jwt: Jwt,
+    pub set_jwt: Callback<Jwt>,
+}
+
 #[function_component(JwtUtils)]
 pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
     let data = use_state(|| None);
@@ -189,11 +195,17 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
 
                 set_jwt.emit(new_jwt);
             }))}
-            <div class={classes!("horizontal")}>
-                <button class={classes!("jwt-util-button")} onclick={validate}>{"Validate signature"}</button>
-                <button class={classes!("jwt-util-button")} onclick={recalculate}>{"Recalculate signature"}</button>
-                <button class={classes!("jwt-util-button")} onclick={generate}>{"Regenerate JWT"}</button>
-            </div>
+            {if props.jwt.signature_algorithm.is_supported() {
+                html! {
+                    <div class={classes!("horizontal")}>
+                        <button class={classes!("jwt-util-button")} onclick={validate}>{"Validate signature"}</button>
+                        <button class={classes!("jwt-util-button")} onclick={recalculate}>{"Recalculate signature"}</button>
+                        <button class={classes!("jwt-util-button")} onclick={generate}>{"Regenerate JWT"}</button>
+                    </div>
+                }
+            } else {
+                html! {}
+            }}
             {if let Some(data) = (*data).as_ref() {
                 build_simple_output((*data).clone(),  BytesFormat::Hex, Callback::from(move |notification| notifications.spawn(notification)))
             } else {

@@ -65,7 +65,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
         "Header",
         Callback::from(move |json| {
             let mut jwt = jwt.clone();
-            jwt.parsed_header = json;
+            jwt.set_parsed_header(json);
             set_jwt.emit(jwt);
         }),
         Callback::from(move |notification| notifications.spawn(notification)),
@@ -92,7 +92,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
         let value = input.value();
 
         let mut jwt = jwt.clone();
-        jwt.parsed_header = value;
+        jwt.set_parsed_header(value);
         set_jwt.emit(jwt);
     });
 
