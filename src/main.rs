@@ -34,7 +34,7 @@ enum Route {
 
 fn switch(routes: Route) -> Html {
     match routes {
-        Route::Home => html! { <Jwt /> },
+        Route::Home => html! { <CryptoHelper /> },
         Route::CryptoHelper => html! { <CryptoHelper /> },
         Route::Jwt => html! { <Jwt /> },
         Route::About => html! { <About /> },
