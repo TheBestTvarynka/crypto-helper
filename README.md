@@ -3,6 +3,8 @@
 ![deploy](https://github.com/TheBestTvarynka/crypto-helper/actions/workflows/github-actions.yml/badge.svg)
 
 ![](/public/img/example.png)
+![](/public/img/sha.png)
+![](/public/img/jwt.png)
 
 The crypto-helper is an online app that helps to work with the diferent crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
 

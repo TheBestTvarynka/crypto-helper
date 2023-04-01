@@ -1,6 +1,6 @@
 [package]
 name = "web-app"
-version = "0.8.0"
+version = "0.9.0"
 description = "The crypto-helper is an online app that helps to work with the diferent crypto algorithms."
 edition = "2021"
 authors = ["Pavlo Myroniuk <pspos.developqkation@gmail.com>"]

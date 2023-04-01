@@ -1524,7 +1524,7 @@ dependencies = [
 
 [[package]]
 name = "web-app"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "base64",
  "gloo-timers",
