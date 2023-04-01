@@ -227,6 +227,7 @@ pub struct JwtUtilsProps {
 #[function_component(JwtUtils)]
 pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
     let data = use_state(|| None);
+    let bytes_format = use_state(|| BytesFormat::Hex);
 
     let data_setter = data.setter();
     let jwt = props.jwt.clone();
@@ -255,6 +256,7 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
     });
 
     let data_setter = data.setter();
+    let bytes_format_setter = bytes_format.setter();
     let jwt = props.jwt.clone();
     let notifications = use_notification::<Notification>();
     let generate = Callback::from(move |_event: MouseEvent| {
@@ -263,6 +265,7 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
             &jwt,
             Callback::from(move |notification| notifications.spawn(notification)),
         ));
+        bytes_format_setter.set(BytesFormat::Ascii);
     });
 
     let jwt = props.jwt.clone();
@@ -290,7 +293,7 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
                 html! {}
             }}
             {if let Some(data) = (*data).as_ref() {
-                build_simple_output((*data).clone(),  BytesFormat::Hex, Callback::from(move |notification| notifications.spawn(notification)))
+                build_simple_output((*data).clone(),  *(bytes_format), Callback::from(move |notification| notifications.spawn(notification)))
             } else {
                 html! {}
             }}

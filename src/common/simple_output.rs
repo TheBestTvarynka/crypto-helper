@@ -9,7 +9,7 @@ use yew_notifications::{Notification, NotificationType};
 
 use crate::utils::gen_copy_func;
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum BytesFormat {
     Hex,
     Base64,
