@@ -1,33 +1,36 @@
 mod krb;
 mod rsa;
-mod simple;
 
 use picky_krb::crypto::CipherSuite;
 use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
 
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
-use self::simple::build_simple_input;
 use super::algorithm::KrbInput;
 use super::Algorithm;
+use crate::common::build_simple_input;
 
 fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm>) -> Html {
     let setter = setter.clone();
     match algorithm {
         Algorithm::Md5(input) => build_simple_input(
             input.clone(),
+            "hex-encoded MD5 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Md5(input))),
         ),
         Algorithm::Sha1(input) => build_simple_input(
             input.clone(),
+            "hex-encoded SHA1 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Sha1(input))),
         ),
         Algorithm::Sha256(input) => build_simple_input(
             input.clone(),
+            "hex-encoded SHA256 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Sha256(input))),
         ),
         Algorithm::Sha512(input) => build_simple_input(
             input.clone(),
+            "hex-encoded SHA512 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Sha512(input))),
         ),
         Algorithm::Aes128CtsHmacSha196(kerberos_input) => build_krb_input(

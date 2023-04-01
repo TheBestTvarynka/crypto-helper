@@ -1,0 +1,102 @@
+.jwt-page {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    width: calc(100% - 0.5em);
+    gap: 0.5em;
+    transition: all 0.3s;
+}
+
+.jwt-header {
+    color: #a562e3;
+    word-wrap: break-word;
+}
+
+.jwt-header:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.jwt-payload {
+    color: mediumvioletred;
+    word-wrap: break-word;
+}
+
+.jwt-payload:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.jwt-signature {
+    color: #70a66c;
+    word-wrap: break-word;
+}
+
+.jwt-signature:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.jwt-dot {
+    background-color: #403735;
+    color: #ccc9af;
+}
+
+.jwt-actions-container {
+    display: inline-flex;
+    justify-content: flex-start;
+    gap: 0;
+}
+
+.jwt-action {
+    font-size: 0.8em;
+    color: #4c5159;
+    padding: 0.3em;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    border-radius: 0;
+    border-top: 2px solid #403735;
+    border-bottom: 2px solid #403735;
+}
+
+.jwt-action:first-child {
+    border-radius: 0.3em 0 0 0.3em;
+    border-left: 2px solid #403735;
+}
+
+.jwt-action:last-child {
+    border-radius: 0 0.3em 0.3em 0;
+    border-right: 2px solid #403735;
+}
+
+.jwt-action:hover {
+    cursor: pointer;
+    border: 2px solid #403735;
+}
+
+.selected-jwt-action {
+    color: #e0e0e0;
+    background-color: #403735;
+    border: 2px solid #403735;
+}
+
+.jwt-util-button {
+    font-size: 0.7em;
+    color: #e0e0e0;
+    background-color: #403735;
+    padding: 0.2em 0.4em 0.2em 0.4em;
+    border-radius: 0.3em;
+    font-family: 'JetBrains Mono', monospace;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.jwt-util-button:hover {
+    cursor: pointer;
+    transition: 0.3s;
+    color: #e0e0e0;
+    background-color: #403735;
+}
+
+.jwt-util-button:focus {
+    box-shadow: 0 0 0 2px #736664;
+}

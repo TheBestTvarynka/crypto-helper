@@ -184,7 +184,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
                                     oninput={gen_on_input_handle(salt.setter())}
                                 />
                             </div>
-                            <button type={"submit"} onclick={generate_key_from_password}>{"Generate key"}</button>
+                            <button class={classes!("jwt-util-button")} type={"submit"} onclick={generate_key_from_password}>{"Generate key"}</button>
                         </form>
                     }
                 } else {

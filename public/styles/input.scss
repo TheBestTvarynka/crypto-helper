@@ -2,11 +2,11 @@
     font-family: 'JetBrains Mono', monospace;
     background: #dbcfbf;
     padding: 0.2em;
+    border-radius: 3px;
     margin: 0;
     width: calc(100% - 0.4em - 6px);
     color: #50437f;
     border: 3px solid #dbcfbf;
-    border-radius: 3px;
     font-size: 0.9em;
     resize: vertical;
     transition: all 0.2s;
@@ -75,4 +75,31 @@
 
 .switch_label:active:after {
 	width: 1.3em;
+}
+
+.formats-container {
+	display: inline-flex;
+	justify-content: flex-start;
+	gap: 0.1em;
+}
+
+.format-button {
+    font-size: 0.7em;
+    color: #403735;
+    background-color: transparent;
+    padding: 0.2em 0.2em 0.2em 0.2em;
+    border-radius: 0.2em;
+    border: 2px solid transparent;
+    font-family: 'JetBrains Mono', monospace;
+    transition: 0.3s;
+}
+
+.format-button:hover {
+    cursor: pointer;
+    border: 2px solid #736664;
+}
+
+.format-button-selected {
+    color: #e0e0e0;
+    background-color: #736664;
 }

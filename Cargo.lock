@@ -1526,6 +1526,7 @@ dependencies = [
 name = "web-app"
 version = "0.8.0"
 dependencies = [
+ "base64",
  "gloo-timers",
  "hex",
  "hmac-sha256",
@@ -1538,6 +1539,7 @@ dependencies = [
  "rand",
  "rand_chacha",
  "rsa 0.7.2",
+ "serde_json",
  "sha1",
  "wasm-bindgen",
  "wasm-logger",

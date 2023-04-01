@@ -94,6 +94,31 @@ article {
 
 .simple-digest:hover {
     cursor: pointer;
-    background: #b5c9eb;
-    border-radius: 0.2em;
+    text-decoration: underline;
+}
+
+.bytes-container {
+    background-color: #403735;
+    padding: 0.2em;
+    border-radius: 3px;
+}
+
+.byte-null {
+    color: red;
+}
+
+.byte-printable {
+    color: cyan;
+}
+
+.byte-whitespace {
+    color: green;
+}
+
+.byte-ascii {
+    color: rgb(232, 52, 210);
+}
+
+.byte-other {
+    color: yellow;
 }

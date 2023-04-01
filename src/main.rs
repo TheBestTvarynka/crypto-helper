@@ -11,7 +11,7 @@ use about::About;
 use crypto_helper::CryptoHelper;
 use footer::footer;
 use header::Header;
-use jwt::jwt;
+use jwt::Jwt;
 use not_found::not_found;
 use yew::{classes, function_component, html, Html};
 use yew_notifications::{Notification, NotificationFactory, NotificationsProvider};
@@ -34,9 +34,9 @@ enum Route {
 
 fn switch(routes: Route) -> Html {
     match routes {
-        Route::Home => html! { <CryptoHelper /> },
+        Route::Home => html! { <Jwt /> },
         Route::CryptoHelper => html! { <CryptoHelper /> },
-        Route::Jwt => jwt(),
+        Route::Jwt => html! { <Jwt /> },
         Route::About => html! { <About /> },
         Route::NotFound => not_found(),
     }
