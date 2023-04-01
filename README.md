@@ -13,11 +13,16 @@ Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
 ### Features
 
 * Written in [Rust](https://github.com/rust-lang/rust) :crab: using [yew](https://github.com/yewstack/yew) :sparkles:
-* MD5
-* SHA1/SHA256/SHA512
-* Kerberos ciphers: AES128-CTS-HMAC-SHA1-96/AES256-CTS-HMAC-SHA1-96
-* Kerberos HMAC: HMAC-SHA1-96-AES128/HMAC-SHA1-96-AES256
-* RSA
+* `MD5`
+* `SHA1`/`SHA256`/`SHA512`
+* Kerberos ciphers: `AES128-CTS-HMAC-SHA1-96`/`AES256-CTS-HMAC-SHA1-96`
+* Kerberos HMAC: `HMAC-SHA1-96-AES128`/`HMAC-SHA1-96-AES256`
+* `RSA`
+* JWT debugger. Supported signature algorithms:
+  * `none`
+  * `HS256`
+  * `HS512`
+  * `RS256`
 
 ### Meta
 

@@ -44,10 +44,8 @@ pub struct SimpleOutputProps {
 }
 
 fn get_set_format_callback(format: BytesFormat, set_format: UseStateSetter<BytesFormat>) -> Callback<MouseEvent> {
-    log::debug!("get format click");
     Callback::from(move |_event| {
-        log::debug!("format click");
-        set_format.set(format.clone());
+        set_format.set(format);
     })
 }
 
@@ -72,7 +70,7 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
     let format_setter = bytes_format.setter();
     use_effect_with_deps(
         move |format| {
-            format_setter.set((**format).clone());
+            format_setter.set(**format);
         },
         bytes_format.clone(),
     );
@@ -97,7 +95,7 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
                     html! {
                         <button
                             class={get_format_button_class(*bytes_format == *format)}
-                            onclick={get_set_format_callback(format.clone(), bytes_format.setter())}
+                            onclick={get_set_format_callback(*format, bytes_format.setter())}
                         >
                             {<&str>::from(format)}
                         </button>
