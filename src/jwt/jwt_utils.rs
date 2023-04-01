@@ -1,5 +1,8 @@
-use web_sys::MouseEvent;
-use yew::{classes, function_component, html, use_state, Callback, Html, Properties};
+use picky::hash::HashAlgorithm;
+use picky::key::{PrivateKey, PublicKey};
+use picky::signature::SignatureAlgorithm;
+use web_sys::{HtmlInputElement, MouseEvent};
+use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
@@ -31,6 +34,22 @@ fn get_input_component(
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs512(key));
             }),
         ),
+        JwtSignatureAlgorithm::RS256(key) => {
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_signature_algo.emit(JwtSignatureAlgorithm::RS256(input.value()));
+            });
+
+            html! {
+                <textarea
+                    rows="4"
+                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
+                    class={classes!("base-input")}
+                    value={key.clone()}
+                    {oninput}
+                />
+            }
+        }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             log::error!("Unsupported signature algo: {:?}", algo_name);
 
@@ -46,7 +65,11 @@ fn get_input_component(
 }
 
 fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {
-    let data_to_sign = base64::encode(format!("{}.{}", jwt.parsed_header, jwt.parsed_payload).as_bytes());
+    let data_to_sign = format!(
+        "{}.{}",
+        base64::encode(jwt.parsed_header.as_bytes()),
+        base64::encode(jwt.parsed_payload.as_bytes())
+    );
 
     match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::None => Some(Vec::new()),
@@ -69,6 +92,33 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             );
 
             Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+        }
+        JwtSignatureAlgorithm::RS256(key) => {
+            let private_key = match PrivateKey::from_pem_str(key) {
+                Ok(key) => key,
+                Err(error) => {
+                    spawn_notification.emit(Notification::new(
+                        NotificationType::Error,
+                        "Invalid private RSA key",
+                        error.to_string(),
+                    ));
+
+                    return None;
+                }
+            };
+
+            match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_256).sign(data_to_sign.as_bytes(), &private_key) {
+                Ok(signature) => Some(signature),
+                Err(error) => {
+                    spawn_notification.emit(Notification::new(
+                        NotificationType::Error,
+                        "Can not generate RS256 signature",
+                        error.to_string(),
+                    ));
+
+                    None
+                }
+            }
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
@@ -109,6 +159,39 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             );
 
             hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+        }
+        JwtSignatureAlgorithm::RS256(key) => {
+            let public_key = match PublicKey::from_pem_str(key) {
+                Ok(key) => key,
+                Err(error) => {
+                    spawn_notification.emit(Notification::new(
+                        NotificationType::Error,
+                        "Invalid public RSA key",
+                        error.to_string(),
+                    ));
+
+                    return None;
+                }
+            };
+
+            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
+            log::debug!("signature: {:?}", jwt.signature);
+
+            match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_256).verify(
+                &public_key,
+                data_to_sign.as_bytes(),
+                &jwt.signature,
+            ) {
+                Ok(_) => return Some(true),
+                Err(error) => {
+                    spawn_notification.emit(Notification::from_description_and_type(
+                        NotificationType::Error,
+                        error.to_string(),
+                    ));
+
+                    return Some(false);
+                }
+            }
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(

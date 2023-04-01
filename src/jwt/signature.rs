@@ -2,13 +2,19 @@ use std::fmt::{self, Display};
 
 use serde_json::Value;
 
-const JWT_SIGNATURE_ALGORITHMS: [&str; 3] = ["HS256", "HS512", "none"];
+const JWT_SIGNATURE_ALGORITHMS: [&str; 4] = ["HS256", "HS512", "none", "RS256"];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum JwtSignatureAlgorithm {
     None,
+    /// HMAC using SHA-256
     Hs256(String),
+    /// HMAC using SHA-512
     Hs512(String),
+    /// RSASSA-PKCS1-v1_5 using SHA-256
+    ///
+    /// A signature can only be generated using the private key.
+    RS256(String),
     Unsupported(String),
 }
 
@@ -20,6 +26,7 @@ impl JwtSignatureAlgorithm {
             JwtSignatureAlgorithm::None => Some(0),
             JwtSignatureAlgorithm::Hs256(_) => Some(32),
             JwtSignatureAlgorithm::Hs512(_) => Some(64),
+            JwtSignatureAlgorithm::RS256(_) => None,
             JwtSignatureAlgorithm::Unsupported(_) => None,
         }
     }
@@ -34,9 +41,9 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
 
     fn try_from(value: &Value) -> Result<Self, Self::Error> {
         match value {
-            Value::Null => Err("Invalid jwt signature algorithm: null but string extpected".into()),
-            Value::Bool(_) => Err("Invalid jwt signature algorithm: bool but string extpected".into()),
-            Value::Number(_) => Err("Invalid jwt signature algorithm: number but string extpected".into()),
+            Value::Null => Err("Invalid jwt signature algorithm: null but string expected".into()),
+            Value::Bool(_) => Err("Invalid jwt signature algorithm: bool but string expected".into()),
+            Value::Number(_) => Err("Invalid jwt signature algorithm: number but string expected".into()),
             Value::String(value) => {
                 if value == JWT_SIGNATURE_ALGORITHMS[0] {
                     Ok(Self::Hs256(Default::default()))
@@ -44,12 +51,14 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
                     Ok(Self::Hs512(Default::default()))
                 } else if value == JWT_SIGNATURE_ALGORITHMS[2] {
                     Ok(Self::None)
+                } else if value == JWT_SIGNATURE_ALGORITHMS[3] {
+                    Ok(Self::RS256(Default::default()))
                 } else {
                     Ok(Self::Unsupported(value.clone()))
                 }
             }
-            Value::Array(_) => Err("Invalid jwt signature algorithm: array but string extpected".into()),
-            Value::Object(_) => Err("Invalid jwt signature algorithm: object but string extpected".into()),
+            Value::Array(_) => Err("Invalid jwt signature algorithm: array but string expected".into()),
+            Value::Object(_) => Err("Invalid jwt signature algorithm: object but string expected".into()),
         }
     }
 }
@@ -66,6 +75,7 @@ impl Display for JwtSignatureAlgorithm {
             JwtSignatureAlgorithm::None => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[2]),
             JwtSignatureAlgorithm::Hs256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[0]),
             JwtSignatureAlgorithm::Hs512(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[1]),
+            JwtSignatureAlgorithm::RS256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[3]),
             JwtSignatureAlgorithm::Unsupported(algo) => write!(f, "{}", algo),
         }
     }
