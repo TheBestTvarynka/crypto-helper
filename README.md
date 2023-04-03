@@ -2,6 +2,15 @@
 
 ![deploy](https://github.com/TheBestTvarynka/crypto-helper/actions/workflows/github-actions.yml/badge.svg)
 
+Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
+
+Table of content:
+
+* [Features](#features)
+* [Development](#development)
+* [Meta](#meta)
+* [Contributing](#contributing)
+
 ![](/public/img/example.png)
 ![](/public/img/sha.png)
 ![](/public/img/jwt.png)
@@ -9,8 +18,6 @@
 The crypto-helper is an online app that helps to work with the diferent crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
 
 All computations are performed on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a [byte-formatter](https://bf.qkation.com) to transform input to the hex format.
-
-Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
 
 ### Features
 
@@ -25,6 +32,13 @@ Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
   * `HS256`
   * `HS512`
   * `RS256`
+
+
+### Development
+
+1. Install [`trunk`](https://github.com/thedodd/trunk). [Additional guide](https://yew.rs/docs/next/getting-started/introduction#install-trunk).
+2. Run `trunk serve` in your terminal.
+3. Go to http://127.0.0.1:8080 in your browser.
 
 ### Meta
 
