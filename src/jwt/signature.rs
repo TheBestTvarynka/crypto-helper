@@ -2,13 +2,15 @@ use std::fmt::{self, Display};
 
 use serde_json::Value;
 
-const JWT_SIGNATURE_ALGORITHMS: [&str; 4] = ["HS256", "HS512", "none", "RS256"];
+const JWT_SIGNATURE_ALGORITHMS: [&str; 5] = ["HS256", "HS512", "none", "RS256", "HS384"];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum JwtSignatureAlgorithm {
     None,
     /// HMAC using SHA-256
     Hs256(String),
+    /// HMAC using SHA-384
+    Hs384(String),
     /// HMAC using SHA-512
     Hs512(String),
     /// RSASSA-PKCS1-v1_5 using SHA-256
@@ -25,6 +27,7 @@ impl JwtSignatureAlgorithm {
         match self {
             JwtSignatureAlgorithm::None => Some(0),
             JwtSignatureAlgorithm::Hs256(_) => Some(32),
+            JwtSignatureAlgorithm::Hs384(_) => Some(48), // <- I am not sure is this length correct.
             JwtSignatureAlgorithm::Hs512(_) => Some(64),
             JwtSignatureAlgorithm::RS256(_) => None,
             JwtSignatureAlgorithm::Unsupported(_) => None,
@@ -53,6 +56,8 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
                     Ok(Self::None)
                 } else if value == JWT_SIGNATURE_ALGORITHMS[3] {
                     Ok(Self::RS256(Default::default()))
+                } else if value == JWT_SIGNATURE_ALGORITHMS[4] {
+                    Ok(Self::Hs384(Default::default()))
                 } else {
                     Ok(Self::Unsupported(value.clone()))
                 }
@@ -74,6 +79,7 @@ impl Display for JwtSignatureAlgorithm {
         match self {
             JwtSignatureAlgorithm::None => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[2]),
             JwtSignatureAlgorithm::Hs256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[0]),
+            JwtSignatureAlgorithm::Hs384(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[4]),
             JwtSignatureAlgorithm::Hs512(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[1]),
             JwtSignatureAlgorithm::RS256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[3]),
             JwtSignatureAlgorithm::Unsupported(algo) => write!(f, "{}", algo),

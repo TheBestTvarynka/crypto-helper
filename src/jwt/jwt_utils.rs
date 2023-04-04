@@ -27,6 +27,13 @@ fn get_input_component(
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs256(key));
             }),
         ),
+        JwtSignatureAlgorithm::Hs384(key) => build_simple_input(
+            key.clone(),
+            "HMAC SHA384 hex-encoded key".into(),
+            Callback::from(move |key| {
+                set_signature_algo.emit(JwtSignatureAlgorithm::Hs384(key));
+            }),
+        ),
         JwtSignatureAlgorithm::Hs512(key) => build_simple_input(
             key.clone(),
             "HMAC SHA512 hex-encoded key".into(),
@@ -82,6 +89,16 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             );
 
             Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+        }
+        JwtSignatureAlgorithm::Hs384(key) => {
+            let key = check_symmetric_key!(
+                key: key,
+                len_hint: jwt.signature_algorithm.key_len_hint(),
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification
+            );
+
+            Some(hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             let key = check_symmetric_key!(
@@ -149,6 +166,16 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             );
 
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+        }
+        JwtSignatureAlgorithm::Hs384(key) => {
+            let key = check_symmetric_key!(
+                key: key,
+                len_hint: jwt.signature_algorithm.key_len_hint(),
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification
+            );
+
+            hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             let key = check_symmetric_key!(
