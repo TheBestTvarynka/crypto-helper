@@ -2,19 +2,28 @@ use std::fmt::{self, Display};
 
 use serde_json::Value;
 
-const JWT_SIGNATURE_ALGORITHMS: [&str; 4] = ["HS256", "HS512", "none", "RS256"];
+const JWT_SIGNATURE_ALGORITHMS: [&str; 6] = ["HS256", "HS512", "none", "RS256", "HS384", "RS384"];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum JwtSignatureAlgorithm {
     None,
+
     /// HMAC using SHA-256
     Hs256(String),
+
+    /// HMAC using SHA-384
+    Hs384(String),
+
     /// HMAC using SHA-512
     Hs512(String),
+
     /// RSASSA-PKCS1-v1_5 using SHA-256
-    ///
     /// A signature can only be generated using the private key.
-    RS256(String),
+    Rs256(String),
+
+    /// RSASSA-PKCS1-v1_5 using SHA-384
+    Rs384(String),
+
     Unsupported(String),
 }
 
@@ -25,8 +34,10 @@ impl JwtSignatureAlgorithm {
         match self {
             JwtSignatureAlgorithm::None => Some(0),
             JwtSignatureAlgorithm::Hs256(_) => Some(32),
+            JwtSignatureAlgorithm::Hs384(_) => Some(48),
             JwtSignatureAlgorithm::Hs512(_) => Some(64),
-            JwtSignatureAlgorithm::RS256(_) => None,
+            JwtSignatureAlgorithm::Rs256(_) => None,
+            JwtSignatureAlgorithm::Rs384(_) => None,
             JwtSignatureAlgorithm::Unsupported(_) => None,
         }
     }
@@ -47,12 +58,16 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
             Value::String(value) => {
                 if value == JWT_SIGNATURE_ALGORITHMS[0] {
                     Ok(Self::Hs256(Default::default()))
+                } else if value == JWT_SIGNATURE_ALGORITHMS[4] {
+                    Ok(Self::Hs384(Default::default()))
                 } else if value == JWT_SIGNATURE_ALGORITHMS[1] {
                     Ok(Self::Hs512(Default::default()))
                 } else if value == JWT_SIGNATURE_ALGORITHMS[2] {
                     Ok(Self::None)
                 } else if value == JWT_SIGNATURE_ALGORITHMS[3] {
-                    Ok(Self::RS256(Default::default()))
+                    Ok(Self::Rs256(Default::default()))
+                } else if value == JWT_SIGNATURE_ALGORITHMS[5] {
+                    Ok(Self::Rs384(Default::default()))
                 } else {
                     Ok(Self::Unsupported(value.clone()))
                 }
@@ -74,8 +89,10 @@ impl Display for JwtSignatureAlgorithm {
         match self {
             JwtSignatureAlgorithm::None => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[2]),
             JwtSignatureAlgorithm::Hs256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[0]),
+            JwtSignatureAlgorithm::Hs384(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[4]),
             JwtSignatureAlgorithm::Hs512(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[1]),
-            JwtSignatureAlgorithm::RS256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[3]),
+            JwtSignatureAlgorithm::Rs256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[3]),
+            JwtSignatureAlgorithm::Rs384(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[5]),
             JwtSignatureAlgorithm::Unsupported(algo) => write!(f, "{}", algo),
         }
     }
