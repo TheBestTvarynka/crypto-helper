@@ -41,10 +41,10 @@ fn get_input_component(
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs512(key));
             }),
         ),
-        JwtSignatureAlgorithm::RS256(key) => {
+        JwtSignatureAlgorithm::Rs256(key) => {
             let oninput = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
-                set_signature_algo.emit(JwtSignatureAlgorithm::RS256(input.value()));
+                set_signature_algo.emit(JwtSignatureAlgorithm::Rs256(input.value()));
             });
 
             html! {
@@ -57,10 +57,10 @@ fn get_input_component(
                 />
             }
         }
-        JwtSignatureAlgorithm::RS384(key) => {
+        JwtSignatureAlgorithm::Rs384(key) => {
             let oninput = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
-                set_signature_algo.emit(JwtSignatureAlgorithm::RS384(input.value()));
+                set_signature_algo.emit(JwtSignatureAlgorithm::Rs384(input.value()));
             });
 
             html! {
@@ -126,7 +126,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
 
             Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
-        JwtSignatureAlgorithm::RS256(key) => {
+        JwtSignatureAlgorithm::Rs256(key) => {
             let private_key = match PrivateKey::from_pem_str(key) {
                 Ok(key) => key,
                 Err(error) => {
@@ -153,7 +153,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 }
             }
         }
-        JwtSignatureAlgorithm::RS384(key) => {
+        JwtSignatureAlgorithm::Rs384(key) => {
             let private_key = match PrivateKey::from_pem_str(key) {
                 Ok(key) => key,
                 Err(error) => {
@@ -230,7 +230,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
 
             hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
-        JwtSignatureAlgorithm::RS256(key) => {
+        JwtSignatureAlgorithm::Rs256(key) => {
             let public_key = match PublicKey::from_pem_str(key) {
                 Ok(key) => key,
                 Err(error) => {
@@ -263,7 +263,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 }
             }
         }
-        JwtSignatureAlgorithm::RS384(key) => {
+        JwtSignatureAlgorithm::Rs384(key) => {
             let public_key = match PublicKey::from_pem_str(key) {
                 Ok(key) => key,
                 Err(error) => {
