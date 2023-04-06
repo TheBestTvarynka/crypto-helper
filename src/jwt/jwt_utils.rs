@@ -214,18 +214,6 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: &spawn_notification
             )
 
-            // match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_512).sign(data_to_sign.as_bytes(), &private_key) {
-            //     Ok(signature) => Some(signature),
-            //     Err(error) => {
-            //         spawn_notification.emit(Notification::new(
-            //             NotificationType::Error,
-            //             "Can not generate RS512 signature",
-            //             error.to_string(),
-            //         ));
-            //
-            //         None
-            //     }
-            // }
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
@@ -365,21 +353,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             );
 
             return Some(is_ok)
-            // match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_512).verify(
-            //     &public_key,
-            //     data_to_sign.as_bytes(),
-            //     &jwt.signature,
-            // ) {
-            //     Ok(_) => return Some(true),
-            //     Err(error) => {
-            //         spawn_notification.emit(Notification::from_description_and_type(
-            //             NotificationType::Error,
-            //             error.to_string(),
-            //         ));
-            //
-            //         return Some(false);
-            //     }
-            // }
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
