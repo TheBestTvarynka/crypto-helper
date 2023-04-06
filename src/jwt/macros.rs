@@ -48,15 +48,14 @@ macro_rules! check_asymmetric_key {
         name: $name:expr,
         notificator: $notificator:expr,
         key_kind: $key_kind:ty,
-        key_kind_as_str: $key_kind_as_str:expr
     ) => {{
         let rsa_key = match <$key_kind>::from_pem_str($key) {
                 Ok(key) => key,
                 Err(error) => {
-                    log::error!("invalid {} RSA {} key", &$key_kind_as_str, $name);
+                    log::error!("invalid RSA {} key", $name);
                     $notificator.emit(Notification::new(
                         NotificationType::Error,
-                        format!("Invalid {} RSA {} key", &$key_kind_as_str, $name),
+                        format!("Invalid RSA {} key", $name),
                         format!("{:?}", error),
                     ));
 
