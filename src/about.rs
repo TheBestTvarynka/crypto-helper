@@ -20,6 +20,7 @@ pub fn about() -> Html {
                     <li>{"HS512"}</li>
                     <li>{"RS256"}</li>
                     <li>{"RS384"}</li>
+                    <li>{"RS512"}</li>
                 </ul>
             </ul>
             <span>{"All computations are performed on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a "}<a href={"https://bf.qkation.com"}>{"byte-formatter"}</a>{" to transform input to the hex format."}</span>

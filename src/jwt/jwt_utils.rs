@@ -7,7 +7,7 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::check_symmetric_key;
+use crate::{check_asymmetric_key, check_symmetric_key, sign, verify};
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
 
 fn get_input_component(
@@ -61,6 +61,22 @@ fn get_input_component(
             let oninput = Callback::from(move |event: html::oninput::Event| {
                 let input: HtmlInputElement = event.target_unchecked_into();
                 set_signature_algo.emit(JwtSignatureAlgorithm::Rs384(input.value()));
+            });
+
+            html! {
+                <textarea
+                    rows="4"
+                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
+                    class={classes!("base-input")}
+                    value={key.clone()}
+                    {oninput}
+                />
+            }
+        }
+        JwtSignatureAlgorithm::Rs512(key) => {
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_signature_algo.emit(JwtSignatureAlgorithm::Rs512(input.value()));
             });
 
             html! {
@@ -127,58 +143,55 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Rs256(key) => {
-            let private_key = match PrivateKey::from_pem_str(key) {
-                Ok(key) => key,
-                Err(error) => {
-                    spawn_notification.emit(Notification::new(
-                        NotificationType::Error,
-                        "Invalid private RSA key",
-                        error.to_string(),
-                    ));
+            let private_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: &spawn_notification,
+                key_kind: PrivateKey,
+            );
 
-                    return None;
-                }
-            };
-
-            match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_256).sign(data_to_sign.as_bytes(), &private_key) {
-                Ok(signature) => Some(signature),
-                Err(error) => {
-                    spawn_notification.emit(Notification::new(
-                        NotificationType::Error,
-                        "Can not generate RS256 signature",
-                        error.to_string(),
-                    ));
-
-                    None
-                }
-            }
+            sign!(
+                signature_algo: SignatureAlgorithm::RsaPkcs1v15,
+                hash_algo: HashAlgorithm::SHA2_256,
+                name: jwt.signature_algorithm.to_string(),
+                private_key: &private_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                notificator: &spawn_notification
+            )
         }
         JwtSignatureAlgorithm::Rs384(key) => {
-            let private_key = match PrivateKey::from_pem_str(key) {
-                Ok(key) => key,
-                Err(error) => {
-                    spawn_notification.emit(Notification::new(
-                        NotificationType::Error,
-                        "Invalid private RSA key",
-                        error.to_string(),
-                    ));
+            let private_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: &spawn_notification,
+                key_kind: PrivateKey,
+            );
 
-                    return None;
-                }
-            };
+            sign!(
+                signature_algo: SignatureAlgorithm::RsaPkcs1v15,
+                hash_algo: HashAlgorithm::SHA2_384,
+                name: jwt.signature_algorithm.to_string(),
+                private_key: &private_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                notificator: &spawn_notification
+            )
+        }
+        JwtSignatureAlgorithm::Rs512(key) => {
+            let private_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: &spawn_notification,
+                key_kind: PrivateKey,
+            );
 
-            match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_384).sign(data_to_sign.as_bytes(), &private_key) {
-                Ok(signature) => Some(signature),
-                Err(error) => {
-                    spawn_notification.emit(Notification::new(
-                        NotificationType::Error,
-                        "Can not generate RS384 signature",
-                        error.to_string(),
-                    ));
-
-                    None
-                }
-            }
+            sign!(
+                signature_algo: SignatureAlgorithm::RsaPkcs1v15,
+                hash_algo: HashAlgorithm::SHA2_512,
+                name: jwt.signature_algorithm.to_string(),
+                private_key: &private_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                notificator: &spawn_notification
+            )
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
@@ -231,70 +244,70 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Rs256(key) => {
-            let public_key = match PublicKey::from_pem_str(key) {
-                Ok(key) => key,
-                Err(error) => {
-                    spawn_notification.emit(Notification::new(
-                        NotificationType::Error,
-                        "Invalid public RSA key",
-                        error.to_string(),
-                    ));
-
-                    return None;
-                }
-            };
+            let public_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification,
+                key_kind: PublicKey,
+            );
 
             log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
             log::debug!("signature: {:?}", jwt.signature);
 
-            match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_256).verify(
-                &public_key,
-                data_to_sign.as_bytes(),
-                &jwt.signature,
-            ) {
-                Ok(_) => return Some(true),
-                Err(error) => {
-                    spawn_notification.emit(Notification::from_description_and_type(
-                        NotificationType::Error,
-                        error.to_string(),
-                    ));
+            let is_ok = verify!(
+                signature_algo: SignatureAlgorithm::RsaPkcs1v15,
+                hash_algo: HashAlgorithm::SHA2_256,
+                public_key: &public_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                jwt_signature: &jwt.signature,
+                notificator: spawn_notification
+            );
 
-                    return Some(false);
-                }
-            }
+            return Some(is_ok)
         }
         JwtSignatureAlgorithm::Rs384(key) => {
-            let public_key = match PublicKey::from_pem_str(key) {
-                Ok(key) => key,
-                Err(error) => {
-                    spawn_notification.emit(Notification::new(
-                        NotificationType::Error,
-                        "Invalid public RSA key",
-                        error.to_string(),
-                    ));
-
-                    return None;
-                }
-            };
+            let public_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification,
+                key_kind: PublicKey,
+            );
 
             log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
             log::debug!("signature: {:?}", jwt.signature);
 
-            match SignatureAlgorithm::RsaPkcs1v15(HashAlgorithm::SHA2_384).verify(
-                &public_key,
-                data_to_sign.as_bytes(),
-                &jwt.signature,
-            ) {
-                Ok(_) => return Some(true),
-                Err(error) => {
-                    spawn_notification.emit(Notification::from_description_and_type(
-                        NotificationType::Error,
-                        error.to_string(),
-                    ));
+            let is_ok = verify!(
+                signature_algo: SignatureAlgorithm::RsaPkcs1v15,
+                hash_algo: HashAlgorithm::SHA2_384,
+                public_key: &public_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                jwt_signature: &jwt.signature,
+                notificator: spawn_notification
+            );
 
-                    return Some(false);
-                }
-            }
+            return Some(is_ok)
+        }
+        JwtSignatureAlgorithm::Rs512(key) => {
+            let public_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification,
+                key_kind: PublicKey,
+            );
+
+            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
+            log::debug!("signature: {:?}", jwt.signature);
+
+            let is_ok = verify!(
+                signature_algo: SignatureAlgorithm::RsaPkcs1v15,
+                hash_algo: HashAlgorithm::SHA2_512,
+                public_key: &public_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                jwt_signature: &jwt.signature,
+                notificator: spawn_notification
+            );
+
+            return Some(is_ok)
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
