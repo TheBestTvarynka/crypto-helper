@@ -1,13 +1,11 @@
 use js_sys::Function;
 use wasm_bindgen::JsValue;
-use yew::{
-    classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties,
-};
+use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties};
 use yew_notifications::{Notification, NotificationType};
 
-use crate::{utils::gen_copy_func, common::{BYTES_FORMATS, encode_bytes, get_format_button_class, get_set_format_callback}};
-
 use super::BytesFormat;
+use crate::common::{encode_bytes, get_format_button_class, get_set_format_callback, BYTES_FORMATS};
+use crate::utils::gen_copy_func;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct SimpleOutputProps {
@@ -34,7 +32,7 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
         bytes_format.clone(),
     );
 
-    let encoded_bytes = encode_bytes(&output, &bytes_format);
+    let encoded_bytes = encode_bytes(&output, *bytes_format);
 
     let encoded = encoded_bytes.clone();
     let onclick = Callback::from(move |_| {
