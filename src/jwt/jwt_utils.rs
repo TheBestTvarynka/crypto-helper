@@ -7,7 +7,7 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::{check_private_key, check_public_key, check_symmetric_key, sign_signature, verify_signature};
+use crate::{check_asymmetric_key, check_symmetric_key, sign, verify};
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
 
 fn get_input_component(
@@ -197,13 +197,15 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             }
         }
         JwtSignatureAlgorithm::Rs512(key) => {
-            let private_key = check_private_key!(
-                private_key: key,
+            let private_key = check_asymmetric_key!(
+                key: key,
                 name: jwt.signature_algorithm.to_string(),
-                notificator: &spawn_notification
+                notificator: &spawn_notification,
+                key_kind: PrivateKey,
+                key_kind_as_str: "private"
             );
 
-            sign_signature!(
+            sign!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_512,
                 name: jwt.signature_algorithm.to_string(),
@@ -342,16 +344,18 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             }
         }
         JwtSignatureAlgorithm::Rs512(key) => {
-            let public_key = check_public_key!(
-                public_key: key,
+            let public_key = check_asymmetric_key!(
+                key: key,
                 name: jwt.signature_algorithm.to_string(),
-                notificator: spawn_notification
+                notificator: spawn_notification,
+                key_kind: PublicKey,
+                key_kind_as_str: "public"
             );
 
             log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
             log::debug!("signature: {:?}", jwt.signature);
 
-            let is_ok = verify_signature!(
+            let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_512,
                 public_key: &public_key,

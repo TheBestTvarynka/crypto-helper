@@ -42,15 +42,21 @@ macro_rules! check_symmetric_key {
 }
 
 #[macro_export]
-macro_rules! check_public_key {
-    (public_key: $public_key:expr, name: $name:expr, notificator: $notificator:expr) => {{
-        let public_key = match PublicKey::from_pem_str($public_key) {
+macro_rules! check_asymmetric_key {
+    (
+        key: $key:expr,
+        name: $name:expr,
+        notificator: $notificator:expr,
+        key_kind: $key_kind:ty,
+        key_kind_as_str: $key_kind_as_str:expr
+    ) => {{
+        let rsa_key = match <$key_kind>::from_pem_str($key) {
                 Ok(key) => key,
                 Err(error) => {
-                    log::error!("invalid public {} key", $name);
+                    log::error!("invalid {} RSA {} key", &$key_kind_as_str, $name);
                     $notificator.emit(Notification::new(
                         NotificationType::Error,
-                        format!("Invalid public {} key", $name),
+                        format!("Invalid {} RSA {} key", &$key_kind_as_str, $name),
                         format!("{:?}", error),
                     ));
 
@@ -58,33 +64,12 @@ macro_rules! check_public_key {
                 }
         };
 
-        public_key
+        rsa_key
     }};
 }
 
 #[macro_export]
-macro_rules! check_private_key {
-    (private_key: $private_key:expr, name: $name:expr, notificator: $notificator:expr) => {{
-        let private_key = match PrivateKey::from_pem_str($private_key) {
-                Ok(key) => key,
-                Err(error) => {
-                    log::error!("invalid private {} key", $name);
-                    $notificator.emit(Notification::new(
-                        NotificationType::Error,
-                        format!("Invalid private {} key", $name),
-                        format!("{:?}", error),
-                    ));
-
-                    return None;
-                }
-        };
-
-        private_key
-    }};
-}
-
-#[macro_export]
-macro_rules! verify_signature {
+macro_rules! verify {
     (
         signature_algo: $signature_algo:expr,
         hash_algo: $hash_algo:expr,
@@ -112,7 +97,7 @@ macro_rules! verify_signature {
 }
 
 #[macro_export]
-macro_rules! sign_signature {
+macro_rules! sign {
     (
         signature_algo: $signature_algo:expr,
         hash_algo: $hash_algo:expr,
