@@ -88,7 +88,6 @@ macro_rules! verify {
                         NotificationType::Error,
                         error.to_string(),
                     ));
-
                     false
                 }
         }
@@ -116,7 +115,6 @@ macro_rules! sign {
                         format!("Can not generate {} signature", $name),
                         format!("{:?}", error),
                     ));
-
                     None
                 }
         }
