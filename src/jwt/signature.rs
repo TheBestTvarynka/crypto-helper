@@ -2,7 +2,16 @@ use std::fmt::{self, Display};
 
 use serde_json::Value;
 
-const JWT_SIGNATURE_ALGORITHMS: [&str; 7] = ["HS256", "HS512", "none", "RS256", "HS384", "RS384", "RS512"];
+const JWT_SIGNATURE_ALGORITHMS: [&str; 8] = [
+    "HS256",
+    "HS512",
+    "none",
+    "RS256",
+    "HS384",
+    "RS384",
+    "RS512",
+    "ES256"
+];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum JwtSignatureAlgorithm {
@@ -27,6 +36,9 @@ pub enum JwtSignatureAlgorithm {
     /// RSASSA-PKCS1-v1_5 using SHA-512
     Rs512(String),
 
+    /// ECDSA using P-256 and SHA-256
+    Es256(String),
+
     Unsupported(String),
 }
 
@@ -42,6 +54,7 @@ impl JwtSignatureAlgorithm {
             JwtSignatureAlgorithm::Rs256(_) => None,
             JwtSignatureAlgorithm::Rs384(_) => None,
             JwtSignatureAlgorithm::Rs512(_) => None,
+            JwtSignatureAlgorithm::Es256(_) => None,
             JwtSignatureAlgorithm::Unsupported(_) => None,
         }
     }
@@ -74,6 +87,8 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
                     Ok(Self::Rs384(Default::default()))
                 } else if value == JWT_SIGNATURE_ALGORITHMS[6] {
                     Ok(Self::Rs512(Default::default()))
+                } else if value == JWT_SIGNATURE_ALGORITHMS[7] {
+                    Ok(Self::Es256(Default::default()))
                 } else {
                     Ok(Self::Unsupported(value.clone()))
                 }
@@ -100,6 +115,7 @@ impl Display for JwtSignatureAlgorithm {
             JwtSignatureAlgorithm::Rs256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[3]),
             JwtSignatureAlgorithm::Rs384(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[5]),
             JwtSignatureAlgorithm::Rs512(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[6]),
+            JwtSignatureAlgorithm::Es256(_) => write!(f, "{}", JWT_SIGNATURE_ALGORITHMS[7]),
             JwtSignatureAlgorithm::Unsupported(algo) => write!(f, "{}", algo),
         }
     }
