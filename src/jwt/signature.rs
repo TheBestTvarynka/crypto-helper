@@ -72,7 +72,7 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
                     Ok(Self::Rs256(Default::default()))
                 } else if value == JWT_SIGNATURE_ALGORITHMS[5] {
                     Ok(Self::Rs384(Default::default()))
-                } else if value == JWT_SIGNATURE_ALGORITHMS[6]  {
+                } else if value == JWT_SIGNATURE_ALGORITHMS[6] {
                     Ok(Self::Rs512(Default::default()))
                 } else {
                     Ok(Self::Unsupported(value.clone()))
