@@ -98,7 +98,7 @@ fn get_input_component(
             html! {
                 <textarea
                     rows="4"
-                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
+                    placeholder={"RSA private/public key in PEM (-----BEGIN PRIVATE/PUBLIC KEY-----)"}
                     class={classes!("base-input")}
                     value={key.clone()}
                     {oninput}
