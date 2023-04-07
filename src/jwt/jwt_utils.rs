@@ -105,6 +105,22 @@ fn get_input_component(
                 />
             }
         }
+        JwtSignatureAlgorithm::Es384(key) => {
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_signature_algo.emit(JwtSignatureAlgorithm::Es384(input.value()));
+            });
+
+            html! {
+                <textarea
+                    rows="4"
+                    placeholder={"RSA private/public key in PEM (-----BEGIN PRIVATE/PUBLIC KEY-----)"}
+                    class={classes!("base-input")}
+                    value={key.clone()}
+                    {oninput}
+                />
+            }
+        }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             log::error!("Unsupported signature algo: {:?}", algo_name);
 
@@ -220,6 +236,23 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             sign!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
                 hash_algo: HashAlgorithm::SHA2_256,
+                name: jwt.signature_algorithm.to_string(),
+                private_key: &private_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                notificator: &spawn_notification
+            )
+        }
+        JwtSignatureAlgorithm::Es384(key) => {
+            let private_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: &spawn_notification,
+                key_kind: PrivateKey,
+            );
+
+            sign!(
+                signature_algo: SignatureAlgorithm::Ecdsa,
+                hash_algo: HashAlgorithm::SHA2_384,
                 name: jwt.signature_algorithm.to_string(),
                 private_key: &private_key,
                 data_to_sign: data_to_sign.as_bytes(),
@@ -356,6 +389,28 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
                 hash_algo: HashAlgorithm::SHA2_256,
+                public_key: &public_key,
+                data_to_sign: data_to_sign.as_bytes(),
+                jwt_signature: &jwt.signature,
+                notificator: spawn_notification
+            );
+
+            return Some(is_ok)
+        }
+        JwtSignatureAlgorithm::Es384(key) => {
+            let public_key = check_asymmetric_key!(
+                key: key,
+                name: jwt.signature_algorithm.to_string(),
+                notificator: spawn_notification,
+                key_kind: PublicKey,
+            );
+
+            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
+            log::debug!("signature: {:?}", jwt.signature);
+
+            let is_ok = verify!(
+                signature_algo: SignatureAlgorithm::Ecdsa,
+                hash_algo: HashAlgorithm::SHA2_384,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,
