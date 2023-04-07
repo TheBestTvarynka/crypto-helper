@@ -32,7 +32,7 @@ base64 = "0.13.1"
 
 # crypto
 picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", rev = "604a246" }
-picky = { version = "7.0.0-rc.3", default-features = false }
+picky = { version = "7.0.0-rc.3", default-features = false, features = ["ec"] }
 md5 = "0.7.0"
 sha1 = "0.10.5"
 hmac-sha256 = "1.1.5"
