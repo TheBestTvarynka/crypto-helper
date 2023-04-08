@@ -31,6 +31,7 @@ fn get_onclick_prettify(
                     NotificationType::Error,
                     name.clone(),
                     format!("Content is not a valid JSON: {:?}", error),
+                    Notification::NOTIFICATION_LIFETIME,
                 ));
                 return;
             }
@@ -44,6 +45,7 @@ fn get_onclick_prettify(
                     NotificationType::Error,
                     name.clone(),
                     format!("Can not prettify content: {:?}", error),
+                    Notification::NOTIFICATION_LIFETIME,
                 ));
             }
         }

@@ -8,30 +8,34 @@ use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
 use super::algorithm::KrbInput;
 use super::Algorithm;
-use crate::common::build_simple_input;
+use crate::common::build_byte_input;
 
 fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm>) -> Html {
     let setter = setter.clone();
     match algorithm {
-        Algorithm::Md5(input) => build_simple_input(
+        Algorithm::Md5(input) => build_byte_input(
             input.clone(),
-            "hex-encoded MD5 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Md5(input))),
+            None,
+            None,
         ),
-        Algorithm::Sha1(input) => build_simple_input(
+        Algorithm::Sha1(input) => build_byte_input(
             input.clone(),
-            "hex-encoded SHA1 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Sha1(input))),
+            None,
+            None,
         ),
-        Algorithm::Sha256(input) => build_simple_input(
+        Algorithm::Sha256(input) => build_byte_input(
             input.clone(),
-            "hex-encoded SHA256 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Sha256(input))),
+            None,
+            None,
         ),
-        Algorithm::Sha512(input) => build_simple_input(
+        Algorithm::Sha512(input) => build_byte_input(
             input.clone(),
-            "hex-encoded SHA512 input".into(),
             Callback::from(move |input| setter.set(Algorithm::Sha512(input))),
+            None,
+            None,
         ),
         Algorithm::Aes128CtsHmacSha196(kerberos_input) => build_krb_input(
             kerberos_input.clone(),

@@ -9,13 +9,13 @@ pub enum JwtSignatureAlgorithm {
     None,
 
     /// HMAC using SHA-256
-    Hs256(String),
+    Hs256(Vec<u8>),
 
     /// HMAC using SHA-384
-    Hs384(String),
+    Hs384(Vec<u8>),
 
     /// HMAC using SHA-512
-    Hs512(String),
+    Hs512(Vec<u8>),
 
     /// RSASSA-PKCS1-v1_5 using SHA-256
     /// A signature can only be generated using the private key.

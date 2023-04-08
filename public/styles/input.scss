@@ -103,3 +103,14 @@
     color: #e0e0e0;
     background-color: #736664;
 }
+
+.bytes-input {
+    width: 100%;
+    background: transparent;
+    border-radius: 0.2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}

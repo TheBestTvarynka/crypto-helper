@@ -22,14 +22,14 @@ fn from_hex(input: &str) -> Result<Vec<u8>, String> {
 
 fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
     match algrithm {
-        Algorithm::Md5(input) => Ok(md5::compute(from_hex(input)?).to_vec()),
+        Algorithm::Md5(input) => Ok(md5::compute(input).to_vec()),
         Algorithm::Sha1(input) => {
             let mut sha1 = Sha1::new();
-            sha1.update(from_hex(input)?);
+            sha1.update(input);
             Ok(sha1.finalize().to_vec())
         }
-        Algorithm::Sha256(input) => Ok(hmac_sha256::Hash::hash(&from_hex(input)?).to_vec()),
-        Algorithm::Sha512(input) => Ok(hmac_sha512::Hash::hash(from_hex(input)?).to_vec()),
+        Algorithm::Sha256(input) => Ok(hmac_sha256::Hash::hash(input).to_vec()),
+        Algorithm::Sha512(input) => Ok(hmac_sha512::Hash::hash(input).to_vec()),
         Algorithm::Aes128CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes128CtsHmacSha196.cipher(), input),
         Algorithm::Aes256CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes256CtsHmacSha196.cipher(), input),
         Algorithm::HmacSha196Aes128(input) => process_krb_hmac(ChecksumSuite::HmacSha196Aes128.hasher(), input),
@@ -50,7 +50,12 @@ pub fn crypto_helper() -> Html {
     let onclick = Callback::from(move |_| {
         match convert(&algorithm_data) {
             Ok(output) => output_setter.set(output),
-            Err(err) => notification_manager.spawn(Notification::new(NotificationType::Error, "Processing error", err)),
+            Err(err) => notification_manager.spawn(Notification::new(
+                NotificationType::Error,
+                "Processing error",
+                err,
+                Notification::NOTIFICATION_LIFETIME,
+            )),
         };
     });
 
