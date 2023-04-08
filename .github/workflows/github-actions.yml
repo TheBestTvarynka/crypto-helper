@@ -8,10 +8,6 @@ on:
     - 'main'
 jobs:
   check:
-    on:
-      pull_request:
-        branches:
-          - main
     name: Check code
     runs-on: ubuntu-latest
 
