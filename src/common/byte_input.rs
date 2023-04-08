@@ -1,3 +1,4 @@
+use time::Duration;
 use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};
@@ -9,13 +10,20 @@ use crate::common::{encode_bytes, get_format_button_class, get_set_format_callba
 pub struct ByteInputProps {
     #[prop_or(BytesFormat::Hex)]
     format: BytesFormat,
+    #[prop_or_default]
+    placeholder: String,
     bytes: Vec<u8>,
     setter: Callback<Vec<u8>>,
 }
 
 #[function_component(ByteInput)]
 pub fn byte_input(props: &ByteInputProps) -> Html {
-    let ByteInputProps { format, bytes, setter } = &props;
+    let ByteInputProps {
+        format,
+        bytes,
+        setter,
+        placeholder,
+    } = &props;
 
     let raw_value = use_state(|| encode_bytes(bytes, *format));
     let bytes = use_state(|| bytes.clone());
@@ -33,11 +41,9 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
     );
 
     let bytes_setter = bytes.setter();
-    let bytes_format_setter = bytes_format.setter();
     use_effect_with_deps(
         move |props| {
             bytes_setter.set(props.bytes.clone());
-            bytes_format_setter.set(props.format);
         },
         props.clone(),
     );
@@ -52,7 +58,12 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
 
         match parse_bytes(&value, format) {
             Ok(bytes) => setter.emit(bytes),
-            Err(error) => notifications.spawn(Notification::new(NotificationType::Error, "Can not parse input", error)),
+            Err(error) => notifications.spawn(Notification::new(
+                NotificationType::Error,
+                "Can not parse input",
+                error,
+                Duration::seconds(1),
+            )),
         }
 
         raw_value_setter.set(value);
@@ -74,7 +85,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
             }</div>
             <textarea
                 rows="2"
-                placeholder={format!("place {} encoded input here", (*bytes_format).as_ref())}
+                placeholder={format!("{}: place {} encoded input here", placeholder, (*bytes_format).as_ref())}
                 class={classes!("base-input")}
                 value={(*raw_value).clone()}
                 {oninput}
@@ -84,8 +95,13 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
     }
 }
 
-pub fn build_byte_input(bytes: Vec<u8>, setter: Callback<Vec<u8>>) -> Html {
+pub fn build_byte_input(
+    bytes: Vec<u8>,
+    setter: Callback<Vec<u8>>,
+    format: Option<BytesFormat>,
+    placeholder: Option<String>,
+) -> Html {
     html! {
-        <ByteInput {bytes} {setter} />
+        <ByteInput {bytes} {setter} format={format.unwrap_or_default()} placeholder={placeholder.unwrap_or_default()} />
     }
 }

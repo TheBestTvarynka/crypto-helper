@@ -10,8 +10,9 @@ pub use switch::{Switch, SwitchProps};
 use web_sys::MouseEvent;
 use yew::{classes, Callback, Classes, UseStateSetter};
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Default)]
 pub enum BytesFormat {
+    #[default]
     Hex,
     Base64,
     Ascii,

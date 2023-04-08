@@ -50,7 +50,12 @@ pub fn crypto_helper() -> Html {
     let onclick = Callback::from(move |_| {
         match convert(&algorithm_data) {
             Ok(output) => output_setter.set(output),
-            Err(err) => notification_manager.spawn(Notification::new(NotificationType::Error, "Processing error", err)),
+            Err(err) => notification_manager.spawn(Notification::new(
+                NotificationType::Error,
+                "Processing error",
+                err,
+                Notification::NOTIFICATION_LIFETIME,
+            )),
         };
     });
 

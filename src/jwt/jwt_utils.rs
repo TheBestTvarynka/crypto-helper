@@ -22,24 +22,27 @@ fn get_input_component(
         }
         JwtSignatureAlgorithm::Hs256(key) => build_byte_input(
             key.clone(),
-            // "HMAC SHA256 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs256(key));
             }),
+            None,
+            Some("HMAC SHA256 key".into()),
         ),
         JwtSignatureAlgorithm::Hs384(key) => build_byte_input(
             key.clone(),
-            // "HMAC SHA384 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs384(key));
             }),
+            None,
+            Some("HMAC SHA384 key".into()),
         ),
         JwtSignatureAlgorithm::Hs512(key) => build_byte_input(
             key.clone(),
-            // "HMAC SHA512 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs512(key));
             }),
+            None,
+            Some("HMAC SHA512 key".into()),
         ),
         JwtSignatureAlgorithm::Rs256(key) => {
             let oninput = Callback::from(move |event: html::oninput::Event| {

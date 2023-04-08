@@ -41,6 +41,7 @@ macro_rules! check_asymmetric_key {
                     NotificationType::Error,
                     format!("Invalid RSA {} key", $name),
                     format!("{:?}", error),
+                    Notification::NOTIFICATION_LIFETIME,
                 ));
 
                 return None;
@@ -92,6 +93,7 @@ macro_rules! sign {
                     NotificationType::Error,
                     format!("Can not generate {} signature", $name),
                     format!("{:?}", error),
+                    Notification::NOTIFICATION_LIFETIME,
                 ));
 
                 None
