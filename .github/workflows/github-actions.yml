@@ -3,6 +3,9 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_BUCKET: ${{ secrets.GCP_BUCKET }}
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
     - 'main'
