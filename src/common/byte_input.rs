@@ -52,11 +52,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
 
         match parse_bytes(&value, format) {
             Ok(bytes) => setter.emit(bytes),
-            Err(error) => notifications.spawn(Notification::new(
-                NotificationType::Error,
-                "Can not parse input",
-                error,
-            )),
+            Err(error) => notifications.spawn(Notification::new(NotificationType::Error, "Can not parse input", error)),
         }
 
         raw_value_setter.set(value);

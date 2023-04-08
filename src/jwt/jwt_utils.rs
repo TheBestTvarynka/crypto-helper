@@ -7,7 +7,7 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::common::{build_simple_input, build_simple_output, BytesFormat};
+use crate::common::{build_byte_input, build_simple_output, BytesFormat};
 use crate::{check_asymmetric_key, check_symmetric_key, sign, verify};
 
 fn get_input_component(
@@ -20,23 +20,23 @@ fn get_input_component(
                 <span>{"none signature algorithm doesn't need any key."}</span>
             }
         }
-        JwtSignatureAlgorithm::Hs256(key) => build_simple_input(
+        JwtSignatureAlgorithm::Hs256(key) => build_byte_input(
             key.clone(),
-            "HMAC SHA256 hex-encoded key".into(),
+            // "HMAC SHA256 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs256(key));
             }),
         ),
-        JwtSignatureAlgorithm::Hs384(key) => build_simple_input(
+        JwtSignatureAlgorithm::Hs384(key) => build_byte_input(
             key.clone(),
-            "HMAC SHA384 hex-encoded key".into(),
+            // "HMAC SHA384 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs384(key));
             }),
         ),
-        JwtSignatureAlgorithm::Hs512(key) => build_simple_input(
+        JwtSignatureAlgorithm::Hs512(key) => build_byte_input(
             key.clone(),
-            "HMAC SHA512 hex-encoded key".into(),
+            // "HMAC SHA512 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs512(key));
             }),
@@ -113,7 +113,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
     match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::None => Some(Vec::new()),
         JwtSignatureAlgorithm::Hs256(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -123,7 +123,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Hs384(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -133,7 +133,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             Some(hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Hs512(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -214,7 +214,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
     let calculated_signature = match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::None => Vec::new(),
         JwtSignatureAlgorithm::Hs256(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -224,7 +224,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Hs384(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -234,7 +234,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Hs512(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
