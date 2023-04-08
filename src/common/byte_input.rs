@@ -55,7 +55,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
             Err(error) => notifications.spawn(Notification::new(
                 NotificationType::Error,
                 "Can not parse input",
-                error.to_string(),
+                error,
             )),
         }
 
@@ -63,7 +63,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
     });
 
     html! {
-        <div class={classes!("output")}>
+        <div class={classes!("bytes-input", "vertical")}>
             <div class={classes!("formats-container")}>{
                 BYTES_FORMATS.iter().map(|format| {
                     html! {
@@ -78,7 +78,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
             }</div>
             <textarea
                 rows="2"
-                placeholder={"place input here"}
+                placeholder={format!("place {} encoded input here", (*bytes_format).as_ref())}
                 class={classes!("base-input")}
                 value={(*raw_value).clone()}
                 {oninput}

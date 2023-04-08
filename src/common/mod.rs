@@ -19,6 +19,16 @@ pub enum BytesFormat {
     Ascii,
 }
 
+impl AsRef<str> for BytesFormat {
+    fn as_ref(&self) -> &str {
+        match self {
+            BytesFormat::Hex => "hex",
+            BytesFormat::Base64 => "base64",
+            BytesFormat::Ascii => "ascii",
+        }
+    }
+}
+
 impl From<&BytesFormat> for &str {
     fn from(format: &BytesFormat) -> Self {
         match format {
