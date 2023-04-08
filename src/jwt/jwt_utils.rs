@@ -7,8 +7,8 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::{check_asymmetric_key, check_symmetric_key, sign, verify};
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
+use crate::{check_asymmetric_key, check_symmetric_key, sign, verify};
 
 fn get_input_component(
     signature_algo: &JwtSignatureAlgorithm,
@@ -263,7 +263,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Rs384(key) => {
             let public_key = check_asymmetric_key!(
@@ -285,7 +285,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Rs512(key) => {
             let public_key = check_asymmetric_key!(
@@ -307,7 +307,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
