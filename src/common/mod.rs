@@ -31,11 +31,11 @@ impl From<&BytesFormat> for &str {
 
 pub const BYTES_FORMATS: [BytesFormat; 3] = [BytesFormat::Hex, BytesFormat::Base64, BytesFormat::Ascii];
 
-fn encode_bytes(bytes: &[u8], format: BytesFormat) -> String {
+fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
     match format {
         BytesFormat::Hex => hex::encode(bytes),
         BytesFormat::Base64 => base64::encode(bytes),
-        BytesFormat::Ascii => bytes.iter().map(|c| *c as char).collect(),
+        BytesFormat::Ascii => bytes.as_ref().iter().map(|c| *c as char).collect(),
     }
 }
 

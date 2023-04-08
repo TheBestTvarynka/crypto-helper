@@ -1,5 +1,3 @@
-use std::os::raw;
-
 use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};
@@ -25,19 +23,21 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
 
     let format_setter = bytes_format.setter();
     let raw_value_setter = raw_value.setter();
+    let parsed_bytes = (*bytes).clone();
     use_effect_with_deps(
         move |format| {
-            log::debug!("change format");
             format_setter.set(**format);
-
-            raw_value_setter.set(encode_bytes(bytes, **format));
+            raw_value_setter.set(encode_bytes(parsed_bytes, **format));
         },
         bytes_format.clone(),
     );
 
+    let bytes_setter = bytes.setter();
+    let bytes_format_setter = bytes_format.setter();
     use_effect_with_deps(
         move |props| {
-            log::debug!("changed props");
+            bytes_setter.set(props.bytes.clone());
+            bytes_format_setter.set(props.format);
         },
         props.clone(),
     );
@@ -59,7 +59,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
             )),
         }
 
-        // raw_value_setter.set(value);
+        raw_value_setter.set(value);
     });
 
     html! {
