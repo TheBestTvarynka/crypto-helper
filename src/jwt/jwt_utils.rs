@@ -7,8 +7,11 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::{check_asymmetric_key, check_symmetric_key, sign, verify};
 use crate::common::{build_simple_input, build_simple_output, BytesFormat};
+use crate::{check_asymmetric_key, check_symmetric_key, generate_placeholder, sign, verify};
+
+const DEFAULT_TEXT_FOR_RSA_PLACEHOLDER: &str = "RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)";
+const DEFAULT_TEXT_FOR_EC_PLACEHOLDER: &str = "EC private/public key in PEM (-----BEGIN EC PRIVATE/PUBLIC KEY-----)";
 
 fn get_input_component(
     signature_algo: &JwtSignatureAlgorithm,
@@ -42,84 +45,44 @@ fn get_input_component(
             }),
         ),
         JwtSignatureAlgorithm::Rs256(key) => {
-            let oninput = Callback::from(move |event: html::oninput::Event| {
-                let input: HtmlInputElement = event.target_unchecked_into();
-                set_signature_algo.emit(JwtSignatureAlgorithm::Rs256(input.value()));
-            });
-
-            html! {
-                <textarea
-                    rows="4"
-                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
-                    class={classes!("base-input")}
-                    value={key.clone()}
-                    {oninput}
-                />
-            }
+            generate_placeholder!(
+                signature: JwtSignatureAlgorithm::Rs256,
+                default_text: DEFAULT_TEXT_FOR_RSA_PLACEHOLDER,
+                set_signature_algo: set_signature_algo,
+                key: key
+            )
         }
         JwtSignatureAlgorithm::Rs384(key) => {
-            let oninput = Callback::from(move |event: html::oninput::Event| {
-                let input: HtmlInputElement = event.target_unchecked_into();
-                set_signature_algo.emit(JwtSignatureAlgorithm::Rs384(input.value()));
-            });
-
-            html! {
-                <textarea
-                    rows="4"
-                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
-                    class={classes!("base-input")}
-                    value={key.clone()}
-                    {oninput}
-                />
-            }
+            generate_placeholder!(
+                signature: JwtSignatureAlgorithm::Rs384,
+                default_text: DEFAULT_TEXT_FOR_RSA_PLACEHOLDER,
+                set_signature_algo: set_signature_algo,
+                key: key
+            )
         }
         JwtSignatureAlgorithm::Rs512(key) => {
-            let oninput = Callback::from(move |event: html::oninput::Event| {
-                let input: HtmlInputElement = event.target_unchecked_into();
-                set_signature_algo.emit(JwtSignatureAlgorithm::Rs512(input.value()));
-            });
-
-            html! {
-                <textarea
-                    rows="4"
-                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
-                    class={classes!("base-input")}
-                    value={key.clone()}
-                    {oninput}
-                />
-            }
+            generate_placeholder!(
+                signature: JwtSignatureAlgorithm::Rs512,
+                default_text: DEFAULT_TEXT_FOR_RSA_PLACEHOLDER,
+                set_signature_algo: set_signature_algo,
+                key: key
+            )
         }
         JwtSignatureAlgorithm::Es256(key) => {
-            let oninput = Callback::from(move |event: html::oninput::Event| {
-                let input: HtmlInputElement = event.target_unchecked_into();
-                set_signature_algo.emit(JwtSignatureAlgorithm::Es256(input.value()));
-            });
-
-            html! {
-                <textarea
-                    rows="4"
-                    placeholder={"RSA private/public key in PEM (-----BEGIN PRIVATE/PUBLIC KEY-----)"}
-                    class={classes!("base-input")}
-                    value={key.clone()}
-                    {oninput}
-                />
-            }
+            generate_placeholder!(
+                signature: JwtSignatureAlgorithm::Es256,
+                default_text: DEFAULT_TEXT_FOR_EC_PLACEHOLDER,
+                set_signature_algo: set_signature_algo,
+                key: key
+            )
         }
         JwtSignatureAlgorithm::Es384(key) => {
-            let oninput = Callback::from(move |event: html::oninput::Event| {
-                let input: HtmlInputElement = event.target_unchecked_into();
-                set_signature_algo.emit(JwtSignatureAlgorithm::Es384(input.value()));
-            });
-
-            html! {
-                <textarea
-                    rows="4"
-                    placeholder={"RSA private/public key in PEM (-----BEGIN PRIVATE/PUBLIC KEY-----)"}
-                    class={classes!("base-input")}
-                    value={key.clone()}
-                    {oninput}
-                />
-            }
+            generate_placeholder!(
+                signature: JwtSignatureAlgorithm::Es384,
+                default_text: DEFAULT_TEXT_FOR_EC_PLACEHOLDER,
+                set_signature_algo: set_signature_algo,
+                key: key
+            )
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             log::error!("Unsupported signature algo: {:?}", algo_name);
