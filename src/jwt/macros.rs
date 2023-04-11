@@ -1,21 +1,7 @@
 #[macro_export]
 macro_rules! check_symmetric_key {
     (key: $key:expr, len_hint: $len_hint:expr, name: $name:expr, notificator: $notificator:expr) => {{
-        let key = match hex::decode($key) {
-            Ok(key) => key,
-            Err(error) => {
-                log::error!("invalid {} key: {}", $name, $key);
-                $notificator.emit(Notification::new(
-                    NotificationType::Error,
-                    format!("Invalid {} key", $name),
-                    format!("{:?}", error),
-                ));
-
-                return Default::default();
-            }
-        };
-
-        if key.is_empty() {
+        if $key.is_empty() {
             $notificator.emit(Notification::from_description_and_type(
                 NotificationType::Error,
                 "Input key is empty.",
@@ -25,19 +11,17 @@ macro_rules! check_symmetric_key {
         }
 
         if let Some(key_len) = $len_hint {
-            if key_len > key.len() {
+            if key_len > $key.len() {
                 $notificator.emit(Notification::from_description_and_type(
                     NotificationType::Warn,
                     format!(
                         "Input key is too short. Got {}, but expected at least {}.",
-                        key.len(),
+                        $key.len(),
                         key_len
                     ),
                 ));
             }
         }
-
-        key
     }};
 }
 
@@ -57,6 +41,7 @@ macro_rules! check_asymmetric_key {
                     NotificationType::Error,
                     format!("Invalid RSA {} key", $name),
                     format!("{:?}", error),
+                    Notification::NOTIFICATION_LIFETIME,
                 ));
 
                 return None;
@@ -84,6 +69,7 @@ macro_rules! verify {
                     NotificationType::Error,
                     error.to_string(),
                 ));
+
                 false
             }
         }
@@ -107,34 +93,11 @@ macro_rules! sign {
                     NotificationType::Error,
                     format!("Can not generate {} signature", $name),
                     format!("{:?}", error),
+                    Notification::NOTIFICATION_LIFETIME,
                 ));
+
                 None
             }
-        }
-    }};
-}
-
-#[macro_export]
-macro_rules! generate_placeholder {
-    (
-        signature: $signature:expr,
-        default_text: $default_text:expr,
-        set_signature_algo: $set_signature_algo:expr,
-        key: $key:expr
-    ) => {{
-        let oninput = Callback::from(move |event: html::oninput::Event| {
-            let input: HtmlInputElement = event.target_unchecked_into();
-            $set_signature_algo.emit($signature(input.value()));
-        });
-
-        html! {
-            <textarea
-                rows="4"
-                placeholder={$default_text}
-                class={classes!("base-input")}
-                value={$key.clone()}
-                {oninput}
-            />
         }
     }};
 }

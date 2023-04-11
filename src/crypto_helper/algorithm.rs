@@ -174,18 +174,16 @@ impl Default for RsaAction {
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct RsaInput {
-    // false - sign
-    // true - validate
     pub action: RsaAction,
     pub payload: String,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Algorithm {
-    Md5(String),
-    Sha1(String),
-    Sha256(String),
-    Sha512(String),
+    Md5(Vec<u8>),
+    Sha1(Vec<u8>),
+    Sha256(Vec<u8>),
+    Sha512(Vec<u8>),
     Aes128CtsHmacSha196(KrbInput),
     Aes256CtsHmacSha196(KrbInput),
     HmacSha196Aes128(KrbInputData),

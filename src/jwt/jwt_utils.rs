@@ -7,11 +7,8 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::common::{build_simple_input, build_simple_output, BytesFormat};
-use crate::{check_asymmetric_key, check_symmetric_key, generate_placeholder, sign, verify};
-
-const DEFAULT_TEXT_FOR_RSA_PLACEHOLDER: &str = "RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)";
-const DEFAULT_TEXT_FOR_EC_PLACEHOLDER: &str = "EC private/public key in PEM (-----BEGIN EC PRIVATE/PUBLIC KEY-----)";
+use crate::common::{build_byte_input, build_simple_output, BytesFormat};
+use crate::{check_asymmetric_key, check_symmetric_key, sign, verify};
 
 fn get_input_component(
     signature_algo: &JwtSignatureAlgorithm,
@@ -23,66 +20,77 @@ fn get_input_component(
                 <span>{"none signature algorithm doesn't need any key."}</span>
             }
         }
-        JwtSignatureAlgorithm::Hs256(key) => build_simple_input(
+        JwtSignatureAlgorithm::Hs256(key) => build_byte_input(
             key.clone(),
-            "HMAC SHA256 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs256(key));
             }),
+            None,
+            Some("HMAC SHA256 key".into()),
         ),
-        JwtSignatureAlgorithm::Hs384(key) => build_simple_input(
+        JwtSignatureAlgorithm::Hs384(key) => build_byte_input(
             key.clone(),
-            "HMAC SHA384 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs384(key));
             }),
+            None,
+            Some("HMAC SHA384 key".into()),
         ),
-        JwtSignatureAlgorithm::Hs512(key) => build_simple_input(
+        JwtSignatureAlgorithm::Hs512(key) => build_byte_input(
             key.clone(),
-            "HMAC SHA512 hex-encoded key".into(),
             Callback::from(move |key| {
                 set_signature_algo.emit(JwtSignatureAlgorithm::Hs512(key));
             }),
+            None,
+            Some("HMAC SHA512 key".into()),
         ),
         JwtSignatureAlgorithm::Rs256(key) => {
-            generate_placeholder!(
-                signature: JwtSignatureAlgorithm::Rs256,
-                default_text: DEFAULT_TEXT_FOR_RSA_PLACEHOLDER,
-                set_signature_algo: set_signature_algo,
-                key: key
-            )
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_signature_algo.emit(JwtSignatureAlgorithm::Rs256(input.value()));
+            });
+
+            html! {
+                <textarea
+                    rows="4"
+                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
+                    class={classes!("base-input")}
+                    value={key.clone()}
+                    {oninput}
+                />
+            }
         }
         JwtSignatureAlgorithm::Rs384(key) => {
-            generate_placeholder!(
-                signature: JwtSignatureAlgorithm::Rs384,
-                default_text: DEFAULT_TEXT_FOR_RSA_PLACEHOLDER,
-                set_signature_algo: set_signature_algo,
-                key: key
-            )
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_signature_algo.emit(JwtSignatureAlgorithm::Rs384(input.value()));
+            });
+
+            html! {
+                <textarea
+                    rows="4"
+                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
+                    class={classes!("base-input")}
+                    value={key.clone()}
+                    {oninput}
+                />
+            }
         }
         JwtSignatureAlgorithm::Rs512(key) => {
-            generate_placeholder!(
-                signature: JwtSignatureAlgorithm::Rs512,
-                default_text: DEFAULT_TEXT_FOR_RSA_PLACEHOLDER,
-                set_signature_algo: set_signature_algo,
-                key: key
-            )
-        }
-        JwtSignatureAlgorithm::Es256(key) => {
-            generate_placeholder!(
-                signature: JwtSignatureAlgorithm::Es256,
-                default_text: DEFAULT_TEXT_FOR_EC_PLACEHOLDER,
-                set_signature_algo: set_signature_algo,
-                key: key
-            )
-        }
-        JwtSignatureAlgorithm::Es384(key) => {
-            generate_placeholder!(
-                signature: JwtSignatureAlgorithm::Es384,
-                default_text: DEFAULT_TEXT_FOR_EC_PLACEHOLDER,
-                set_signature_algo: set_signature_algo,
-                key: key
-            )
+            let oninput = Callback::from(move |event: html::oninput::Event| {
+                let input: HtmlInputElement = event.target_unchecked_into();
+                set_signature_algo.emit(JwtSignatureAlgorithm::Rs512(input.value()));
+            });
+
+            html! {
+                <textarea
+                    rows="4"
+                    placeholder={"RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)"}
+                    class={classes!("base-input")}
+                    value={key.clone()}
+                    {oninput}
+                />
+            }
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             log::error!("Unsupported signature algo: {:?}", algo_name);
@@ -108,7 +116,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
     match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::None => Some(Vec::new()),
         JwtSignatureAlgorithm::Hs256(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -118,7 +126,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Hs384(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -128,7 +136,7 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
             Some(hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
         }
         JwtSignatureAlgorithm::Hs512(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -188,40 +196,6 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: &spawn_notification
             )
         }
-        JwtSignatureAlgorithm::Es256(key) => {
-            let private_key = check_asymmetric_key!(
-                key: key,
-                name: jwt.signature_algorithm.to_string(),
-                notificator: &spawn_notification,
-                key_kind: PrivateKey,
-            );
-
-            sign!(
-                signature_algo: SignatureAlgorithm::Ecdsa,
-                hash_algo: HashAlgorithm::SHA2_256,
-                name: jwt.signature_algorithm.to_string(),
-                private_key: &private_key,
-                data_to_sign: data_to_sign.as_bytes(),
-                notificator: &spawn_notification
-            )
-        }
-        JwtSignatureAlgorithm::Es384(key) => {
-            let private_key = check_asymmetric_key!(
-                key: key,
-                name: jwt.signature_algorithm.to_string(),
-                notificator: &spawn_notification,
-                key_kind: PrivateKey,
-            );
-
-            sign!(
-                signature_algo: SignatureAlgorithm::Ecdsa,
-                hash_algo: HashAlgorithm::SHA2_384,
-                name: jwt.signature_algorithm.to_string(),
-                private_key: &private_key,
-                data_to_sign: data_to_sign.as_bytes(),
-                notificator: &spawn_notification
-            )
-        }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
                 NotificationType::Warn,
@@ -243,7 +217,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
     let calculated_signature = match &jwt.signature_algorithm {
         JwtSignatureAlgorithm::None => Vec::new(),
         JwtSignatureAlgorithm::Hs256(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -253,7 +227,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Hs384(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -263,7 +237,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
         }
         JwtSignatureAlgorithm::Hs512(key) => {
-            let key = check_symmetric_key!(
+            check_symmetric_key!(
                 key: key,
                 len_hint: jwt.signature_algorithm.key_len_hint(),
                 name: jwt.signature_algorithm.to_string(),
@@ -330,50 +304,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_512,
-                public_key: &public_key,
-                data_to_sign: data_to_sign.as_bytes(),
-                jwt_signature: &jwt.signature,
-                notificator: spawn_notification
-            );
-
-            return Some(is_ok);
-        }
-        JwtSignatureAlgorithm::Es256(key) => {
-            let public_key = check_asymmetric_key!(
-                key: key,
-                name: jwt.signature_algorithm.to_string(),
-                notificator: spawn_notification,
-                key_kind: PublicKey,
-            );
-
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
-
-            let is_ok = verify!(
-                signature_algo: SignatureAlgorithm::Ecdsa,
-                hash_algo: HashAlgorithm::SHA2_256,
-                public_key: &public_key,
-                data_to_sign: data_to_sign.as_bytes(),
-                jwt_signature: &jwt.signature,
-                notificator: spawn_notification
-            );
-
-            return Some(is_ok);
-        }
-        JwtSignatureAlgorithm::Es384(key) => {
-            let public_key = check_asymmetric_key!(
-                key: key,
-                name: jwt.signature_algorithm.to_string(),
-                notificator: spawn_notification,
-                key_kind: PublicKey,
-            );
-
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
-
-            let is_ok = verify!(
-                signature_algo: SignatureAlgorithm::Ecdsa,
-                hash_algo: HashAlgorithm::SHA2_384,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,

@@ -40,7 +40,12 @@ pub fn jwt() -> Html {
             jwte_setter.set(None);
             log::error!("{}", error);
 
-            notifications.spawn(Notification::new(NotificationType::Error, "Invalid token", error));
+            notifications.spawn(Notification::new(
+                NotificationType::Error,
+                "Invalid token",
+                error,
+                Notification::NOTIFICATION_LIFETIME,
+            ));
         }
     });
 
