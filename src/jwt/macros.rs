@@ -113,3 +113,28 @@ macro_rules! sign {
         }
     }};
 }
+
+#[macro_export]
+macro_rules! generate_placeholder {
+    (
+        signature: $signature:expr,
+        default_text: $default_text:expr,
+        set_signature_algo: $set_signature_algo:expr,
+        key: $key:expr
+    ) => {{
+        let oninput = Callback::from(move |event: html::oninput::Event| {
+            let input: HtmlInputElement = event.target_unchecked_into();
+            $set_signature_algo.emit($signature(input.value()));
+        });
+
+        html! {
+            <textarea
+                rows="4"
+                placeholder={$default_text}
+                class={classes!("base-input")}
+                value={$key.clone()}
+                {oninput}
+            />
+        }
+    }};
+}
