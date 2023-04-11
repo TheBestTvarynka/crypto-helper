@@ -3,15 +3,7 @@ use std::fmt::{self, Display};
 use serde_json::Value;
 
 const JWT_SIGNATURE_ALGORITHMS: [&str; 9] = [
-    "HS256",
-    "HS512",
-    "none",
-    "RS256",
-    "HS384",
-    "RS384",
-    "RS512",
-    "ES256",
-    "ES384"
+    "HS256", "HS512", "none", "RS256", "HS384", "RS384", "RS512", "ES256", "ES384",
 ];
 
 #[derive(Debug, PartialEq, Eq, Clone)]

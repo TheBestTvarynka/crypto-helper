@@ -329,7 +329,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Rs384(key) => {
             let public_key = check_asymmetric_key!(
@@ -351,7 +351,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Rs512(key) => {
             let public_key = check_asymmetric_key!(
@@ -373,7 +373,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Es256(key) => {
             let public_key = check_asymmetric_key!(
@@ -395,7 +395,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Es384(key) => {
             let public_key = check_asymmetric_key!(
@@ -417,7 +417,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            return Some(is_ok)
+            return Some(is_ok);
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(

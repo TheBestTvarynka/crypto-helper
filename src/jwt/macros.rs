@@ -50,17 +50,17 @@ macro_rules! check_asymmetric_key {
         key_kind: $key_kind:ty,
     ) => {{
         let rsa_key = match <$key_kind>::from_pem_str($key) {
-                Ok(key) => key,
-                Err(error) => {
-                    log::error!("invalid RSA {} key", $name);
-                    $notificator.emit(Notification::new(
-                        NotificationType::Error,
-                        format!("Invalid RSA {} key", $name),
-                        format!("{:?}", error),
-                    ));
+            Ok(key) => key,
+            Err(error) => {
+                log::error!("invalid RSA {} key", $name);
+                $notificator.emit(Notification::new(
+                    NotificationType::Error,
+                    format!("Invalid RSA {} key", $name),
+                    format!("{:?}", error),
+                ));
 
-                    return None;
-                }
+                return None;
+            }
         };
 
         rsa_key
@@ -77,19 +77,15 @@ macro_rules! verify {
         jwt_signature: $jwt_signature:expr,
         notificator: $notificator:expr
     ) => {{
-        match $signature_algo($hash_algo).verify(
-                $public_key,
-                $data_to_sign,
-                $jwt_signature
-            ) {
-                Ok(_) => true,
-                Err(error) => {
-                    $notificator.emit(Notification::from_description_and_type(
-                        NotificationType::Error,
-                        error.to_string(),
-                    ));
-                    false
-                }
+        match $signature_algo($hash_algo).verify($public_key, $data_to_sign, $jwt_signature) {
+            Ok(_) => true,
+            Err(error) => {
+                $notificator.emit(Notification::from_description_and_type(
+                    NotificationType::Error,
+                    error.to_string(),
+                ));
+                false
+            }
         }
     }};
 }
@@ -104,19 +100,16 @@ macro_rules! sign {
         data_to_sign: $data_to_sign:expr,
         notificator: $notificator:expr
     ) => {{
-        match $signature_algo($hash_algo).sign(
-                $data_to_sign,
-                $private_key
-            ) {
-                Ok(signature) => Some(signature),
-                Err(error) => {
-                    $notificator.emit(Notification::new(
-                        NotificationType::Error,
-                        format!("Can not generate {} signature", $name),
-                        format!("{:?}", error),
-                    ));
-                    None
-                }
+        match $signature_algo($hash_algo).sign($data_to_sign, $private_key) {
+            Ok(signature) => Some(signature),
+            Err(error) => {
+                $notificator.emit(Notification::new(
+                    NotificationType::Error,
+                    format!("Can not generate {} signature", $name),
+                    format!("{:?}", error),
+                ));
+                None
+            }
         }
     }};
 }
