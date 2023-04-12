@@ -23,6 +23,7 @@ pub fn about() -> Html {
                     <li>{"RS512"}</li>
                     <li>{"ES256"}</li>
                     <li>{"ES384"}</li>
+                    <li>{"ES512"}</li>
                 </ul>
             </ul>
             <span>{"All computations are performed on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a "}<a href={"https://bf.qkation.com"}>{"byte-formatter"}</a>{" to transform input to the hex format."}</span>
