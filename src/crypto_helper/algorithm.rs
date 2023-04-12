@@ -10,7 +10,7 @@ pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
     "HMAC-SHA1-96-AES128",
     "HMAC-SHA1-96-AES256",
     "RSA",
-    "SHA384"
+    "SHA384",
 ];
 
 const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
@@ -204,7 +204,7 @@ impl TryFrom<&str> for Algorithm {
         } else if value == SUPPORTED_ALGORITHMS[2] {
             return Ok(Algorithm::Sha256(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[9] {
-            return Ok(Algorithm::Sha384(Default::default()))
+            return Ok(Algorithm::Sha384(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[3] {
             return Ok(Algorithm::Sha512(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[4] {
