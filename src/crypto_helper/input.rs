@@ -31,6 +31,12 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
             None,
             None,
         ),
+        Algorithm::Sha384(input) => build_byte_input(
+            input.clone(),
+            Callback::from(move |input| setter.set(Algorithm::Sha384(input))),
+            None,
+            None,
+        ),
         Algorithm::Sha512(input) => build_byte_input(
             input.clone(),
             Callback::from(move |input| setter.set(Algorithm::Sha512(input))),

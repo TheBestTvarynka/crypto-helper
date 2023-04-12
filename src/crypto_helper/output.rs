@@ -12,6 +12,7 @@ fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification:
         Algorithm::Md5(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::Sha1(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::Sha256(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::Sha384(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::Sha512(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::Aes128CtsHmacSha196(input) => build_krb_output(input, output, add_notification),
         Algorithm::Aes256CtsHmacSha196(input) => build_krb_output(input, output, add_notification),

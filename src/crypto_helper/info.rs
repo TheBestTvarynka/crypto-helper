@@ -31,6 +31,11 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
             <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
             </span>
         },
+        Algorithm::Sha384(_) => html! {
+            <span>{"Hash hex-encoded input using SHA384 hashing function."}
+            <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
+            </span>
+        },
         Algorithm::Sha512(_) => html! {
             <span>{"Hash hex-encoded input using SHA512 hashing function."}
             <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}

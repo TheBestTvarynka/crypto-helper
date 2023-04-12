@@ -1,6 +1,6 @@
 use picky::hash::HashAlgorithm;
 
-pub const SUPPORTED_ALGORITHMS: [&str; 9] = [
+pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
     "MD5",
     "SHA1",
     "SHA256",
@@ -10,6 +10,7 @@ pub const SUPPORTED_ALGORITHMS: [&str; 9] = [
     "HMAC-SHA1-96-AES128",
     "HMAC-SHA1-96-AES256",
     "RSA",
+    "SHA384"
 ];
 
 const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
@@ -183,6 +184,7 @@ pub enum Algorithm {
     Md5(Vec<u8>),
     Sha1(Vec<u8>),
     Sha256(Vec<u8>),
+    Sha384(Vec<u8>),
     Sha512(Vec<u8>),
     Aes128CtsHmacSha196(KrbInput),
     Aes256CtsHmacSha196(KrbInput),
@@ -201,6 +203,8 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::Sha1(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[2] {
             return Ok(Algorithm::Sha256(Default::default()));
+        } else if value == SUPPORTED_ALGORITHMS[9] {
+            return Ok(Algorithm::Sha384(Default::default()))
         } else if value == SUPPORTED_ALGORITHMS[3] {
             return Ok(Algorithm::Sha512(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[4] {
@@ -227,6 +231,7 @@ impl From<&Algorithm> for &str {
             Algorithm::Md5(_) => SUPPORTED_ALGORITHMS[0],
             Algorithm::Sha1(_) => SUPPORTED_ALGORITHMS[1],
             Algorithm::Sha256(_) => SUPPORTED_ALGORITHMS[2],
+            Algorithm::Sha384(_) => SUPPORTED_ALGORITHMS[9],
             Algorithm::Sha512(_) => SUPPORTED_ALGORITHMS[3],
             Algorithm::Aes128CtsHmacSha196(_) => SUPPORTED_ALGORITHMS[4],
             Algorithm::Aes256CtsHmacSha196(_) => SUPPORTED_ALGORITHMS[5],
