@@ -23,7 +23,7 @@ All computations are performed on the client side. This tool never sends the dat
 
 * Written in [Rust](https://github.com/rust-lang/rust) :crab: using [yew](https://github.com/yewstack/yew) :sparkles:
 * `MD5`
-* `SHA1`/`SHA256`/`SHA512`
+* `SHA1`/`SHA256`/`SHA384`/`SHA512`
 * Kerberos ciphers: `AES128-CTS-HMAC-SHA1-96`/`AES256-CTS-HMAC-SHA1-96`
 * Kerberos HMAC: `HMAC-SHA1-96-AES128`/`HMAC-SHA1-96-AES256`
 * `RSA`
