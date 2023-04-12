@@ -37,6 +37,7 @@ All computations are performed on the client side. This tool never sends the dat
   * `RS512`
   * `ES256`
   * `ES384`
+  * `ES512`
 
 
 ### Development
