@@ -4,8 +4,10 @@ use web_sys::HtmlInputElement;
 use yew::html::onchange::Event;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast, UseStateSetter};
 
-use super::algorithm::{Algorithm, SUPPORTED_ALGORITHMS};
+use super::algorithm::Algorithm;
+use crate::crypto_helper::algorithm::{ENCRYPTION_ALGOS, HASHING_ALGOS, HMAC_ALGOS};
 use crate::crypto_helper::info::algo_search::AlgoSearch;
+use crate::generate_algo_list_for_yew;
 
 #[derive(PartialEq, Properties)]
 pub struct InfoProps {
@@ -101,21 +103,25 @@ pub fn info(props: &InfoProps) -> Html {
         algo_search_setter.set(!algo_search_value);
     });
 
+    let hashing_algos = generate_algo_list_for_yew!(algo_list: HASHING_ALGOS, props: props);
+    let encryption_algos = generate_algo_list_for_yew!(algo_list: ENCRYPTION_ALGOS, props: props);
+    let hmac_algos = generate_algo_list_for_yew!(algo_list: HMAC_ALGOS, props: props);
+
     html! {
         <div class={classes!("horizontal")}>
             <div class={classes!("vertical")}>
                 <div class={classes!("horizontal")}>
-                    <select {onchange} class={classes!("base-input")}>{
-                        SUPPORTED_ALGORITHMS
-                            .iter()
-                            .map(|algo| {
-                                log::trace!("selected: {}, value: {}", &props.algorithm == *algo, *algo);
-                                html!{
-                                    <option selected={ &props.algorithm == *algo } value={*algo}>{algo}</option>
-                                }
-                            })
-                            .collect::<Vec<_>>()
-                    }</select>
+                    <select {onchange} class={classes!("base-input")}>
+                        <optgroup label="Hashing"> {
+                            hashing_algos
+                        }</optgroup>
+                        <optgroup label="Encryption"> {
+                            encryption_algos
+                        }</optgroup>
+                        <optgroup label="HMAC"> {
+                            hmac_algos
+                        }</optgroup>
+                    </select>
                     <input type="checkbox" id={"algo-search"} class={classes!("search-input")} onchange={on_algo_search_change} />
                     <label for={"algo-search"} class={classes!("search-button")}>
                         {get_search_icon()}
