@@ -16,28 +16,27 @@ pub struct InfoProps {
 fn get_algorithm_info(algorithm: &Algorithm) -> Html {
     match algorithm {
         Algorithm::Md5(_) => html! {
-            <span>
-            {"Hash hex-encoded input using MD5 hashing function. "}
+            <span>{"Input for MD5 hashing function."}
             <a href={"https://www.ietf.org/rfc/rfc1321.txt"}>{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha1(_) => html! {
-            <span>{"Hash hex-encoded input using SHA1 hashing function."}
+            <span>{"Input for SHA1 hashing function."}
             <a href={"https://www.rfc-editor.org/rfc/rfc3174"}>{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha256(_) => html! {
-            <span>{"Hash hex-encoded input using SHA256 hashing function."}
+            <span>{"Input for SHA256 hashing function."}
             <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha384(_) => html! {
-            <span>{"Hash hex-encoded input using SHA384 hashing function."}
+            <span>{"Input for SHA384 hashing function."}
             <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha512(_) => html! {
-            <span>{"Hash hex-encoded input using SHA512 hashing function."}
+            <span>{"Input for SHA512 hashing function."}
             <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
             </span>
         },
