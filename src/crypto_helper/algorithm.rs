@@ -1,17 +1,33 @@
 use picky::hash::HashAlgorithm;
 
 pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
-    "MD5",
-    "SHA1",
-    "SHA256",
-    "SHA512",
-    "AES128-CTS-HMAC-SHA1-96",
-    "AES256-CTS-HMAC-SHA1-96",
-    "HMAC-SHA1-96-AES128",
-    "HMAC-SHA1-96-AES256",
-    "RSA",
-    "SHA384",
+    "MD5",                     // 0
+    "SHA1",                    // 1
+    "SHA256",                  // 2
+    "SHA512",                  // 3
+    "AES128-CTS-HMAC-SHA1-96", // 4
+    "AES256-CTS-HMAC-SHA1-96", // 5
+    "HMAC-SHA1-96-AES128",     // 6
+    "HMAC-SHA1-96-AES256",     // 7
+    "RSA",                     // 8
+    "SHA384",                  // 9
 ];
+
+pub const HASHING_ALGOS: [&str; 5] = [
+    SUPPORTED_ALGORITHMS[0],
+    SUPPORTED_ALGORITHMS[1],
+    SUPPORTED_ALGORITHMS[2],
+    SUPPORTED_ALGORITHMS[3],
+    SUPPORTED_ALGORITHMS[9],
+];
+
+pub const ENCRYPTION_ALGOS: [&str; 3] = [
+    SUPPORTED_ALGORITHMS[4],
+    SUPPORTED_ALGORITHMS[5],
+    SUPPORTED_ALGORITHMS[8],
+];
+
+pub const HMAC_ALGOS: [&str; 2] = [SUPPORTED_ALGORITHMS[6], SUPPORTED_ALGORITHMS[7]];
 
 const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
 pub const RSA_HASH_ALGOS: [&str; 8] = [
