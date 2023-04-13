@@ -2,6 +2,7 @@ mod algorithm;
 mod computations;
 mod info;
 mod input;
+mod macros;
 mod output;
 
 pub use algorithm::RSA_HASH_ALGOS;
