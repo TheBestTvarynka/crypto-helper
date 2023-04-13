@@ -29,6 +29,7 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
             Ok(sha1.finalize().to_vec())
         }
         Algorithm::Sha256(input) => Ok(hmac_sha256::Hash::hash(input).to_vec()),
+        Algorithm::Sha384(input) => Ok(hmac_sha512::sha384::Hash::hash(input).to_vec()),
         Algorithm::Sha512(input) => Ok(hmac_sha512::Hash::hash(input).to_vec()),
         Algorithm::Aes128CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes128CtsHmacSha196.cipher(), input),
         Algorithm::Aes256CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes256CtsHmacSha196.cipher(), input),
