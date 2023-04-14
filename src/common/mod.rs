@@ -10,12 +10,16 @@ pub use switch::{Switch, SwitchProps};
 use web_sys::MouseEvent;
 use yew::{classes, Callback, Classes, UseStateSetter};
 
+use crate::utils::{decode_binary, decode_decimal};
+
 #[derive(PartialEq, Eq, Clone, Copy, Default)]
 pub enum BytesFormat {
     #[default]
     Hex,
     Base64,
     Ascii,
+    Decimal,
+    Binary,
 }
 
 impl AsRef<str> for BytesFormat {
@@ -24,6 +28,8 @@ impl AsRef<str> for BytesFormat {
             BytesFormat::Hex => "hex",
             BytesFormat::Base64 => "base64",
             BytesFormat::Ascii => "ascii",
+            BytesFormat::Decimal => "decimal",
+            BytesFormat::Binary => "binary",
         }
     }
 }
@@ -34,17 +40,37 @@ impl From<&BytesFormat> for &str {
             BytesFormat::Hex => "hex",
             BytesFormat::Base64 => "base64",
             BytesFormat::Ascii => "ascii",
+            BytesFormat::Decimal => "decimal",
+            BytesFormat::Binary => "binary",
         }
     }
 }
 
-pub const BYTES_FORMATS: [BytesFormat; 3] = [BytesFormat::Hex, BytesFormat::Base64, BytesFormat::Ascii];
+pub const BYTES_FORMATS: [BytesFormat; 5] = [
+    BytesFormat::Hex,
+    BytesFormat::Base64,
+    BytesFormat::Ascii,
+    BytesFormat::Decimal,
+    BytesFormat::Binary,
+];
 
 fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
     match format {
         BytesFormat::Hex => hex::encode(bytes),
         BytesFormat::Base64 => base64::encode(bytes),
         BytesFormat::Ascii => bytes.as_ref().iter().map(|c| *c as char).collect(),
+        BytesFormat::Decimal => bytes
+            .as_ref()
+            .iter()
+            .map(|byte| byte.to_string())
+            .collect::<Vec<String>>()
+            .join(" "),
+        BytesFormat::Binary => bytes
+            .as_ref()
+            .iter()
+            .map(|byte| format!("{:08b}", byte))
+            .collect::<Vec<String>>()
+            .join(" "),
     }
 }
 
@@ -53,6 +79,8 @@ fn parse_bytes(raw: &str, format: BytesFormat) -> Result<Vec<u8>, String> {
         BytesFormat::Hex => hex::decode(raw).map_err(|err| format!("invalid hex input:{:?}", err)),
         BytesFormat::Base64 => base64::decode(raw).map_err(|err| format!("invalid base64 input:{:?}", err)),
         BytesFormat::Ascii => Ok(raw.into()),
+        BytesFormat::Decimal => decode_decimal(raw),
+        BytesFormat::Binary => decode_binary(raw),
     }
 }
 
