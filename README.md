@@ -44,6 +44,7 @@ All computations are performed on the client side. This tool never sends the dat
 
 ### Development
 
+0. Install WebAssembly target: `rustup target add wasm32-unknown-unknown`.
 1. Install [`trunk`](https://github.com/thedodd/trunk). [Additional guide](https://yew.rs/docs/next/getting-started/introduction#install-trunk).
 2. Run `trunk serve` in your terminal.
 3. Go to http://127.0.0.1:8080 in your browser.
