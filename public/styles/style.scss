@@ -122,3 +122,35 @@ article {
 .byte-other {
     color: yellow;
 }
+
+.button-with-icon {
+    font-size: 0.7em;
+
+    width: 3em;
+    height: 2em;
+    padding: 0.1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    // background-color: #403735;
+    padding: 0.1em 0.2em 0.1em 0.2em;
+    border-radius: 0.2em;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.button-with-icon > img {
+    width: 90%;
+}
+
+.button-with-icon:hover {
+    cursor: pointer;
+    transition: 0.3s;
+    // background-color: #403735;
+}
+
+.button-with-icon:focus {
+    box-shadow: 0 0 0 2px #736664;
+}

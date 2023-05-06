@@ -69,6 +69,11 @@ pub fn crypto_helper() -> Html {
                 <button {onclick}>{"Go"}</button>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
+            <div class={classes!("horizontal")}>
+                <button class={classes!("button-with-icon")}>
+                    <img src="/public/img/icons/share_by_link.png" />
+                </button>
+            </div>
         </article>
     }
 }
