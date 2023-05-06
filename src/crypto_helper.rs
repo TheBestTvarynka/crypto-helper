@@ -5,7 +5,7 @@ mod input;
 mod macros;
 mod output;
 
-pub use algorithm::RSA_HASH_ALGOS;
+pub use algorithm::{Algorithm, KrbInput, KrbInputData, RSA_HASH_ALGOS};
 use info::Info;
 use input::Input;
 use output::Output;
@@ -14,7 +14,6 @@ use sha1::{Digest, Sha1};
 use yew::{classes, function_component, html, use_state, Callback, Html};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use self::algorithm::Algorithm;
 use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
 
 fn from_hex(input: &str) -> Result<Vec<u8>, String> {

@@ -5,6 +5,7 @@ mod footer;
 mod header;
 mod jwt;
 mod not_found;
+mod url_query_params;
 mod utils;
 
 use about::About;

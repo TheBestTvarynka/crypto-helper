@@ -36,9 +36,9 @@ pub const RSA_HASH_ALGOS: [&str; 8] = [
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct KrbInputData {
-    pub key: String,
-    pub key_usage: String,
-    pub payload: String,
+    pub key: Vec<u8>,
+    pub key_usage: i32,
+    pub payload: Vec<u8>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
