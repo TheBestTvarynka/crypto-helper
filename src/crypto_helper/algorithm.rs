@@ -268,6 +268,6 @@ impl PartialEq<&str> for &Algorithm {
 
 impl Default for Algorithm {
     fn default() -> Self {
-        Algorithm::Sha256(Default::default())
+        Algorithm::Aes256CtsHmacSha196(Default::default())
     }
 }

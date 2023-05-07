@@ -45,40 +45,17 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
 pub fn process_krb_cipher(cipher: Box<dyn Cipher>, input: &KrbInput) -> Result<Vec<u8>, String> {
     if input.mode {
         cipher
-            .decrypt(
-                &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                input
-                    .data
-                    .key_usage
-                    .parse::<i32>()
-                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                &from_hex(&input.data.payload).map_err(|err| format!("payload: {}", err))?,
-            )
+            .decrypt(&input.data.key, input.data.key_usage, &input.data.payload)
             .map_err(|err| err.to_string())
     } else {
         cipher
-            .encrypt(
-                &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                input
-                    .data
-                    .key_usage
-                    .parse::<i32>()
-                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                &from_hex(&input.data.payload).map_err(|err| format!("payload: {}", err))?,
-            )
+            .encrypt(&input.data.key, input.data.key_usage, &input.data.payload)
             .map_err(|err| err.to_string())
     }
 }
 
 pub fn process_krb_hmac(hasher: Box<dyn Checksum>, input: &KrbInputData) -> Result<Vec<u8>, String> {
     hasher
-        .checksum(
-            &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-            input
-                .key_usage
-                .parse::<i32>()
-                .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-            &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
-        )
+        .checksum(&input.key, input.key_usage, &input.payload)
         .map_err(|err| err.to_string())
 }
