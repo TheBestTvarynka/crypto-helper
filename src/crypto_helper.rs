@@ -5,7 +5,7 @@ mod input;
 mod macros;
 mod output;
 
-pub use algorithm::{Algorithm, KrbInput, KrbInputData, RSA_HASH_ALGOS};
+pub use algorithm::{Algorithm, KrbInput, KrbInputData, RSA_HASH_ALGOS, KrbMode};
 use info::Info;
 use input::Input;
 use output::Output;
