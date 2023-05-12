@@ -47,11 +47,34 @@ pub struct KrbInputData {
     pub payload: Vec<u8>,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
+pub enum KrbMode {
+    #[default]
+    Encrypt,
+    Decrypt,
+}
+
+impl From<KrbMode> for bool {
+    fn from(mode: KrbMode) -> Self {
+        match mode {
+            KrbMode::Encrypt => false,
+            KrbMode::Decrypt => true,
+        }
+    }
+}
+
+impl From<bool> for KrbMode {
+    fn from(mode: bool) -> Self {
+        match mode {
+            true => KrbMode::Decrypt,
+            false => KrbMode::Encrypt,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct KrbInput {
-    // false - encrypt
-    // true - decrypt
-    pub mode: bool,
+    pub mode: KrbMode,
     pub data: KrbInputData,
 }
 

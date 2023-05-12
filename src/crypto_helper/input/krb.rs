@@ -7,7 +7,7 @@ use yew::{
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::common::{build_byte_input, Switch};
-use crate::crypto_helper::algorithm::KrbInput as KerberosInput;
+use crate::crypto_helper::algorithm::{KrbInput as KerberosInput, KrbMode};
 
 fn get_usage_number_name(usage_number: i32) -> &'static str {
     match usage_number {
@@ -120,9 +120,9 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
 
     let input_setter = props.krb_input_setter.clone();
     let krb_data = (*krb_input).data.clone();
-    let set_mode = Callback::from(move |mode| {
+    let set_mode = Callback::from(move |mode: bool| {
         input_setter.emit(KerberosInput {
-            mode,
+            mode: mode.into(),
             data: krb_data.clone(),
         });
     });
@@ -174,7 +174,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
             {if props.with_mode { html! {
                 <div class={classes!("horizontal", "krbEncOpts")}>
                     <span class="total">{"encrypt"}</span>
-                    <Switch id={"1"} setter={set_mode} state={mode} />
+                    <Switch id={"1"} setter={set_mode} state={<KrbMode as Into<bool>>::into(mode)} />
                     <span class="total">{"decrypt"}</span>
                     <span class="total">{"|"}</span>
                     <span class="total">{"raw key"}</span>

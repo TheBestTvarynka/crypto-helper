@@ -3,7 +3,7 @@ use wasm_bindgen::JsValue;
 use yew::{classes, html, Callback, Html};
 use yew_notifications::{Notification, NotificationType};
 
-use crate::crypto_helper::algorithm::KrbInput;
+use crate::crypto_helper::algorithm::{KrbInput, KrbMode};
 use crate::utils::gen_copy_func;
 
 const HMAC_LEN: usize = 12;
@@ -41,13 +41,14 @@ pub fn build_krb_output(krb_input: &KrbInput, output: &[u8], add_notification: C
                 <span class={classes!("hmac")}>{hmac}</span>
             </span>
             {
-                if krb_input.mode {
-                    html!{ <span class={classes!("total")}>{format!("total: {}.", len)}</span> }
-                } else {
-                    html!{
+                match krb_input.mode {
+                    KrbMode::Encrypt => html!{
                         <span class={classes!("total")}>
                             {format!("total: {}. cipher: {}. hmac: {}.", len, cipher_len, hmac_len)}
                         </span>
+                    },
+                    KrbMode::Decrypt => html!{
+                        <span class={classes!("total")}>{format!("total: {}.", len)}</span>
                     }
                 }
             }

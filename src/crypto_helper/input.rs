@@ -6,7 +6,7 @@ use yew::{classes, function_component, html, Callback, Html, Properties, UseStat
 
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
-use super::algorithm::KrbInput;
+use super::algorithm::{KrbInput, KrbMode};
 use super::Algorithm;
 use crate::common::build_byte_input;
 
@@ -58,7 +58,7 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
         Algorithm::HmacSha196Aes128(kerberos_input) => build_krb_input(
             KrbInput {
                 data: kerberos_input.clone(),
-                mode: false,
+                mode: KrbMode::Encrypt,
             },
             Callback::from(move |kerberos_input: KrbInput| {
                 setter.set(Algorithm::HmacSha196Aes128(kerberos_input.data))
@@ -69,7 +69,7 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
         Algorithm::HmacSha196Aes256(kerberos_input) => build_krb_input(
             KrbInput {
                 data: kerberos_input.clone(),
-                mode: false,
+                mode: KrbMode::Encrypt,
             },
             Callback::from(move |kerberos_input: KrbInput| {
                 setter.set(Algorithm::HmacSha196Aes256(kerberos_input.data))

@@ -4,7 +4,7 @@ use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
 
-use super::algorithm::{KrbInput, KrbInputData, RsaAction, RsaInput};
+use super::algorithm::{KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput};
 use super::from_hex;
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
@@ -30,14 +30,13 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
 }
 
 pub fn process_krb_cipher(cipher: Box<dyn Cipher>, input: &KrbInput) -> Result<Vec<u8>, String> {
-    if input.mode {
-        cipher
+    match input.mode {
+        KrbMode::Encrypt => cipher
             .decrypt(&input.data.key, input.data.key_usage, &input.data.payload)
-            .map_err(|err| err.to_string())
-    } else {
-        cipher
+            .map_err(|err| err.to_string()),
+        KrbMode::Decrypt => cipher
             .encrypt(&input.data.key, input.data.key_usage, &input.data.payload)
-            .map_err(|err| err.to_string())
+            .map_err(|err| err.to_string()),
     }
 }
 
