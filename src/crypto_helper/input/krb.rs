@@ -7,7 +7,7 @@ use yew::{
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::common::{build_byte_input, Switch};
-use crate::crypto_helper::algorithm::{KrbInput as KerberosInput};
+use crate::crypto_helper::algorithm::KrbInput as KerberosInput;
 
 fn get_usage_number_name(usage_number: i32) -> &'static str {
     match usage_number {
@@ -92,7 +92,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     let notifications = use_notification::<Notification>();
     let input_setter = props.krb_input_setter.clone();
     let mode = (*krb_input).mode;
-    let mut krb_data = (*krb_input).data.clone();
+    let krb_data = (*krb_input).data.clone();
     let generate_key_from_password = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         match generate_key(&cipher, &password_value, &salt_value) {
@@ -111,7 +111,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     });
 
     let input_setter = props.krb_input_setter.clone();
-    let mut krb_data = (*krb_input).data.clone();
+    let krb_data = (*krb_input).data.clone();
     let set_key = Callback::from(move |key| {
         let mut data = krb_data.clone();
         data.key = key;
@@ -119,7 +119,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     });
 
     let input_setter = props.krb_input_setter.clone();
-    let mut krb_data = (*krb_input).data.clone();
+    let krb_data = (*krb_input).data.clone();
     let set_mode = Callback::from(move |mode| {
         input_setter.emit(KerberosInput {
             mode,
@@ -149,7 +149,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     });
 
     let input_setter = props.krb_input_setter.clone();
-    let mut krb_data = (*krb_input).data.clone();
+    let krb_data = (*krb_input).data.clone();
     let set_payload = Callback::from(move |payload| {
         let mut data = krb_data.clone();
         data.payload = payload;

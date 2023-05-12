@@ -1,4 +1,7 @@
 use picky::hash::HashAlgorithm;
+use picky::key::{PrivateKey, PublicKey};
+use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
+use rsa::{RsaPrivateKey, RsaPublicKey};
 
 pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
     "MD5",                     // 0
@@ -33,6 +36,9 @@ const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
 pub const RSA_HASH_ALGOS: [&str; 8] = [
     "MD5", "SHA1", "SHA2_224", "SHA2_256", "SHA2_384", "SHA2_512", "SHA3_384", "SHA3_512",
 ];
+
+const DEFAULT_RSA_PRIVATE_KEY: &str = include_str!("../../public/assets/rsa_private_key.pem");
+const DEFAULT_RSA_PUBLIC_KEY: &str = include_str!("../../public/assets/rsa_public_key.pem");
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct KrbInputData {
@@ -105,14 +111,14 @@ impl PartialEq<&str> for RsaHashAlgorithm {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RsaSignInput {
     pub hash_algorithm: RsaHashAlgorithm,
-    pub rsa_key: String,
+    pub rsa_private_key: PrivateKey,
 }
 
 impl Default for RsaSignInput {
     fn default() -> Self {
         Self {
             hash_algorithm: RsaHashAlgorithm(HashAlgorithm::SHA1),
-            rsa_key: String::new(),
+            rsa_private_key: PrivateKey::from_pem_str(DEFAULT_RSA_PRIVATE_KEY).unwrap(),
         }
     }
 }
@@ -120,24 +126,24 @@ impl Default for RsaSignInput {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RsaVerifyInput {
     pub hash_algorithm: RsaHashAlgorithm,
-    pub rsa_key: String,
-    pub signature: String,
+    pub rsa_public_key: PublicKey,
+    pub signature: Vec<u8>,
 }
 
 impl Default for RsaVerifyInput {
     fn default() -> Self {
         RsaVerifyInput {
             hash_algorithm: RsaHashAlgorithm(HashAlgorithm::SHA1),
-            rsa_key: String::new(),
-            signature: String::new(),
+            rsa_public_key: PublicKey::from_pem_str(DEFAULT_RSA_PUBLIC_KEY).unwrap(),
+            signature: Vec::new(),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum RsaAction {
-    Encrypt(String),
-    Decrypt(String),
+    Encrypt(RsaPublicKey),
+    Decrypt(RsaPrivateKey),
     Sign(RsaSignInput),
     Verify(RsaVerifyInput),
 }
@@ -157,9 +163,13 @@ impl TryFrom<&str> for RsaAction {
         } else if action_literal == RSA_ACTIONS[1] {
             Ok(RsaAction::Verify(Default::default()))
         } else if action_literal == RSA_ACTIONS[2] {
-            Ok(RsaAction::Encrypt(Default::default()))
+            Ok(RsaAction::Encrypt(
+                RsaPublicKey::from_pkcs1_pem(DEFAULT_RSA_PUBLIC_KEY).unwrap(),
+            ))
         } else if action_literal == RSA_ACTIONS[3] {
-            Ok(RsaAction::Decrypt(Default::default()))
+            Ok(RsaAction::Decrypt(
+                RsaPrivateKey::from_pkcs1_pem(DEFAULT_RSA_PRIVATE_KEY).unwrap(),
+            ))
         } else {
             Err(())
         }

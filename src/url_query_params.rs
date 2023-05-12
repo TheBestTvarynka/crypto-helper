@@ -62,6 +62,9 @@ impl From<&KrbInput> for KrbCipherQuery {
 }
 
 #[derive(Serialize, Deserialize)]
+struct RsaQuery {}
+
+#[derive(Serialize, Deserialize)]
 enum AlgorithmQuery {
     Md5(HexData),
     Sha1(HexData),
@@ -72,6 +75,7 @@ enum AlgorithmQuery {
     Aes256CtsHmacSha196(KrbCipherQuery),
     HmacSha196Aes128(KrbInputQuery),
     HmacSha196Aes256(KrbInputQuery),
+    Rsa(RsaQuery),
 }
 
 pub fn generate_crypto_helper_link(algorithm: &Algorithm) -> String {
@@ -81,11 +85,11 @@ pub fn generate_crypto_helper_link(algorithm: &Algorithm) -> String {
         Algorithm::Sha256(input) => AlgorithmQuery::Sha256(input.as_slice().into()),
         Algorithm::Sha384(input) => AlgorithmQuery::Sha384(input.as_slice().into()),
         Algorithm::Sha512(input) => AlgorithmQuery::Sha512(input.as_slice().into()),
-        Algorithm::Aes128CtsHmacSha196(input) => todo!(),
-        Algorithm::Aes256CtsHmacSha196(input) => todo!(),
-        Algorithm::HmacSha196Aes128(input) => todo!(),
-        Algorithm::HmacSha196Aes256(input) => todo!(),
-        Algorithm::Rsa(input) => todo!(),
+        Algorithm::Aes128CtsHmacSha196(input) => AlgorithmQuery::Aes128CtsHmacSha196(input.into()),
+        Algorithm::Aes256CtsHmacSha196(input) => AlgorithmQuery::Aes256CtsHmacSha196(input.into()),
+        Algorithm::HmacSha196Aes128(input) => AlgorithmQuery::HmacSha196Aes128(input.into()),
+        Algorithm::HmacSha196Aes256(input) => AlgorithmQuery::HmacSha196Aes256(input.into()),
+        Algorithm::Rsa(input) => AlgorithmQuery::Rsa(RsaQuery {}),
     };
 
     let mut link = APP_HOST.to_string();
