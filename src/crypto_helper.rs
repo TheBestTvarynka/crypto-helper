@@ -65,17 +65,15 @@ pub fn crypto_helper() -> Html {
     });
 
     let algorithm_setter = algorithm.setter();
-    let r = use_location();
+    let location = use_location();
     let notifications = notification_manager.clone();
     use_effect_with_deps(
         move |_: &[(); 0]| {
-            let query = &r.search;
+            let query = &location.search;
 
             if query.len() < 2 {
                 return;
             }
-
-            log::debug!("remove question mark from url query: {:?}", query.chars().next());
 
             match serde_qs::from_str(&query[1..]) {
                 Ok(algorithm) => {

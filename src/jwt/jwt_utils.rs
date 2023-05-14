@@ -3,11 +3,13 @@ use picky::key::{PrivateKey, PublicKey};
 use picky::signature::SignatureAlgorithm;
 use web_sys::{HtmlInputElement, MouseEvent};
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
+use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
 use crate::common::{build_byte_input, build_simple_output, BytesFormat};
+use crate::url_query_params::generate_jwt_link;
 use crate::{check_asymmetric_key, check_symmetric_key, generate_placeholder, sign, verify};
 
 const DEFAULT_TEXT_FOR_RSA_PLACEHOLDER: &str = "RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)";
@@ -508,8 +510,32 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
     });
 
     let jwt = props.jwt.clone();
-    let set_jwt = props.set_jwt.clone();
+    let notifications = use_notification::<Notification>();
+    let clipboard = use_clipboard();
+    let share_by_link = Callback::from(move |_| {
+        let notifications_manager = notifications.clone();
+        if let Some(new_jwt) = generate_jwt(
+            &jwt,
+            Callback::from(move |notification| notifications_manager.spawn(notification)),
+        )
+        .and_then(|data| String::from_utf8(data).ok())
+        {
+            clipboard.write_text(generate_jwt_link(new_jwt));
 
+            notifications.spawn(Notification::from_description_and_type(
+                NotificationType::Info,
+                "link to jwt copied",
+            ));
+        } else {
+            notifications.spawn(Notification::from_description_and_type(
+                NotificationType::Error,
+                "can not generate jwt",
+            ));
+        }
+    });
+
+    let jwt = props.jwt.clone();
+    let set_jwt = props.set_jwt.clone();
     let notifications = use_notification::<Notification>();
 
     html! {
@@ -525,7 +551,10 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
                     <div class={classes!("horizontal")}>
                         <button class={classes!("jwt-util-button")} onclick={validate}>{"Validate signature"}</button>
                         <button class={classes!("jwt-util-button")} onclick={recalculate}>{"Recalculate signature"}</button>
-                        <button class={classes!("jwt-util-button")} onclick={generate}>{"Regenerate JWT"}</button>
+                        <button class={classes!("jwt-util-button")} onclick={generate}>{"Generate JWT"}</button>
+                        <button class={classes!("button-with-icon")} onclick={share_by_link}>
+                            <img src="/public/img/icons/share_by_link.png" />
+                        </button>
                     </div>
                 }
             } else {
