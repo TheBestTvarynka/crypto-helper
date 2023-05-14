@@ -1,8 +1,10 @@
 use picky::hash::HashAlgorithm;
 use picky::key::{PrivateKey, PublicKey};
-use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey, EncodeRsaPublicKey};
+use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
 use rsa::{RsaPrivateKey, RsaPublicKey};
-use serde::{Serialize, Serializer};
+use serde::{Deserialize, Serialize};
+
+use super::serde::*;
 
 pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
     "MD5",                     // 0
@@ -41,16 +43,16 @@ pub const RSA_HASH_ALGOS: [&str; 8] = [
 const DEFAULT_RSA_PRIVATE_KEY: &str = include_str!("../../public/assets/rsa_private_key.pem");
 const DEFAULT_RSA_PUBLIC_KEY: &str = include_str!("../../public/assets/rsa_public_key.pem");
 
-#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct KrbInputData {
-    #[serde(serialize_with = "serialize_bytes")]
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub key: Vec<u8>,
     pub key_usage: i32,
-    #[serde(serialize_with = "serialize_bytes")]
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub payload: Vec<u8>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize, Deserialize)]
 pub enum KrbMode {
     #[default]
     Encrypt,
@@ -75,13 +77,13 @@ impl From<bool> for KrbMode {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct KrbInput {
     pub mode: KrbMode,
     pub data: KrbInputData,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct RsaHashAlgorithm(pub HashAlgorithm);
 
 impl TryFrom<&str> for RsaHashAlgorithm {
@@ -134,49 +136,13 @@ impl PartialEq<&str> for RsaHashAlgorithm {
     }
 }
 
-fn serialize_bytes<S>(bytes: &[u8], s: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    s.serialize_str(&hex::encode(bytes))
-}
-
-fn serialize_private_key<S>(private_key: &PrivateKey, s: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    let pem_str = private_key.to_pem_str().unwrap();
-    s.serialize_str(&pem_str)
-}
-
-fn serialize_public_key<S>(public_key: &PublicKey, s: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    let pem_str = public_key.to_pem_str().unwrap();
-    s.serialize_str(&pem_str)
-}
-
-fn serialize_rsa_private_key<S>(private_key: &RsaPrivateKey, s: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    let pem_str = private_key.to_pkcs1_pem(Default::default()).unwrap();
-    s.serialize_str(&pem_str)
-}
-
-fn serialize_rsa_public_key<S>(public_key: &RsaPublicKey, s: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    let pem_str = public_key.to_pkcs1_pem(Default::default()).unwrap();
-    s.serialize_str(&pem_str)
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct RsaSignInput {
     pub hash_algorithm: RsaHashAlgorithm,
-    #[serde(serialize_with = "serialize_private_key")]
+    #[serde(
+        serialize_with = "serialize_private_key",
+        deserialize_with = "deserialize_private_key"
+    )]
     pub rsa_private_key: PrivateKey,
 }
 
@@ -189,10 +155,10 @@ impl Default for RsaSignInput {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct RsaVerifyInput {
     pub hash_algorithm: RsaHashAlgorithm,
-    #[serde(serialize_with = "serialize_public_key")]
+    #[serde(serialize_with = "serialize_public_key", deserialize_with = "deserialize_public_key")]
     pub rsa_public_key: PublicKey,
     pub signature: Vec<u8>,
 }
@@ -207,11 +173,17 @@ impl Default for RsaVerifyInput {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum RsaAction {
-    #[serde(serialize_with = "serialize_rsa_public_key")]
+    #[serde(
+        serialize_with = "serialize_rsa_public_key",
+        deserialize_with = "deserialize_rsa_public_key"
+    )]
     Encrypt(RsaPublicKey),
-    #[serde(serialize_with = "serialize_rsa_private_key")]
+    #[serde(
+        serialize_with = "serialize_rsa_private_key",
+        deserialize_with = "deserialize_rsa_private_key"
+    )]
     Decrypt(RsaPrivateKey),
     Sign(RsaSignInput),
     Verify(RsaVerifyInput),
@@ -268,14 +240,14 @@ impl Default for RsaAction {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct RsaInput {
     pub action: RsaAction,
     pub payload: String,
 }
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Algorithm {
     #[serde(serialize_with = "serialize_bytes")]
     Md5(Vec<u8>),

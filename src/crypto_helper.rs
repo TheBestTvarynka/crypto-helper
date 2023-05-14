@@ -4,6 +4,7 @@ mod info;
 mod input;
 mod macros;
 mod output;
+mod serde;
 
 pub use algorithm::{Algorithm, KrbInput, KrbInputData, KrbMode, RSA_HASH_ALGOS};
 use info::Info;
