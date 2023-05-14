@@ -19,10 +19,6 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
 use crate::url_query_params::generate_crypto_helper_link;
 
-fn from_hex(input: &str) -> Result<Vec<u8>, String> {
-    hex::decode(input).map_err(|err| format!("invalid hex input:{:?}", err))
-}
-
 fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
     match algrithm {
         Algorithm::Md5(input) => Ok(md5::compute(input).to_vec()),

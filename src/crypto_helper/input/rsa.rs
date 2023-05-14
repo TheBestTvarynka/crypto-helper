@@ -5,6 +5,7 @@ use web_sys::{Event, HtmlInputElement};
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
+use crate::common::build_byte_input;
 use crate::crypto_helper::algorithm::{
     RsaAction, RsaHashAlgorithm, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput, RSA_HASH_ALGOS,
 };
@@ -273,12 +274,10 @@ pub fn rsa_input(props: &RsaInputProps) -> Html {
 
     let setter = props.setter.clone();
     let action = props.input.action.clone();
-    let oninput = Callback::from(move |event: html::oninput::Event| {
-        let input: HtmlInputElement = event.target_unchecked_into();
-
+    let input_setter = Callback::from(move |payload| {
         setter.emit(RsaInputData {
             action: action.clone(),
-            payload: input.value(),
+            payload,
         });
     });
 
@@ -288,13 +287,7 @@ pub fn rsa_input(props: &RsaInputProps) -> Html {
     html! {
         <div class={classes!("vertical")}>
             {generate_rsa_input(&props.input.action, set_action, spawn_notification)}
-            <textarea
-                rows="2"
-                placeholder={"hex-encoded input"}
-                class={classes!("base-input")}
-                value={props.input.payload.clone()}
-                {oninput}
-            />
+            {build_byte_input(props.input.payload.clone(), input_setter, None, Some("input".into()))}
         </div>
     }
 }

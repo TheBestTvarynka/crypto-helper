@@ -243,7 +243,7 @@ impl Default for RsaAction {
 #[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct RsaInput {
     pub action: RsaAction,
-    pub payload: String,
+    pub payload: Vec<u8>,
 }
 
 #[allow(clippy::large_enum_variant)]
