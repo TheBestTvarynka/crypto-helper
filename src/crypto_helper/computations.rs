@@ -1,84 +1,46 @@
-use picky::key::{PrivateKey, PublicKey};
 use picky::signature::SignatureAlgorithm;
 use picky_krb::crypto::{Checksum, Cipher};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
-use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
-use rsa::{PaddingScheme, PublicKey as PublicKeyTrait, RsaPrivateKey, RsaPublicKey};
+use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
 
-use super::algorithm::{KrbInput, KrbInputData, RsaAction, RsaInput};
-use super::from_hex;
+use super::algorithm::{KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput};
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
-    let payload = from_hex(&input.payload)?;
+    let payload = &input.payload;
     match &input.action {
-        RsaAction::Encrypt(input) => {
-            let public_key = RsaPublicKey::from_pkcs1_pem(input).map_err(|err| err.to_string())?;
+        RsaAction::Encrypt(public_key) => {
             let mut rng = ChaCha8Rng::from_entropy();
             public_key
-                .encrypt(&mut rng, PaddingScheme::PKCS1v15Encrypt, &payload)
+                .encrypt(&mut rng, PaddingScheme::PKCS1v15Encrypt, payload)
                 .map_err(|err| err.to_string())
         }
-        RsaAction::Decrypt(input) => {
-            let private_key = RsaPrivateKey::from_pkcs1_pem(input).map_err(|err| err.to_string())?;
-            private_key
-                .decrypt(PaddingScheme::PKCS1v15Encrypt, &payload)
-                .map_err(|err| err.to_string())
-        }
-        RsaAction::Sign(input) => {
-            let private_key = PrivateKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
-            Ok(SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
-                .sign(&payload, &private_key)
-                .map_err(|err| err.to_string())?)
-        }
-        RsaAction::Verify(input) => {
-            let signature = from_hex(&input.signature)?;
-            let public_key = PublicKey::from_pem_str(&input.rsa_key).map_err(|err| err.to_string())?;
-            SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
-                .verify(&public_key, &payload, &signature)
-                .map(|_| vec![1])
-                .map_err(|err| err.to_string())
-        }
+        RsaAction::Decrypt(private_key) => private_key
+            .decrypt(PaddingScheme::PKCS1v15Encrypt, payload)
+            .map_err(|err| err.to_string()),
+        RsaAction::Sign(input) => Ok(SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
+            .sign(payload, &input.rsa_private_key)
+            .map_err(|err| err.to_string())?),
+        RsaAction::Verify(input) => SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
+            .verify(&input.rsa_public_key, payload, &input.signature)
+            .map(|_| vec![1])
+            .map_err(|err| err.to_string()),
     }
 }
 
 pub fn process_krb_cipher(cipher: Box<dyn Cipher>, input: &KrbInput) -> Result<Vec<u8>, String> {
-    if input.mode {
-        cipher
-            .decrypt(
-                &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                input
-                    .data
-                    .key_usage
-                    .parse::<i32>()
-                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                &from_hex(&input.data.payload).map_err(|err| format!("payload: {}", err))?,
-            )
-            .map_err(|err| err.to_string())
-    } else {
-        cipher
-            .encrypt(
-                &from_hex(&input.data.key).map_err(|err| format!("key: {}", err))?,
-                input
-                    .data
-                    .key_usage
-                    .parse::<i32>()
-                    .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-                &from_hex(&input.data.payload).map_err(|err| format!("payload: {}", err))?,
-            )
-            .map_err(|err| err.to_string())
+    match input.mode {
+        KrbMode::Decrypt => cipher
+            .decrypt(&input.data.key, input.data.key_usage, &input.data.payload)
+            .map_err(|err| err.to_string()),
+        KrbMode::Encrypt => cipher
+            .encrypt(&input.data.key, input.data.key_usage, &input.data.payload)
+            .map_err(|err| err.to_string()),
     }
 }
 
 pub fn process_krb_hmac(hasher: Box<dyn Checksum>, input: &KrbInputData) -> Result<Vec<u8>, String> {
     hasher
-        .checksum(
-            &from_hex(&input.key).map_err(|err| format!("key: {}", err))?,
-            input
-                .key_usage
-                .parse::<i32>()
-                .map_err(|err| format!("Can not parse usage number: {:?}", err))?,
-            &from_hex(&input.payload).map_err(|err| format!("payload: {}", err))?,
-        )
+        .checksum(&input.key, input.key_usage, &input.payload)
         .map_err(|err| err.to_string())
 }

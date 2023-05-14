@@ -1,4 +1,10 @@
 use picky::hash::HashAlgorithm;
+use picky::key::{PrivateKey, PublicKey};
+use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
+use rsa::{RsaPrivateKey, RsaPublicKey};
+use serde::{Deserialize, Serialize};
+
+use super::serde::*;
 
 pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
     "MD5",                     // 0
@@ -34,22 +40,50 @@ pub const RSA_HASH_ALGOS: [&str; 8] = [
     "MD5", "SHA1", "SHA2_224", "SHA2_256", "SHA2_384", "SHA2_512", "SHA3_384", "SHA3_512",
 ];
 
-#[derive(Debug, PartialEq, Eq, Clone, Default)]
+const DEFAULT_RSA_PRIVATE_KEY: &str = include_str!("../../public/assets/rsa_private_key.pem");
+const DEFAULT_RSA_PUBLIC_KEY: &str = include_str!("../../public/assets/rsa_public_key.pem");
+
+#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct KrbInputData {
-    pub key: String,
-    pub key_usage: String,
-    pub payload: String,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub key: Vec<u8>,
+    pub key_usage: i32,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub payload: Vec<u8>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize, Deserialize)]
+pub enum KrbMode {
+    #[default]
+    Encrypt,
+    Decrypt,
+}
+
+impl From<KrbMode> for bool {
+    fn from(mode: KrbMode) -> Self {
+        match mode {
+            KrbMode::Encrypt => false,
+            KrbMode::Decrypt => true,
+        }
+    }
+}
+
+impl From<bool> for KrbMode {
+    fn from(mode: bool) -> Self {
+        match mode {
+            true => KrbMode::Decrypt,
+            false => KrbMode::Encrypt,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct KrbInput {
-    // false - encrypt
-    // true - decrypt
-    pub mode: bool,
+    pub mode: KrbMode,
     pub data: KrbInputData,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct RsaHashAlgorithm(pub HashAlgorithm);
 
 impl TryFrom<&str> for RsaHashAlgorithm {
@@ -102,42 +136,55 @@ impl PartialEq<&str> for RsaHashAlgorithm {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct RsaSignInput {
     pub hash_algorithm: RsaHashAlgorithm,
-    pub rsa_key: String,
+    #[serde(
+        serialize_with = "serialize_private_key",
+        deserialize_with = "deserialize_private_key"
+    )]
+    pub rsa_private_key: PrivateKey,
 }
 
 impl Default for RsaSignInput {
     fn default() -> Self {
         Self {
             hash_algorithm: RsaHashAlgorithm(HashAlgorithm::SHA1),
-            rsa_key: String::new(),
+            rsa_private_key: PrivateKey::from_pem_str(DEFAULT_RSA_PRIVATE_KEY).unwrap(),
         }
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct RsaVerifyInput {
     pub hash_algorithm: RsaHashAlgorithm,
-    pub rsa_key: String,
-    pub signature: String,
+    #[serde(serialize_with = "serialize_public_key", deserialize_with = "deserialize_public_key")]
+    pub rsa_public_key: PublicKey,
+    pub signature: Vec<u8>,
 }
 
 impl Default for RsaVerifyInput {
     fn default() -> Self {
         RsaVerifyInput {
             hash_algorithm: RsaHashAlgorithm(HashAlgorithm::SHA1),
-            rsa_key: String::new(),
-            signature: String::new(),
+            rsa_public_key: PublicKey::from_pem_str(DEFAULT_RSA_PUBLIC_KEY).unwrap(),
+            signature: Vec::new(),
         }
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum RsaAction {
-    Encrypt(String),
-    Decrypt(String),
+    #[serde(
+        serialize_with = "serialize_rsa_public_key",
+        deserialize_with = "deserialize_rsa_public_key"
+    )]
+    Encrypt(RsaPublicKey),
+    #[serde(
+        serialize_with = "serialize_rsa_private_key",
+        deserialize_with = "deserialize_rsa_private_key"
+    )]
+    Decrypt(RsaPrivateKey),
     Sign(RsaSignInput),
     Verify(RsaVerifyInput),
 }
@@ -157,9 +204,13 @@ impl TryFrom<&str> for RsaAction {
         } else if action_literal == RSA_ACTIONS[1] {
             Ok(RsaAction::Verify(Default::default()))
         } else if action_literal == RSA_ACTIONS[2] {
-            Ok(RsaAction::Encrypt(Default::default()))
+            Ok(RsaAction::Encrypt(
+                RsaPublicKey::from_pkcs1_pem(DEFAULT_RSA_PUBLIC_KEY).unwrap(),
+            ))
         } else if action_literal == RSA_ACTIONS[3] {
-            Ok(RsaAction::Decrypt(Default::default()))
+            Ok(RsaAction::Decrypt(
+                RsaPrivateKey::from_pkcs1_pem(DEFAULT_RSA_PRIVATE_KEY).unwrap(),
+            ))
         } else {
             Err(())
         }
@@ -189,18 +240,24 @@ impl Default for RsaAction {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct RsaInput {
     pub action: RsaAction,
-    pub payload: String,
+    pub payload: Vec<u8>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Algorithm {
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Md5(Vec<u8>),
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha1(Vec<u8>),
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha256(Vec<u8>),
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha384(Vec<u8>),
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha512(Vec<u8>),
     Aes128CtsHmacSha196(KrbInput),
     Aes256CtsHmacSha196(KrbInput),
@@ -268,6 +325,6 @@ impl PartialEq<&str> for &Algorithm {
 
 impl Default for Algorithm {
     fn default() -> Self {
-        Algorithm::Sha256(Default::default())
+        Algorithm::Aes256CtsHmacSha196(Default::default())
     }
 }

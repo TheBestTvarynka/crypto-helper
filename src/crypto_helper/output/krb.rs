@@ -1,14 +1,26 @@
-use js_sys::Function;
-use wasm_bindgen::JsValue;
-use yew::{classes, html, Callback, Html};
+use yew::{classes, function_component, html, Callback, Html, Properties};
+use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType};
 
-use crate::crypto_helper::algorithm::KrbInput;
-use crate::utils::gen_copy_func;
+use crate::crypto_helper::algorithm::KrbMode;
 
 const HMAC_LEN: usize = 12;
 
-pub fn build_krb_output(krb_input: &KrbInput, output: &[u8], add_notification: Callback<Notification>) -> Html {
+#[derive(PartialEq, Properties, Clone)]
+pub struct KrbOutputProps {
+    mode: KrbMode,
+    output: Vec<u8>,
+    add_notification: Callback<Notification>,
+}
+
+#[function_component(KrbOutput)]
+pub fn krb_output(props: &KrbOutputProps) -> Html {
+    let KrbOutputProps {
+        mode,
+        output,
+        add_notification,
+    } = &props;
+
     let len = output.len();
 
     let (cipher_len, hmac_len, cipher, hmac) = if len < HMAC_LEN {
@@ -24,14 +36,15 @@ pub fn build_krb_output(krb_input: &KrbInput, output: &[u8], add_notification: C
     };
 
     let hex_output = hex::encode(output);
+    let clipboard = use_clipboard();
+    let add_notification = add_notification.clone();
     let onclick = Callback::from(move |_| {
-        let function = Function::new_no_args(&gen_copy_func(&hex_output));
-        if function.call0(&JsValue::null()).is_ok() {
-            add_notification.emit(Notification::from_description_and_type(
-                NotificationType::Info,
-                "output copied",
-            ))
-        }
+        clipboard.write_text(hex_output.clone());
+
+        add_notification.emit(Notification::from_description_and_type(
+            NotificationType::Info,
+            "output copied",
+        ));
     });
 
     html! {
@@ -41,16 +54,23 @@ pub fn build_krb_output(krb_input: &KrbInput, output: &[u8], add_notification: C
                 <span class={classes!("hmac")}>{hmac}</span>
             </span>
             {
-                if krb_input.mode {
-                    html!{ <span class={classes!("total")}>{format!("total: {}.", len)}</span> }
-                } else {
-                    html!{
+                match mode {
+                    KrbMode::Encrypt => html!{
                         <span class={classes!("total")}>
                             {format!("total: {}. cipher: {}. hmac: {}.", len, cipher_len, hmac_len)}
                         </span>
+                    },
+                    KrbMode::Decrypt => html!{
+                        <span class={classes!("total")}>{format!("total: {}.", len)}</span>
                     }
                 }
             }
         </div>
+    }
+}
+
+pub fn build_krb_output(mode: KrbMode, output: Vec<u8>, add_notification: Callback<Notification>) -> Html {
+    html! {
+        <KrbOutput {mode} {output} {add_notification} />
     }
 }

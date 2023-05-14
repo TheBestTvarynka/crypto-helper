@@ -1,11 +1,9 @@
-use js_sys::Function;
-use wasm_bindgen::JsValue;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties};
+use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType};
 
 use super::BytesFormat;
 use crate::common::{encode_bytes, get_format_button_class, get_set_format_callback, BYTES_FORMATS};
-use crate::utils::gen_copy_func;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct SimpleOutputProps {
@@ -35,14 +33,14 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
     let encoded_bytes = encode_bytes(&output, *bytes_format);
 
     let encoded = encoded_bytes.clone();
+    let clipboard = use_clipboard();
     let onclick = Callback::from(move |_| {
-        let function = Function::new_no_args(&gen_copy_func(&encoded));
-        if function.call0(&JsValue::null()).is_ok() {
-            add_notification.emit(Notification::from_description_and_type(
-                NotificationType::Info,
-                "output copied",
-            ))
-        }
+        clipboard.write_text(encoded.clone());
+
+        add_notification.emit(Notification::from_description_and_type(
+            NotificationType::Info,
+            "output copied",
+        ));
     });
 
     html! {
