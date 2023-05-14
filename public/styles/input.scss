@@ -12,6 +12,12 @@
     transition: all 0.2s;
 }
 
+.input-error {
+    color: #3714ba;
+    border-color: #f07b6e;
+    background-color: #f07b6e;
+}
+
 .wide-input {
     width: 100%;
 }

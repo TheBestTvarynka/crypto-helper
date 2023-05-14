@@ -1,7 +1,5 @@
-use time::Duration;
 use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties, TargetCast};
-use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::BytesFormat;
 use crate::common::{encode_bytes, get_format_button_class, get_set_format_callback, parse_bytes, BYTES_FORMATS};
@@ -28,6 +26,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
     let raw_value = use_state(|| encode_bytes(bytes, *format));
     let bytes = use_state(|| bytes.clone());
     let bytes_format = use_state(|| *format);
+    let is_valid = use_state(|| true);
 
     let format_setter = bytes_format.setter();
     let raw_value_setter = raw_value.setter();
@@ -56,20 +55,20 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
 
     let setter = setter.clone();
     let raw_value_setter = raw_value.setter();
-    let notifications = use_notification::<Notification>();
     let format = *bytes_format;
+    let set_is_valid = is_valid.setter();
     let oninput = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
         let value = input.value();
 
         match parse_bytes(&value, format) {
-            Ok(bytes) => setter.emit(bytes),
-            Err(error) => notifications.spawn(Notification::new(
-                NotificationType::Error,
-                "Can not parse input",
-                error,
-                Duration::seconds(1),
-            )),
+            Ok(bytes) => {
+                setter.emit(bytes);
+                set_is_valid.set(true);
+            }
+            Err(_) => {
+                set_is_valid.set(false);
+            }
         }
 
         raw_value_setter.set(value);
@@ -92,7 +91,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
             <textarea
                 rows="2"
                 placeholder={format!("{}: place {} encoded input here", placeholder, (*bytes_format).as_ref())}
-                class={classes!("base-input")}
+                class={classes!("base-input", if !(*is_valid) { "input-error" } else { "" })}
                 value={(*raw_value).clone()}
                 {oninput}
             />
