@@ -12,7 +12,7 @@ use yew::{classes, Callback, Classes, UseStateSetter};
 
 use crate::utils::{decode_binary, decode_decimal};
 
-#[derive(PartialEq, Eq, Clone, Copy, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
 pub enum BytesFormat {
     #[default]
     Hex,
