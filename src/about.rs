@@ -25,8 +25,14 @@ pub fn about() -> Html {
                     <li>{"ES384"}</li>
                     <li>{"ES512"}</li>
                 </ul>
+                <li>{"Ability to share the sample by url"}</li>
             </ul>
-            <span>{"All computations are performed on the client side. This tool never sends the data the any servers. Tip: if your input is not hex-encoded then you can use a "}<a href={"https://bf.qkation.com"}>{"byte-formatter"}</a>{" to transform input to the hex format."}</span>
+            <span>{"All computations are performed on the client side."}</span>
+            <ul>
+                <li>{"This site does not set or use cookies."}</li>
+                <li>{"This site does not store data in the browser to be shared, sent, or sold to third-parties."}</li>
+                <li>{"No personal information is shared, sent, or sold to third-parties."}</li>
+            </ul>
             <span>{"Authors: "}<a href={"https://github.com/TheBestTvarynka"}>{"Pavlo Myroniuk (@TheBestTvarynka)"}</a></span>
             <span>{"GitHub: "}<a href={"https://github.com/TheBestTvarynka/crypto-helper"}>{"https://github.com/TheBestTvarynka/crypto-helper"}</a></span>
         </div>
