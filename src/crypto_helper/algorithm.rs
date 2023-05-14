@@ -249,15 +249,15 @@ pub struct RsaInput {
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Algorithm {
-    #[serde(serialize_with = "serialize_bytes")]
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Md5(Vec<u8>),
-    #[serde(serialize_with = "serialize_bytes")]
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha1(Vec<u8>),
-    #[serde(serialize_with = "serialize_bytes")]
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha256(Vec<u8>),
-    #[serde(serialize_with = "serialize_bytes")]
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha384(Vec<u8>),
-    #[serde(serialize_with = "serialize_bytes")]
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Sha512(Vec<u8>),
     Aes128CtsHmacSha196(KrbInput),
     Aes256CtsHmacSha196(KrbInput),
