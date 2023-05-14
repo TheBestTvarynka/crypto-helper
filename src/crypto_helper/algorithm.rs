@@ -134,26 +134,41 @@ impl PartialEq<&str> for RsaHashAlgorithm {
     }
 }
 
-fn serialize_bytes<S>(bytes: &[u8], s: S) -> Result<S::Ok, S::Error> where S: Serializer {
+fn serialize_bytes<S>(bytes: &[u8], s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
     s.serialize_str(&hex::encode(bytes))
 }
 
-fn serialize_private_key<S>(private_key: &PrivateKey, s: S) -> Result<S::Ok, S::Error> where S: Serializer {
+fn serialize_private_key<S>(private_key: &PrivateKey, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
     let pem_str = private_key.to_pem_str().unwrap();
     s.serialize_str(&pem_str)
 }
 
-fn serialize_public_key<S>(public_key: &PublicKey, s: S) -> Result<S::Ok, S::Error> where S: Serializer {
+fn serialize_public_key<S>(public_key: &PublicKey, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
     let pem_str = public_key.to_pem_str().unwrap();
     s.serialize_str(&pem_str)
 }
 
-fn serialize_rsa_private_key<S>(private_key: &RsaPrivateKey, s: S) -> Result<S::Ok, S::Error> where S: Serializer {
+fn serialize_rsa_private_key<S>(private_key: &RsaPrivateKey, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
     let pem_str = private_key.to_pkcs1_pem(Default::default()).unwrap();
     s.serialize_str(&pem_str)
 }
 
-fn serialize_rsa_public_key<S>(public_key: &RsaPublicKey, s: S) -> Result<S::Ok, S::Error> where S: Serializer {
+fn serialize_rsa_public_key<S>(public_key: &RsaPublicKey, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
     let pem_str = public_key.to_pkcs1_pem(Default::default()).unwrap();
     s.serialize_str(&pem_str)
 }
@@ -259,6 +274,7 @@ pub struct RsaInput {
     pub payload: String,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize)]
 pub enum Algorithm {
     #[serde(serialize_with = "serialize_bytes")]

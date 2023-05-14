@@ -1,31 +1,9 @@
-use js_sys::Function;
-use wasm_bindgen::JsValue;
-use web_sys::MouseEvent;
 use yew::Callback;
+use yew_hooks::UseClipboardHandle;
 
-pub fn gen_copy_func(data: &str) -> String {
-    let data = data
-        .chars()
-        .map(|c| {
-            if c == '\n' {
-                "\\n".to_owned()
-            } else if c == '\\' {
-                "\\\\".to_owned()
-            } else {
-                c.to_string()
-            }
-        })
-        .collect::<String>();
-    format!("navigator.clipboard.writeText('{}');", data)
-}
-
-pub fn gen_copy_onclick(data: String) -> Callback<MouseEvent> {
+pub fn get_copy_to_clipboard_callback<T>(data_to_copy: String, clipboard: UseClipboardHandle) -> Callback<T> {
     Callback::from(move |_| {
-        log::debug!("data to copy: `{}`", data);
-        let function = Function::new_no_args(&gen_copy_func(&data));
-        if let Err(err) = function.call0(&JsValue::null()) {
-            log::error!("error oncopy: {:?}", err);
-        }
+        clipboard.write_text(data_to_copy.clone());
     })
 }
 

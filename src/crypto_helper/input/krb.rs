@@ -45,10 +45,10 @@ fn gen_on_input_handle(setter: UseStateSetter<String>) -> Callback<InputEvent> {
 }
 
 fn generate_key(cipher: &CipherSuite, password: &str, salt: &str) -> Result<Vec<u8>, String> {
-    Ok(cipher
+    cipher
         .cipher()
         .generate_key_from_password(password.as_bytes(), salt.as_bytes())
-        .map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -91,8 +91,8 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
 
     let notifications = use_notification::<Notification>();
     let input_setter = props.krb_input_setter.clone();
-    let mode = (*krb_input).mode;
-    let krb_data = (*krb_input).data.clone();
+    let mode = krb_input.mode;
+    let krb_data = krb_input.data.clone();
     let generate_key_from_password = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         match generate_key(&cipher, &password_value, &salt_value) {
@@ -111,7 +111,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     });
 
     let input_setter = props.krb_input_setter.clone();
-    let krb_data = (*krb_input).data.clone();
+    let krb_data = krb_input.data.clone();
     let set_key = Callback::from(move |key| {
         let mut data = krb_data.clone();
         data.key = key;
@@ -119,7 +119,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     });
 
     let input_setter = props.krb_input_setter.clone();
-    let krb_data = (*krb_input).data.clone();
+    let krb_data = krb_input.data.clone();
     let set_mode = Callback::from(move |mode: bool| {
         input_setter.emit(KerberosInput {
             mode: mode.into(),
@@ -129,7 +129,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
 
     let input_setter = props.krb_input_setter.clone();
     let notifications = use_notification::<Notification>();
-    let mut krb_data = (*krb_input).data.clone();
+    let krb_data = krb_input.data.clone();
     let set_usage_number = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
@@ -149,7 +149,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     });
 
     let input_setter = props.krb_input_setter.clone();
-    let krb_data = (*krb_input).data.clone();
+    let krb_data = krb_input.data.clone();
     let set_payload = Callback::from(move |payload| {
         let mut data = krb_data.clone();
         data.payload = payload;
@@ -158,19 +158,19 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
 
     html! {
         <div class={classes!("enc-params")}>
-            {build_byte_input((*krb_input).data.key.clone(), set_key, None, Some("key".into()))}
+            {build_byte_input(krb_input.data.key.clone(), set_key, None, Some("key".into()))}
             <div class={classes!("vertical")}>
                 <span class={classes!("total")}>{"Key usage number"}</span>
                 <input
                     type={"number"}
                     class={classes!("base-input")}
                     placeholder={"usage number"}
-                    value={(*krb_input).data.key_usage.to_string()}
+                    value={krb_input.data.key_usage.to_string()}
                     oninput={set_usage_number}
                 />
-                <span class={classes!("total")}>{get_usage_number_name((*krb_input).data.key_usage)}</span>
+                <span class={classes!("total")}>{get_usage_number_name(krb_input.data.key_usage)}</span>
             </div>
-            {build_byte_input((*krb_input).data.payload.clone(), set_payload, None, Some("payload".into()))}
+            {build_byte_input(krb_input.data.payload.clone(), set_payload, None, Some("payload".into()))}
             {if props.with_mode { html! {
                 <div class={classes!("horizontal", "krbEncOpts")}>
                     <span class="total">{"encrypt"}</span>

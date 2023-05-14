@@ -5,7 +5,7 @@ const APP_HOST: &str = env!("APP_HOST");
 pub fn generate_crypto_helper_link(algorithm: &Algorithm) -> String {
     let mut link = APP_HOST.to_string();
 
-    link.push('&');
+    link.push_str("/crypto-helper/&");
     link.push_str(&serde_qs::to_string(algorithm).unwrap());
 
     link
@@ -32,7 +32,7 @@ mod tests {
                 data: KrbInputData {
                     key: vec![1, 2, 3, 4, 5],
                     key_usage: 4,
-                    payload: vec![5,4, 5,45, 95, 3,54,53],
+                    payload: vec![5, 4, 5, 45, 95, 3, 54, 53],
                 },
             }))
         );

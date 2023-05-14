@@ -5,16 +5,18 @@ mod input;
 mod macros;
 mod output;
 
-pub use algorithm::{Algorithm, KrbInput, KrbInputData, RSA_HASH_ALGOS, KrbMode};
+pub use algorithm::{Algorithm, KrbInput, KrbInputData, KrbMode, RSA_HASH_ALGOS};
 use info::Info;
 use input::Input;
 use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
 use yew::{classes, function_component, html, use_state, Callback, Html};
+use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
+use crate::url_query_params::generate_crypto_helper_link;
 
 fn from_hex(input: &str) -> Result<Vec<u8>, String> {
     hex::decode(input).map_err(|err| format!("invalid hex input:{:?}", err))
@@ -48,16 +50,28 @@ pub fn crypto_helper() -> Html {
 
     let output_setter = output.setter();
     let algorithm_data = (*algorithm).clone();
+    let notifications = notification_manager.clone();
     let onclick = Callback::from(move |_| {
         match convert(&algorithm_data) {
             Ok(output) => output_setter.set(output),
-            Err(err) => notification_manager.spawn(Notification::new(
+            Err(err) => notifications.spawn(Notification::new(
                 NotificationType::Error,
                 "Processing error",
                 err,
                 Notification::NOTIFICATION_LIFETIME,
             )),
         };
+    });
+
+    let algorithm_data = (*algorithm).clone();
+    let clipboard = use_clipboard();
+    let share_by_link = Callback::from(move |_| {
+        clipboard.write_text(generate_crypto_helper_link(&algorithm_data));
+
+        notification_manager.spawn(Notification::from_description_and_type(
+            NotificationType::Info,
+            "link copied",
+        ));
     });
 
     html! {
@@ -69,7 +83,7 @@ pub fn crypto_helper() -> Html {
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
             <div class={classes!("horizontal")}>
-                <button class={classes!("button-with-icon")}>
+                <button class={classes!("button-with-icon")} onclick={share_by_link}>
                     <img src="/public/img/icons/share_by_link.png" />
                 </button>
             </div>

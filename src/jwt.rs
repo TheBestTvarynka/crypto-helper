@@ -8,6 +8,7 @@ mod macros;
 
 use std::str::FromStr;
 
+pub use jwt::Jwt as JwtData;
 use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_state, Callback, Html, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};

@@ -1,11 +1,12 @@
 use serde_json::{to_string_pretty, Value};
 use web_sys::{HtmlInputElement, MouseEvent};
 use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
+use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::Jwt;
 use crate::common::{build_simple_output, BytesFormat};
-use crate::utils::gen_copy_onclick;
+use crate::utils::get_copy_to_clipboard_callback;
 
 #[derive(PartialEq, Properties)]
 pub struct JwtEditorProps {
@@ -110,25 +111,26 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
     });
 
     let notifications = use_notification::<Notification>();
+    let clipboard = use_clipboard();
 
     html! {
         <div class={classes!("vertical")}>
             <div class={classes!("vertical")}>
                 <div class={classes!("horizontal")}>
-                    <span class={classes!("jwt-header")} onclick={gen_copy_onclick(header.clone())}>{"Header"}</span>
+                    <span class={classes!("jwt-header")} onclick={get_copy_to_clipboard_callback(header.clone(), clipboard.clone())}>{"Header"}</span>
                     <button onclick={header_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
                 </div>
                 <textarea rows="4" class={classes!("base-input")} value={header} oninput={on_header_input} />
             </div>
             <div class={classes!("vertical")}>
                 <div class={classes!("horizontal")}>
-                    <span class={classes!("jwt-payload")} onclick={gen_copy_onclick(payload.clone())}>{"Payload"}</span>
+                    <span class={classes!("jwt-payload")} onclick={get_copy_to_clipboard_callback(payload.clone(), clipboard.clone())}>{"Payload"}</span>
                     <button onclick={payload_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
                 </div>
                 <textarea rows="6" class={classes!("base-input")} value={payload} oninput={on_payload_input} />
             </div>
             <div class={classes!("vertical")}>
-                <span class={classes!("jwt-signature")} onclick={gen_copy_onclick(signature.clone())}>{"Signature"}</span>
+                <span class={classes!("jwt-signature")} onclick={get_copy_to_clipboard_callback(signature.clone(), clipboard)}>{"Signature"}</span>
                 {build_simple_output(signature_bytes, BytesFormat::Hex, Callback::from(move |notification| notifications.spawn(notification)))}
             </div>
         </div>

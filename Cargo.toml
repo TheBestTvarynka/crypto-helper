@@ -41,3 +41,4 @@ sha1 = "0.10.5"
 hmac-sha256 = "1.1.5"
 hmac-sha512 = { version = "1.1.2", features = ["sha384"] }
 rsa = "0.7.2"
+yew-hooks = "0.2.0"
