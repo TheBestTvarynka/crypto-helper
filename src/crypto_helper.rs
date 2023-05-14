@@ -12,8 +12,8 @@ use input::Input;
 use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
-use yew::{classes, function_component, html, use_state, Callback, Html};
-use yew_hooks::use_clipboard;
+use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
+use yew_hooks::{use_clipboard, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
@@ -63,6 +63,34 @@ pub fn crypto_helper() -> Html {
             )),
         };
     });
+
+    let algorithm_setter = algorithm.setter();
+    let r = use_location();
+    let notifications = notification_manager.clone();
+    use_effect_with_deps(
+        move |_: &[(); 0]| {
+            let query = &r.search;
+
+            if query.len() < 2 {
+                return;
+            }
+
+            log::debug!("remove question mark from url query: {:?}", query.chars().next());
+
+            match serde_qs::from_str(&query[1..]) {
+                Ok(algorithm) => {
+                    algorithm_setter.set(algorithm);
+                }
+                Err(err) => notifications.spawn(Notification::new(
+                    NotificationType::Error,
+                    "Can not load data from url",
+                    err.to_string(),
+                    Notification::NOTIFICATION_LIFETIME,
+                )),
+            }
+        },
+        [],
+    );
 
     let algorithm_data = (*algorithm).clone();
     let clipboard = use_clipboard();
