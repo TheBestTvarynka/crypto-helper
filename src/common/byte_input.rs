@@ -41,7 +41,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
 
     let bytes_setter = bytes.setter();
     let raw_value_setter = raw_value.setter();
-    let format_value = *format;
+    let format_value = *bytes_format;
     use_effect_with_deps(
         move |props| {
             let bytes = props.bytes.clone();
