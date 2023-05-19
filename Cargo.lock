@@ -38,10 +38,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
+name = "base64"
+version = "0.21.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4a4ddaa51a5bc52a6948f74c06d20aaaddb71924eab79b8c97a8c556e942d6a"
+
+[[package]]
 name = "base64ct"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
+
+[[package]]
+name = "bcrypt"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9df288bec72232f78c1ec5fe4e8f1d108aa0265476e93097593c803c8c02062a"
+dependencies = [
+ "base64 0.21.0",
+ "blowfish",
+ "getrandom",
+ "subtle",
+ "zeroize",
+]
 
 [[package]]
 name = "bincode"
@@ -68,6 +87,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8894febbff9f758034a5b8e12d87918f56dfc64a8e1fe757d65e29041538d93"
 dependencies = [
  "generic-array",
+]
+
+[[package]]
+name = "blowfish"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e412e2cd0f2b2d93e02543ceae7917b3c70331573df19ee046bcbc35e45e87d7"
+dependencies = [
+ "byteorder",
+ "cipher",
 ]
 
 [[package]]
@@ -876,7 +905,7 @@ version = "7.0.0-rc.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72ac7d98dfb5e53cdea76b70df8d5e8dd7717a2d685a12f54c547e03b5afd76a"
 dependencies = [
- "base64",
+ "base64 0.13.1",
  "digest",
  "md-5",
  "num-bigint-dig",
@@ -944,7 +973,7 @@ version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fdb51541f90aa99f2fa7191c8daebc224d500cd5963c6ca3e6cede9645a1b2e1"
 dependencies = [
- "base64",
+ "base64 0.13.1",
  "num-bigint-dig",
  "oid",
  "picky-asn1 0.7.2",
@@ -958,7 +987,7 @@ name = "picky-asn1-x509"
 version = "0.9.0"
 source = "git+https://github.com/TheBestTravynka/picky-rs.git?rev=604a246#604a2461571ae5c3371a4b34691fa0c4fea091b4"
 dependencies = [
- "base64",
+ "base64 0.13.1",
  "oid",
  "picky-asn1 0.7.0",
  "picky-asn1-der 0.4.0 (git+https://github.com/TheBestTravynka/picky-rs.git?rev=604a246)",
@@ -1689,7 +1718,8 @@ dependencies = [
 name = "web-app"
 version = "0.9.0"
 dependencies = [
- "base64",
+ "base64 0.13.1",
+ "bcrypt",
  "gloo-timers",
  "hex",
  "hmac-sha256",
