@@ -19,6 +19,7 @@ fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification:
         Algorithm::HmacSha196Aes128(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::HmacSha196Aes256(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::Rsa(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::Bcrypt(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
     }
 }
 
