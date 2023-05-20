@@ -45,16 +45,20 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
 
     let on_salt_input = Callback::from(move |salt: Vec<u8>| {
         if let BcryptAction::Hash(hash_action) = bcrypt_action.clone() {
+            let salt = match salt.len() {
+                16 | 0 => {
+                    set_is_valid.set(true);
+                    salt
+                },
+                _ => {
+                    set_is_valid.set(false);
+                    salt
+                }
+            };
             input_setter.emit(BI {
                 data: data.clone(),
                 action: BcryptAction::Hash(BcryptHashAction {
-                    salt: if salt.len() == 16 {
-                        set_is_valid.set(true);
-                        Some(salt)
-                    } else {
-                        set_is_valid.set(if salt.len() == 0 {true} else {false});
-                        None
-                    },
+                    salt,
                     rounds: hash_action.rounds,
                 })
             })
@@ -81,11 +85,15 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
                 <span class="total">{"verify"}</span>
             </div>
 
-            <div class="horizontal">
-                <input class={classes!("base-input")} type="number" min="4" max="31" placeholder={"rounds"} oninput={on_rounds_input}/>
-                // <input class={classes!("base-input", if !(*is_valid) { "input-error" } else { "" }, "wide-input")} placeholder={"salt"} oninput={on_salt_input}/>
-                {build_byte_input(vec![], on_salt_input, None, Some("salt".into()))}
-            </div>
+            {match input_props.input.action.clone() {
+                BcryptAction::Hash(hash_info) => html! {
+                    <div class="horizontal">
+                        <input class={classes!("base-input")} value={hash_info.rounds.to_string()} type="number" min="4" max="31" placeholder={"rounds"} oninput={on_rounds_input}/>
+                        {build_byte_input(hash_info.salt, on_salt_input, None, Some("salt".into()))}
+                    </div>
+                },
+                BcryptAction::Verify(_) => html!{ <span>{"todo!()"}</span> },
+            }}
 
         </div>
     }
