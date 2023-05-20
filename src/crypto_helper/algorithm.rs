@@ -261,6 +261,15 @@ impl Default for BcryptInput {
     }
 }
 
+impl From<BcryptAction> for bool {
+    fn from(value: BcryptAction) -> Self {
+        match value {
+            BcryptAction::Hash(_) => false,
+            BcryptAction::Verify(_) => true,
+        }
+    }
+}
+
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct BcryptHashAction {
     pub rounds: u32,
