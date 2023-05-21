@@ -54,9 +54,10 @@ pub fn process_bcrypt(input: &BcryptInput) -> Result<Vec<u8>, String> {
     }
 }
 fn hash_bcrypt(hash_action: &BcryptHashAction, password: &[u8]) -> Result<Vec<u8>, String> {
-    match &hash_action.salt {
-        Some(salt) => hash_with_salt_bcrypt(password, hash_action.rounds, salt),
-        None => hash_without_salt_bcrypt(password, hash_action.rounds),
+    match hash_action.salt.len() {
+        16 => hash_with_salt_bcrypt(password, hash_action.rounds, &hash_action.salt),
+        0 => hash_without_salt_bcrypt(password, hash_action.rounds),
+        len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len))
     }
 }
 fn hash_with_salt_bcrypt(password: &[u8], rounds: u32, salt: &[u8]) -> Result<Vec<u8>, String> {
