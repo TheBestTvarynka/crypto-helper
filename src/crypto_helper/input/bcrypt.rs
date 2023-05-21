@@ -2,12 +2,12 @@ use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
 
 use crate::common::{build_byte_input, Switch};
-use crate::crypto_helper::algorithm::{BcryptAction, BcryptHashAction, BcryptInput as BI};
+use crate::crypto_helper::algorithm::{BcryptAction, BcryptHashAction, BcryptInput as BcryptInputData};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct BcryptInputProps {
-    pub input: BI,
-    pub bcrypt_input_setter: Callback<BI>,
+    pub input: BcryptInputData,
+    pub bcrypt_input_setter: Callback<BcryptInputData>,
 }
 
 #[function_component(BcryptInput)]
@@ -20,7 +20,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
         match event.target_unchecked_into::<HtmlInputElement>().value().parse::<u32>() {
             Ok(rounds) => {
                 if let BcryptAction::Hash(bcrypt_hash_action) = bcrypt_action.clone() {
-                    input_setter.emit(BI {
+                    input_setter.emit(BcryptInputData {
                         data: data.clone(),
                         action: BcryptAction::Hash(BcryptHashAction {
                             rounds,
@@ -50,7 +50,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
                     set_is_valid.set(false);
                 }
             };
-            input_setter.emit(BI {
+            input_setter.emit(BcryptInputData {
                 data: data.clone(),
                 action: BcryptAction::Hash(BcryptHashAction {
                     salt,
@@ -63,7 +63,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     let bcrypt_action = input_props.input.action.clone();
     let input_setter = input_props.bcrypt_input_setter.clone();
     let byte_setter = Callback::from(move |data| {
-        input_setter.emit(BI {
+        input_setter.emit(BcryptInputData {
             action: bcrypt_action.clone(),
             data,
         });
@@ -73,8 +73,8 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     let data = input_props.input.data.clone();
     let input = input_props.input.clone();
     let on_switch = Callback::from(move |mode: bool| {
-        let BI { action: _, data } = input.clone();
-        input_setter.emit(BI {
+        let BcryptInputData { action: _, data } = input.clone();
+        input_setter.emit(BcryptInputData {
             data,
             action: mode.into(),
         });
@@ -85,7 +85,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     let bcrypt_hash_action = input_props.input.action.clone();
     let on_hashed_input = Callback::from(move |hashed: Vec<u8>| {
         if let BcryptAction::Verify(_) = bcrypt_hash_action.clone() {
-            input_setter.emit(BI {
+            input_setter.emit(BcryptInputData {
                 data: data.clone(),
                 action: BcryptAction::Verify(std::str::from_utf8(&hashed).unwrap_or("").to_string()),
             })
@@ -121,7 +121,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     }
 }
 
-pub fn build_bcrypt_input(input: BI, setter: Callback<BI>) -> Html {
+pub fn build_bcrypt_input(input: BcryptInputData, setter: Callback<BcryptInputData>) -> Html {
     html! {
         <BcryptInput input={input} bcrypt_input_setter={setter}/>
     }
