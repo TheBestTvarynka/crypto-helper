@@ -6,8 +6,8 @@ Table of content:
 * [Overview](#overview)
 * [How it works](#how-it-works)
 * [Components](#components)
-    * [Practices](#practices)
     * [Hierarchy](#hierarchy) 
+    * [Practices](#practices)
 
 ## Overview
 
@@ -34,6 +34,24 @@ Because it's a great framework for building web applications in Rust. It is very
 
 ## Components
 
-### Practices
+We have three main groups of components (divided by purpose):
+
+1. General purpose components.
+2. Crypto-helper related components.
+3. Jwt related components.
+
+### General purpose components
+
+Those components can be used on any app page and located in the [`src/common`](https://github.com/TheBestTvarynka/crypto-helper/tree/main/src/common) directory. They are small, without side effects, and have only one special purpose. Examples:
+
+* [`ByteInput`](https://github.com/TheBestTvarynka/crypto-helper/blob/main/src/common/byte_input.rs). This component is used for the bytes entering. You can use it in any place where you need to take any input bytes from the user. It automatically supports many input formats, validation, etc.
+
+![](/public/img/architecture/bi_1.png) ![](/public/img/architecture/bi_2.png) ![](/public/img/architecture/bi_3.png)
+* [`Switch`](https://github.com/TheBestTvarynka/crypto-helper/blob/main/src/common/switch.rs). Just a regular switch. Can be used to switch between any two options. For example, encrypt <-> decrypt, hash <-> verify, etc.
+
+![](/public/img/architecture/s1.png) ![](/public/img/architecture/s2.png)
+* There are and will be more common components. The above two are just examples. **If some component was purpose specialized during creation but become common, then it should be moved in the [`src/common`](https://github.com/TheBestTvarynka/crypto-helper/tree/main/src/common) directory.**
 
 ### Hierarchy
+
+### Practices
