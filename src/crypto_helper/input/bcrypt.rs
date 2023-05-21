@@ -1,3 +1,4 @@
+use serde::__private::de::Content::String;
 use web_sys::HtmlInputElement;
 use yew::{Properties, Callback, Html, html, function_component, classes, TargetCast, use_state};
 
@@ -73,6 +74,27 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
             data,
         });
     });
+
+    let input_setter = input_props.bcrypt_input_setter.clone();
+    let data = input_props.input.data.clone();
+    let input = input_props.input.clone();
+    let on_switch = Callback::from(move |mode: bool| {
+        todo!() // for some odd reason passed argument is ALWAYS true or false
+    });
+
+    let data = input_props.input.data.clone();
+    let input_setter = input_props.bcrypt_input_setter.clone();
+    let bcrypt_hash_action = input_props.input.action.clone();
+    let on_hashed_input = Callback::from(move |hashed: Vec<u8>| {
+        if let BcryptAction::Verify(_) = bcrypt_hash_action.clone() {
+            input_setter.emit(BI {
+                data: data.clone(),
+                action: BcryptAction::Verify(std::str::from_utf8(&hashed).unwrap_or("").to_string()),
+            })
+        }
+    });
+
+    let action = input_props.input.action.clone();
     let data = input_props.input.data.clone();
     html! {
         <div class={classes!("formats-container", "vertical")}>
@@ -81,7 +103,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
 
             <div class="horizontal">
                 <span class="total">{"hash"}</span>
-                <Switch id={"hash-verify".to_string()} state={false} setter={Callback::from(|_:bool| {})}/>
+                <Switch id={"hash-verify".to_string()} setter={on_switch} state={<BcryptAction as Into<bool>>::into(action)}/>
                 <span class="total">{"verify"}</span>
             </div>
 
@@ -92,7 +114,9 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
                         {build_byte_input(hash_info.salt, on_salt_input, None, Some("salt".into()))}
                     </div>
                 },
-                BcryptAction::Verify(_) => html!{ <span>{"todo!()"}</span> },
+                BcryptAction::Verify(hashed) => html! {
+                    {build_byte_input(hashed.into_bytes(), on_hashed_input, None, Some("hashed".into()))}
+                },
             }}
 
         </div>
