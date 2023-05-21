@@ -261,7 +261,16 @@ impl Default for BcryptInput {
     }
 }
 
-#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
+impl Default for BcryptHashAction {
+    fn default() -> Self {
+        Self {
+            rounds: 8,
+            salt: Vec::new(),
+        }
+    }
+}
+
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct BcryptHashAction {
     pub rounds: u32,
     pub salt: Vec<u8>,
