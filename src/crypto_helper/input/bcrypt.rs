@@ -79,7 +79,11 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
     let data = input_props.input.data.clone();
     let input = input_props.input.clone();
     let on_switch = Callback::from(move |mode: bool| {
-        todo!() // for some odd reason passed argument is ALWAYS true or false
+        let BI { action: _, data } = input.clone();
+        input_setter.emit(BI {
+            data,
+            action: mode.into(),
+        });
     });
 
     let data = input_props.input.data.clone();

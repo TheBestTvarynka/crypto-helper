@@ -261,7 +261,7 @@ impl Default for BcryptInput {
     }
 }
 
-#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
 pub struct BcryptHashAction {
     pub rounds: u32,
     pub salt: Vec<u8>,
@@ -271,6 +271,24 @@ pub struct BcryptHashAction {
 pub enum BcryptAction {
     Hash(BcryptHashAction),
     Verify(String),
+}
+
+impl From<BcryptAction> for bool {
+    fn from(action: BcryptAction) -> Self {
+        match action {
+            BcryptAction::Hash(_) => false,
+            BcryptAction::Verify(_) => true,
+        }
+    }
+}
+
+impl From<bool> for BcryptAction {
+    fn from(action: bool) -> Self {
+        match action {
+            true => Self::Verify(Default::default()),
+            false => Self::Hash(Default::default()),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
