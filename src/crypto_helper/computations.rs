@@ -59,7 +59,7 @@ pub fn process_bcrypt(input: &BcryptInput) -> Result<Vec<u8>, String> {
                 .map_err(|e| e.to_string()),
             len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len)),
         },
-        BcryptAction::Verify(hash) => bcrypt::verify(&input.data, &hash)
+        BcryptAction::Verify(hash) => bcrypt::verify(&input.data, hash)
             .map(|r| if r { vec![1] } else { vec![0] })
             .map_err(|e| e.to_string()),
     }
