@@ -1,5 +1,6 @@
 use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
+use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::common::{build_byte_input, Switch};
 use crate::crypto_helper::algorithm::{BcryptAction, BcryptHashAction, BcryptInput as BcryptInputData};
@@ -12,6 +13,9 @@ pub struct BcryptInputProps {
 
 #[function_component(BcryptInput)]
 pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
+    let rounds_state = use_state(|| true);
+    let set_rounds_state = rounds_state.setter();
+
     let data = input_props.input.data.clone();
     let bcrypt_action = input_props.input.action.clone();
     let input_setter = input_props.bcrypt_input_setter.clone();
@@ -26,15 +30,16 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
                             rounds,
                             salt: bcrypt_hash_action.salt,
                         }),
-                    })
+                    });
+                    set_rounds_state.set(true); // todo: states are useless at this point
                 }
             }
-            Err(_) => (),
+            Err(_) => set_rounds_state.set(false),
         };
     });
 
-    let is_valid = use_state(|| true);
-    let set_is_valid = is_valid.setter();
+    let salt_state = use_state(|| true);
+    let set_salt_state = salt_state.setter();
 
     let input_setter = input_props.bcrypt_input_setter.clone();
     let bcrypt_action = input_props.input.action.clone();
@@ -44,10 +49,10 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
         if let BcryptAction::Hash(hash_action) = bcrypt_action.clone() {
             match salt.len() {
                 16 | 0 => {
-                    set_is_valid.set(true);
+                    set_salt_state.set(true);
                 }
                 _ => {
-                    set_is_valid.set(false);
+                    set_salt_state.set(false);
                 }
             };
             input_setter.emit(BcryptInputData {
@@ -70,7 +75,6 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     });
 
     let input_setter = input_props.bcrypt_input_setter.clone();
-    let data = input_props.input.data.clone();
     let input = input_props.input.clone();
     let on_switch = Callback::from(move |mode: bool| {
         let BcryptInputData { action: _, data } = input.clone();
@@ -80,14 +84,29 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
         });
     });
 
+    let notifications = use_notification::<Notification>();
+
     let data = input_props.input.data.clone();
     let input_setter = input_props.bcrypt_input_setter.clone();
     let bcrypt_hash_action = input_props.input.action.clone();
+
     let on_hashed_input = Callback::from(move |hashed: Vec<u8>| {
         if let BcryptAction::Verify(_) = bcrypt_hash_action.clone() {
             input_setter.emit(BcryptInputData {
                 data: data.clone(),
-                action: BcryptAction::Verify(std::str::from_utf8(&hashed).unwrap_or("").to_string()),
+                action: BcryptAction::Verify(
+                    std::str::from_utf8(&hashed)
+                        .unwrap_or_else(|err| {
+                            notifications.spawn(Notification::new(
+                                NotificationType::Error,
+                                "Invalid hash",
+                                err.to_string(),
+                                Notification::NOTIFICATION_LIFETIME,
+                            ));
+                            ""
+                        })
+                        .to_string(),
+                ),
             })
         }
     });
