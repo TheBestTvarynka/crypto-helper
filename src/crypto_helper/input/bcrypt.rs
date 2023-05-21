@@ -2,7 +2,7 @@ use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use crate::common::{build_byte_input, Switch};
+use crate::common::{build_byte_input, BytesFormat, Switch};
 use crate::crypto_helper::algorithm::{BcryptAction, BcryptHashAction, BcryptInput as BcryptInputData};
 
 #[derive(PartialEq, Properties, Clone)]
@@ -115,15 +115,12 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     let data = input_props.input.data.clone();
     html! {
         <div class={classes!("formats-container", "vertical")}>
-
-            {build_byte_input(data, byte_setter, None, Some("bcrypt".into()))}
-
+            {build_byte_input(data, byte_setter, Some(BytesFormat::Ascii), Some("bcrypt".into()))}
             <div class="horizontal">
                 <span class="total">{"hash"}</span>
                 <Switch id={"hash-verify".to_string()} setter={on_switch} state={<BcryptAction as Into<bool>>::into(action)}/>
                 <span class="total">{"verify"}</span>
             </div>
-
             {match input_props.input.action.clone() {
                 BcryptAction::Hash(hash_info) => html! {
                     <div class="horizontal">
@@ -135,7 +132,6 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
                     {build_byte_input(hashed.into_bytes(), on_hashed_input, None, Some("hashed".into()))}
                 },
             }}
-
         </div>
     }
 }
