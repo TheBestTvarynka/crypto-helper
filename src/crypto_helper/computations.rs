@@ -55,13 +55,13 @@ pub fn process_bcrypt(input: &BcryptInput) -> Result<Vec<u8>, String> {
 }
 fn hash_bcrypt(hash_action: &BcryptHashAction, password: &[u8]) -> Result<Vec<u8>, String> {
     match hash_action.salt.len() {
-        16 => hash_with_salt_bcrypt(password, hash_action.rounds, &hash_action.salt),
+        16 => hash_with_salt_bcrypt(password, hash_action.rounds, hash_action.salt.clone().try_into().unwrap()), // todo: get rid of clone()
         0 => hash_without_salt_bcrypt(password, hash_action.rounds),
         len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len))
     }
 }
-fn hash_with_salt_bcrypt(password: &[u8], rounds: u32, salt: &[u8]) -> Result<Vec<u8>, String> {
-    let res = bcrypt::hash_with_salt(password, rounds, salt.try_into().expect("Should not be visible")); // it's guaranteed that salt's length is 16
+fn hash_with_salt_bcrypt(password: &[u8], rounds: u32, salt: [u8; 16]) -> Result<Vec<u8>, String> {
+    let res = bcrypt::hash_with_salt(password, rounds, salt);
     match &res {
         Ok(hash_parts) => Ok(hash_parts.format_for_version(Version::TwoB).into_bytes()),
         Err(e) => Err(e.to_string()),
