@@ -245,18 +245,15 @@ impl Default for RsaAction {
 #[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct RsaInput {
     pub action: RsaAction,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub payload: Vec<u8>,
 }
 
 impl Default for BcryptInput {
     fn default() -> Self {
-        let action = BcryptAction::Hash(BcryptHashAction {
-            rounds: 8,
-            salt: Vec::new(),
-        });
         Self {
             data: Vec::new(),
-            action,
+            action: BcryptAction::Hash(Default::default()),
         }
     }
 }
@@ -273,6 +270,7 @@ impl Default for BcryptHashAction {
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct BcryptHashAction {
     pub rounds: u32,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub salt: Vec<u8>,
 }
 
@@ -303,6 +301,7 @@ impl From<bool> for BcryptAction {
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct BcryptInput {
     pub action: BcryptAction,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub data: Vec<u8>,
 }
 
