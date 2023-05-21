@@ -5,7 +5,12 @@ Table of content:
 
 * [Overview](#overview)
 * [How it works](#how-it-works)
+* [Code style](#code-style)
 * [Components](#components)
+    * [General purpose components](#general-purpose-components)
+    * [Crypto-helper related components](#crypto-helper-related-components)
+    * [Jwt related components](#jwt-related-components)
+    * [Other components](#other-components)
     * [Practices](#practices)
 
 ## Overview
@@ -30,6 +35,12 @@ Because it's a great framework for building web applications in Rust. It is very
 
 * [Rust](https://www.rust-lang.org/) is the main programming language in this project. It allows us to write highly maintained code with less amount of bugs.
 * Fast computations thanks to the [WASM](https://en.wikipedia.org/wiki/WebAssembly).
+
+## Code style
+
+1. We use the custom [`rustfmt.toml`](https://github.com/TheBestTvarynka/crypto-helper/blob/main/rustfmt.toml) configuration. If you want to change some formatting options then create a pull request with changes and an explanation of your motivation, how it'll help us, etc.
+2. All code must be formatted using the `cargo fmt`. Run `cargo +nightly fmt --all -- --check`.
+3. All build and clippy warnings must be fixed. Run `cargo clippy -- -D warnings`.
 
 ## Components
 
