@@ -1,4 +1,3 @@
-use serde::__private::de::Content::String;
 use web_sys::HtmlInputElement;
 use yew::{Properties, Callback, Html, html, function_component, classes, TargetCast, use_state};
 
@@ -18,7 +17,6 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
     let bcrypt_action = input_props.input.action.clone();
     let input_setter = input_props.bcrypt_input_setter.clone();
 
-    let is_valid = use_state(|| true);
 
     let on_rounds_input = Callback::from(move |event: html::oninput::Event| {
         match event.target_unchecked_into::<HtmlInputElement>().value().parse::<u32>() {
@@ -46,14 +44,12 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
 
     let on_salt_input = Callback::from(move |salt: Vec<u8>| {
         if let BcryptAction::Hash(hash_action) = bcrypt_action.clone() {
-            let salt = match salt.len() {
+            match salt.len() {
                 16 | 0 => {
                     set_is_valid.set(true);
-                    salt
                 },
                 _ => {
                     set_is_valid.set(false);
-                    salt
                 }
             };
             input_setter.emit(BI {
