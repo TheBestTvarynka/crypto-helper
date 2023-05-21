@@ -6,7 +6,6 @@ Table of content:
 * [Overview](#overview)
 * [How it works](#how-it-works)
 * [Components](#components)
-    * [Hierarchy](#hierarchy) 
     * [Practices](#practices)
 
 ## Overview
@@ -39,6 +38,7 @@ We have three main groups of components (divided by purpose):
 1. General purpose components.
 2. Crypto-helper related components.
 3. Jwt related components.
+4. Other components.
 
 ### General purpose components
 
@@ -47,11 +47,25 @@ Those components can be used on any app page and located in the [`src/common`](h
 * [`ByteInput`](https://github.com/TheBestTvarynka/crypto-helper/blob/main/src/common/byte_input.rs). This component is used for the bytes entering. You can use it in any place where you need to take any input bytes from the user. It automatically supports many input formats, validation, etc.
 
 ![](/public/img/architecture/bi_1.png) ![](/public/img/architecture/bi_2.png) ![](/public/img/architecture/bi_3.png)
-* [`Switch`](https://github.com/TheBestTvarynka/crypto-helper/blob/main/src/common/switch.rs). Just a regular switch. Can be used to switch between any two options. For example, encrypt <-> decrypt, hash <-> verify, etc.
+* [`Switch`](https://github.com/TheBestTvarynka/crypto-helper/blob/main/src/common/switch.rs). Just a regular switch. Can be used to switch between any two options. For example, `encrypt <-> decrypt`, `hash <-> verify`, etc.
 
 ![](/public/img/architecture/s1.png) ![](/public/img/architecture/s2.png)
 * There are and will be more common components. The above two are just examples. **If some component was purpose specialized during creation but become common, then it should be moved in the [`src/common`](https://github.com/TheBestTvarynka/crypto-helper/tree/main/src/common) directory.**
 
-### Hierarchy
+### Crypto-helper related components
+
+In short: all components from the [`src/crypto_helper`](https://github.com/TheBestTvarynka/crypto-helper/tree/main/src/crypto_helper) directory belong to this group. Here are the input/output components for the different algorithms, computations, etc.
+
+If some components will be used only on the `/crypto-helper` page, then they should be placed somewhere in the [`src/crypto_helper`](https://github.com/TheBestTvarynka/crypto-helper/tree/main/src/crypto_helper) directory.
+
+### Jwt related components
+
+In short: all components from the [`src/jwt`](https://github.com/TheBestTvarynka/crypto-helper/tree/main/src/jwt) directory belong to this group. Here are the input/output components for the JWT, its parts parsing/editing/viewing, etc.
+
+If some components will be used only on the `/jwt` page, then they should be placed somewhere in the [`src/jwt`](https://github.com/TheBestTvarynka/crypto-helper/tree/main/src/jwt) directory.
+
+### Other components
+
+The `About` page, `Header, `Footer, etc.
 
 ### Practices
