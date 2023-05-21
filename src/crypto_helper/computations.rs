@@ -7,9 +7,7 @@ use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
 
-use super::algorithm::{
-    BcryptAction, BcryptHashAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput,
-};
+use super::algorithm::{BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput};
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
     let payload = &input.payload;
@@ -52,40 +50,17 @@ pub fn process_krb_hmac(hasher: Box<dyn Checksum>, input: &KrbInputData) -> Resu
 
 pub fn process_bcrypt(input: &BcryptInput) -> Result<Vec<u8>, String> {
     match &input.action {
-        BcryptAction::Hash(bcrypt_hash_action) => hash_bcrypt(bcrypt_hash_action, &input.data),
-        BcryptAction::Verify(hashed) => verify_bcrypt(&input.data, hashed),
-    }
-}
-fn hash_bcrypt(hash_action: &BcryptHashAction, password: &[u8]) -> Result<Vec<u8>, String> {
-    match hash_action.salt.len() {
-        16 => hash_with_salt_bcrypt(
-            password,
-            hash_action.rounds,
-            hash_action.salt.clone().try_into().unwrap(), // todo: get rid of clone()
-        ),
-        0 => hash_without_salt_bcrypt(password, hash_action.rounds),
-        len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len)),
-    }
-}
-fn hash_with_salt_bcrypt(password: &[u8], rounds: u32, salt: [u8; 16]) -> Result<Vec<u8>, String> {
-    let res = bcrypt::hash_with_salt(password, rounds, salt);
-    match &res {
-        Ok(hash_parts) => Ok(hash_parts.format_for_version(Version::TwoB).into_bytes()),
-        Err(e) => Err(e.to_string()),
-    }
-}
-fn hash_without_salt_bcrypt(password: &[u8], cost: u32) -> Result<Vec<u8>, String> {
-    match bcrypt::hash(password, cost) {
-        Ok(hash) => Ok(hash.into_bytes()),
-        Err(e) => Err(e.to_string()),
-    }
-}
-fn verify_bcrypt(password: &[u8], hashed: &str) -> Result<Vec<u8>, String> {
-    match bcrypt::verify(password, hashed) {
-        Ok(res) => Ok(match res {
-            true => vec![1],
-            false => vec![],
-        }),
-        Err(e) => Err(e.to_string()),
+        BcryptAction::Hash(hash) => match hash.salt.len() {
+            16 => bcrypt::hash_with_salt(&input.data, hash.rounds, hash.salt.as_slice().try_into().unwrap())
+                .map(|hash| hash.format_for_version(Version::TwoB).into_bytes())
+                .map_err(|e| e.to_string()),
+            0 => bcrypt::hash(&input.data, hash.rounds)
+                .map(|hash| hash.into_bytes())
+                .map_err(|e| e.to_string()),
+            len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len)),
+        },
+        BcryptAction::Verify(hash) => bcrypt::verify(&input.data, &hash)
+            .map(|r| if r { vec![1] } else { vec![0] })
+            .map_err(|e| e.to_string()),
     }
 }
