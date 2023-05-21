@@ -256,7 +256,7 @@ impl Default for BcryptInput {
         });
         Self {
             data: Vec::new(),
-            action
+            action,
         }
     }
 }

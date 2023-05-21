@@ -1,9 +1,8 @@
 use web_sys::HtmlInputElement;
-use yew::{Properties, Callback, Html, html, function_component, classes, TargetCast, use_state};
+use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
 
+use crate::common::{build_byte_input, Switch};
 use crate::crypto_helper::algorithm::{BcryptAction, BcryptHashAction, BcryptInput as BI};
-use crate::common::{Switch, build_byte_input};
-
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct BcryptInputProps {
@@ -12,11 +11,10 @@ pub struct BcryptInputProps {
 }
 
 #[function_component(BcryptInput)]
-pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
+pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     let data = input_props.input.data.clone();
     let bcrypt_action = input_props.input.action.clone();
     let input_setter = input_props.bcrypt_input_setter.clone();
-
 
     let on_rounds_input = Callback::from(move |event: html::oninput::Event| {
         match event.target_unchecked_into::<HtmlInputElement>().value().parse::<u32>() {
@@ -27,10 +25,10 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
                         action: BcryptAction::Hash(BcryptHashAction {
                             rounds,
                             salt: bcrypt_hash_action.salt,
-                        })
+                        }),
                     })
                 }
-            },
+            }
             Err(_) => (),
         };
     });
@@ -47,7 +45,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
             match salt.len() {
                 16 | 0 => {
                     set_is_valid.set(true);
-                },
+                }
                 _ => {
                     set_is_valid.set(false);
                 }
@@ -57,7 +55,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
                 action: BcryptAction::Hash(BcryptHashAction {
                     salt,
                     rounds: hash_action.rounds,
-                })
+                }),
             })
         }
     });
@@ -123,10 +121,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps, ) -> Html {
     }
 }
 
-pub fn build_bcrypt_input(
-    input: BI,
-    setter: Callback<BI>,
-) -> Html {
+pub fn build_bcrypt_input(input: BI, setter: Callback<BI>) -> Html {
     html! {
         <BcryptInput input={input} bcrypt_input_setter={setter}/>
     }

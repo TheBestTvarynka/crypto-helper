@@ -1,13 +1,13 @@
+mod bcrypt;
 mod krb;
 mod rsa;
-mod bcrypt;
 
 use picky_krb::crypto::CipherSuite;
 use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
 
+use self::bcrypt::build_bcrypt_input;
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
-use self::bcrypt::build_bcrypt_input;
 use super::algorithm::{KrbInput, KrbMode};
 use super::Algorithm;
 use crate::common::build_byte_input;

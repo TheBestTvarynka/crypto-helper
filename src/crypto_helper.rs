@@ -15,9 +15,9 @@ use sha1::{Digest, Sha1};
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
 use yew_hooks::{use_clipboard, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
-use crate::crypto_helper::computations::process_bcrypt;
 
 use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
+use crate::crypto_helper::computations::process_bcrypt;
 use crate::url_query_params::generate_crypto_helper_link;
 
 fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {

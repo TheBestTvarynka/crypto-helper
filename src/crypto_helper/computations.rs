@@ -1,12 +1,15 @@
+use std::convert::TryInto;
+
+use bcrypt::Version;
 use picky::signature::SignatureAlgorithm;
 use picky_krb::crypto::{Checksum, Cipher};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
-use std::convert::TryInto;
-use bcrypt::Version;
 
-use super::algorithm::{KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput, BcryptInput, BcryptAction, BcryptHashAction};
+use super::algorithm::{
+    BcryptAction, BcryptHashAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput,
+};
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
     let payload = &input.payload;
@@ -55,9 +58,13 @@ pub fn process_bcrypt(input: &BcryptInput) -> Result<Vec<u8>, String> {
 }
 fn hash_bcrypt(hash_action: &BcryptHashAction, password: &[u8]) -> Result<Vec<u8>, String> {
     match hash_action.salt.len() {
-        16 => hash_with_salt_bcrypt(password, hash_action.rounds, hash_action.salt.clone().try_into().unwrap()), // todo: get rid of clone()
+        16 => hash_with_salt_bcrypt(
+            password,
+            hash_action.rounds,
+            hash_action.salt.clone().try_into().unwrap(), // todo: get rid of clone()
+        ),
         0 => hash_without_salt_bcrypt(password, hash_action.rounds),
-        len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len))
+        len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len)),
     }
 }
 fn hash_with_salt_bcrypt(password: &[u8], rounds: u32, salt: [u8; 16]) -> Result<Vec<u8>, String> {
@@ -70,10 +77,10 @@ fn hash_with_salt_bcrypt(password: &[u8], rounds: u32, salt: [u8; 16]) -> Result
 fn hash_without_salt_bcrypt(password: &[u8], cost: u32) -> Result<Vec<u8>, String> {
     match bcrypt::hash(password, cost) {
         Ok(hash) => Ok(hash.into_bytes()),
-        Err(e) => Err(e.to_string())
+        Err(e) => Err(e.to_string()),
     }
 }
-fn verify_bcrypt(password: &[u8], hashed: &str) -> Result<Vec<u8>, String>{
+fn verify_bcrypt(password: &[u8], hashed: &str) -> Result<Vec<u8>, String> {
     match bcrypt::verify(password, hashed) {
         Ok(res) => Ok(match res {
             true => vec![1],
