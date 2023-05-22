@@ -77,6 +77,49 @@ If some components will be used only on the `/jwt` page, then they should be pla
 
 ### Other components
 
-The `About` page, `Header, `Footer, etc.
+The `About` page, `Header`, `Footer`, etc.
 
 ### Practices
+
+1. Validate on input.
+
+Components that take some input from the user usually have their validation rules. For example, the `ByteInput` component with the `ByteFormat::Hex` parameter will require only hex-encoded bytes from the user.
+
+In the app state, we save only validated/parsed data.  If the user enters an invalid string, then inform about it. But do not save raw `String` or smth like that in the state. If you look at the `Algorithm` enum, you can see that all input data for algorithms save in a "parsed" state:
+
+```rust
+// some fields and structures are omitted
+enum Algorithm {
+    Md5(Vec<u8>),
+    Rsa(RsaInput),
+}
+
+struct RsaInput {
+    pub action: RsaAction,
+    pub payload: Vec<u8>,
+}
+
+enum RsaAction {
+    Encrypt(RsaPublicKey),
+    Decrypt(RsaPrivateKey),
+    Sign(RsaSignInput),
+    Verify(RsaVerifyInput),
+}
+```
+
+You won't find any raw Strings. Bytes for hashing/encryption are `Vec<u8>` (not raw `String`), RSA keys are parsed and saved in `Public/PrivateKey` structures, etc.
+
+2. Logging.
+
+This app has a simple and typical logging system: [`wasm-logger`](https://crates.io/crates/wasm-logger) + [`log`](https://crates.io/crates/log) crates. If you want to log something, then just use any suitable for you macros from the `log` crate. All logs will be written into the browser's console. This is how it looks:
+
+![](/public/img/architecture/logs_example.png) ![](/public/img/architecture/logs_example.png)
+
+3. Inform user about everything.
+
+You have two main ways how to tell the user that something went wrong:
+
+# Spawn notifications using the [`use_notifications`](https://yn-docs.qkation.com/yew_notifications/fn.use_notification.html) hook from the [`yew_notifications`](https://github.com/TheBestTvarynka/yew-notifications) crate.
+# Different UI tricks like painting the input component in red, on-page messages, etc. Example:
+
+![](/public/img/architecture/invalid_input.png) ![](/public/img/architecture/invalid_input.png)
