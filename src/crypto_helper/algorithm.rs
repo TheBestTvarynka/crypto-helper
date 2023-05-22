@@ -280,8 +280,8 @@ pub enum BcryptAction {
     Verify(String),
 }
 
-impl From<BcryptAction> for bool {
-    fn from(action: BcryptAction) -> Self {
+impl From<&BcryptAction> for bool {
+    fn from(action: &BcryptAction) -> Self {
         match action {
             BcryptAction::Hash(_) => false,
             BcryptAction::Verify(_) => true,

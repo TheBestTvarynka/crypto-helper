@@ -110,7 +110,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
             {build_byte_input(data, byte_setter, Some(BytesFormat::Ascii), Some("bcrypt".into()))}
             <div class="horizontal">
                 <span class="total">{"hash"}</span>
-                <Switch id={"hash-verify".to_string()} setter={on_switch} state={bool::from(action)}/>
+                <Switch id={"hash-verify".to_string()} setter={on_switch} state={bool::from(&action)}/>
                 <span class="total">{"verify"}</span>
             </div>
             {match input_props.input.action.clone() {
