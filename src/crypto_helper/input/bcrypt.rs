@@ -106,7 +106,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
     let action = input_props.input.action.clone();
     let data = input_props.input.data.clone();
     html! {
-        <div class={classes!("formats-container", "vertical")}>
+        <div class={classes!("wide-input", "vertical")}>
             {build_byte_input(data, byte_setter, Some(BytesFormat::Ascii), Some("bcrypt".into()))}
             <div class="horizontal">
                 <span class="total">{"hash"}</span>
