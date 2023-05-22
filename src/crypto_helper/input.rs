@@ -1,9 +1,11 @@
+mod bcrypt;
 mod krb;
 mod rsa;
 
 use picky_krb::crypto::CipherSuite;
 use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
 
+use self::bcrypt::build_bcrypt_input;
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
 use super::algorithm::{KrbInput, KrbMode};
@@ -80,6 +82,10 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
         Algorithm::Rsa(input) => build_rsa_input(
             input.clone(),
             Callback::from(move |input| setter.set(Algorithm::Rsa(input))),
+        ),
+        Algorithm::Bcrypt(input) => build_bcrypt_input(
+            input.clone(),
+            Callback::from(move |input| setter.set(Algorithm::Bcrypt(input))),
         ),
     }
 }

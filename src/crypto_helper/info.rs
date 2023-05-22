@@ -65,6 +65,9 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
         Algorithm::Rsa(_) => html! {
             <span>{"Use RSA algorithm to sign/verify/encrypt/decrypt your data."}</span>
         },
+        Algorithm::Bcrypt(_) => html! {
+            <span>{"Use Bcrypt algorithm to encrypt/verify your data."}</span>
+        },
     }
 }
 

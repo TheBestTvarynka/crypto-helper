@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use super::serde::*;
 
-pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
+pub const SUPPORTED_ALGORITHMS: [&str; 11] = [
     "MD5",                     // 0
     "SHA1",                    // 1
     "SHA256",                  // 2
@@ -17,14 +17,16 @@ pub const SUPPORTED_ALGORITHMS: [&str; 10] = [
     "HMAC-SHA1-96-AES256",     // 7
     "RSA",                     // 8
     "SHA384",                  // 9
+    "BCRYPT",                  // 10
 ];
 
-pub const HASHING_ALGOS: [&str; 5] = [
+pub const HASHING_ALGOS: [&str; 6] = [
     SUPPORTED_ALGORITHMS[0],
     SUPPORTED_ALGORITHMS[1],
     SUPPORTED_ALGORITHMS[2],
     SUPPORTED_ALGORITHMS[3],
     SUPPORTED_ALGORITHMS[9],
+    SUPPORTED_ALGORITHMS[10],
 ];
 
 pub const ENCRYPTION_ALGOS: [&str; 3] = [
@@ -243,7 +245,64 @@ impl Default for RsaAction {
 #[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
 pub struct RsaInput {
     pub action: RsaAction,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub payload: Vec<u8>,
+}
+
+impl Default for BcryptInput {
+    fn default() -> Self {
+        Self {
+            data: Vec::new(),
+            action: BcryptAction::Hash(Default::default()),
+        }
+    }
+}
+
+impl Default for BcryptHashAction {
+    fn default() -> Self {
+        Self {
+            rounds: 8,
+            salt: Vec::new(),
+        }
+    }
+}
+
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct BcryptHashAction {
+    pub rounds: u32,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub salt: Vec<u8>,
+}
+
+#[derive(Eq, Clone, PartialEq, Serialize, Deserialize, Debug)]
+pub enum BcryptAction {
+    Hash(BcryptHashAction),
+    Verify(String),
+}
+
+impl From<&BcryptAction> for bool {
+    fn from(action: &BcryptAction) -> Self {
+        match action {
+            BcryptAction::Hash(_) => false,
+            BcryptAction::Verify(_) => true,
+        }
+    }
+}
+
+impl From<bool> for BcryptAction {
+    fn from(action: bool) -> Self {
+        match action {
+            true => Self::Verify(Default::default()),
+            false => Self::Hash(Default::default()),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct BcryptInput {
+    pub action: BcryptAction,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub data: Vec<u8>,
 }
 
 #[allow(clippy::large_enum_variant)]
@@ -264,6 +323,7 @@ pub enum Algorithm {
     HmacSha196Aes128(KrbInputData),
     HmacSha196Aes256(KrbInputData),
     Rsa(RsaInput),
+    Bcrypt(BcryptInput),
 }
 
 impl TryFrom<&str> for Algorithm {
@@ -290,6 +350,8 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::HmacSha196Aes256(Default::default()));
         } else if value == SUPPORTED_ALGORITHMS[8] {
             return Ok(Algorithm::Rsa(Default::default()));
+        } else if value == SUPPORTED_ALGORITHMS[10] {
+            return Ok(Algorithm::Bcrypt(Default::default()));
         }
 
         log::error!("invalid algo literal: {}", value);
@@ -311,6 +373,7 @@ impl From<&Algorithm> for &str {
             Algorithm::HmacSha196Aes128(_) => SUPPORTED_ALGORITHMS[6],
             Algorithm::HmacSha196Aes256(_) => SUPPORTED_ALGORITHMS[7],
             Algorithm::Rsa(_) => SUPPORTED_ALGORITHMS[8],
+            Algorithm::Bcrypt(_) => SUPPORTED_ALGORITHMS[10],
         }
     }
 }

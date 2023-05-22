@@ -1,10 +1,13 @@
+use std::convert::TryInto;
+
+use bcrypt::Version;
 use picky::signature::SignatureAlgorithm;
 use picky_krb::crypto::{Checksum, Cipher};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
 
-use super::algorithm::{KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput};
+use super::algorithm::{BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput};
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
     let payload = &input.payload;
@@ -43,4 +46,21 @@ pub fn process_krb_hmac(hasher: Box<dyn Checksum>, input: &KrbInputData) -> Resu
     hasher
         .checksum(&input.key, input.key_usage, &input.payload)
         .map_err(|err| err.to_string())
+}
+
+pub fn process_bcrypt(input: &BcryptInput) -> Result<Vec<u8>, String> {
+    match &input.action {
+        BcryptAction::Hash(hash) => match hash.salt.len() {
+            16 => bcrypt::hash_with_salt(&input.data, hash.rounds, hash.salt.as_slice().try_into().unwrap())
+                .map(|hash| hash.format_for_version(Version::TwoB).into_bytes())
+                .map_err(|e| e.to_string()),
+            0 => bcrypt::hash(&input.data, hash.rounds)
+                .map(|hash| hash.into_bytes())
+                .map_err(|e| e.to_string()),
+            len => Err(format!("Invalid bcrypt salt len: expected 16 bytes but got {}", len)),
+        },
+        BcryptAction::Verify(hash) => bcrypt::verify(&input.data, hash)
+            .map(|r| if r { vec![1] } else { vec![0] })
+            .map_err(|e| e.to_string()),
+    }
 }
