@@ -1,5 +1,5 @@
 use web_sys::HtmlInputElement;
-use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
+use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::common::{build_byte_input, BytesFormat, Switch};
@@ -13,8 +13,7 @@ pub struct BcryptInputProps {
 
 #[function_component(BcryptInput)]
 pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
-    let rounds_state = use_state(|| true);
-    let set_rounds_state = rounds_state.setter();
+    let notifications = use_notification::<Notification>();
 
     let data = input_props.input.data.clone();
     let bcrypt_action = input_props.input.action.clone();
@@ -31,15 +30,16 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
                             salt: bcrypt_hash_action.salt,
                         }),
                     });
-                    set_rounds_state.set(true); // todo: states are useless at this point
                 }
             }
-            Err(_) => set_rounds_state.set(false),
+            Err(err) => notifications.spawn(Notification::new(
+                NotificationType::Error,
+                "Processing error",
+                err.to_string(),
+                Notification::NOTIFICATION_LIFETIME,
+            )),
         };
     });
-
-    let salt_state = use_state(|| true);
-    let set_salt_state = salt_state.setter();
 
     let input_setter = input_props.bcrypt_input_setter.clone();
     let bcrypt_action = input_props.input.action.clone();
@@ -47,14 +47,6 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
 
     let on_salt_input = Callback::from(move |salt: Vec<u8>| {
         if let BcryptAction::Hash(hash_action) = bcrypt_action.clone() {
-            match salt.len() {
-                16 | 0 => {
-                    set_salt_state.set(true);
-                }
-                _ => {
-                    set_salt_state.set(false);
-                }
-            };
             input_setter.emit(BcryptInputData {
                 data: data.clone(),
                 action: BcryptAction::Hash(BcryptHashAction {
