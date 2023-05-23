@@ -1,6 +1,6 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua/)
 
-## crypoto-helper
+## crypto-helper
 
 ![deploy](https://github.com/TheBestTvarynka/crypto-helper/actions/workflows/github-actions.yml/badge.svg)
 
@@ -17,9 +17,9 @@ Table of content:
 ![](/public/img/sha.png)
 ![](/public/img/jwt.png)
 
-The crypto-helper is an online app that helps to work with the diferent crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
+The crypto-helper is an online app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
 
-All computations are performed on the client side. This tool never sends the data to the any server. Tip: if your input is not hex-encoded then you can use a [byte-formatter](https://bf.qkation.com) to transform input to the hex format.
+All computations are performed on the client side. This tool never sends the data to any server. Tip: if your input is not hex-encoded then you can use a [byte-formatter](https://bf.qkation.com) to transform input to the hex format.
 
 ### Features
 
