@@ -113,13 +113,13 @@ You won't find any raw Strings. Bytes for hashing/encryption are `Vec<u8>` (not 
 
 This app has a simple and typical logging system: [`wasm-logger`](https://crates.io/crates/wasm-logger) + [`log`](https://crates.io/crates/log) crates. If you want to log something, then just use any suitable for you macros from the `log` crate. All logs will be written into the browser's console. This is how it looks:
 
-![](/public/img/architecture/logs_exmaple.png) ![](/public/img/architecture/logs_exmaple.png)
+![](/public/img/architecture/logs_exmaple.png)
 
 3. Inform user about everything.
 
 You have two main ways how to tell the user that something went wrong:
 
-# Spawn notifications using the [`use_notifications`](https://yn-docs.qkation.com/yew_notifications/fn.use_notification.html) hook from the [`yew_notifications`](https://github.com/TheBestTvarynka/yew-notifications) crate.
-# Different UI tricks like painting the input component in red, on-page messages, etc. Example:
+* Spawn notifications using the [`use_notifications`](https://yn-docs.qkation.com/yew_notifications/fn.use_notification.html) hook from the [`yew_notifications`](https://github.com/TheBestTvarynka/yew-notifications) crate.
+* Different UI tricks like painting the input component in red, on-page messages, etc. Example:
 
-![](/public/img/architecture/invalid_input.png) ![](/public/img/architecture/invalid_input.png)
+![](/public/img/architecture/invalid_input.png)
