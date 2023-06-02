@@ -113,7 +113,7 @@ You won't find any raw Strings. Bytes for hashing/encryption are `Vec<u8>` (not 
 
 This app has a simple and typical logging system: [`wasm-logger`](https://crates.io/crates/wasm-logger) + [`log`](https://crates.io/crates/log) crates. If you want to log something, then just use any suitable for you macros from the `log` crate. All logs will be written into the browser's console. This is how it looks:
 
-![](/public/img/architecture/logs_example.png) ![](/public/img/architecture/logs_example.png)
+![](/public/img/architecture/logs_exmaple.png) ![](/public/img/architecture/logs_exmaple.png)
 
 3. Inform user about everything.
 
