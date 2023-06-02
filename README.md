@@ -46,8 +46,19 @@ All computations are performed on the client side. This tool never sends the dat
 
 0. Install WebAssembly target: `rustup target add wasm32-unknown-unknown`.
 1. Install [`trunk`](https://github.com/thedodd/trunk). [Additional guide](https://yew.rs/docs/next/getting-started/introduction#install-trunk).
-2. Run `trunk serve` in your terminal.
-3. Go to http://127.0.0.1:8080 in your browser.
+2. Set up `APP_HOST` environment variable:
+```bash
+# Windows
+set APP_HOST=<url>
+# Linux
+export APP_HOST=<url>
+# example:
+# export APP_HOST=https://crypto-helper.qkation.com
+```
+This env variable is uses for the url generation when you click the *share by url* button.
+
+3. Run `trunk serve` in your terminal.
+4. Go to http://127.0.0.1:8080 in your browser.
 
 ### Meta
 
