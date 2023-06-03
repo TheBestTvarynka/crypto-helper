@@ -39,7 +39,6 @@ impl FromStr for Jwte {
             .next()
             .ok_or_else(|| "JWT Header is not present".to_owned())?
             .to_owned();
-        log::debug!("raw_header: {}", raw_header);
         let parsed_header = String::from_utf8(decode_base64(&raw_header)?)
             .map_err(|err| format!("Decoded header is not UTF-8 text: {:?}", err))?;
 
