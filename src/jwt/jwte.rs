@@ -16,16 +16,29 @@ pub enum Jwte {
     Jwe(Jwe),
 }
 
+fn is_jwt_allowed_char(c: &char) -> bool {
+    c.is_alphabetic() || c.is_numeric() || *c == '+' || *c == '/' || *c == '='
+    // in case of the url-encoded base64 token
+    || *c == '-' || *c == '_'
+    // JWT parts separator
+    || *c == '.'
+}
+
 impl FromStr for Jwte {
     type Err = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut parts = s.split('.');
+    fn from_str(token: &str) -> Result<Self, Self::Err> {
+        let token = token.replace("Authorization", "");
+        let token = token.replace("Bearer", "");
+        let token = token.trim().chars().filter(is_jwt_allowed_char).collect::<String>();
+
+        let mut parts = token.split('.');
 
         let raw_header = parts
             .next()
             .ok_or_else(|| "JWT Header is not present".to_owned())?
             .to_owned();
+        log::debug!("raw_header: {}", raw_header);
         let parsed_header = String::from_utf8(decode_base64(&raw_header)?).unwrap();
 
         let raw_payload = parts
