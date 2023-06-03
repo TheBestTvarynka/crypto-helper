@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use serde_json::{to_string_pretty, Value};
 use web_sys::{HtmlInputElement, MouseEvent};
 use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
@@ -14,11 +16,13 @@ pub struct JwtEditorProps {
     pub set_jwt: Callback<Jwt>,
 }
 
-fn get_onclick_prettify(
+fn format_json<E: Debug>(
     value: impl Into<String>,
     name: impl Into<String>,
     set_data: Callback<String>,
     notify: Callback<Notification>,
+    // Note: this function type can be changed (extended) in the future. It's just enough for now.
+    format_fn: &'static dyn Fn(&serde_json::Value) -> Result<String, E>,
 ) -> Callback<MouseEvent> {
     let name = name.into();
     let value = value.into();
@@ -27,21 +31,19 @@ fn get_onclick_prettify(
         let value: Value = match serde_json::from_str(&value).map_err(|err| format!("{:?}", err)) {
             Ok(value) => value,
             Err(error) => {
-                log::error!("{:?}", error);
                 notify.emit(Notification::new(
                     NotificationType::Error,
                     name.clone(),
-                    format!("Content is not a valid JSON: {:?}", error),
+                    format!("Content is not a valid JSON: {}", error),
                     Notification::NOTIFICATION_LIFETIME,
                 ));
                 return;
             }
         };
 
-        match to_string_pretty(&value) {
+        match format_fn(&value) {
             Ok(pretty_json_string) => set_data.emit(pretty_json_string),
             Err(error) => {
-                log::error!("{:?}", error);
                 notify.emit(Notification::new(
                     NotificationType::Error,
                     name.clone(),
@@ -63,7 +65,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
     let set_jwt = props.set_jwt.clone();
     let jwt = props.jwt.clone();
     let notifications = use_notification::<Notification>();
-    let header_on_pretty = get_onclick_prettify(
+    let header_on_pretty = format_json(
         header.clone(),
         "Header",
         Callback::from(move |json| {
@@ -72,12 +74,27 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
             set_jwt.emit(jwt);
         }),
         Callback::from(move |notification| notifications.spawn(notification)),
+        &to_string_pretty,
+    );
+    let set_jwt = props.set_jwt.clone();
+    let jwt = props.jwt.clone();
+    let notifications = use_notification::<Notification>();
+    let header_on_minify = format_json(
+        header.clone(),
+        "Header",
+        Callback::from(move |json| {
+            let mut jwt = jwt.clone();
+            jwt.set_parsed_header(json);
+            set_jwt.emit(jwt);
+        }),
+        Callback::from(move |notification| notifications.spawn(notification)),
+        &serde_json::to_string,
     );
 
     let set_jwt = props.set_jwt.clone();
     let jwt = props.jwt.clone();
     let notifications = use_notification::<Notification>();
-    let payload_on_pretty = get_onclick_prettify(
+    let payload_on_pretty = format_json(
         payload.clone(),
         "Payload",
         Callback::from(move |json| {
@@ -86,6 +103,21 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
             set_jwt.emit(jwt);
         }),
         Callback::from(move |notification| notifications.spawn(notification)),
+        &to_string_pretty,
+    );
+    let set_jwt = props.set_jwt.clone();
+    let jwt = props.jwt.clone();
+    let notifications = use_notification::<Notification>();
+    let payload_on_minify = format_json(
+        payload.clone(),
+        "Payload",
+        Callback::from(move |json| {
+            let mut jwt = jwt.clone();
+            jwt.parsed_payload = json;
+            set_jwt.emit(jwt);
+        }),
+        Callback::from(move |notification| notifications.spawn(notification)),
+        &serde_json::to_string,
     );
 
     let set_jwt = props.set_jwt.clone();
@@ -119,6 +151,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
                 <div class={classes!("horizontal")}>
                     <span class={classes!("jwt-header")} onclick={get_copy_to_clipboard_callback(header.clone(), clipboard.clone())}>{"Header"}</span>
                     <button onclick={header_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
+                    <button onclick={header_on_minify} class={classes!("jwt-util-button")}>{"Minify"}</button>
                 </div>
                 <textarea rows="4" class={classes!("base-input")} value={header} oninput={on_header_input} />
             </div>
@@ -126,6 +159,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
                 <div class={classes!("horizontal")}>
                     <span class={classes!("jwt-payload")} onclick={get_copy_to_clipboard_callback(payload.clone(), clipboard.clone())}>{"Payload"}</span>
                     <button onclick={payload_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
+                    <button onclick={payload_on_minify} class={classes!("jwt-util-button")}>{"Minify"}</button>
                 </div>
                 <textarea rows="6" class={classes!("base-input")} value={payload} oninput={on_payload_input} />
             </div>
