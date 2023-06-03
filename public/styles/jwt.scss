@@ -36,6 +36,18 @@
     cursor: pointer;
 }
 
+.jwt-rest {
+    color: #630310;
+    background-color: #d15a66;
+    text-decoration: line-through;
+    word-wrap: break-word;
+}
+
+.jwt-rest:hover {
+    text-decoration: underline line-through;
+    cursor: pointer;
+}
+
 .jwt-dot {
     background-color: #403735;
     color: #ccc9af;

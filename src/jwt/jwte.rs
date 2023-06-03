@@ -65,9 +65,19 @@ impl FromStr for Jwte {
             })
             .unwrap_or_default();
 
-        if parts.next().is_some() {
-            return Err("Too many dots in the JWT".into());
-        }
+        let rest = parts
+            .next()
+            .map(|part| {
+                let mut part = part.to_owned();
+                part.insert(0, '.');
+                part
+            })
+            .unwrap_or_default();
+        let rest = parts.fold(rest, |mut rest, part| {
+            rest.push('.');
+            rest.push_str(part);
+            rest
+        });
 
         Ok(Jwte::Jwt(Jwt {
             raw_header,
@@ -80,6 +90,8 @@ impl FromStr for Jwte {
             parsed_signature,
             signature,
             signature_algorithm,
+
+            rest,
         }))
     }
 }
