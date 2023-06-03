@@ -1,9 +1,22 @@
 use yew::Callback;
 use yew_hooks::UseClipboardHandle;
+use yew_notifications::{Notification, NotificationType, NotificationsManager};
 
-pub fn get_copy_to_clipboard_callback<T>(data_to_copy: String, clipboard: UseClipboardHandle) -> Callback<T> {
+pub fn copy_to_clipboard_with_notification<T>(
+    data_to_copy: String,
+    clipboard: UseClipboardHandle,
+    data_name: impl Into<String>,
+    notifications: NotificationsManager<Notification>,
+) -> Callback<T> {
+    let data_name = data_name.into();
+
     Callback::from(move |_| {
         clipboard.write_text(data_to_copy.clone());
+
+        notifications.spawn(Notification::from_description_and_type(
+            NotificationType::Info,
+            format!("{} copied.", data_name),
+        ));
     })
 }
 

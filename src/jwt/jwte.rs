@@ -68,7 +68,7 @@ impl FromStr for Jwte {
             })
             .unwrap_or_default();
 
-        let rest = parts
+        let leftover = parts
             .next()
             .map(|part| {
                 let mut part = part.to_owned();
@@ -76,10 +76,10 @@ impl FromStr for Jwte {
                 part
             })
             .unwrap_or_default();
-        let rest = parts.fold(rest, |mut rest, part| {
-            rest.push('.');
-            rest.push_str(part);
-            rest
+        let leftover = parts.fold(leftover, |mut leftover, part| {
+            leftover.push('.');
+            leftover.push_str(part);
+            leftover
         });
 
         Ok(Jwte::Jwt(Jwt {
@@ -94,7 +94,7 @@ impl FromStr for Jwte {
             signature,
             signature_algorithm,
 
-            rest,
+            leftover,
         }))
     }
 }
