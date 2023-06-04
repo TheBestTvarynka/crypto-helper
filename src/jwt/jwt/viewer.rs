@@ -15,6 +15,7 @@ pub fn jwt_viewer(props: &JwtViewerProps) -> Html {
     let header = props.jwt.raw_header.clone();
     let payload = props.jwt.raw_payload.clone();
     let signature = props.jwt.raw_signature.clone();
+    let start_over = props.jwt.start_over.clone();
     let leftover = props.jwt.leftover.clone();
 
     let clipboard = use_clipboard();
@@ -22,6 +23,7 @@ pub fn jwt_viewer(props: &JwtViewerProps) -> Html {
 
     html! {
         <div>
+            <span class={classes!("jwt-rest")} onclick={copy_to_clipboard_with_notification(start_over.clone(), clipboard.clone(), "Start part", notifications.clone())}>{start_over}</span>
             <span class={classes!("jwt-header")} onclick={copy_to_clipboard_with_notification(header.clone(), clipboard.clone(), "Header", notifications.clone())}>{header}</span>
             <span class={classes!("jwt-dot")}>{"."}</span>
             <span class={classes!("jwt-payload")} onclick={copy_to_clipboard_with_notification(payload.clone(), clipboard.clone(), "Payload", notifications.clone())}>{payload}</span>

@@ -29,18 +29,54 @@ impl FromStr for Jwte {
     type Err = String;
 
     fn from_str(token: &str) -> Result<Self, Self::Err> {
-        let token = token.replace("Authorization", "");
-        let token = token.replace("Bearer", "");
-        let token = token.trim().chars().filter(is_jwt_allowed_char).collect::<String>();
+        let mut start_over = String::new();
 
         let mut parts = token.split('.');
 
-        let raw_header = parts
-            .next()
-            .ok_or_else(|| "JWT Header is not present".to_owned())?
-            .to_owned();
-        let parsed_header = String::from_utf8(decode_base64(&raw_header)?)
-            .map_err(|err| format!("Decoded header is not UTF-8 text: {:?}", err))?;
+        let (raw_header, parsed_header, signature_algorithm) = loop {
+            let raw_header = if let Some(data) = parts.next() {
+                data.trim()
+            } else {
+                return Err("Invalid JWT: missing header.".into());
+            };
+
+            let raw_header = match raw_header.rfind(|c: char| !is_jwt_allowed_char(&c)) {
+                Some(index) => {
+                    start_over.push_str(&raw_header[0..(index + 1)]);
+                    &raw_header[(index + 1)..]
+                }
+                None => raw_header,
+            };
+
+            let parsed_header = match String::from_utf8(match decode_base64(raw_header) {
+                Ok(data) => data,
+                Err(_) => {
+                    start_over.push_str(raw_header);
+                    start_over.push('.');
+                    continue;
+                }
+            }) {
+                Ok(parsed) => parsed,
+                Err(_) => {
+                    start_over.push_str(raw_header);
+                    start_over.push('.');
+                    continue;
+                }
+            };
+
+            let header: Result<Value, _> = serde_json::from_str(&parsed_header);
+            let signature_algorithm = header
+                .map(|header| {
+                    let algo: JwtSignatureAlgorithm = header
+                        .get("alg")
+                        .map(|algo| algo.try_into().unwrap_or_default())
+                        .unwrap_or_default();
+                    algo
+                })
+                .unwrap_or_default();
+
+            break (raw_header.to_owned(), parsed_header, signature_algorithm);
+        };
 
         let raw_payload = parts
             .next()
@@ -49,32 +85,29 @@ impl FromStr for Jwte {
         let parsed_payload = String::from_utf8(decode_base64(&raw_payload)?)
             .map_err(|err| format!("Decoded payload is not UTF-8 text: {:?}", err))?;
 
-        let raw_signature = parts
-            .next()
-            .ok_or_else(|| "JWT Signature is not present".to_owned())?
-            .to_owned();
+        let mut leftover = String::new();
+
+        let raw_signature = parts.next().ok_or_else(|| "JWT Signature is not present".to_owned())?;
+        let raw_signature = match raw_signature.find(|c: char| !is_jwt_allowed_char(&c)) {
+            Some(index) => {
+                leftover.push_str(&raw_signature[index..]);
+                raw_signature[0..index].to_owned()
+            }
+            None => raw_signature.to_owned(),
+        };
         let signature = decode_base64(&raw_signature)?;
         let parsed_signature = hex::encode(&signature);
 
-        let header: Result<Value, _> = serde_json::from_str(&parsed_header);
-        let signature_algorithm = header
-            .map(|header| {
-                let algo: JwtSignatureAlgorithm = header
-                    .get("alg")
-                    .map(|algo| algo.try_into().unwrap_or_default())
-                    .unwrap_or_default();
-                algo
-            })
-            .unwrap_or_default();
-
-        let leftover = parts
-            .next()
-            .map(|part| {
-                let mut part = part.to_owned();
-                part.insert(0, '.');
-                part
-            })
-            .unwrap_or_default();
+        leftover.push_str(
+            &parts
+                .next()
+                .map(|part| {
+                    let mut part = part.to_owned();
+                    part.insert(0, '.');
+                    part
+                })
+                .unwrap_or_default(),
+        );
         let leftover = parts.fold(leftover, |mut leftover, part| {
             leftover.push('.');
             leftover.push_str(part);
@@ -93,6 +126,7 @@ impl FromStr for Jwte {
             signature,
             signature_algorithm,
 
+            start_over,
             leftover,
         }))
     }
