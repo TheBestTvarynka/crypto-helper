@@ -14,6 +14,7 @@ use yew::{classes, function_component, html, use_effect_with_deps, use_state, Ca
 use yew_hooks::use_location;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
+use crate::common::Checkbox;
 use crate::jwt::jwt::editor::JwtEditor;
 use crate::jwt::jwt::viewer::JwtViewer;
 use crate::jwt::jwt_utils::JwtUtils;
@@ -24,19 +25,13 @@ const TEST_JWT: &str = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJ
 
 #[function_component(Jwt)]
 pub fn jwt() -> Html {
-    let notifications = use_notification::<Notification>();
-
     let raw_jwt = use_state(|| TEST_JWT.to_owned());
     let jwte = use_state(|| None);
-
-    let jwt_setter = raw_jwt.setter();
-    let oninput = Callback::from(move |event: html::oninput::Event| {
-        let input: HtmlInputElement = event.target_unchecked_into();
-        jwt_setter.set(input.value());
-    });
+    let auto_decode = use_state(|| true);
 
     let raw = (*raw_jwt).clone();
     let jwte_setter = jwte.setter();
+    let notifications = use_notification::<Notification>();
     let onclick = Callback::from(move |_| match Jwte::from_str(&raw) {
         Ok(jwte) => jwte_setter.set(Some(jwte)),
         Err(error) => {
@@ -50,6 +45,40 @@ pub fn jwt() -> Html {
             ));
         }
     });
+
+    let notifications = use_notification::<Notification>();
+    let oninput = if *auto_decode {
+        let jwt_setter = raw_jwt.setter();
+        let jwte_setter = jwte.setter();
+        Callback::from(move |event: html::oninput::Event| {
+            let input: HtmlInputElement = event.target_unchecked_into();
+            let value = input.value();
+
+            jwt_setter.set(value.clone());
+
+            match Jwte::from_str(&value) {
+                Ok(jwte) => jwte_setter.set(Some(jwte)),
+                Err(error) => {
+                    jwte_setter.set(None);
+
+                    notifications.spawn(Notification::new(
+                        NotificationType::Error,
+                        "Invalid token",
+                        error,
+                        Notification::NOTIFICATION_LIFETIME,
+                    ));
+                }
+            };
+        })
+    } else {
+        let jwt_setter = raw_jwt.setter();
+        Callback::from(move |event: html::oninput::Event| {
+            let input: HtmlInputElement = event.target_unchecked_into();
+            let value = input.value();
+
+            jwt_setter.set(value);
+        })
+    };
 
     let location = use_location();
     let jwt_setter = raw_jwt.setter();
@@ -101,6 +130,11 @@ pub fn jwt() -> Html {
 
     let jwte_setter = jwte.setter();
 
+    let set_auto_decode = auto_decode.setter();
+    let set_checked = Callback::from(move |checked| {
+        set_auto_decode.set(checked);
+    });
+
     html! {
         <article class={classes!("vertical")}>
             <textarea
@@ -110,7 +144,10 @@ pub fn jwt() -> Html {
                 value={(*raw_jwt).clone()}
                 {oninput}
             />
-            <button {onclick}>{"Process"}</button>
+            <div class={classes!("horizontal")}>
+                <button {onclick}>{"Process"}</button>
+                <Checkbox id={"auto-decode".to_owned()} name={"auto-decode".to_owned()} checked={*auto_decode} {set_checked} />
+            </div>
             {if let Some(jwte) = &(*jwte) {
                 match jwte {
                     Jwte::Jwt(jwt) => html! {
