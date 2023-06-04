@@ -82,7 +82,7 @@ impl FromStr for Jwte {
             .next()
             .ok_or_else(|| "JWT Payload is not present".to_owned())?
             .to_owned();
-        let parsed_payload = String::from_utf8(decode_base64(&raw_payload)?)
+        let parsed_payload = String::from_utf8(decode_base64(&raw_payload).map_err(|err| format!("Payload: {}", err))?)
             .map_err(|err| format!("Decoded payload is not UTF-8 text: {:?}", err))?;
 
         let mut leftover = String::new();
@@ -95,7 +95,7 @@ impl FromStr for Jwte {
             }
             None => raw_signature.to_owned(),
         };
-        let signature = decode_base64(&raw_signature)?;
+        let signature = decode_base64(&raw_signature).map_err(|err| format!("Signature: {}", err))?;
         let parsed_signature = hex::encode(&signature);
 
         leftover.push_str(
