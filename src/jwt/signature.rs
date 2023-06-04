@@ -106,7 +106,7 @@ impl TryFrom<&Value> for JwtSignatureAlgorithm {
 
 impl Default for JwtSignatureAlgorithm {
     fn default() -> Self {
-        Self::Unsupported(String::new())
+        Self::Unsupported("The 'alg' field is missing in the header json".into())
     }
 }
 

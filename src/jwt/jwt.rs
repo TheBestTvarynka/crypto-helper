@@ -17,6 +17,9 @@ pub struct Jwt {
     pub parsed_signature: String,
     pub signature: Vec<u8>,
     pub signature_algorithm: JwtSignatureAlgorithm,
+
+    pub start_over: String,
+    pub leftover: String,
 }
 
 impl Jwt {
