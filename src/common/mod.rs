@@ -1,10 +1,12 @@
 mod byte_input;
 mod bytes_viewer;
+mod checkbox;
 mod simple_output;
 mod switch;
 
 pub use byte_input::{build_byte_input, ByteInput, ByteInputProps};
 pub use bytes_viewer::{BytesViewer, BytesViewerProps};
+pub use checkbox::{Checkbox, CheckboxProps};
 pub use simple_output::build_simple_output;
 pub use switch::{Switch, SwitchProps};
 use web_sys::MouseEvent;
