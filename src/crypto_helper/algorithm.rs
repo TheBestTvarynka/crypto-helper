@@ -6,40 +6,58 @@ use serde::{Deserialize, Serialize};
 
 use super::serde::*;
 
+pub const MD5: &str = "MD5";
+pub const SHA1: &str = "SHA1";
+pub const SHA256: &str = "SHA256";
+pub const SHA512: &str = "SHA512";
+pub const AES128_CTS_HMAC_SHA1_96: &str = "AES128-CTS-HMAC-SHA1-96";
+pub const AES256_CTS_HMAC_SHA1_96: &str = "AES256-CTS-HMAC-SHA1-96";
+pub const HMAC_SHA1_96_AES128: &str = "HMAC-SHA1-96-AES128";
+pub const HMAC_SHA1_96_AES256: &str = "HMAC-SHA1-96-AES256";
+pub const RSA: &str = "RSA";
+pub const SHA384: &str = "SHA384";
+pub const BCRYPT: &str = "BCRYPT";
+
 pub const SUPPORTED_ALGORITHMS: [&str; 11] = [
-    "MD5",                     // 0
-    "SHA1",                    // 1
-    "SHA256",                  // 2
-    "SHA512",                  // 3
-    "AES128-CTS-HMAC-SHA1-96", // 4
-    "AES256-CTS-HMAC-SHA1-96", // 5
-    "HMAC-SHA1-96-AES128",     // 6
-    "HMAC-SHA1-96-AES256",     // 7
-    "RSA",                     // 8
-    "SHA384",                  // 9
-    "BCRYPT",                  // 10
+    MD5,
+    SHA1,
+    SHA256,
+    SHA512,
+    AES128_CTS_HMAC_SHA1_96,
+    AES256_CTS_HMAC_SHA1_96,
+    HMAC_SHA1_96_AES128,
+    HMAC_SHA1_96_AES256,
+    RSA,
+    SHA384,
+    BCRYPT,
 ];
 
-pub const HASHING_ALGOS: [&str; 6] = [
-    SUPPORTED_ALGORITHMS[0],
-    SUPPORTED_ALGORITHMS[1],
-    SUPPORTED_ALGORITHMS[2],
-    SUPPORTED_ALGORITHMS[3],
-    SUPPORTED_ALGORITHMS[9],
-    SUPPORTED_ALGORITHMS[10],
-];
+pub const HASHING_ALGOS: [&str; 6] = [MD5, SHA1, SHA256, SHA384, SHA512, BCRYPT];
 
-pub const ENCRYPTION_ALGOS: [&str; 3] = [
-    SUPPORTED_ALGORITHMS[4],
-    SUPPORTED_ALGORITHMS[5],
-    SUPPORTED_ALGORITHMS[8],
-];
+pub const ENCRYPTION_ALGOS: [&str; 3] = [AES128_CTS_HMAC_SHA1_96, AES256_CTS_HMAC_SHA1_96, RSA];
 
 pub const HMAC_ALGOS: [&str; 2] = [SUPPORTED_ALGORITHMS[6], SUPPORTED_ALGORITHMS[7]];
 
 const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
+
+pub const RSA_HASH_MD5: &str = "MD5";
+pub const RSA_HASH_SHA1: &str = "SHA1";
+pub const RSA_HASH_SHA2_224: &str = "SHA2_224";
+pub const RSA_HASH_SHA2_256: &str = "SHA2_256";
+pub const RSA_HASH_SHA2_384: &str = "SHA2_384";
+pub const RSA_HASH_SHA2_512: &str = "SHA2_512";
+pub const RSA_HASH_SHA3_384: &str = "SHA3_384";
+pub const RSA_HASH_SHA3_512: &str = "SHA3_512";
+
 pub const RSA_HASH_ALGOS: [&str; 8] = [
-    "MD5", "SHA1", "SHA2_224", "SHA2_256", "SHA2_384", "SHA2_512", "SHA3_384", "SHA3_512",
+    RSA_HASH_MD5,
+    RSA_HASH_SHA1,
+    RSA_HASH_SHA2_224,
+    RSA_HASH_SHA2_256,
+    RSA_HASH_SHA2_384,
+    RSA_HASH_SHA2_512,
+    RSA_HASH_SHA3_384,
+    RSA_HASH_SHA3_512,
 ];
 
 const DEFAULT_RSA_PRIVATE_KEY: &str = include_str!("../../public/assets/rsa_private_key.pem");
@@ -89,27 +107,30 @@ pub struct KrbInput {
 pub struct RsaHashAlgorithm(pub HashAlgorithm);
 
 impl TryFrom<&str> for RsaHashAlgorithm {
-    type Error = ();
+    type Error = String;
 
     fn try_from(raw: &str) -> Result<Self, Self::Error> {
-        if RSA_HASH_ALGOS[0] == raw {
+        if RSA_HASH_MD5 == raw {
             Ok(Self(HashAlgorithm::MD5))
-        } else if RSA_HASH_ALGOS[1] == raw {
+        } else if RSA_HASH_SHA1 == raw {
             Ok(Self(HashAlgorithm::SHA1))
-        } else if RSA_HASH_ALGOS[2] == raw {
+        } else if RSA_HASH_SHA2_224 == raw {
             Ok(Self(HashAlgorithm::SHA2_224))
-        } else if RSA_HASH_ALGOS[3] == raw {
+        } else if RSA_HASH_SHA2_256 == raw {
             Ok(Self(HashAlgorithm::SHA2_256))
-        } else if RSA_HASH_ALGOS[4] == raw {
+        } else if RSA_HASH_SHA2_384 == raw {
             Ok(Self(HashAlgorithm::SHA2_384))
-        } else if RSA_HASH_ALGOS[5] == raw {
+        } else if RSA_HASH_SHA2_512 == raw {
             Ok(Self(HashAlgorithm::SHA2_512))
-        } else if RSA_HASH_ALGOS[6] == raw {
+        } else if RSA_HASH_SHA3_384 == raw {
             Ok(Self(HashAlgorithm::SHA3_384))
-        } else if RSA_HASH_ALGOS[7] == raw {
+        } else if RSA_HASH_SHA3_512 == raw {
             Ok(Self(HashAlgorithm::SHA3_512))
         } else {
-            Err(())
+            Err(format!(
+                "Invalid RSA hash algorithm: {}. Supported: {:?}.",
+                raw, RSA_HASH_ALGOS
+            ))
         }
     }
 }
@@ -330,50 +351,53 @@ impl TryFrom<&str> for Algorithm {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        if value == SUPPORTED_ALGORITHMS[0] {
+        if value == MD5 {
             return Ok(Algorithm::Md5(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[1] {
+        } else if value == SHA1 {
             return Ok(Algorithm::Sha1(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[2] {
+        } else if value == SHA256 {
             return Ok(Algorithm::Sha256(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[9] {
+        } else if value == SHA384 {
             return Ok(Algorithm::Sha384(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[3] {
+        } else if value == SHA512 {
             return Ok(Algorithm::Sha512(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[4] {
+        } else if value == AES128_CTS_HMAC_SHA1_96 {
             return Ok(Algorithm::Aes128CtsHmacSha196(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[5] {
+        } else if value == AES256_CTS_HMAC_SHA1_96 {
             return Ok(Algorithm::Aes256CtsHmacSha196(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[6] {
+        } else if value == HMAC_SHA1_96_AES128 {
             return Ok(Algorithm::HmacSha196Aes128(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[7] {
+        } else if value == HMAC_SHA1_96_AES256 {
             return Ok(Algorithm::HmacSha196Aes256(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[8] {
+        } else if value == RSA {
             return Ok(Algorithm::Rsa(Default::default()));
-        } else if value == SUPPORTED_ALGORITHMS[10] {
+        } else if value == BCRYPT {
             return Ok(Algorithm::Bcrypt(Default::default()));
         }
 
-        log::error!("invalid algo literal: {}", value);
+        log::error!("Invalid algo literal: {}", value);
 
-        Err(format!("invalid algorithm name: {:?}", value))
+        Err(format!(
+            "Invalid algorithm name: {}. Supported: {:?}.",
+            value, SUPPORTED_ALGORITHMS
+        ))
     }
 }
 
 impl From<&Algorithm> for &str {
     fn from(algorithm: &Algorithm) -> Self {
         match algorithm {
-            Algorithm::Md5(_) => SUPPORTED_ALGORITHMS[0],
-            Algorithm::Sha1(_) => SUPPORTED_ALGORITHMS[1],
-            Algorithm::Sha256(_) => SUPPORTED_ALGORITHMS[2],
-            Algorithm::Sha384(_) => SUPPORTED_ALGORITHMS[9],
-            Algorithm::Sha512(_) => SUPPORTED_ALGORITHMS[3],
-            Algorithm::Aes128CtsHmacSha196(_) => SUPPORTED_ALGORITHMS[4],
-            Algorithm::Aes256CtsHmacSha196(_) => SUPPORTED_ALGORITHMS[5],
-            Algorithm::HmacSha196Aes128(_) => SUPPORTED_ALGORITHMS[6],
-            Algorithm::HmacSha196Aes256(_) => SUPPORTED_ALGORITHMS[7],
-            Algorithm::Rsa(_) => SUPPORTED_ALGORITHMS[8],
-            Algorithm::Bcrypt(_) => SUPPORTED_ALGORITHMS[10],
+            Algorithm::Md5(_) => MD5,
+            Algorithm::Sha1(_) => SHA1,
+            Algorithm::Sha256(_) => SHA256,
+            Algorithm::Sha384(_) => SHA384,
+            Algorithm::Sha512(_) => SHA512,
+            Algorithm::Aes128CtsHmacSha196(_) => AES128_CTS_HMAC_SHA1_96,
+            Algorithm::Aes256CtsHmacSha196(_) => AES256_CTS_HMAC_SHA1_96,
+            Algorithm::HmacSha196Aes128(_) => HMAC_SHA1_96_AES128,
+            Algorithm::HmacSha196Aes256(_) => HMAC_SHA1_96_AES256,
+            Algorithm::Rsa(_) => RSA,
+            Algorithm::Bcrypt(_) => BCRYPT,
         }
     }
 }
