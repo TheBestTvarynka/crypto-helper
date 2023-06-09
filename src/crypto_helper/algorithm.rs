@@ -375,8 +375,6 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::Bcrypt(Default::default()));
         }
 
-        log::error!("Invalid algo literal: {}", value);
-
         Err(format!(
             "Invalid algorithm name: {}. Supported: {:?}.",
             value, SUPPORTED_ALGORITHMS

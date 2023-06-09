@@ -114,7 +114,7 @@ impl FromStr for Jwte {
             leftover
         });
 
-        let r = Ok(Jwte::Jwt(Jwt {
+        Ok(Jwte::Jwt(Jwt {
             raw_header,
             parsed_header,
 
@@ -128,11 +128,7 @@ impl FromStr for Jwte {
 
             start_over,
             leftover,
-        }));
-
-        log::debug!("{:?}", r);
-
-        r
+        }))
     }
 }
 

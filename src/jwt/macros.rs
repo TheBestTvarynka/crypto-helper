@@ -36,7 +36,6 @@ macro_rules! check_asymmetric_key {
         let rsa_key = match <$key_kind>::from_pem_str($key) {
             Ok(key) => key,
             Err(error) => {
-                log::error!("invalid RSA {} key", $name);
                 $notificator.emit(Notification::new(
                     NotificationType::Error,
                     format!("Invalid RSA {} key", $name),

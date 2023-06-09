@@ -98,8 +98,6 @@ fn get_input_component(
             )
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
-            log::error!("Unsupported signature algo: {:?}", algo_name);
-
             if !algo_name.is_empty() {
                 html! {
                     <span>{format!("Unsupported signature algo: {}", algo_name)}</span>
@@ -310,9 +308,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
-
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_256,
@@ -331,9 +326,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification,
                 key_kind: PublicKey,
             );
-
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
 
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
@@ -354,9 +346,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
-
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_512,
@@ -375,9 +364,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification,
                 key_kind: PublicKey,
             );
-
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
 
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
@@ -398,9 +384,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
-
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
                 hash_algo: HashAlgorithm::SHA2_384,
@@ -419,9 +402,6 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification,
                 key_kind: PublicKey,
             );
-
-            log::debug!("data_to_sign: {:?}", data_to_sign.as_bytes());
-            log::debug!("signature: {:?}", jwt.signature);
 
             let is_ok = verify!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
