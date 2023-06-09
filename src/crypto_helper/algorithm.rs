@@ -17,8 +17,9 @@ pub const HMAC_SHA1_96_AES256: &str = "HMAC-SHA1-96-AES256";
 pub const RSA: &str = "RSA";
 pub const SHA384: &str = "SHA384";
 pub const BCRYPT: &str = "BCRYPT";
+pub const ZLIB: &str = "ZLIB";
 
-pub const SUPPORTED_ALGORITHMS: [&str; 11] = [
+pub const SUPPORTED_ALGORITHMS: [&str; 12] = [
     MD5,
     SHA1,
     SHA256,
@@ -30,13 +31,16 @@ pub const SUPPORTED_ALGORITHMS: [&str; 11] = [
     RSA,
     SHA384,
     BCRYPT,
+    ZLIB,
 ];
 
 pub const HASHING_ALGOS: [&str; 6] = [MD5, SHA1, SHA256, SHA384, SHA512, BCRYPT];
 
 pub const ENCRYPTION_ALGOS: [&str; 3] = [AES128_CTS_HMAC_SHA1_96, AES256_CTS_HMAC_SHA1_96, RSA];
 
-pub const HMAC_ALGOS: [&str; 2] = [SUPPORTED_ALGORITHMS[6], SUPPORTED_ALGORITHMS[7]];
+pub const HMAC_ALGOS: [&str; 2] = [HMAC_SHA1_96_AES128, HMAC_SHA1_96_AES256];
+
+pub const COMPRESSION_ALGOS: [&str; 1] = [ZLIB];
 
 const RSA_ACTIONS: [&str; 4] = ["Sign", "Verify", "Encrypt", "Decrypt"];
 
@@ -326,6 +330,21 @@ pub struct BcryptInput {
     pub data: Vec<u8>,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Default)]
+pub enum ZlibMode {
+    #[default]
+    Compress,
+    Decompress,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Default)]
+pub struct ZlibInput {
+    pub with_header: bool,
+    pub mode: ZlibMode,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub data: Vec<u8>,
+}
+
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Algorithm {
@@ -345,6 +364,7 @@ pub enum Algorithm {
     HmacSha196Aes256(KrbInputData),
     Rsa(RsaInput),
     Bcrypt(BcryptInput),
+    Zlib(ZlibInput),
 }
 
 impl TryFrom<&str> for Algorithm {
@@ -373,6 +393,8 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::Rsa(Default::default()));
         } else if value == BCRYPT {
             return Ok(Algorithm::Bcrypt(Default::default()));
+        } else if value == ZLIB {
+            return Ok(Algorithm::Zlib(Default::default()));
         }
 
         Err(format!(
@@ -396,6 +418,7 @@ impl From<&Algorithm> for &str {
             Algorithm::HmacSha196Aes256(_) => HMAC_SHA1_96_AES256,
             Algorithm::Rsa(_) => RSA,
             Algorithm::Bcrypt(_) => BCRYPT,
+            Algorithm::Zlib(_) => ZLIB,
         }
     }
 }
