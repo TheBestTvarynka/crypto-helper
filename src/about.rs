@@ -12,6 +12,7 @@ pub fn about() -> Html {
                 <li>{"Kerberos ciphers: AES128-CTS-HMAC-SHA1-96/AES256-CTS-HMAC-SHA1-96"}</li>
                 <li>{"Kerberos HMAC: HMAC-SHA1-96-AES128/HMAC-SHA1-96-AES256"}</li>
                 <li>{"RSA"}</li>
+                <li>{"Compression: ZLIB"}</li>
                 <li>{"JWT debugger. Supported signature algorithms:"}</li>
                 <ul>
                     <li>{"none"}</li>
