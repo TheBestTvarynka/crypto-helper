@@ -16,7 +16,7 @@ use yew::{classes, function_component, html, use_effect_with_deps, use_state, Ca
 use yew_hooks::{use_clipboard, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
+use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa, process_zlib};
 use crate::crypto_helper::computations::process_bcrypt;
 use crate::url_query_params::generate_crypto_helper_link;
 
@@ -37,6 +37,7 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
         Algorithm::HmacSha196Aes256(input) => process_krb_hmac(ChecksumSuite::HmacSha196Aes256.hasher(), input),
         Algorithm::Rsa(input) => process_rsa(input),
         Algorithm::Bcrypt(input) => process_bcrypt(input),
+        Algorithm::Zlib(input) => process_zlib(input),
     }
 }
 

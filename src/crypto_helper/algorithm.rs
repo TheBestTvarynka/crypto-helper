@@ -339,7 +339,6 @@ pub enum ZlibMode {
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Default)]
 pub struct ZlibInput {
-    pub with_header: bool,
     pub mode: ZlibMode,
     #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub data: Vec<u8>,
