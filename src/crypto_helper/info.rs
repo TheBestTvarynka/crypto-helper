@@ -19,47 +19,47 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
     match algorithm {
         Algorithm::Md5(_) => html! {
             <span>{"Input for MD5 hashing function."}
-            <a href={"https://www.ietf.org/rfc/rfc1321.txt"}>{"RFC"}</a>{"."}
+            <a href="https://www.ietf.org/rfc/rfc1321.txt">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha1(_) => html! {
             <span>{"Input for SHA1 hashing function."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc3174"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc3174">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha256(_) => html! {
             <span>{"Input for SHA256 hashing function."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc4634">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha384(_) => html! {
             <span>{"Input for SHA384 hashing function."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc4634">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Sha512(_) => html! {
             <span>{"Input for SHA512 hashing function."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc4634"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc4634">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Aes128CtsHmacSha196(_) => html! {
             <span>{"Encrypt hex-encoded data with the provided or derived key using AES128-CTS-HMAC-SHA1-96 algorithm."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc3961.html">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Aes256CtsHmacSha196(_) => html! {
             <span>{"Encrypt hex-encoded data with the provided or derived key using AES256-CTS-HMAC-SHA1-96 algorithm."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc3961.html">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::HmacSha196Aes128(_) => html! {
             <span>{"Hmac with the provided or derived key using HMAC-SHA1-96-AES128 algorithm."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc3961.html">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::HmacSha196Aes256(_) => html! {
             <span>{"Hmac with the provided or derived key using HMAC-SHA1-96-AES256 algorithm."}
-            <a href={"https://www.rfc-editor.org/rfc/rfc3961.html"}>{"RFC"}</a>{"."}
+            <a href="https://www.rfc-editor.org/rfc/rfc3961.html">{"RFC"}</a>{"."}
             </span>
         },
         Algorithm::Rsa(_) => html! {
@@ -67,6 +67,11 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
         },
         Algorithm::Bcrypt(_) => html! {
             <span>{"Use Bcrypt algorithm to encrypt/verify your data."}</span>
+        },
+        Algorithm::Zlib(_) => html! {
+            <span>{"Compress/decompress data with Zlib."}
+            <a href="https://www.rfc-editor.org/rfc/rfc1950">{"RFC"}</a>
+            </span>
         },
     }
 }

@@ -27,6 +27,8 @@ fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification:
             },
             add_notification,
         ),
+        // TODO: replace with zlib_output.
+        Algorithm::Zlib(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
     }
 }
 
