@@ -86,8 +86,6 @@ fn get_search_icon() -> Html {
 
 #[function_component(Info)]
 pub fn info(props: &InfoProps) -> Html {
-    log::debug!("props algo: {:?}", props.algorithm);
-
     let algo_search = use_state(|| false);
 
     let set_algorithm = props.set_algorithm.clone();
@@ -95,7 +93,6 @@ pub fn info(props: &InfoProps) -> Html {
         let input: HtmlInputElement = event.target_unchecked_into();
 
         if let Ok(algorithm) = input.value().as_str().try_into() {
-            log::info!("set new algorithm: {:?}", algorithm);
             set_algorithm.set(algorithm);
         }
     });

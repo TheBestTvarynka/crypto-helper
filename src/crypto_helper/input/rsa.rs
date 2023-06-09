@@ -50,7 +50,6 @@ fn get_hash_selection_component(hash_algorithm: &RsaHashAlgorithm, set_hash_algo
         let input: HtmlInputElement = event.target_unchecked_into();
 
         if let Ok(hash_algorithm) = input.value().as_str().try_into() {
-            log::info!("set new rsa hash algorithm: {:?}", hash_algorithm);
             set_hash_algo.emit(hash_algorithm);
         }
     });

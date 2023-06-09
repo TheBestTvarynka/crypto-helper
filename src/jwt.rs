@@ -9,7 +9,7 @@ mod macros;
 use std::str::FromStr;
 
 pub use jwt::Jwt as JwtData;
-use web_sys::HtmlInputElement;
+use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
 use yew_hooks::use_location;
 use yew_notifications::{use_notification, Notification, NotificationType};
@@ -46,29 +46,32 @@ pub fn jwt() -> Html {
         }
     });
 
+    let jwt_setter = raw_jwt.setter();
+    let jwte_setter = jwte.setter();
     let notifications = use_notification::<Notification>();
+    let parse_jwt_callback = Callback::from(move |raw_jwt: String| {
+        jwt_setter.set(raw_jwt.clone());
+
+        match Jwte::from_str(&raw_jwt) {
+            Ok(jwte) => jwte_setter.set(Some(jwte)),
+            Err(error) => {
+                jwte_setter.set(None);
+
+                notifications.spawn(Notification::new(
+                    NotificationType::Error,
+                    "Invalid token",
+                    error,
+                    Notification::NOTIFICATION_LIFETIME,
+                ));
+            }
+        };
+    });
+
     let oninput = if *auto_decode {
-        let jwt_setter = raw_jwt.setter();
-        let jwte_setter = jwte.setter();
+        let parse_jwt_callback = parse_jwt_callback.clone();
         Callback::from(move |event: html::oninput::Event| {
             let input: HtmlInputElement = event.target_unchecked_into();
-            let value = input.value();
-
-            jwt_setter.set(value.clone());
-
-            match Jwte::from_str(&value) {
-                Ok(jwte) => jwte_setter.set(Some(jwte)),
-                Err(error) => {
-                    jwte_setter.set(None);
-
-                    notifications.spawn(Notification::new(
-                        NotificationType::Error,
-                        "Invalid token",
-                        error,
-                        Notification::NOTIFICATION_LIFETIME,
-                    ));
-                }
-            };
+            parse_jwt_callback.emit(input.value());
         })
     } else {
         let jwt_setter = raw_jwt.setter();
@@ -135,6 +138,13 @@ pub fn jwt() -> Html {
         set_auto_decode.set(checked);
     });
 
+    let raw_jwt_data = (*raw_jwt).clone();
+    let onkeydown = Callback::from(move |event: KeyboardEvent| {
+        if event.ctrl_key() && event.code() == "Enter" {
+            parse_jwt_callback.emit(raw_jwt_data.clone())
+        }
+    });
+
     html! {
         <article class={classes!("vertical")}>
             <textarea
@@ -143,6 +153,7 @@ pub fn jwt() -> Html {
                 class={classes!("base-input")}
                 value={(*raw_jwt).clone()}
                 {oninput}
+                {onkeydown}
             />
             <div class={classes!("horizontal")}>
                 <button {onclick}>{"Process"}</button>

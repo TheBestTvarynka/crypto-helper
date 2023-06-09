@@ -7,7 +7,6 @@ macro_rules! generate_algo_list_for_yew {
         sorted_algo_list
             .iter()
             .map(|algo| {
-                log::trace!("selected: {}, value: {}", &$props.algorithm == *algo, *algo);
                 html! {
                     <option selected={ &$props.algorithm == *algo } value={*algo}>{algo}</option>
                 }
