@@ -330,11 +330,29 @@ pub struct BcryptInput {
     pub data: Vec<u8>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Serialize, Deserialize, Default)]
 pub enum ZlibMode {
     #[default]
     Compress,
     Decompress,
+}
+
+impl From<ZlibMode> for bool {
+    fn from(mode: ZlibMode) -> Self {
+        match mode {
+            ZlibMode::Compress => false,
+            ZlibMode::Decompress => true,
+        }
+    }
+}
+
+impl From<bool> for ZlibMode {
+    fn from(mode: bool) -> Self {
+        match mode {
+            true => ZlibMode::Decompress,
+            false => ZlibMode::Compress,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Default)]
@@ -432,6 +450,6 @@ impl PartialEq<&str> for &Algorithm {
 
 impl Default for Algorithm {
     fn default() -> Self {
-        Algorithm::Sha256(Default::default())
+        Algorithm::Zlib(Default::default())
     }
 }
