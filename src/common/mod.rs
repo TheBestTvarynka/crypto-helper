@@ -88,7 +88,7 @@ fn parse_bytes(raw: &str, format: BytesFormat) -> Result<Vec<u8>, String> {
             let raw = raw
                 .to_ascii_lowercase()
                 .chars()
-                .filter(|c| ('0'..='9').contains(c) || ('a'..='f').contains(c))
+                .filter(|c| c.is_ascii_digit() || ('a'..='f').contains(c))
                 .collect::<String>();
             hex::decode(raw).map_err(|err| format!("invalid hex input: {:?}", err))
         }
@@ -96,9 +96,9 @@ fn parse_bytes(raw: &str, format: BytesFormat) -> Result<Vec<u8>, String> {
             let raw = raw
                 .chars()
                 .filter(|c| {
-                    ('a'..='z').contains(c)
-                        || ('A'..='Z').contains(c)
-                        || ('0'..='9').contains(c)
+                    c.is_ascii_lowercase()
+                        || c.is_ascii_uppercase()
+                        || c.is_ascii_digit()
                         || *c == '+'
                         || *c == '/'
                         || *c == '='
