@@ -50,7 +50,7 @@ pub fn decode_decimal(input: &str) -> Result<Vec<u8>, String> {
 }
 
 pub fn decode_binary(input: &str) -> Result<Vec<u8>, String> {
-    let binary_str = input.chars().filter(|c| c == &'0' || c == &'1').collect::<String>();
+    let binary_str = input.chars().filter(|c| *c == '0' || *c == '1').collect::<String>();
 
     if binary_str.len() % 8 != 0 {
         return Err("invalid binary input: not a multiple of 8 bits".to_string());
