@@ -76,7 +76,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
 
     html! {
         <div class={classes!("bytes-input", "vertical")}>
-            <div class={classes!("formats-container")}>{
+            <div class="formats-container">{
                 BYTES_FORMATS.iter().map(|format| {
                     html! {
                         <button
@@ -95,7 +95,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
                 value={(*raw_value).clone()}
                 {oninput}
             />
-            <span class={classes!("total")}>{format!("total: {}", (*bytes).len())}</span>
+            <span class="total">{format!("total: {}", (*bytes).len())}</span>
         </div>
     }
 }

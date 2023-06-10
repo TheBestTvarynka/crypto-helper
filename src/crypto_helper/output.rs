@@ -1,6 +1,6 @@
 mod krb;
 
-use yew::{classes, function_component, html, Callback, Html, Properties};
+use yew::{function_component, html, Callback, Html, Properties};
 use yew_notifications::{use_notification, Notification};
 
 use self::krb::build_krb_output;
@@ -27,6 +27,7 @@ fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification:
             },
             add_notification,
         ),
+        Algorithm::Zlib(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
     }
 }
 
@@ -45,7 +46,7 @@ pub fn output(props: &OutputProps) -> Html {
     });
 
     html! {
-        <div class={classes!("container")}>
+        <div class="container">
             {get_output_components(&props.algorithm, &props.output, add_notification)}
         </div>
     }

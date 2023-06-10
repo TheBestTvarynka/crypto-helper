@@ -157,18 +157,18 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     });
 
     html! {
-        <div class={classes!("enc-params")}>
+        <div class="enc-params">
             {build_byte_input(krb_input.data.key.clone(), set_key, None, Some("key".into()))}
-            <div class={classes!("vertical")}>
-                <span class={classes!("total")}>{"Key usage number"}</span>
+            <div class="vertical">
+                <span class="total">{"Key usage number"}</span>
                 <input
                     type={"number"}
-                    class={classes!("base-input")}
+                    class="base-input"
                     placeholder={"usage number"}
                     value={krb_input.data.key_usage.to_string()}
                     oninput={set_usage_number}
                 />
-                <span class={classes!("total")}>{get_usage_number_name(krb_input.data.key_usage)}</span>
+                <span class="total">{get_usage_number_name(krb_input.data.key_usage)}</span>
             </div>
             {build_byte_input(krb_input.data.payload.clone(), set_payload, None, Some("payload".into()))}
             {if props.with_mode { html! {
@@ -194,7 +194,7 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
                         <form class={classes!("horizontal", "generateKeyOpts")}>
                             <div>
                                 <input
-                                    class={classes!("base-input")}
+                                    class="base-input"
                                     placeholder={"password"}
                                     value={(*password).clone()}
                                     oninput={gen_on_input_handle(password.setter())}
@@ -202,13 +202,13 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
                             </div>
                             <div>
                                 <input
-                                    class={classes!("base-input")}
+                                    class="base-input"
                                     placeholder={"salt"}
                                     value={(*salt).clone()}
                                     oninput={gen_on_input_handle(salt.setter())}
                                 />
                             </div>
-                            <button class={classes!("jwt-util-button")} type={"submit"} onclick={generate_key_from_password}>{"Generate key"}</button>
+                            <button class="jwt-util-button" type={"submit"} onclick={generate_key_from_password}>{"Generate key"}</button>
                         </form>
                     }
                 } else {

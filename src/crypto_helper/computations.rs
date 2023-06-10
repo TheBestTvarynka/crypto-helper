@@ -1,13 +1,18 @@
 use std::convert::TryInto;
+use std::io::Write;
 
 use bcrypt::Version;
+use flate2::write::{ZlibDecoder, ZlibEncoder};
+use flate2::Compression;
 use picky::signature::SignatureAlgorithm;
 use picky_krb::crypto::{Checksum, Cipher};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
 
-use super::algorithm::{BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput};
+use super::algorithm::{
+    BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput, ZlibInput, ZlibMode,
+};
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
     let payload = &input.payload;
@@ -62,5 +67,28 @@ pub fn process_bcrypt(input: &BcryptInput) -> Result<Vec<u8>, String> {
         BcryptAction::Verify(hash) => bcrypt::verify(&input.data, hash)
             .map(|r| if r { vec![1] } else { vec![0] })
             .map_err(|e| e.to_string()),
+    }
+}
+
+pub fn process_zlib(input: &ZlibInput) -> Result<Vec<u8>, String> {
+    match input.mode {
+        ZlibMode::Compress => {
+            let mut compressor = ZlibEncoder::new(Vec::new(), Compression::fast());
+            compressor
+                .write_all(&input.data)
+                .map_err(|err| format!("Can not compress the input data: {:?}", err))?;
+            compressor
+                .finish()
+                .map_err(|err| format!("Can not finish compression: {:?}", err))
+        }
+        ZlibMode::Decompress => {
+            let mut decompressor = ZlibDecoder::new(Vec::new());
+            decompressor
+                .write_all(&input.data)
+                .map_err(|err| format!("Can not decompress the input data: {:?}", err))?;
+            decompressor
+                .finish()
+                .map_err(|err| format!("Can not finish decompression: {:?}", err))
+        }
     }
 }

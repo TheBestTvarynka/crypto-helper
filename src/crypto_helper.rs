@@ -12,11 +12,11 @@ use input::Input;
 use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
-use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
+use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html};
 use yew_hooks::{use_clipboard, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa};
+use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa, process_zlib};
 use crate::crypto_helper::computations::process_bcrypt;
 use crate::url_query_params::generate_crypto_helper_link;
 
@@ -37,6 +37,7 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
         Algorithm::HmacSha196Aes256(input) => process_krb_hmac(ChecksumSuite::HmacSha196Aes256.hasher(), input),
         Algorithm::Rsa(input) => process_rsa(input),
         Algorithm::Bcrypt(input) => process_bcrypt(input),
+        Algorithm::Zlib(input) => process_zlib(input),
     }
 }
 
@@ -100,15 +101,15 @@ pub fn crypto_helper() -> Html {
     });
 
     html! {
-        <article class={classes!("vertical")}>
+        <article class="vertical">
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
-            <div class={classes!("horizontal")}>
-                <button {onclick}>{"Go"}</button>
+            <div class="horizontal">
+                <button class="action-button" {onclick}>{"Go"}</button>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
-            <div class={classes!("horizontal")}>
-                <button class={classes!("button-with-icon")} onclick={share_by_link}>
+            <div class="horizontal">
+                <button class="button-with-icon" onclick={share_by_link}>
                     <img src="/public/img/icons/share_by_link.png" />
                 </button>
             </div>

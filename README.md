@@ -29,6 +29,7 @@ All computations are performed on the client side. This tool never sends the dat
 * Kerberos ciphers: `AES128-CTS-HMAC-SHA1-96`/`AES256-CTS-HMAC-SHA1-96`
 * Kerberos HMAC: `HMAC-SHA1-96-AES128`/`HMAC-SHA1-96-AES256`
 * `RSA`
+* Compression: `ZLIB`
 * JWT debugger. Supported signature algorithms:
   * `none`
   * `HS256`

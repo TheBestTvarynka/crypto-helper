@@ -14,7 +14,7 @@ use footer::footer;
 use header::Header;
 use jwt::Jwt;
 use not_found::not_found;
-use yew::{classes, function_component, html, Html};
+use yew::{function_component, html, Html};
 use yew_notifications::{Notification, NotificationFactory, NotificationsProvider};
 use yew_router::{BrowserRouter, Routable, Switch};
 
@@ -50,7 +50,7 @@ pub fn app() -> Html {
     html! {
         <BrowserRouter>
             <NotificationsProvider<Notification, NotificationFactory> {component_creator}>
-                <div class={classes!("body")}>
+                <div class="body">
                     <Header />
                     <Switch<Route> render={switch} />
                     {footer()}

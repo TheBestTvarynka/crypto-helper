@@ -1,13 +1,15 @@
 mod bcrypt;
 mod krb;
 mod rsa;
+mod zlib;
 
 use picky_krb::crypto::CipherSuite;
-use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
+use yew::{function_component, html, Callback, Html, Properties, UseStateSetter};
 
 use self::bcrypt::build_bcrypt_input;
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
+use self::zlib::build_zlib_input;
 use super::algorithm::{KrbInput, KrbMode};
 use super::Algorithm;
 use crate::common::build_byte_input;
@@ -87,6 +89,10 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
             input.clone(),
             Callback::from(move |input| setter.set(Algorithm::Bcrypt(input))),
         ),
+        Algorithm::Zlib(input) => build_zlib_input(
+            input.clone(),
+            Callback::from(move |input| setter.set(Algorithm::Zlib(input))),
+        ),
     }
 }
 
@@ -99,7 +105,7 @@ pub struct InputProps {
 #[function_component(Input)]
 pub fn input(props: &InputProps) -> Html {
     html! {
-        <div class={classes!("container")}>
+        <div class="container">
             {get_input_components(&props.algorithm, &props.setter)}
         </div>
     }
