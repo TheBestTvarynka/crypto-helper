@@ -1,4 +1,4 @@
-use yew::{classes, function_component, html, Callback, Html, Properties};
+use yew::{function_component, html, Callback, Html, Properties};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct CheckboxProps {
@@ -20,9 +20,9 @@ pub fn checkbox(props: &CheckboxProps) -> Html {
     let oninput = Callback::from(move |_| set_checked.emit(!checked));
 
     html! {
-        <div class={classes!("checkbox")} >
+        <div class="checkbox">
             <input type="checkbox" checked={props.checked} id={id.clone()} {oninput} />
-            <label for={id.clone()} class={classes!("checkbox-label")} />
+            <label for={id.clone()} class="checkbox-label" />
             <label for={id}>{name}</label>
         </div>
     }

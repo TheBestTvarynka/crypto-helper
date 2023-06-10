@@ -1,4 +1,4 @@
-use yew::{classes, function_component, html, Html, Properties};
+use yew::{function_component, html, Html, Properties};
 use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification};
 
@@ -23,15 +23,15 @@ pub fn jwt_viewer(props: &JwtViewerProps) -> Html {
 
     html! {
         <div>
-            <span class={classes!("jwt-rest")} onclick={copy_to_clipboard_with_notification(start_over.clone(), clipboard.clone(), "Start part", notifications.clone())}>{start_over}</span>
-            <span class={classes!("jwt-header")} onclick={copy_to_clipboard_with_notification(header.clone(), clipboard.clone(), "Header", notifications.clone())}>{header}</span>
-            <span class={classes!("jwt-dot")}>{"."}</span>
-            <span class={classes!("jwt-payload")} onclick={copy_to_clipboard_with_notification(payload.clone(), clipboard.clone(), "Payload", notifications.clone())}>{payload}</span>
-            <span class={classes!("jwt-dot")}>{"."}</span>
-            <span class={classes!("jwt-signature")} onclick={copy_to_clipboard_with_notification(signature.clone(), clipboard.clone(), "Signature", notifications.clone())}>{signature}</span>
+            <span class="jwt-rest" onclick={copy_to_clipboard_with_notification(start_over.clone(), clipboard.clone(), "Start part", notifications.clone())}>{start_over}</span>
+            <span class="jwt-header" onclick={copy_to_clipboard_with_notification(header.clone(), clipboard.clone(), "Header", notifications.clone())}>{header}</span>
+            <span class="jwt-dot">{"."}</span>
+            <span class="jwt-payload" onclick={copy_to_clipboard_with_notification(payload.clone(), clipboard.clone(), "Payload", notifications.clone())}>{payload}</span>
+            <span class="jwt-dot">{"."}</span>
+            <span class="jwt-signature" onclick={copy_to_clipboard_with_notification(signature.clone(), clipboard.clone(), "Signature", notifications.clone())}>{signature}</span>
             {if !leftover.is_empty() {
                 html! {
-                    <span class={classes!("jwt-rest")} onclick={copy_to_clipboard_with_notification(leftover.clone(), clipboard, "Token leftover", notifications)}>{leftover}</span>
+                    <span class="jwt-rest" onclick={copy_to_clipboard_with_notification(leftover.clone(), clipboard, "Token leftover", notifications)}>{leftover}</span>
                 }
             } else {
                 html! {}

@@ -90,21 +90,21 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
     });
 
     html! {
-        <div class={classes!("vertical")}>
+        <div class="vertical">
             <input
                 placeholder={"algo name"}
-                class={classes!("base-input")}
+                class="base-input"
                 onfocus={onfocus}
                 value={(*pattern).clone()}
                 {oninput}
                 {onchange}
                 {onkeydown}
             />
-            <div class={classes!("search-result-container")}>
+            <div class="search-result-container">
                 <div class={classes!("vertical", "search-result")}>
                 {
                     if !(*algos).is_empty() {
-                        html! { <div class={classes!("algo-search-background")} onclick={on_background_click} /> }
+                        html! { <div class="algo-search-background" onclick={on_background_click} /> }
                     } else {
                         html! {}
                     }
@@ -114,7 +114,7 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
                         .iter()
                         .map(|algo| html!{
                             <span
-                                class={classes!("sr")}
+                                class="sr"
                                 onclick={get_onclick_hangle(algo, props.set_algorithm.clone(), algos.setter())}
                             >
                                 {algo}

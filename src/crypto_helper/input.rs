@@ -4,7 +4,7 @@ mod rsa;
 mod zlib;
 
 use picky_krb::crypto::CipherSuite;
-use yew::{classes, function_component, html, Callback, Html, Properties, UseStateSetter};
+use yew::{function_component, html, Callback, Html, Properties, UseStateSetter};
 
 use self::bcrypt::build_bcrypt_input;
 use self::krb::build_krb_input;
@@ -105,7 +105,7 @@ pub struct InputProps {
 #[function_component(Input)]
 pub fn input(props: &InputProps) -> Html {
     html! {
-        <div class={classes!("container")}>
+        <div class="container">
             {get_input_components(&props.algorithm, &props.setter)}
         </div>
     }

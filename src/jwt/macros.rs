@@ -118,7 +118,7 @@ macro_rules! generate_placeholder {
             <textarea
                 rows="4"
                 placeholder={$default_text}
-                class={classes!("base-input")}
+                class="base-input"
                 value={$key.clone()}
                 {oninput}
             />

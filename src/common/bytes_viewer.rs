@@ -28,7 +28,7 @@ fn byte_component(byte: u8) -> Html {
 #[function_component(BytesViewer)]
 pub fn bytes_viewer(props: &BytesViewerProps) -> Html {
     html! {
-        <div class={classes!("bytes-container")}>{
+        <div class="bytes-container">{
             props.bytes.iter().map(|byte| byte_component(*byte)).collect::<Vec<_>>()
         }</div>
     }

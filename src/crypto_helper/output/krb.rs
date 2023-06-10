@@ -1,4 +1,4 @@
-use yew::{classes, function_component, html, Callback, Html, Properties};
+use yew::{function_component, html, Callback, Html, Properties};
 use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType};
 
@@ -48,20 +48,20 @@ pub fn krb_output(props: &KrbOutputProps) -> Html {
     });
 
     html! {
-        <div class={classes!("output")}>
-            <span class={classes!("full-cipher")} {onclick}>
-                <span class={classes!("cipher")}>{cipher}</span>
-                <span class={classes!("hmac")}>{hmac}</span>
+        <div class="output">
+            <span class="full-cipher" {onclick}>
+                <span class="cipher">{cipher}</span>
+                <span class="hmac">{hmac}</span>
             </span>
             {
                 match mode {
                     KrbMode::Encrypt => html!{
-                        <span class={classes!("total")}>
+                        <span class="total">
                             {format!("total: {}. cipher: {}. hmac: {}.", len, cipher_len, hmac_len)}
                         </span>
                     },
                     KrbMode::Decrypt => html!{
-                        <span class={classes!("total")}>{format!("total: {}.", len)}</span>
+                        <span class="total">{format!("total: {}.", len)}</span>
                     }
                 }
             }

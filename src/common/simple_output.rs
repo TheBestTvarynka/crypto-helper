@@ -1,4 +1,4 @@
-use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties};
+use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties};
 use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType};
 
@@ -44,8 +44,8 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
     });
 
     html! {
-        <div class={classes!("output")}>
-            <div class={classes!("formats-container")}>{
+        <div class="output">
+            <div class="formats-container">{
                 BYTES_FORMATS.iter().map(|format| {
                     html! {
                         <button
@@ -57,8 +57,8 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
                     }
                 }).collect::<Html>()
             }</div>
-            <span class={classes!("simple-digest")} onclick={onclick}>{encoded_bytes}</span>
-            <span class={classes!("total")}>{format!("total: {}", output.len())}</span>
+            <span class="simple-digest" onclick={onclick}>{encoded_bytes}</span>
+            <span class="total">{format!("total: {}", output.len())}</span>
         </div>
     }
 }

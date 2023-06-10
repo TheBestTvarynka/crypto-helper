@@ -10,7 +10,7 @@ use std::str::FromStr;
 
 pub use jwt::Jwt as JwtData;
 use web_sys::{HtmlInputElement, KeyboardEvent};
-use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
+use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
 use yew_hooks::use_location;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
@@ -146,23 +146,23 @@ pub fn jwt() -> Html {
     });
 
     html! {
-        <article class={classes!("vertical")}>
+        <article class="vertical">
             <textarea
                 rows="5"
                 placeholder={"base64 encoded JWT(JWE)"}
-                class={classes!("base-input")}
+                class="base-input"
                 value={(*raw_jwt).clone()}
                 {oninput}
                 {onkeydown}
             />
-            <div class={classes!("horizontal")}>
-                <button {onclick}>{"Process"}</button>
+            <div class="horizontal">
+                <button class="action-button" {onclick}>{"Process"}</button>
                 <Checkbox id={"auto-decode".to_owned()} name={"auto-decode".to_owned()} checked={*auto_decode} {set_checked} />
             </div>
             {if let Some(jwte) = &(*jwte) {
                 match jwte {
                     Jwte::Jwt(jwt) => html! {
-                        <div class={classes!("jwt-page")}>
+                        <div class="jwt-page">
                             <JwtViewer jwt={jwt.clone()} />
                             <JwtEditor jwt={jwt.clone()} {set_jwt} />
                         </div>
@@ -174,7 +174,7 @@ pub fn jwt() -> Html {
             {if let Some(jwte) = &(*jwte) {
                 match jwte {
                     Jwte::Jwt(jwt) => html! {
-                        <div class={classes!("container")}>
+                        <div class="container">
                             <JwtUtils jwt={jwt.clone()} set_jwt={Callback::from(move |jwt| jwte_setter.set(Some(Jwte::Jwt(jwt))))} />
                         </div>
                     },

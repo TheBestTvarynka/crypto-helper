@@ -26,7 +26,7 @@ fn get_action_classes(is_selected: bool) -> Classes {
 
 fn generate_selection_action_component(action: &RsaAction, set_action: Callback<RsaAction>) -> Html {
     html! {
-        <div class={classes!("rsa-actions-container")}>
+        <div class="rsa-actions-container">
             {RsaAction::enumerate_actions()
                 .iter()
                 .map(|action_name| {
@@ -96,12 +96,12 @@ fn generate_rsa_input(
             });
 
             html! {
-                <div class={classes!("vertical")}>
+                <div class="vertical">
                     {selected_algorithm_component}
                     <textarea
                         rows="4"
                         placeholder={"RSA public key in PEM (-----BEGIN RSA PUBLIC KEY-----)"}
-                        class={classes!("base-input")}
+                        class="base-input"
                         value={input.to_pkcs1_pem(Default::default()).unwrap()}
                         {oninput}
                     />
@@ -124,12 +124,12 @@ fn generate_rsa_input(
             });
 
             html! {
-                <div class={classes!("vertical")}>
+                <div class="vertical">
                     {selected_algorithm_component}
                     <textarea
                         rows="4"
                         placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
-                        class={classes!("base-input")}
+                        class="base-input"
                         value={input.to_pkcs1_pem(Default::default()).unwrap()}
                         {oninput}
                     />
@@ -165,14 +165,14 @@ fn generate_rsa_input(
             });
 
             html! {
-                <div class={classes!("vertical")}>
+                <div class="vertical">
                     {selected_algorithm_component}
-                    <div class={classes!("horizontal")}>
+                    <div class="horizontal">
                         {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
                         <textarea
                             rows="4"
                             placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
-                            class={classes!("base-input")}
+                            class="base-input"
                             value={input.rsa_private_key.to_pem_str().unwrap()}
                             oninput={on_rsa_key_input}
                         />
@@ -235,14 +235,14 @@ fn generate_rsa_input(
             });
 
             html! {
-                <div class={classes!("vertical")}>
+                <div class="vertical">
                     {selected_algorithm_component}
-                    <div class={classes!("horizontal")}>
+                    <div class="horizontal">
                         {get_hash_selection_component(&input.hash_algorithm, set_hash_algo)}
                         <textarea
                             rows="4"
                             placeholder={"RSA public key in PEM (-----BEGIN RSA PUBLIC KEY-----)"}
-                            class={classes!("base-input")}
+                            class="base-input"
                             value={input.rsa_public_key.to_pem_str().unwrap()}
                             oninput={on_rsa_key_input}
                         />
@@ -250,7 +250,7 @@ fn generate_rsa_input(
                     <textarea
                         rows="3"
                         placeholder={"hex-encoded signature"}
-                        class={classes!("base-input")}
+                        class="base-input"
                         value={hex::encode(&input.signature)}
                         oninput={on_signature_input}
                     />
@@ -284,7 +284,7 @@ pub fn rsa_input(props: &RsaInputProps) -> Html {
     let spawn_notification = Callback::from(move |notification: Notification| notifications.spawn(notification));
 
     html! {
-        <div class={classes!("vertical")}>
+        <div class="vertical">
             {generate_rsa_input(&props.input.action, set_action, spawn_notification)}
             {build_byte_input(props.input.payload.clone(), input_setter, None, Some("input".into()))}
         </div>

@@ -2,7 +2,7 @@ mod algo_search;
 
 use web_sys::HtmlInputElement;
 use yew::html::onchange::Event;
-use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast, UseStateSetter};
+use yew::{function_component, html, use_state, Callback, Html, Properties, TargetCast, UseStateSetter};
 
 use super::algorithm::Algorithm;
 use crate::crypto_helper::algorithm::{COMPRESSION_ALGOS, ENCRYPTION_ALGOS, HASHING_ALGOS, HMAC_ALGOS};
@@ -114,10 +114,10 @@ pub fn info(props: &InfoProps) -> Html {
     let compression_algos = generate_algo_list_for_yew!(algo_list: COMPRESSION_ALGOS, props: props);
 
     html! {
-        <div class={classes!("horizontal")}>
-            <div class={classes!("vertical")}>
-                <div class={classes!("horizontal")}>
-                    <select {onchange} class={classes!("base-input")}>
+        <div class="horizontal">
+            <div class="vertical">
+                <div class="horizontal">
+                    <select {onchange} class="base-input">
                         <optgroup label="Hashing"> {
                             hashing_algos
                         }</optgroup>
@@ -131,8 +131,8 @@ pub fn info(props: &InfoProps) -> Html {
                             compression_algos
                         }</optgroup>
                     </select>
-                    <input type="checkbox" id={"algo-search"} class={classes!("search-input")} onchange={on_algo_search_change} />
-                    <label for={"algo-search"} class={classes!("search-button")}>
+                    <input type="checkbox" id={"algo-search"} class="search-input" onchange={on_algo_search_change} />
+                    <label for={"algo-search"} class="search-button">
                         {get_search_icon()}
                     </label>
                 </div>
@@ -146,7 +146,7 @@ pub fn info(props: &InfoProps) -> Html {
                     }
                 }
             </div>
-            <div class={classes!("algo-info")}>{get_algorithm_info(&props.algorithm)}</div>
+            <div class="algo-info">{get_algorithm_info(&props.algorithm)}</div>
         </div>
     }
 }

@@ -116,7 +116,7 @@ pub fn bcrypt_input(input_props: &BcryptInputProps) -> Html {
             {match input_props.input.action.clone() {
                 BcryptAction::Hash(hash_info) => html! {
                     <div class="horizontal">
-                        <input class={classes!("base-input")} value={hash_info.rounds.to_string()} type="number" min="4" max="31" placeholder={"rounds"} oninput={on_rounds_input}/>
+                        <input class="base-input" value={hash_info.rounds.to_string()} type="number" min="4" max="31" placeholder={"rounds"} oninput={on_rounds_input}/>
                         {build_byte_input(hash_info.salt, on_salt_input, None, Some("salt".into()))}
                     </div>
                 },

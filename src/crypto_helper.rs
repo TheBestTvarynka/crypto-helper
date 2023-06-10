@@ -12,7 +12,7 @@ use input::Input;
 use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
-use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html};
+use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html};
 use yew_hooks::{use_clipboard, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
@@ -101,15 +101,15 @@ pub fn crypto_helper() -> Html {
     });
 
     html! {
-        <article class={classes!("vertical")}>
+        <article class="vertical">
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
-            <div class={classes!("horizontal")}>
-                <button {onclick}>{"Go"}</button>
+            <div class="horizontal">
+                <button class="action-button" {onclick}>{"Go"}</button>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
-            <div class={classes!("horizontal")}>
-                <button class={classes!("button-with-icon")} onclick={share_by_link}>
+            <div class="horizontal">
+                <button class="button-with-icon" onclick={share_by_link}>
                     <img src="/public/img/icons/share_by_link.png" />
                 </button>
             </div>

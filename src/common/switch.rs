@@ -1,4 +1,4 @@
-use yew::{classes, function_component, html, Callback, Html, Properties};
+use yew::{function_component, html, Callback, Html, Properties};
 
 #[derive(Properties, PartialEq, Debug, Clone)]
 pub struct SwitchProps {
@@ -14,9 +14,9 @@ pub fn switch(props: &SwitchProps) -> Html {
     let onchange = Callback::from(move |_| setter.emit(!state));
 
     html! {
-        <span class={classes!("switch_span")}>
-            <input type={"checkbox"} id={props.id.clone()} class={classes!("switch_input")} {onchange} checked={props.state} />
-            <label for={props.id.clone()} class={classes!("switch_label")}>{"Toggle"}</label>
+        <span class="switch_span">
+            <input type={"checkbox"} id={props.id.clone()} class="switch_input" {onchange} checked={props.state} />
+            <label for={props.id.clone()} class="switch_label">{"Toggle"}</label>
         </span>
     }
 }

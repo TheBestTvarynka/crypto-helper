@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde_json::{to_string_pretty, Value};
 use web_sys::{HtmlInputElement, MouseEvent};
-use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
+use yew::{function_component, html, Callback, Html, Properties, TargetCast};
 use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
@@ -146,25 +146,25 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
     let clipboard = use_clipboard();
 
     html! {
-        <div class={classes!("vertical")}>
-            <div class={classes!("vertical")}>
-                <div class={classes!("horizontal")}>
-                    <span class={classes!("jwt-header")} onclick={copy_to_clipboard_with_notification(header.clone(), clipboard.clone(), "Header", notifications.clone())}>{"Header"}</span>
-                    <button onclick={header_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
-                    <button onclick={header_on_minify} class={classes!("jwt-util-button")}>{"Minify"}</button>
+        <div class="vertical">
+            <div class="vertical">
+                <div class="horizontal">
+                    <span class="jwt-header" onclick={copy_to_clipboard_with_notification(header.clone(), clipboard.clone(), "Header", notifications.clone())}>{"Header"}</span>
+                    <button onclick={header_on_pretty} class="jwt-util-button">{"Prettify"}</button>
+                    <button onclick={header_on_minify} class="jwt-util-button">{"Minify"}</button>
                 </div>
-                <textarea rows="4" class={classes!("base-input")} value={header} oninput={on_header_input} />
+                <textarea rows="4" class="base-input" value={header} oninput={on_header_input} />
             </div>
-            <div class={classes!("vertical")}>
-                <div class={classes!("horizontal")}>
-                    <span class={classes!("jwt-payload")} onclick={copy_to_clipboard_with_notification(payload.clone(), clipboard.clone(), "Payload", notifications.clone())}>{"Payload"}</span>
-                    <button onclick={payload_on_pretty} class={classes!("jwt-util-button")}>{"Prettify"}</button>
-                    <button onclick={payload_on_minify} class={classes!("jwt-util-button")}>{"Minify"}</button>
+            <div class="vertical">
+                <div class="horizontal">
+                    <span class="jwt-payload" onclick={copy_to_clipboard_with_notification(payload.clone(), clipboard.clone(), "Payload", notifications.clone())}>{"Payload"}</span>
+                    <button onclick={payload_on_pretty} class="jwt-util-button">{"Prettify"}</button>
+                    <button onclick={payload_on_minify} class="jwt-util-button">{"Minify"}</button>
                 </div>
-                <textarea rows="6" class={classes!("base-input")} value={payload} oninput={on_payload_input} />
+                <textarea rows="6" class="base-input" value={payload} oninput={on_payload_input} />
             </div>
-            <div class={classes!("vertical")}>
-                <span class={classes!("jwt-signature")} onclick={copy_to_clipboard_with_notification(signature.clone(), clipboard, "Signature", notifications.clone())}>{"Signature"}</span>
+            <div class="vertical">
+                <span class="jwt-signature" onclick={copy_to_clipboard_with_notification(signature.clone(), clipboard, "Signature", notifications.clone())}>{"Signature"}</span>
                 {build_simple_output(signature_bytes, BytesFormat::Hex, Callback::from(move |notification| notifications.spawn(notification)))}
             </div>
         </div>

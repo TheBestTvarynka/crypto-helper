@@ -2,7 +2,7 @@ use picky::hash::HashAlgorithm;
 use picky::key::{PrivateKey, PublicKey};
 use picky::signature::SignatureAlgorithm;
 use web_sys::{HtmlInputElement, MouseEvent};
-use yew::{classes, function_component, html, use_state, Callback, Html, Properties, TargetCast};
+use yew::{function_component, html, use_state, Callback, Html, Properties, TargetCast};
 use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
@@ -519,7 +519,7 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
     let notifications = use_notification::<Notification>();
 
     html! {
-        <div class={classes!("vertical")}>
+        <div class="vertical">
             {get_input_component(&props.jwt.signature_algorithm, Callback::from(move |signature_algo| {
                 let mut new_jwt = jwt.clone();
                 new_jwt.signature_algorithm = signature_algo;
@@ -528,11 +528,11 @@ pub fn jwt_utils(props: &JwtUtilsProps) -> Html {
             }))}
             {if props.jwt.signature_algorithm.is_supported() {
                 html! {
-                    <div class={classes!("horizontal")}>
-                        <button class={classes!("jwt-util-button")} onclick={validate}>{"Validate signature"}</button>
-                        <button class={classes!("jwt-util-button")} onclick={recalculate}>{"Recalculate signature"}</button>
-                        <button class={classes!("jwt-util-button")} onclick={generate}>{"Generate JWT"}</button>
-                        <button class={classes!("button-with-icon")} onclick={share_by_link}>
+                    <div class="horizontal">
+                        <button class="jwt-util-button" onclick={validate}>{"Validate signature"}</button>
+                        <button class="jwt-util-button" onclick={recalculate}>{"Recalculate signature"}</button>
+                        <button class="jwt-util-button" onclick={generate}>{"Generate JWT"}</button>
+                        <button class="button-with-icon" onclick={share_by_link}>
                             <img src="/public/img/icons/share_by_link.png" />
                         </button>
                     </div>
