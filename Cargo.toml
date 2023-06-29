@@ -3,10 +3,13 @@ name = "web-app"
 version = "0.10.0"
 description = "The crypto-helper is an online app that helps to work with the diferent crypto algorithms."
 edition = "2021"
-authors = ["Pavlo Myroniuk <pspos.developqkation@gmail.com>"]
+authors = ["Pavlo Myroniuk <the.best.tvarynka@gmail.com>"]
 readme = "README.md"
 license-file = "LICENSE"
 repository = "https://github.com/TheBestTvarynka/crypto-helper"
+
+[workspace]
+members = ["crates/asn1-parser"]
 
 [dependencies]
 yew = { version = "0.20", features = ["csr"] }
