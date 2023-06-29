@@ -9,6 +9,7 @@ pub fn header() -> Html {
         <header>
             <Link<Route> to={Route::CryptoHelper}>{"Crypto helper"}</Link<Route>>
             <Link<Route> to={Route::Jwt}>{"JWT"}</Link<Route>>
+            <Link<Route> to={Route::Asn1Parser}>{"Asn1 parser"}</Link<Route>>
             <Link<Route> to={Route::About}>{"About"}</Link<Route>>
         </header>
     }
