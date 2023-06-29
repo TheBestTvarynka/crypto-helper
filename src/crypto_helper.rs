@@ -12,6 +12,7 @@ use input::Input;
 use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
+use web_sys::KeyboardEvent;
 use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html};
 use yew_hooks::{use_clipboard, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
@@ -51,7 +52,7 @@ pub fn crypto_helper() -> Html {
     let output_setter = output.setter();
     let algorithm_data = (*algorithm).clone();
     let notifications = notification_manager.clone();
-    let onclick = Callback::from(move |_| {
+    let go = Callback::from(move |_: ()| {
         match convert(&algorithm_data) {
             Ok(output) => output_setter.set(output),
             Err(err) => notifications.spawn(Notification::new(
@@ -61,6 +62,10 @@ pub fn crypto_helper() -> Html {
                 Notification::NOTIFICATION_LIFETIME,
             )),
         };
+    });
+    let go_onclick = go.clone();
+    let onclick = Callback::from(move |_| {
+        go_onclick.emit(());
     });
 
     let algorithm_setter = algorithm.setter();
@@ -100,12 +105,19 @@ pub fn crypto_helper() -> Html {
         ));
     });
 
+    let onkeydown = Callback::from(move |event: KeyboardEvent| {
+        if event.ctrl_key() && event.code() == "Enter" {
+            go.emit(());
+        }
+    });
+
     html! {
-        <article class="vertical">
+        <article class="vertical" {onkeydown}>
             <Info set_algorithm={algorithm.setter()} algorithm={(*algorithm).clone()} />
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
             <div class="horizontal">
                 <button class="action-button" {onclick}>{"Go"}</button>
+                <span class="total">{"(ctrl + enter)"}</span>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
             <div class="horizontal">
