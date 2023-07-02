@@ -11,21 +11,22 @@ pub enum Asn1Type<'data> {
 
 /// [`Asn1`] structure represents generic `asn1` value.
 /// It contains raw data and parsed values.
+#[derive(Debug)]
 pub struct Asn1<'data> {
     /// Raw input bytes
-    raw_data: &'data [u8],
+    pub(crate) raw_data: &'data [u8],
 
     /// Position of the tag in the input data
-    tag: usize,
+    pub(crate) tag: usize,
 
     /// Range that corresponds to the encoded length bytes
-    length: Range<usize>,
+    pub(crate) length: Range<usize>,
 
     /// Range that corresponds to the inner raw data
-    data: Range<usize>,
+    pub(crate) data: Range<usize>,
 
     /// Parsed asn1 data
-    asn1_type: Asn1Type<'data>,
+    pub(crate) asn1_type: Asn1Type<'data>,
 }
 
 impl Asn1<'_> {
