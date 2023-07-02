@@ -1,4 +1,6 @@
 
+This crate has `no_std` support.
+
 # `asn1` parser
 
 > **Yet another `asn1` parser? https://users.rust-lang.org/t/comparison-of-way-too-many-rust-asn-1-der-libraries**
