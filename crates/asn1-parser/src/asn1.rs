@@ -6,7 +6,7 @@ use crate::{OctetString, Sequence, Utf8String};
 pub enum Asn1Type<'data> {
     Sequence(Sequence<'data>),
     OctetString(OctetString<'data>),
-    Utf8String(Utf8String),
+    Utf8String(Utf8String<'data>),
 }
 
 /// [`Asn1`] structure represents generic `asn1` value.

@@ -1,6 +1,6 @@
 use crate::length::read_len;
 use crate::reader::{read_data, Reader};
-use crate::{Asn1, Asn1Decode, Asn1Result, Asn1Type, Tag};
+use crate::{Asn1, Asn1Decode, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq)]
 pub struct OctetString<'data> {
@@ -44,12 +44,14 @@ impl<'data> Asn1Decode<'data> for OctetString<'data> {
     }
 }
 
+impl Asn1Entity for OctetString<'_> {
+    fn tag(&self) -> &Tag {
+        &OctetString::TAG
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    extern crate std;
-
-    use std::println;
-
     use crate::reader::Reader;
     use crate::{Asn1Decode, OctetString};
 
@@ -58,8 +60,6 @@ mod tests {
         let raw = [4, 8, 0, 17, 34, 51, 68, 85, 102, 119];
 
         let octet_string = OctetString::decode_asn1(&mut Reader::new(&raw)).unwrap();
-
-        println!("{:?}", octet_string);
 
         assert_eq!(octet_string.tag_position(), 0);
         assert_eq!(octet_string.length_bytes(), &[8]);
