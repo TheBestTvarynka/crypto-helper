@@ -24,6 +24,8 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 - [ ] [VideotextString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/videotexstring.html)
 - [ ] [Utf8String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utf8string.html)
 
+---
+
 - [ ] [Date](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utf8string.html)
 - [ ] [DateTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/datetime.html)
 - [ ] [Duration](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/duration.html)
@@ -32,17 +34,23 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 - [ ] [UtcTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utctime.html)
 - [ ] [TimeOfDay](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/timeofday.html)
 
+---
+
 - [ ] [Integer](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/integer.html)
 - [ ] [Boolean](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/boolean.html)
 - [ ] [Null](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/null.html)
 - [ ] [ObjectIdentifier](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/object-identifier.html)
 - [ ] [Real](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/real.html)
 
+---
+
 - [ ] [Sequence](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
 - [ ] [SequenceOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequenceof.html)
 - [ ] [Set](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/set.html)
 - [ ] [SetOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/setof.html)
 - [ ] [Choice](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/choice.html)
+
+---
 
 - [ ] [ExplicitTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
 - [ ] [ImplicitTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
