@@ -9,7 +9,10 @@ license-file = "LICENSE"
 repository = "https://github.com/TheBestTvarynka/crypto-helper"
 
 [workspace]
-members = ["crates/asn1-parser"]
+members = [
+    "crates/asn1-parser",
+    "crates/prop-strategies"
+]
 
 [dependencies]
 yew = { version = "0.20", features = ["csr"] }

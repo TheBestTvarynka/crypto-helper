@@ -1,0 +1,13 @@
+[package]
+name = "prop-strategies"
+description = "This crate contains prop strategies for the asn1-parser crate."
+version = "0.1.0"
+edition = "2021"
+authors = ["Pavlo Myroniuk <the.best.tvarynka@gmail.com>"]
+readme = "README.md"
+license-file = "../../LICENSE"
+repository = "https://github.com/TheBestTvarynka/crypto-helper"
+
+[dependencies]
+proptest = "1.2.0"
+asn1-parser = { path = "../asn1-parser" }
