@@ -76,7 +76,7 @@ impl Asn1Encode for OctetString<'_> {
     }
 
     fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
-        writer.write_byte(Self::TAG.0)?;
+        writer.write_byte(Self::TAG.into())?;
         write_len(self.octets.len(), writer)?;
         writer.write_slice(&self.octets)
     }

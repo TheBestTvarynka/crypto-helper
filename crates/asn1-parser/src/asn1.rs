@@ -2,11 +2,11 @@ use core::ops::Range;
 
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Error, OctetString, Tag, Utf8String};
+use crate::{Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Error, OctetString, Sequence, Tag, Utf8String};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1Type<'data> {
-    // Sequence(Sequence<'data>),
+    Sequence(Sequence<'data>),
     OctetString(OctetString<'data>),
     Utf8String(Utf8String<'data>),
 }
@@ -16,9 +16,9 @@ pub type OwnedAsn1Type = Asn1Type<'static>;
 impl Asn1Entity for Asn1Type<'_> {
     fn tag(&self) -> &crate::Tag {
         match self {
-            // Asn1Type::Sequence(_) => todo!(),
             Asn1Type::OctetString(octet) => octet.tag(),
             Asn1Type::Utf8String(utf8) => utf8.tag(),
+            Asn1Type::Sequence(sequence) => sequence.tag(),
         }
     }
 }
@@ -35,6 +35,8 @@ impl<'data> Asn1Decode<'data> for Asn1Type<'data> {
             Ok(Asn1Type::OctetString(OctetString::decode(reader)?))
         } else if Utf8String::compare_tags(&tag) {
             Ok(Asn1Type::Utf8String(Utf8String::decode(reader)?))
+        } else if Sequence::compare_tags(&tag) {
+            Ok(Asn1Type::Sequence(Sequence::decode(reader)?))
         } else {
             Err(Error::from("Invalid data"))
         }
@@ -47,6 +49,8 @@ impl<'data> Asn1Decode<'data> for Asn1Type<'data> {
             OctetString::decode_asn1(reader)
         } else if Utf8String::compare_tags(&tag) {
             Utf8String::decode_asn1(reader)
+        } else if Sequence::compare_tags(&tag) {
+            Sequence::decode_asn1(reader)
         } else {
             Err(Error::from("Invalid data"))
         }
@@ -58,6 +62,7 @@ impl Asn1Encode for Asn1Type<'_> {
         match self {
             Asn1Type::OctetString(octet) => octet.needed_buf_size(),
             Asn1Type::Utf8String(utf8) => utf8.needed_buf_size(),
+            Asn1Type::Sequence(sequence) => sequence.needed_buf_size(),
         }
     }
 
@@ -65,13 +70,14 @@ impl Asn1Encode for Asn1Type<'_> {
         match self {
             Asn1Type::OctetString(octet) => octet.encode(writer),
             Asn1Type::Utf8String(utf8) => utf8.encode(writer),
+            Asn1Type::Sequence(sequence) => sequence.encode(writer),
         }
     }
 }
 
 /// [`Asn1`] structure represents generic `asn1` value.
 /// It contains raw data and parsed values.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Asn1<'data> {
     /// Raw input bytes
     pub(crate) raw_data: &'data [u8],
@@ -116,11 +122,5 @@ impl Asn1<'_> {
 
     pub fn asn1(&self) -> &Asn1Type<'_> {
         &self.asn1_type
-    }
-}
-
-impl<'data> Asn1<'data> {
-    pub fn parse(_input: &'data [u8]) -> Self {
-        todo!()
     }
 }

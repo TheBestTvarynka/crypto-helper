@@ -2,6 +2,7 @@ use core::ops::Range;
 
 use crate::{Asn1Result, Error};
 
+#[derive(Debug)]
 pub struct Reader<'data> {
     position: usize,
     inner: &'data [u8],
@@ -17,6 +18,10 @@ impl<'data> Reader<'data> {
 
     pub fn position(&self) -> usize {
         self.position
+    }
+
+    pub fn empty(&self) -> bool {
+        self.position == self.inner.len()
     }
 
     pub fn data_in_range(&self, range: Range<usize>) -> Asn1Result<&'data [u8]> {
@@ -54,7 +59,7 @@ impl<'data> Reader<'data> {
             return Err(Error::from("End of the buffer"));
         }
 
-        Ok(self.inner[0])
+        Ok(self.inner[self.position])
     }
 }
 

@@ -1,3 +1,3 @@
 mod sequence;
 
-pub use sequence::Sequence;
+pub use sequence::{OwnedSequence, Sequence};

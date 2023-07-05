@@ -19,12 +19,12 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 - [ ] [IA5String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/ia5string.html)
 - [ ] [GeneralString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/generalstring.html)
 - [ ] [PrintableString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/printablestring.html)
-- [ ] [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
+- [X] [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
 - [ ] [NumericString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/numericstring.html)
 - [ ] [UniversalString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/universalstring.html)
 - [ ] [VisibleString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/visiblestring.html)
 - [ ] [VideotextString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/videotexstring.html)
-- [ ] [Utf8String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utf8string.html)
+- [X] [Utf8String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utf8string.html)
 
 ---
 
@@ -46,7 +46,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 
 ---
 
-- [ ] [Sequence](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
+- [X] [Sequence](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
 - [ ] [SequenceOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequenceof.html)
 - [ ] [Set](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/set.html)
 - [ ] [SetOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/setof.html)

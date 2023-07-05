@@ -26,6 +26,14 @@ impl From<String> for OwnedUtf8String {
     }
 }
 
+impl From<&'static str> for OwnedUtf8String {
+    fn from(data: &'static str) -> Self {
+        Self {
+            string: Cow::Borrowed(data),
+        }
+    }
+}
+
 impl<'data> Asn1Decode<'data> for Utf8String<'data> {
     fn compare_tags(tag: &Tag) -> bool {
         Utf8String::TAG == *tag
@@ -77,7 +85,7 @@ impl Asn1Encode for Utf8String<'_> {
     }
 
     fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
-        writer.write_byte(Self::TAG.0)?;
+        writer.write_byte(Self::TAG.into())?;
         write_len(self.string.len(), writer)?;
         writer.write_slice(self.string.as_bytes())
     }
