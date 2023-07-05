@@ -48,6 +48,14 @@ impl<'data> Reader<'data> {
     pub fn read_byte(&mut self) -> Asn1Result<u8> {
         Ok(self.read(1)?[0])
     }
+
+    pub fn peek_byte(&self) -> Asn1Result<u8> {
+        if self.position == self.inner.len() {
+            return Err(Error::from("End of the buffer"));
+        }
+
+        Ok(self.inner[0])
+    }
 }
 
 pub fn read_data<'data>(reader: &mut Reader<'data>, len: usize) -> Asn1Result<(&'data [u8], Range<usize>)> {
