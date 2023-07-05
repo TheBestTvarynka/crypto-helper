@@ -1,14 +1,27 @@
+use alloc::borrow::Cow;
+use alloc::vec::Vec;
+
 use crate::length::read_len;
 use crate::reader::{read_data, Reader};
 use crate::{Asn1, Asn1Decode, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OctetString<'data> {
-    octets: &'data [u8],
+    octets: Cow<'data, [u8]>,
 }
+
+pub type OwnedOctetString = OctetString<'static>;
 
 impl OctetString<'_> {
     pub const TAG: Tag = Tag(4);
+}
+
+impl From<Vec<u8>> for OwnedOctetString {
+    fn from(data: Vec<u8>) -> Self {
+        Self {
+            octets: Cow::Owned(data),
+        }
+    }
 }
 
 impl<'data> Asn1Decode<'data> for OctetString<'data> {
@@ -23,7 +36,9 @@ impl<'data> Asn1Decode<'data> for OctetString<'data> {
 
         let (data, _data_range) = read_data(reader, len)?;
 
-        Ok(Self { octets: data })
+        Ok(Self {
+            octets: Cow::Borrowed(data),
+        })
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
@@ -39,7 +54,9 @@ impl<'data> Asn1Decode<'data> for OctetString<'data> {
             tag: tag_position,
             length: len_range,
             data: data_range,
-            asn1_type: Asn1Type::OctetString(Self { octets: data }),
+            asn1_type: Asn1Type::OctetString(Self {
+                octets: Cow::Borrowed(data),
+            }),
         })
     }
 }

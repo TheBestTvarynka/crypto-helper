@@ -1,16 +1,28 @@
+use alloc::borrow::Cow;
+use alloc::string::String;
 use core::str::from_utf8;
 
 use crate::length::read_len;
 use crate::reader::{read_data, Reader};
 use crate::{Asn1, Asn1Decode, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Utf8String<'data> {
-    string: &'data str,
+    string: Cow<'data, str>,
 }
+
+pub type OwnedUtf8String = Utf8String<'static>;
 
 impl Utf8String<'_> {
     pub const TAG: Tag = Tag(12);
+}
+
+impl From<String> for OwnedUtf8String {
+    fn from(data: String) -> Self {
+        Self {
+            string: Cow::Owned(data),
+        }
+    }
 }
 
 impl<'data> Asn1Decode<'data> for Utf8String<'data> {
@@ -26,7 +38,7 @@ impl<'data> Asn1Decode<'data> for Utf8String<'data> {
         let (data, _data_range) = read_data(reader, len)?;
 
         Ok(Self {
-            string: from_utf8(data)?,
+            string: Cow::Borrowed(from_utf8(data)?),
         })
     }
 
@@ -44,7 +56,7 @@ impl<'data> Asn1Decode<'data> for Utf8String<'data> {
             length: len_range,
             data: data_range,
             asn1_type: Asn1Type::Utf8String(Self {
-                string: from_utf8(data)?,
+                string: Cow::Borrowed(from_utf8(data)?),
             }),
         })
     }
@@ -58,6 +70,8 @@ impl Asn1Entity for Utf8String<'_> {
 
 #[cfg(test)]
 mod tests {
+    use alloc::borrow::Cow;
+
     use crate::reader::Reader;
     use crate::{Asn1Decode, Asn1Type, Utf8String};
 
@@ -76,7 +90,7 @@ mod tests {
         assert_eq!(
             utf8_string.asn1(),
             &Asn1Type::Utf8String(Utf8String {
-                string: "thebesttvarynka"
+                string: Cow::Borrowed("thebesttvarynka"),
             })
         );
     }
