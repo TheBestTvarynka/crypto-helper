@@ -14,7 +14,7 @@ mod string;
 mod tag;
 mod writer;
 
-pub use asn1::{Asn1, Asn1Type};
+pub use asn1::{Asn1, Asn1Type, OwnedAsn1Type};
 pub use constructors::*;
 pub use error::Error;
 use reader::Reader;
@@ -32,8 +32,18 @@ pub trait Asn1Decode<'data>: Sized {
     /// Decodes the asn1 entity using provided Reader.
     fn decode(reader: &mut Reader<'data>) -> Asn1Result<Self>;
 
+    /// Decodes the asn1 entity using provided buffer.
+    fn decode_buff(buff: &'data [u8]) -> Asn1Result<Self> {
+        Self::decode(&mut Reader::new(buff))
+    }
+
     /// Decodes the asn1 entity using provided Reader.
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>>;
+
+    /// Decodes the asn1 entity using provided Reader.
+    fn decode_asn1_buff(buff: &'data [u8]) -> Asn1Result<Asn1<'data>> {
+        Self::decode_asn1(&mut Reader::new(buff))
+    }
 }
 
 /// General trait for encoding asn1 entities

@@ -11,6 +11,8 @@ pub enum Asn1Type<'data> {
     Utf8String(Utf8String<'data>),
 }
 
+pub type OwnedAsn1Type = Asn1Type<'static>;
+
 impl Asn1Entity for Asn1Type<'_> {
     fn tag(&self) -> &crate::Tag {
         match self {
@@ -98,6 +100,10 @@ impl Asn1<'_> {
 
     pub fn data_range(&self) -> Range<usize> {
         self.data.clone()
+    }
+
+    pub fn raw_bytes(&self) -> &[u8] {
+        self.raw_data
     }
 
     pub fn length_bytes(&self) -> &[u8] {

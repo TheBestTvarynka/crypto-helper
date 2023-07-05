@@ -7,6 +7,12 @@ pub struct Error {
 }
 
 impl Error {
+    pub fn message(&self) -> &str {
+        self.message
+    }
+}
+
+impl Error {
     pub fn from(message: &'static str) -> Self {
         Self { message }
     }
