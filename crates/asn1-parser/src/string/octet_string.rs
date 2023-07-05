@@ -1,9 +1,10 @@
 use alloc::borrow::Cow;
 use alloc::vec::Vec;
 
-use crate::length::read_len;
+use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
-use crate::{Asn1, Asn1Decode, Asn1Entity, Asn1Result, Asn1Type, Tag};
+use crate::writer::Writer;
+use crate::{Asn1, Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OctetString<'data> {
@@ -67,13 +68,27 @@ impl Asn1Entity for OctetString<'_> {
     }
 }
 
+impl Asn1Encode for OctetString<'_> {
+    fn needed_buf_size(&self) -> usize {
+        let data_len = self.octets.len();
+
+        1 /* tag */ + len_size(data_len) + data_len
+    }
+
+    fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
+        writer.write_byte(Self::TAG.0)?;
+        write_len(self.octets.len(), writer)?;
+        writer.write_slice(&self.octets)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::reader::Reader;
-    use crate::{Asn1Decode, OctetString};
+    use crate::{Asn1Decode, Asn1Encode, OctetString};
 
     #[test]
-    fn decoding_example() {
+    fn example() {
         let raw = [4, 8, 0, 17, 34, 51, 68, 85, 102, 119];
 
         let octet_string = OctetString::decode_asn1(&mut Reader::new(&raw)).unwrap();
@@ -81,6 +96,14 @@ mod tests {
         assert_eq!(octet_string.tag_position(), 0);
         assert_eq!(octet_string.length_bytes(), &[8]);
         assert_eq!(octet_string.length_range(), 1..2);
-        assert_eq!(&raw[octet_string.data_range()], &[0, 17, 34, 51, 68, 85, 102, 119])
+        assert_eq!(&raw[octet_string.data_range()], &[0, 17, 34, 51, 68, 85, 102, 119]);
+
+        let mut encoded = [0; 10];
+
+        assert_eq!(octet_string.asn1().needed_buf_size(), 10);
+
+        octet_string.asn1().encode_buff(&mut encoded).unwrap();
+
+        assert_eq!(encoded, raw);
     }
 }

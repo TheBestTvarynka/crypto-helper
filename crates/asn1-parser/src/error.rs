@@ -1,3 +1,4 @@
+use core::num::TryFromIntError;
 use core::str::Utf8Error;
 
 #[derive(Debug)]
@@ -14,5 +15,13 @@ impl Error {
 impl From<Utf8Error> for Error {
     fn from(_value: Utf8Error) -> Self {
         Self { message: "utf8error" }
+    }
+}
+
+impl From<TryFromIntError> for Error {
+    fn from(_value: TryFromIntError) -> Self {
+        Self {
+            message: "Numbers conversion error",
+        }
     }
 }

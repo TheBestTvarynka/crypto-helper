@@ -2,9 +2,10 @@ use alloc::borrow::Cow;
 use alloc::string::String;
 use core::str::from_utf8;
 
-use crate::length::read_len;
+use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
-use crate::{Asn1, Asn1Decode, Asn1Entity, Asn1Result, Asn1Type, Tag};
+use crate::writer::Writer;
+use crate::{Asn1, Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Utf8String<'data> {
@@ -68,15 +69,29 @@ impl Asn1Entity for Utf8String<'_> {
     }
 }
 
+impl Asn1Encode for Utf8String<'_> {
+    fn needed_buf_size(&self) -> usize {
+        let data_len = self.string.len();
+
+        1 /* tag */ + len_size(data_len) + data_len
+    }
+
+    fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
+        writer.write_byte(Self::TAG.0)?;
+        write_len(self.string.len(), writer)?;
+        writer.write_slice(self.string.as_bytes())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use alloc::borrow::Cow;
 
     use crate::reader::Reader;
-    use crate::{Asn1Decode, Asn1Type, Utf8String};
+    use crate::{Asn1Decode, Asn1Encode, Asn1Type, Utf8String};
 
     #[test]
-    fn decoding_example() {
+    fn example() {
         let raw = [
             12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97,
         ];
@@ -93,5 +108,13 @@ mod tests {
                 string: Cow::Borrowed("thebesttvarynka"),
             })
         );
+
+        let mut encoded = [0; 17];
+
+        assert_eq!(utf8_string.asn1().needed_buf_size(), 17);
+
+        utf8_string.asn1().encode_buff(&mut encoded).unwrap();
+
+        assert_eq!(encoded, raw);
     }
 }
