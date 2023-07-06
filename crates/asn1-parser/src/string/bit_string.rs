@@ -57,7 +57,7 @@ impl<'data> Asn1Decode<'data> for BitString<'data> {
 
         let (len, _len_range) = read_len(reader)?;
 
-        let (data, _data_range) = read_data(reader, len)?;
+        let data = reader.read(len)?;
 
         Ok(Self {
             bits: Cow::Borrowed(data),

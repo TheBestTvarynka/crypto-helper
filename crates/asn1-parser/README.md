@@ -13,7 +13,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 
 ## Supported `asn1` types
 
-- [ ] [BitString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bitstring.html)
+- [X] [BitString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bitstring.html)
 - [ ] [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
 - [ ] [GraphicString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/graphicstring.html)
 - [ ] [IA5String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/ia5string.html)
@@ -39,7 +39,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 ---
 
 - [ ] [Integer](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/integer.html)
-- [ ] [Boolean](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/boolean.html)
+- [X] [Boolean](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/boolean.html)
 - [ ] [Null](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/null.html)
 - [ ] [ObjectIdentifier](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/object-identifier.html)
 - [ ] [Real](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/real.html)
