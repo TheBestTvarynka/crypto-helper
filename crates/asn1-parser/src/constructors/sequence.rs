@@ -16,6 +16,12 @@ impl Sequence<'_> {
     pub const TAG: Tag = Tag(0x30);
 }
 
+impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {
+    fn from(fields: Vec<Asn1<'data>>) -> Self {
+        Self { fields }
+    }
+}
+
 impl Asn1Entity for Sequence<'_> {
     fn tag(&self) -> &Tag {
         &Self::TAG

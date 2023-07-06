@@ -2,13 +2,14 @@ use core::ops::Range;
 
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Error, OctetString, Sequence, Tag, Utf8String};
+use crate::{Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, BitString, Error, OctetString, Sequence, Tag, Utf8String};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1Type<'data> {
     Sequence(Sequence<'data>),
     OctetString(OctetString<'data>),
     Utf8String(Utf8String<'data>),
+    BitString(BitString<'data>),
 }
 
 pub type OwnedAsn1Type = Asn1Type<'static>;
@@ -19,6 +20,7 @@ impl Asn1Entity for Asn1Type<'_> {
             Asn1Type::OctetString(octet) => octet.tag(),
             Asn1Type::Utf8String(utf8) => utf8.tag(),
             Asn1Type::Sequence(sequence) => sequence.tag(),
+            Asn1Type::BitString(bit) => bit.tag(),
         }
     }
 }
@@ -37,6 +39,8 @@ impl<'data> Asn1Decode<'data> for Asn1Type<'data> {
             Ok(Asn1Type::Utf8String(Utf8String::decode(reader)?))
         } else if Sequence::compare_tags(&tag) {
             Ok(Asn1Type::Sequence(Sequence::decode(reader)?))
+        } else if BitString::compare_tags(&tag) {
+            Ok(Asn1Type::BitString(BitString::decode(reader)?))
         } else {
             Err(Error::from("Invalid data"))
         }
@@ -51,6 +55,8 @@ impl<'data> Asn1Decode<'data> for Asn1Type<'data> {
             Utf8String::decode_asn1(reader)
         } else if Sequence::compare_tags(&tag) {
             Sequence::decode_asn1(reader)
+        } else if BitString::compare_tags(&tag) {
+            BitString::decode_asn1(reader)
         } else {
             Err(Error::from("Invalid data"))
         }
@@ -63,6 +69,7 @@ impl Asn1Encode for Asn1Type<'_> {
             Asn1Type::OctetString(octet) => octet.needed_buf_size(),
             Asn1Type::Utf8String(utf8) => utf8.needed_buf_size(),
             Asn1Type::Sequence(sequence) => sequence.needed_buf_size(),
+            Asn1Type::BitString(bit) => bit.needed_buf_size(),
         }
     }
 
@@ -71,6 +78,7 @@ impl Asn1Encode for Asn1Type<'_> {
             Asn1Type::OctetString(octet) => octet.encode(writer),
             Asn1Type::Utf8String(utf8) => utf8.encode(writer),
             Asn1Type::Sequence(sequence) => sequence.encode(writer),
+            Asn1Type::BitString(bit) => bit.encode(writer),
         }
     }
 }
