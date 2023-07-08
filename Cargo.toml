@@ -50,3 +50,6 @@ rsa = "0.7.2"
 yew-hooks = "0.2.0"
 bcrypt = "0.14.0"
 flate2 = { version = "1.0.26", features = ["zlib"] }
+
+# asn1
+asn1-parser = { path = "./crates/asn1-parser" }

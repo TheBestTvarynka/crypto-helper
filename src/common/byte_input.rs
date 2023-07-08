@@ -7,11 +7,11 @@ use crate::common::{encode_bytes, get_format_button_class, get_set_format_callba
 #[derive(PartialEq, Properties, Clone)]
 pub struct ByteInputProps {
     #[prop_or(BytesFormat::Hex)]
-    format: BytesFormat,
+    pub format: BytesFormat,
     #[prop_or_default]
-    placeholder: String,
-    bytes: Vec<u8>,
-    setter: Callback<Vec<u8>>,
+    pub placeholder: String,
+    pub bytes: Vec<u8>,
+    pub setter: Callback<Vec<u8>>,
 }
 
 #[function_component(ByteInput)]

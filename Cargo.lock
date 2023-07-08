@@ -1992,6 +1992,7 @@ dependencies = [
 name = "web-app"
 version = "0.10.0"
 dependencies = [
+ "asn1-parser",
  "base64 0.13.1",
  "bcrypt",
  "flate2",
