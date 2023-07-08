@@ -13,6 +13,7 @@ mod length;
 mod reader;
 mod string;
 mod tag;
+mod tags;
 mod writer;
 
 pub use asn1::{Asn1, Asn1Type, OwnedAsn1Type};
@@ -22,12 +23,13 @@ pub use generic_types::*;
 use reader::Reader;
 pub use string::*;
 pub use tag::Tag;
+pub use tags::*;
 use writer::Writer;
 
 pub type Asn1Result<T> = Result<T, Error>;
 
 /// General trait for decoding asn1 entities.
-pub trait Asn1Decode<'data>: Sized {
+pub trait Asn1Decoder<'data>: Sized {
     /// Check if the provided tag belongs to decoding implementation.
     fn compare_tags(tag: &Tag) -> bool;
 
@@ -49,7 +51,7 @@ pub trait Asn1Decode<'data>: Sized {
 }
 
 /// General trait for encoding asn1 entities
-pub trait Asn1Encode {
+pub trait Asn1Encoder {
     /// Returns needed buffer size for asn1 entity encoding
     fn needed_buf_size(&self) -> usize;
 
@@ -65,5 +67,5 @@ pub trait Asn1Encode {
 /// Every asn1 entity should implement this trait.
 pub trait Asn1Entity {
     /// Returns asn1 tag of the entity
-    fn tag(&self) -> &Tag;
+    fn tag(&self) -> Tag;
 }

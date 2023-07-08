@@ -1,11 +1,12 @@
 use alloc::borrow::Cow;
+use alloc::boxed::Box;
 use alloc::string::String;
 use core::str::from_utf8;
 
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
-use crate::{Asn1, Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Asn1Type, Tag};
+use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Utf8String<'data> {
@@ -34,7 +35,7 @@ impl From<&'static str> for OwnedUtf8String {
     }
 }
 
-impl<'data> Asn1Decode<'data> for Utf8String<'data> {
+impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
     fn compare_tags(tag: &Tag) -> bool {
         Utf8String::TAG == *tag
     }
@@ -64,20 +65,20 @@ impl<'data> Asn1Decode<'data> for Utf8String<'data> {
             tag: tag_position,
             length: len_range,
             data: data_range,
-            asn1_type: Asn1Type::Utf8String(Self {
+            asn1_type: Box::new(Asn1Type::Utf8String(Self {
                 string: Cow::Borrowed(from_utf8(data)?),
-            }),
+            })),
         })
     }
 }
 
 impl Asn1Entity for Utf8String<'_> {
-    fn tag(&self) -> &Tag {
-        &Utf8String::TAG
+    fn tag(&self) -> Tag {
+        Utf8String::TAG
     }
 }
 
-impl Asn1Encode for Utf8String<'_> {
+impl Asn1Encoder for Utf8String<'_> {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.string.len();
 
@@ -96,7 +97,7 @@ mod tests {
     use alloc::borrow::Cow;
 
     use crate::reader::Reader;
-    use crate::{Asn1Decode, Asn1Encode, Asn1Type, Utf8String};
+    use crate::{Asn1Decoder, Asn1Encoder, Asn1Type, Utf8String};
 
     #[test]
     fn example() {

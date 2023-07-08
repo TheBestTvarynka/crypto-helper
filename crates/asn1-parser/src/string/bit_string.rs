@@ -1,10 +1,11 @@
 use alloc::borrow::Cow;
+use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
-use crate::{Asn1, Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
+use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BitString<'data> {
@@ -42,12 +43,12 @@ impl From<Vec<u8>> for BitString<'_> {
 }
 
 impl Asn1Entity for BitString<'_> {
-    fn tag(&self) -> &Tag {
-        &Self::TAG
+    fn tag(&self) -> Tag {
+        Self::TAG
     }
 }
 
-impl<'data> Asn1Decode<'data> for BitString<'data> {
+impl<'data> Asn1Decoder<'data> for BitString<'data> {
     fn compare_tags(tag: &Tag) -> bool {
         Self::TAG == *tag
     }
@@ -77,14 +78,14 @@ impl<'data> Asn1Decode<'data> for BitString<'data> {
             tag: tag_position,
             length: len_range,
             data: data_range,
-            asn1_type: Asn1Type::BitString(Self {
+            asn1_type: Box::new(Asn1Type::BitString(Self {
                 bits: Cow::Borrowed(data),
-            }),
+            })),
         })
     }
 }
 
-impl Asn1Encode for BitString<'_> {
+impl Asn1Encoder for BitString<'_> {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.bits.len();
 

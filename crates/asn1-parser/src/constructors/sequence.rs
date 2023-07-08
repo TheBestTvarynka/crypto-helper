@@ -1,9 +1,10 @@
+use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1, Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Asn1Type, Tag};
+use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Sequence<'data> {
@@ -23,12 +24,12 @@ impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {
 }
 
 impl Asn1Entity for Sequence<'_> {
-    fn tag(&self) -> &Tag {
-        &Self::TAG
+    fn tag(&self) -> Tag {
+        Self::TAG
     }
 }
 
-impl Asn1Encode for Sequence<'_> {
+impl Asn1Encoder for Sequence<'_> {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.fields.iter().map(|f| f.asn1().needed_buf_size()).sum();
 
@@ -45,7 +46,7 @@ impl Asn1Encode for Sequence<'_> {
     }
 }
 
-impl<'data> Asn1Decode<'data> for Sequence<'data> {
+impl<'data> Asn1Decoder<'data> for Sequence<'data> {
     fn compare_tags(tag: &Tag) -> bool {
         &Self::TAG == tag
     }
@@ -84,16 +85,17 @@ impl<'data> Asn1Decode<'data> for Sequence<'data> {
             tag: tag_position,
             length: len_range,
             data: data_range,
-            asn1_type: Asn1Type::Sequence(Sequence { fields }),
+            asn1_type: Box::new(Asn1Type::Sequence(Sequence { fields })),
         })
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use alloc::boxed::Box;
     use alloc::vec;
 
-    use crate::{Asn1, Asn1Decode, Asn1Type, OctetString, Sequence, Utf8String};
+    use crate::{Asn1, Asn1Decoder, Asn1Type, OctetString, Sequence, Utf8String};
 
     #[test]
     fn example() {
@@ -111,24 +113,26 @@ mod tests {
                 tag: 0,
                 length: 1..2,
                 data: 2..29,
-                asn1_type: Asn1Type::Sequence(Sequence {
+                asn1_type: Box::new(Asn1Type::Sequence(Sequence {
                     fields: vec![
                         Asn1 {
                             raw_data: &[4, 8, 0, 17, 34, 51, 68, 85, 102, 119],
                             tag: 2,
                             length: 3..4,
                             data: 4..12,
-                            asn1_type: Asn1Type::OctetString(OctetString::from(vec![0, 17, 34, 51, 68, 85, 102, 119]))
+                            asn1_type: Box::new(Asn1Type::OctetString(OctetString::from(vec![
+                                0, 17, 34, 51, 68, 85, 102, 119
+                            ]))),
                         },
                         Asn1 {
                             raw_data: &[12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97],
                             tag: 12,
                             length: 13..14,
                             data: 14..29,
-                            asn1_type: Asn1Type::Utf8String(Utf8String::from("thebesttvarynka"))
+                            asn1_type: Box::new(Asn1Type::Utf8String(Utf8String::from("thebesttvarynka")))
                         },
                     ]
-                }),
+                })),
             }
         );
     }

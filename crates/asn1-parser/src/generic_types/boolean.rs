@@ -1,7 +1,9 @@
+use alloc::boxed::Box;
+
 use crate::length::{read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
-use crate::{Asn1, Asn1Decode, Asn1Entity, Asn1Result, Asn1Type, Error, Tag, Asn1Encode};
+use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Bool {
@@ -31,12 +33,12 @@ impl TryFrom<u8> for Bool {
 }
 
 impl Asn1Entity for Bool {
-    fn tag(&self) -> &Tag {
-        &Self::TAG
+    fn tag(&self) -> Tag {
+        Self::TAG
     }
 }
 
-impl<'data> Asn1Decode<'data> for Bool {
+impl<'data> Asn1Decoder<'data> for Bool {
     fn compare_tags(tag: &Tag) -> bool {
         Self::TAG == *tag
     }
@@ -70,12 +72,12 @@ impl<'data> Asn1Decode<'data> for Bool {
             tag: tag_position,
             length: len_range,
             data: data_range,
-            asn1_type: Asn1Type::Bool(data[0].try_into()?),
+            asn1_type: Box::new(Asn1Type::Bool(data[0].try_into()?)),
         })
     }
 }
 
-impl Asn1Encode for Bool {
+impl Asn1Encoder for Bool {
     fn needed_buf_size(&self) -> usize {
         1 /* tag */ + 1 /* len */ + 1 /* bool value */
     }
@@ -85,7 +87,7 @@ impl Asn1Encode for Bool {
         write_len(1, writer)?;
         writer.write_byte(match self.flag {
             true => 0xff,
-            false => 0
+            false => 0,
         })
     }
 }

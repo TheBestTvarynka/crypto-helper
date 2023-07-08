@@ -1,10 +1,11 @@
 use alloc::borrow::Cow;
+use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
-use crate::{Asn1, Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, Asn1Type, Tag};
+use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OctetString<'data> {
@@ -25,7 +26,7 @@ impl From<Vec<u8>> for OwnedOctetString {
     }
 }
 
-impl<'data> Asn1Decode<'data> for OctetString<'data> {
+impl<'data> Asn1Decoder<'data> for OctetString<'data> {
     fn compare_tags(tag: &Tag) -> bool {
         OctetString::TAG == *tag
     }
@@ -55,20 +56,20 @@ impl<'data> Asn1Decode<'data> for OctetString<'data> {
             tag: tag_position,
             length: len_range,
             data: data_range,
-            asn1_type: Asn1Type::OctetString(Self {
+            asn1_type: Box::new(Asn1Type::OctetString(Self {
                 octets: Cow::Borrowed(data),
-            }),
+            })),
         })
     }
 }
 
 impl Asn1Entity for OctetString<'_> {
-    fn tag(&self) -> &Tag {
-        &OctetString::TAG
+    fn tag(&self) -> Tag {
+        OctetString::TAG
     }
 }
 
-impl Asn1Encode for OctetString<'_> {
+impl Asn1Encoder for OctetString<'_> {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.octets.len();
 
@@ -85,7 +86,7 @@ impl Asn1Encode for OctetString<'_> {
 #[cfg(test)]
 mod tests {
     use crate::reader::Reader;
-    use crate::{Asn1Decode, Asn1Encode, OctetString};
+    use crate::{Asn1Decoder, Asn1Encoder, OctetString};
 
     #[test]
     fn example() {

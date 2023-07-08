@@ -1,9 +1,11 @@
+use alloc::boxed::Box;
 use core::ops::Range;
 
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
-    Asn1Decode, Asn1Encode, Asn1Entity, Asn1Result, BitString, Bool, Error, OctetString, Sequence, Tag, Utf8String,
+    Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, BitString, Bool, Error, ExplicitTag, OctetString, Sequence, Tag,
+    Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -14,23 +16,26 @@ pub enum Asn1Type<'data> {
     BitString(BitString<'data>),
 
     Bool(Bool),
+
+    ExplicitTag(ExplicitTag<'data>),
 }
 
 pub type OwnedAsn1Type = Asn1Type<'static>;
 
 impl Asn1Entity for Asn1Type<'_> {
-    fn tag(&self) -> &crate::Tag {
+    fn tag(&self) -> Tag {
         match self {
             Asn1Type::OctetString(octet) => octet.tag(),
             Asn1Type::Utf8String(utf8) => utf8.tag(),
             Asn1Type::Sequence(sequence) => sequence.tag(),
             Asn1Type::BitString(bit) => bit.tag(),
             Asn1Type::Bool(boolean) => boolean.tag(),
+            Asn1Type::ExplicitTag(e) => e.tag(),
         }
     }
 }
 
-impl<'data> Asn1Decode<'data> for Asn1Type<'data> {
+impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
     fn compare_tags(tag: &Tag) -> bool {
         OctetString::compare_tags(tag) || Utf8String::compare_tags(tag)
     }
@@ -48,6 +53,8 @@ impl<'data> Asn1Decode<'data> for Asn1Type<'data> {
             Ok(Asn1Type::BitString(BitString::decode(reader)?))
         } else if Bool::compare_tags(&tag) {
             Ok(Asn1Type::Bool(Bool::decode(reader)?))
+        } else if ExplicitTag::compare_tags(&tag) {
+            Ok(Asn1Type::ExplicitTag(ExplicitTag::decode(reader)?))
         } else {
             Err(Error::from("Invalid data"))
         }
@@ -66,13 +73,15 @@ impl<'data> Asn1Decode<'data> for Asn1Type<'data> {
             BitString::decode_asn1(reader)
         } else if Bool::compare_tags(&tag) {
             Bool::decode_asn1(reader)
+        } else if ExplicitTag::compare_tags(&tag) {
+            ExplicitTag::decode_asn1(reader)
         } else {
             Err(Error::from("Invalid data"))
         }
     }
 }
 
-impl Asn1Encode for Asn1Type<'_> {
+impl Asn1Encoder for Asn1Type<'_> {
     fn needed_buf_size(&self) -> usize {
         match self {
             Asn1Type::OctetString(octet) => octet.needed_buf_size(),
@@ -80,6 +89,7 @@ impl Asn1Encode for Asn1Type<'_> {
             Asn1Type::Sequence(sequence) => sequence.needed_buf_size(),
             Asn1Type::BitString(bit) => bit.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
+            Asn1Type::ExplicitTag(e) => e.needed_buf_size(),
         }
     }
 
@@ -90,6 +100,7 @@ impl Asn1Encode for Asn1Type<'_> {
             Asn1Type::Sequence(sequence) => sequence.encode(writer),
             Asn1Type::BitString(bit) => bit.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
+            Asn1Type::ExplicitTag(e) => e.encode(writer),
         }
     }
 }
@@ -111,7 +122,7 @@ pub struct Asn1<'data> {
     pub(crate) data: Range<usize>,
 
     /// Parsed asn1 data
-    pub(crate) asn1_type: Asn1Type<'data>,
+    pub(crate) asn1_type: Box<Asn1Type<'data>>,
 }
 
 impl Asn1<'_> {
