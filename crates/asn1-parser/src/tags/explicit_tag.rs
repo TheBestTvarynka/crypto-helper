@@ -1,3 +1,4 @@
+use alloc::borrow::Cow;
 use alloc::boxed::Box;
 
 use crate::length::{len_size, read_len, write_len};
@@ -67,7 +68,7 @@ impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
         let inner_data_range = inner.data_range();
 
         Ok(Asn1 {
-            raw_data: reader.data_in_range(tag_position..inner_data_range.end)?,
+            raw_data: Cow::Borrowed(reader.data_in_range(tag_position..inner_data_range.end)?),
             tag: tag_position,
             length: len_range,
             data: inner.tag_position()..inner_data_range.end,

@@ -61,7 +61,7 @@ impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
         let (data, data_range) = read_data(reader, len)?;
 
         Ok(Asn1 {
-            raw_data: reader.data_in_range(tag_position..data_range.end)?,
+            raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
             tag: tag_position,
             length: len_range,
             data: data_range,

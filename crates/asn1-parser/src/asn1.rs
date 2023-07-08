@@ -1,3 +1,4 @@
+use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use core::ops::Range;
 
@@ -110,7 +111,7 @@ impl Asn1Encoder for Asn1Type<'_> {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Asn1<'data> {
     /// Raw input bytes
-    pub(crate) raw_data: &'data [u8],
+    pub(crate) raw_data: Cow<'data, [u8]>,
 
     /// Position of the tag in the input data
     pub(crate) tag: usize,
@@ -124,6 +125,8 @@ pub struct Asn1<'data> {
     /// Parsed asn1 data
     pub(crate) asn1_type: Box<Asn1Type<'data>>,
 }
+
+pub type OwnedAsn1 = Asn1<'static>;
 
 impl Asn1<'_> {
     pub fn tag_position(&self) -> usize {
@@ -139,7 +142,7 @@ impl Asn1<'_> {
     }
 
     pub fn raw_bytes(&self) -> &[u8] {
-        self.raw_data
+        self.raw_data.as_ref()
     }
 
     pub fn length_bytes(&self) -> &[u8] {
@@ -152,5 +155,16 @@ impl Asn1<'_> {
 
     pub fn asn1(&self) -> &Asn1Type<'_> {
         &self.asn1_type
+    }
+}
+
+impl Default for Asn1<'_> {
+    fn default() -> Self {
+        // those values are just for testing purpose during development
+        Asn1Type::decode_asn1_buff(&[
+            48, 50, 161, 17, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 162, 9,
+            12, 7, 113, 107, 97, 116, 105, 111, 110, 163, 18, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156,
+            221, 80, 86, 181, 110,
+        ]).unwrap()
     }
 }

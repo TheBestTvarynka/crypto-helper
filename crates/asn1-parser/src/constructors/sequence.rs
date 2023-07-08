@@ -1,3 +1,4 @@
+use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
@@ -81,7 +82,7 @@ impl<'data> Asn1Decoder<'data> for Sequence<'data> {
         }
 
         Ok(Asn1 {
-            raw_data: reader.data_in_range(tag_position..len_range.end + len)?,
+            raw_data: Cow::Borrowed(reader.data_in_range(tag_position..len_range.end + len)?),
             tag: tag_position,
             length: len_range,
             data: data_range,
@@ -92,7 +93,7 @@ impl<'data> Asn1Decoder<'data> for Sequence<'data> {
 
 #[cfg(test)]
 mod tests {
-    use alloc::boxed::Box;
+    use alloc::{boxed::Box, borrow::Cow};
     use alloc::vec;
 
     use crate::{Asn1, Asn1Decoder, Asn1Type, OctetString, Sequence, Utf8String};
@@ -109,14 +110,14 @@ mod tests {
         assert_eq!(
             decoded,
             Asn1 {
-                raw_data: &raw,
+                raw_data: Cow::Borrowed(&raw),
                 tag: 0,
                 length: 1..2,
                 data: 2..29,
                 asn1_type: Box::new(Asn1Type::Sequence(Sequence {
                     fields: vec![
                         Asn1 {
-                            raw_data: &[4, 8, 0, 17, 34, 51, 68, 85, 102, 119],
+                            raw_data: Cow::Borrowed(&[4, 8, 0, 17, 34, 51, 68, 85, 102, 119]),
                             tag: 2,
                             length: 3..4,
                             data: 4..12,
@@ -125,7 +126,7 @@ mod tests {
                             ]))),
                         },
                         Asn1 {
-                            raw_data: &[12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97],
+                            raw_data: Cow::Borrowed(&[12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97]),
                             tag: 12,
                             length: 13..14,
                             data: 14..29,

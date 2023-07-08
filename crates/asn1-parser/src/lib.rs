@@ -16,7 +16,7 @@ mod tag;
 mod tags;
 mod writer;
 
-pub use asn1::{Asn1, Asn1Type, OwnedAsn1Type};
+pub use asn1::{Asn1, Asn1Type, OwnedAsn1Type, OwnedAsn1};
 pub use constructors::*;
 pub use error::Error;
 pub use generic_types::*;
