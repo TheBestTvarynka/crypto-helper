@@ -1,4 +1,4 @@
-use asn1_parser::{Asn1Decode, Asn1Encode, Asn1Entity, Asn1Type};
+use asn1_parser::{Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Type};
 use prop_strategies::any_asn1_type;
 use proptest::proptest;
 

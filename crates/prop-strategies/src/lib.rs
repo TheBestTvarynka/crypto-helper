@@ -27,5 +27,6 @@ pub fn any_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
         any_utf8_string().prop_map(Asn1Type::Utf8String),
         any_bit_string().prop_map(Asn1Type::BitString),
         any_bool().prop_map(Asn1Type::Bool),
-    ].no_shrink()
+    ]
+    .no_shrink()
 }
