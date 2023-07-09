@@ -1,15 +1,20 @@
 mod asn1_viewer;
+mod hex_buffer;
+mod scheme;
 
 use asn1_parser::Asn1;
 use web_sys::KeyboardEvent;
-use yew::{function_component, html, use_state, Callback, Html, classes};
+use yew::{classes, function_component, html, use_state, Callback, Html};
 
-use crate::{common::{ByteInput, Checkbox}, asn1::asn1_viewer::Asn1Viewer};
+use crate::asn1::asn1_viewer::Asn1Viewer;
+use crate::common::{ByteInput, Checkbox};
 
 const TEST_ASN1: &[u8] = &[
-    48, 50, 161, 17, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 162, 9,
-    12, 7, 113, 107, 97, 116, 105, 111, 110, 163, 18, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156,
-    221, 80, 86, 181, 110,
+    // 48, 50, 161, 17, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 162, 9, 12, 7,
+    // 113, 107, 97, 116, 105, 111, 110, 163, 18, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156, 221, 80, 86,
+    // 181, 110,
+
+48, 44, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 12, 7, 113, 107, 97, 116, 105, 111, 110, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156, 221, 80, 86, 181, 110
 ];
 
 #[function_component(Asn1ParserPage)]

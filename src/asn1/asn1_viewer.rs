@@ -1,5 +1,7 @@
 use asn1_parser::OwnedAsn1;
-use yew::{Html, function_component, Properties, html};
+use yew::{function_component, html, Html, Properties};
+
+use crate::asn1::scheme::build_asn1_schema;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Asn1ViewerProps {
@@ -11,7 +13,7 @@ pub struct Asn1ViewerProps {
 pub fn asn1_viewer(props: &Asn1ViewerProps) -> Html {
     html! {
         <div>
-            {format!("{:?}", props.structure)}
+            {build_asn1_schema(&props.structure)}
         </div>
     }
 }
