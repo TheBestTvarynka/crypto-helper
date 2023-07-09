@@ -17,6 +17,16 @@ pub type OwnedSequence = Sequence<'static>;
 
 impl Sequence<'_> {
     pub const TAG: Tag = Tag(0x30);
+
+    pub fn fields(&self) -> &[Asn1<'_>] {
+        &self.fields
+    }
+
+    pub fn to_owned(&self) -> OwnedSequence {
+        Sequence {
+            fields: self.fields.iter().map(|f| f.to_owned()).collect(),
+        }
+    }
 }
 
 impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {

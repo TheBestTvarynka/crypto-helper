@@ -17,6 +17,16 @@ pub type OwnedOctetString = OctetString<'static>;
 
 impl OctetString<'_> {
     pub const TAG: Tag = Tag(4);
+
+    pub fn octets(&self) -> &[u8] {
+        &self.octets
+    }
+
+    pub fn to_owned(&self) -> OwnedOctetString {
+        OctetString {
+            octets: self.octets.to_vec().into(),
+        }
+    }
 }
 
 impl From<Vec<u8>> for OwnedOctetString {

@@ -1,6 +1,6 @@
 use alloc::borrow::Cow;
 use alloc::boxed::Box;
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use core::str::from_utf8;
 
 use crate::asn1::RawAsn1EntityData;
@@ -18,6 +18,16 @@ pub type OwnedUtf8String = Utf8String<'static>;
 
 impl Utf8String<'_> {
     pub const TAG: Tag = Tag(12);
+
+    pub fn string(&self) -> &str {
+        &self.string
+    }
+
+    pub fn to_owned(&self) -> OwnedUtf8String {
+        Utf8String {
+            string: self.string.to_string().into(),
+        }
+    }
 }
 
 impl From<String> for OwnedUtf8String {

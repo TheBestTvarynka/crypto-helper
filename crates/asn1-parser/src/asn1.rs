@@ -23,6 +23,20 @@ pub enum Asn1Type<'data> {
 
 pub type OwnedAsn1Type = Asn1Type<'static>;
 
+impl Asn1Type<'_> {
+    pub fn to_owned(&self) -> OwnedAsn1Type {
+        match self {
+            Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned()),
+            Asn1Type::OctetString(o) => Asn1Type::OctetString(o.to_owned()),
+            Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned()),
+            // Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
+            // Asn1Type::Bool(b) => Asn1Type::Bool(b),
+            // Asn1Type::ExplicitTag(_) => todo!(),
+            _ => unimplemented!(),
+        }
+    }
+}
+
 impl Asn1Entity for Asn1Type<'_> {
     fn tag(&self) -> Tag {
         match self {
@@ -148,6 +162,15 @@ impl RawAsn1EntityData<'_> {
     pub fn data_bytes(&self) -> &[u8] {
         &self.raw_data[self.data.clone()]
     }
+
+    pub fn to_owned(&self) -> OwnedRawAsn1EntityData {
+        RawAsn1EntityData {
+            raw_data: self.raw_data.to_vec().into(),
+            tag: self.tag,
+            length: self.length.clone(),
+            data: self.data.clone(),
+        }
+    }
 }
 
 /// [`Asn1`] structure represents generic `asn1` value.
@@ -171,15 +194,20 @@ impl Asn1<'_> {
     pub fn asn1(&self) -> &Asn1Type<'_> {
         &self.asn1_type
     }
+
+    pub fn to_owned(&self) -> OwnedAsn1 {
+        Asn1 {
+            raw_data: self.raw_data.to_owned(),
+            asn1_type: Box::new(self.asn1_type.to_owned()),
+        }
+    }
 }
 
 impl Default for Asn1<'_> {
     fn default() -> Self {
         // those values are just for testing purpose during development
         Asn1Type::decode_asn1_buff(&[
-            48, 50, 161, 17, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 162, 9,
-            12, 7, 113, 107, 97, 116, 105, 111, 110, 163, 18, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156,
-            221, 80, 86, 181, 110,
+            48, 44, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 12, 7, 113, 107, 97, 116, 105, 111, 110, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156, 221, 80, 86, 181, 110
         ])
         .unwrap()
     }
