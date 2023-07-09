@@ -2,6 +2,7 @@ use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
+use crate::asn1::RawAsn1EntityData;
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
@@ -82,10 +83,12 @@ impl<'data> Asn1Decoder<'data> for Sequence<'data> {
         }
 
         Ok(Asn1 {
-            raw_data: Cow::Borrowed(reader.data_in_range(tag_position..len_range.end + len)?),
-            tag: tag_position,
-            length: len_range,
-            data: data_range,
+            raw_data: RawAsn1EntityData {
+                raw_data: Cow::Borrowed(reader.data_in_range(tag_position..len_range.end + len)?),
+                tag: tag_position,
+                length: len_range,
+                data: data_range,
+            },
             asn1_type: Box::new(Asn1Type::Sequence(Sequence { fields })),
         })
     }
@@ -93,9 +96,11 @@ impl<'data> Asn1Decoder<'data> for Sequence<'data> {
 
 #[cfg(test)]
 mod tests {
-    use alloc::{boxed::Box, borrow::Cow};
+    use alloc::borrow::Cow;
+    use alloc::boxed::Box;
     use alloc::vec;
 
+    use crate::asn1::RawAsn1EntityData;
     use crate::{Asn1, Asn1Decoder, Asn1Type, OctetString, Sequence, Utf8String};
 
     #[test]
@@ -110,26 +115,34 @@ mod tests {
         assert_eq!(
             decoded,
             Asn1 {
-                raw_data: Cow::Borrowed(&raw),
-                tag: 0,
-                length: 1..2,
-                data: 2..29,
+                raw_data: RawAsn1EntityData {
+                    raw_data: Cow::Borrowed(&raw),
+                    tag: 0,
+                    length: 1..2,
+                    data: 2..29,
+                },
                 asn1_type: Box::new(Asn1Type::Sequence(Sequence {
                     fields: vec![
                         Asn1 {
-                            raw_data: Cow::Borrowed(&[4, 8, 0, 17, 34, 51, 68, 85, 102, 119]),
-                            tag: 2,
-                            length: 3..4,
-                            data: 4..12,
+                            raw_data: RawAsn1EntityData {
+                                raw_data: Cow::Borrowed(&[4, 8, 0, 17, 34, 51, 68, 85, 102, 119]),
+                                tag: 2,
+                                length: 3..4,
+                                data: 4..12,
+                            },
                             asn1_type: Box::new(Asn1Type::OctetString(OctetString::from(vec![
                                 0, 17, 34, 51, 68, 85, 102, 119
                             ]))),
                         },
                         Asn1 {
-                            raw_data: Cow::Borrowed(&[12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97]),
-                            tag: 12,
-                            length: 13..14,
-                            data: 14..29,
+                            raw_data: RawAsn1EntityData {
+                                raw_data: Cow::Borrowed(&[
+                                    12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97
+                                ]),
+                                tag: 12,
+                                length: 13..14,
+                                data: 14..29,
+                            },
                             asn1_type: Box::new(Asn1Type::Utf8String(Utf8String::from("thebesttvarynka")))
                         },
                     ]

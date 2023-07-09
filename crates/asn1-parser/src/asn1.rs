@@ -106,29 +106,25 @@ impl Asn1Encoder for Asn1Type<'_> {
     }
 }
 
-/// [`Asn1`] structure represents generic `asn1` value.
-/// It contains raw data and parsed values.
+/// Information about raw data of the asn1 entity
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Asn1<'data> {
+pub struct RawAsn1EntityData<'data> {
     /// Raw input bytes
-    pub(crate) raw_data: Cow<'data, [u8]>,
+    pub raw_data: Cow<'data, [u8]>,
 
     /// Position of the tag in the input data
-    pub(crate) tag: usize,
+    pub tag: usize,
 
     /// Range that corresponds to the encoded length bytes
-    pub(crate) length: Range<usize>,
+    pub length: Range<usize>,
 
     /// Range that corresponds to the inner raw data
-    pub(crate) data: Range<usize>,
-
-    /// Parsed asn1 data
-    pub(crate) asn1_type: Box<Asn1Type<'data>>,
+    pub data: Range<usize>,
 }
 
-pub type OwnedAsn1 = Asn1<'static>;
+pub type OwnedRawAsn1EntityData = RawAsn1EntityData<'static>;
 
-impl Asn1<'_> {
+impl RawAsn1EntityData<'_> {
     pub fn tag_position(&self) -> usize {
         self.tag
     }
@@ -152,6 +148,25 @@ impl Asn1<'_> {
     pub fn data_bytes(&self) -> &[u8] {
         &self.raw_data[self.data.clone()]
     }
+}
+
+/// [`Asn1`] structure represents generic `asn1` value.
+/// It contains raw data and parsed values.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Asn1<'data> {
+    /// Information about raw data of the asn1
+    pub(crate) raw_data: RawAsn1EntityData<'data>,
+
+    /// Parsed asn1 data
+    pub(crate) asn1_type: Box<Asn1Type<'data>>,
+}
+
+pub type OwnedAsn1 = Asn1<'static>;
+
+impl Asn1<'_> {
+    pub fn raw_entity_data(&self) -> &RawAsn1EntityData<'_> {
+        &self.raw_data
+    }
 
     pub fn asn1(&self) -> &Asn1Type<'_> {
         &self.asn1_type
@@ -165,6 +180,7 @@ impl Default for Asn1<'_> {
             48, 50, 161, 17, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 162, 9,
             12, 7, 113, 107, 97, 116, 105, 111, 110, 163, 18, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156,
             221, 80, 86, 181, 110,
-        ]).unwrap()
+        ])
+        .unwrap()
     }
 }

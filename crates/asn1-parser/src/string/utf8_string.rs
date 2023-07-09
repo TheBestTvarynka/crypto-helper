@@ -3,6 +3,7 @@ use alloc::boxed::Box;
 use alloc::string::String;
 use core::str::from_utf8;
 
+use crate::asn1::RawAsn1EntityData;
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
@@ -61,10 +62,12 @@ impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
         let (data, data_range) = read_data(reader, len)?;
 
         Ok(Asn1 {
-            raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
-            tag: tag_position,
-            length: len_range,
-            data: data_range,
+            raw_data: RawAsn1EntityData {
+                raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
+                tag: tag_position,
+                length: len_range,
+                data: data_range,
+            },
             asn1_type: Box::new(Asn1Type::Utf8String(Self {
                 string: Cow::Borrowed(from_utf8(data)?),
             })),
@@ -107,10 +110,10 @@ mod tests {
 
         let utf8_string = Utf8String::decode_asn1(&mut Reader::new(&raw)).unwrap();
 
-        assert_eq!(utf8_string.tag_position(), 0);
-        assert_eq!(utf8_string.length_bytes(), &[15]);
-        assert_eq!(utf8_string.length_range(), 1..2);
-        assert_eq!(&raw[utf8_string.data_range()], b"thebesttvarynka");
+        assert_eq!(utf8_string.raw_data.tag_position(), 0);
+        assert_eq!(utf8_string.raw_data.length_bytes(), &[15]);
+        assert_eq!(utf8_string.raw_data.length_range(), 1..2);
+        assert_eq!(&raw[utf8_string.raw_data.data_range()], b"thebesttvarynka");
         assert_eq!(
             utf8_string.asn1(),
             &Asn1Type::Utf8String(Utf8String {

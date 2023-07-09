@@ -33,10 +33,10 @@ fn asn1() {
         let decoded = Asn1Type::decode_asn1_buff(&buff).unwrap();
 
         assert_eq!(decoded.asn1().needed_buf_size(), buff_len);
-        assert_eq!(1 + decoded.length_bytes().len() + decoded.data_bytes().len(), buff_len);
+        assert_eq!(1 + decoded.raw_entity_data().length_bytes().len() + decoded.raw_entity_data().data_bytes().len(), buff_len);
         assert_eq!(decoded.asn1(), &asn1);
         assert_eq!(decoded.asn1().tag(), asn1_tag);
-        assert_eq!(decoded.tag_position(), 0);
-        assert_eq!(decoded.raw_bytes(), buff);
+        assert_eq!(decoded.raw_entity_data().tag_position(), 0);
+        assert_eq!(decoded.raw_entity_data().raw_bytes(), buff);
     })
 }

@@ -2,6 +2,7 @@ use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
+use crate::asn1::RawAsn1EntityData;
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
@@ -74,10 +75,12 @@ impl<'data> Asn1Decoder<'data> for BitString<'data> {
         let (data, data_range) = read_data(reader, len)?;
 
         Ok(Asn1 {
-            raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
-            tag: tag_position,
-            length: len_range,
-            data: data_range,
+            raw_data: RawAsn1EntityData {
+                raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
+                tag: tag_position,
+                length: len_range,
+                data: data_range,
+            },
             asn1_type: Box::new(Asn1Type::BitString(Self {
                 bits: Cow::Borrowed(data),
             })),

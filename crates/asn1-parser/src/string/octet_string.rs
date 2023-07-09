@@ -2,6 +2,7 @@ use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
+use crate::asn1::RawAsn1EntityData;
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
@@ -52,10 +53,12 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
         let (data, data_range) = read_data(reader, len)?;
 
         Ok(Asn1 {
-            raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
-            tag: tag_position,
-            length: len_range,
-            data: data_range,
+            raw_data: RawAsn1EntityData {
+                raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
+                tag: tag_position,
+                length: len_range,
+                data: data_range,
+            },
             asn1_type: Box::new(Asn1Type::OctetString(Self {
                 octets: Cow::Borrowed(data),
             })),
@@ -94,10 +97,13 @@ mod tests {
 
         let octet_string = OctetString::decode_asn1(&mut Reader::new(&raw)).unwrap();
 
-        assert_eq!(octet_string.tag_position(), 0);
-        assert_eq!(octet_string.length_bytes(), &[8]);
-        assert_eq!(octet_string.length_range(), 1..2);
-        assert_eq!(&raw[octet_string.data_range()], &[0, 17, 34, 51, 68, 85, 102, 119]);
+        assert_eq!(octet_string.raw_data.tag_position(), 0);
+        assert_eq!(octet_string.raw_data.length_bytes(), &[8]);
+        assert_eq!(octet_string.raw_data.length_range(), 1..2);
+        assert_eq!(
+            &raw[octet_string.raw_data.data_range()],
+            &[0, 17, 34, 51, 68, 85, 102, 119]
+        );
 
         let mut encoded = [0; 10];
 
