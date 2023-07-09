@@ -1,0 +1,36 @@
+
+.terminal-asn1-node {
+    display: inline-flex;
+    gap: 0.5em;
+}
+
+.terminal-asn1-node:hover > span:first-child {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.asn1-constructor-header {
+    display: inline-flex;
+    gap: 0.5em;
+}
+
+.asn1-constructor-header:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.asn1-constructor-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+
+    padding-left: 1.5em;
+    border-left: 2px solid #70a66c;
+}
+
+.asn1-node-info-label {
+    font-size: 0.8em;
+    color: #4c5159;
+    align-self: center;
+}

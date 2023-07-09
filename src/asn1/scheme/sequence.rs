@@ -16,8 +16,11 @@ pub fn sequence(props: &SequenceNodeProps) -> Html {
 
     html! {
         <div>
-            <span>{format!("Sequence ({} fields)", fields.len())}</span>
-            <div>
+            <div class="asn1-constructor-header">
+                <span>{"Sequence"}</span>
+                <span class="asn1-node-info-label">{format!("({} fields)", fields.len())}</span>
+            </div>
+            <div class="asn1-constructor-body">
                 {fields_components}
             </div>
         </div>
