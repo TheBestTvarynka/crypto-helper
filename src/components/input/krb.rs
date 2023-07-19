@@ -6,7 +6,8 @@ use yew::{
 };
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use crate::common::{build_byte_input, Switch};
+use crate::components::byte_input::build_byte_input;
+use crate::components::Switch;
 use crate::crypto_helper::algorithm::{KrbInput as KerberosInput, KrbMode};
 
 fn get_usage_number_name(usage_number: i32) -> &'static str {

@@ -1,20 +1,11 @@
-#[allow(clippy::module_inception)]
-mod jwt;
-pub mod jwt_utils;
-mod jwte;
-pub mod signature;
-#[macro_use]
-mod macros;
-
 use std::str::FromStr;
 
-pub use jwt::Jwt as JwtData;
 use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
 use yew_hooks::use_location;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use crate::common::Checkbox;
+use crate::components::Checkbox;
 use crate::jwt::jwt::editor::JwtEditor;
 use crate::jwt::jwt::viewer::JwtViewer;
 use crate::jwt::jwt_utils::JwtUtils;

@@ -1,16 +1,4 @@
-mod byte_input;
-mod bytes_viewer;
-mod checkbox;
-mod simple_output;
-mod switch;
-
-pub use byte_input::{build_byte_input, ByteInput, ByteInputProps};
-pub use bytes_viewer::{BytesViewer, BytesViewerProps};
-pub use checkbox::{Checkbox, CheckboxProps};
-pub use simple_output::build_simple_output;
-pub use switch::{Switch, SwitchProps};
-use web_sys::MouseEvent;
-use yew::{classes, Callback, Classes, UseStateSetter};
+pub mod ui;
 
 use crate::utils::{decode_base64, decode_binary, decode_decimal};
 
@@ -62,7 +50,7 @@ pub const BYTES_FORMATS: [BytesFormat; 5] = [
     BytesFormat::Binary,
 ];
 
-fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
+pub fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
     match format {
         BytesFormat::Hex => hex::encode(bytes),
         BytesFormat::Base64 => base64::encode(bytes),
@@ -82,7 +70,7 @@ fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
     }
 }
 
-fn parse_bytes(raw: &str, format: BytesFormat) -> Result<Vec<u8>, String> {
+pub fn parse_bytes(raw: &str, format: BytesFormat) -> Result<Vec<u8>, String> {
     match format {
         BytesFormat::Hex => {
             let raw = raw
@@ -113,18 +101,4 @@ fn parse_bytes(raw: &str, format: BytesFormat) -> Result<Vec<u8>, String> {
         BytesFormat::Decimal => decode_decimal(raw),
         BytesFormat::Binary => decode_binary(raw),
     }
-}
-
-fn get_format_button_class(selected: bool) -> Classes {
-    if selected {
-        classes!("format-button", "format-button-selected")
-    } else {
-        classes!("format-button")
-    }
-}
-
-fn get_set_format_callback(format: BytesFormat, set_format: UseStateSetter<BytesFormat>) -> Callback<MouseEvent> {
-    Callback::from(move |_event| {
-        set_format.set(format);
-    })
 }

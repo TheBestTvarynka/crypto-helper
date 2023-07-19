@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::crypto_helper::Algorithm;
-
-const APP_HOST: &str = env!("APP_HOST");
+use crate::crypto_helper::algorithm::Algorithm;
+use crate::settings::APP_HOST;
 
 pub fn generate_crypto_helper_link(algorithm: &Algorithm) -> String {
     let mut link = APP_HOST.to_string();

@@ -10,9 +10,8 @@ use self::bcrypt::build_bcrypt_input;
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
 use self::zlib::build_zlib_input;
-use super::algorithm::{KrbInput, KrbMode};
-use super::Algorithm;
-use crate::common::build_byte_input;
+use crate::components::byte_input::build_byte_input;
+use crate::crypto_helper::algorithm::{Algorithm, KrbInput, KrbMode};
 
 fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm>) -> Html {
     let setter = setter.clone();

@@ -2,8 +2,8 @@ use yew::{function_component, html, use_effect_with_deps, use_state, Callback, H
 use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType};
 
-use super::BytesFormat;
-use crate::common::{encode_bytes, get_format_button_class, get_set_format_callback, BYTES_FORMATS};
+use crate::common::ui::{get_format_button_class, get_set_format_callback};
+use crate::common::{encode_bytes, BytesFormat, BYTES_FORMATS};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct SimpleOutputProps {

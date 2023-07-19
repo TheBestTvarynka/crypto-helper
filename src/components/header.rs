@@ -1,7 +1,7 @@
 use yew::{function_component, html, Html};
 use yew_router::prelude::Link;
 
-use crate::Route;
+use crate::router::Route;
 
 #[function_component(Header)]
 pub fn header() -> Html {

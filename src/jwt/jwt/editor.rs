@@ -7,7 +7,8 @@ use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::Jwt;
-use crate::common::{build_simple_output, BytesFormat};
+use crate::common::BytesFormat;
+use crate::components::build_simple_output;
 use crate::utils::copy_to_clipboard_with_notification;
 
 #[derive(PartialEq, Properties)]
@@ -153,6 +154,7 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
                     <button onclick={header_on_pretty} class="jwt-util-button">{"Prettify"}</button>
                     <button onclick={header_on_minify} class="jwt-util-button">{"Minify"}</button>
                 </div>
+                <table><tr><td>{"Hello"}</td></tr></table>
                 <textarea rows="4" class="base-input" value={header} oninput={on_header_input} />
             </div>
             <div class="vertical">

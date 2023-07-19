@@ -8,7 +8,8 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::common::{build_byte_input, build_simple_output, BytesFormat};
+use crate::common::BytesFormat;
+use crate::components::{build_byte_input, build_simple_output};
 use crate::url_query_params::generate_jwt_link;
 use crate::{check_asymmetric_key, check_symmetric_key, generate_placeholder, sign, verify};
 

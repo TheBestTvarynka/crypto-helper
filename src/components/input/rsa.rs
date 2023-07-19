@@ -5,7 +5,7 @@ use web_sys::{Event, HtmlInputElement};
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties, TargetCast};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use crate::common::build_byte_input;
+use crate::components::byte_input::build_byte_input;
 use crate::crypto_helper::algorithm::{
     RsaAction, RsaHashAlgorithm, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput, RSA_HASH_ALGOS,
 };

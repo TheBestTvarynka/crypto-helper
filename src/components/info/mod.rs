@@ -4,10 +4,11 @@ use web_sys::HtmlInputElement;
 use yew::html::onchange::Event;
 use yew::{function_component, html, use_state, Callback, Html, Properties, TargetCast, UseStateSetter};
 
-use super::algorithm::Algorithm;
-use crate::crypto_helper::algorithm::{COMPRESSION_ALGOS, ENCRYPTION_ALGOS, HASHING_ALGOS, HMAC_ALGOS};
-use crate::crypto_helper::info::algo_search::AlgoSearch;
-use crate::generate_algo_list_for_yew;
+use crate::components::info::algo_search::AlgoSearch;
+use crate::crypto_helper::algorithm::{Algorithm, COMPRESSION_ALGOS, ENCRYPTION_ALGOS, HASHING_ALGOS, HMAC_ALGOS};
+
+#[macro_use]
+mod macros;
 
 #[derive(PartialEq, Properties)]
 pub struct InfoProps {
@@ -108,10 +109,10 @@ pub fn info(props: &InfoProps) -> Html {
         algo_search_setter.set(!algo_search_value);
     });
 
-    let hashing_algos = generate_algo_list_for_yew!(algo_list: HASHING_ALGOS, props: props);
-    let encryption_algos = generate_algo_list_for_yew!(algo_list: ENCRYPTION_ALGOS, props: props);
-    let hmac_algos = generate_algo_list_for_yew!(algo_list: HMAC_ALGOS, props: props);
-    let compression_algos = generate_algo_list_for_yew!(algo_list: COMPRESSION_ALGOS, props: props);
+    let hashing_algos = macros::generate_algo_list_for_yew!(algo_list: HASHING_ALGOS, props: props);
+    let encryption_algos = macros::generate_algo_list_for_yew!(algo_list: ENCRYPTION_ALGOS, props: props);
+    let hmac_algos = macros::generate_algo_list_for_yew!(algo_list: HMAC_ALGOS, props: props);
+    let compression_algos = macros::generate_algo_list_for_yew!(algo_list: COMPRESSION_ALGOS, props: props);
 
     html! {
         <div class="horizontal">

@@ -4,8 +4,9 @@ use yew::{function_component, html, Callback, Html, Properties};
 use yew_notifications::{use_notification, Notification};
 
 use self::krb::build_krb_output;
-use super::Algorithm;
-use crate::common::{build_simple_output, BytesFormat};
+use crate::common::BytesFormat;
+use crate::components::simple_output::build_simple_output;
+use crate::crypto_helper::algorithm::Algorithm;
 
 fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification: Callback<Notification>) -> Html {
     match algorithm {
