@@ -18,8 +18,9 @@ pub const RSA: &str = "RSA";
 pub const SHA384: &str = "SHA384";
 pub const BCRYPT: &str = "BCRYPT";
 pub const ZLIB: &str = "ZLIB";
+pub const ARGON2: &str = "ARGON2";
 
-pub const SUPPORTED_ALGORITHMS: [&str; 12] = [
+pub const SUPPORTED_ALGORITHMS: [&str; 13] = [
     MD5,
     SHA1,
     SHA256,
@@ -32,9 +33,10 @@ pub const SUPPORTED_ALGORITHMS: [&str; 12] = [
     SHA384,
     BCRYPT,
     ZLIB,
+    ARGON2,
 ];
 
-pub const HASHING_ALGOS: [&str; 6] = [MD5, SHA1, SHA256, SHA384, SHA512, BCRYPT];
+pub const HASHING_ALGOS: [&str; 7] = [MD5, SHA1, SHA256, SHA384, SHA512, BCRYPT, ARGON2];
 
 pub const ENCRYPTION_ALGOS: [&str; 3] = [AES128_CTS_HMAC_SHA1_96, AES256_CTS_HMAC_SHA1_96, RSA];
 
@@ -362,6 +364,61 @@ pub struct ZlibInput {
     pub data: Vec<u8>,
 }
 
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct Argon2HashAction {
+    memory: u32,
+    iters: u32,
+    paralelism: u32,
+    output_len: u32,
+}
+
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub enum Argon2Action {
+    Hash(Argon2HashAction),
+    Verify(Vec<u8>),
+}
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct Argon2Input {
+    pub action: Argon2Action,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub data: Vec<u8>,
+}
+
+impl From<argon2::Params> for Argon2HashAction {
+    fn from(value: argon2::Params) -> Self {
+        let params = argon2::Params::DEFAULT;
+        Self {
+            memory: params.m_cost(),
+            iters: params.t_cost(),
+            paralelism: params.p_cost(),
+            output_len: 32
+        }
+    }
+}
+
+impl Default for Argon2HashAction {
+    fn default() -> Self {
+        argon2::Params::DEFAULT.into()
+    } 
+}
+
+impl Default for Argon2Action {
+    fn default() -> Self {
+        Self::Hash(Argon2HashAction::default())
+    }
+}
+
+impl Default for Argon2Input {
+    fn default() -> Self {
+        Self {
+            action: Argon2Action::default(),
+            data: Vec::new()
+        }
+    }
+}
+
+
+
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Algorithm {
@@ -382,6 +439,7 @@ pub enum Algorithm {
     Rsa(RsaInput),
     Bcrypt(BcryptInput),
     Zlib(ZlibInput),
+    Argon2(Argon2Input),
 }
 
 impl TryFrom<&str> for Algorithm {
@@ -412,6 +470,8 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::Bcrypt(Default::default()));
         } else if value == ZLIB {
             return Ok(Algorithm::Zlib(Default::default()));
+        } else if value == ARGON2 {
+            return Ok(Algorithm::Argon2(Default::default()));
         }
 
         Err(format!(
@@ -436,6 +496,7 @@ impl From<&Algorithm> for &str {
             Algorithm::Rsa(_) => RSA,
             Algorithm::Bcrypt(_) => BCRYPT,
             Algorithm::Zlib(_) => ZLIB,
+            Algorithm::Argon2(_) => ARGON2,
         }
     }
 }
