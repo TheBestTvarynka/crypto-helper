@@ -10,7 +10,7 @@ use rsa::rand_core::OsRng;
 use rsa::Pkcs1v15Encrypt;
 
 use super::algorithm::{
-    BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput, ZlibInput, ZlibMode,
+    BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput, ZlibInput, ZlibMode, Argon2Input, Argon2Action,
 };
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
@@ -90,4 +90,8 @@ pub fn process_zlib(input: &ZlibInput) -> Result<Vec<u8>, String> {
                 .map_err(|err| format!("Can not finish decompression: {:?}", err))
         }
     }
+}
+
+pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
+    todo!()
 }

@@ -73,6 +73,9 @@ fn get_algorithm_info(algorithm: &Algorithm) -> Html {
             <a href="https://www.rfc-editor.org/rfc/rfc1950">{"RFC"}</a>
             </span>
         },
+        Algorithm::Argon2(_) => html! {
+            <span>{"Use Argon2 to encrypt/verify your data."}</span>
+        },
     }
 }
 
