@@ -8,16 +8,17 @@ Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
 
 Table of content:
 
-* [Features](#features)
-* [Development](#development)
-* [Meta](#meta)
-* [Contributing](#contributing)
+- [crypto-helper](#crypto-helper)
+  - [Features](#features)
+  - [Development](#development)
+  - [Meta](#meta)
+  - [Contributing](#contributing)
 
 ![](/public/img/example.png)
 ![](/public/img/sha.png)
 ![](/public/img/jwt.png)
 
-The crypto-helper is an online app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
+The crypto-helper is a web app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
 
 All computations are performed on the client side. This tool never sends the data to any server.
 
@@ -25,6 +26,7 @@ All computations are performed on the client side. This tool never sends the dat
 
 * Written in [Rust](https://github.com/rust-lang/rust) :crab: using [yew](https://github.com/yewstack/yew) :sparkles:
 * `MD5`
+* `BCRYPT`
 * `SHA1`/`SHA256`/`SHA384`/`SHA512`
 * Kerberos ciphers: `AES128-CTS-HMAC-SHA1-96`/`AES256-CTS-HMAC-SHA1-96`
 * Kerberos HMAC: `HMAC-SHA1-96-AES128`/`HMAC-SHA1-96-AES256`
@@ -55,7 +57,7 @@ export APP_HOST=<url>
 # example:
 # export APP_HOST=https://crypto-helper.qkation.com
 ```
-This env variable is uses for the url generation when you click the *share by url* button.
+This env variable is used for the url generation when you click the *share by url* button.
 
 3. Run `trunk serve` in your terminal.
 4. Go to http://127.0.0.1:8080 in your browser.
