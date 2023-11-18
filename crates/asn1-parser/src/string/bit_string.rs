@@ -18,6 +18,10 @@ pub type OwnedBitString = BitString<'static>;
 impl BitString<'_> {
     pub const TAG: Tag = Tag(3);
 
+    pub fn bits(&self) -> &[u8] {
+        self.bits.as_ref()
+    }
+
     pub fn from_raw_vec(bits_amount: usize, mut bits: Vec<u8>) -> Asn1Result<Self> {
         let all_bits_amount = bits.len() * 8;
 
@@ -33,6 +37,12 @@ impl BitString<'_> {
         bits.insert(0, unused_bits);
 
         Ok(Self { bits: Cow::Owned(bits) })
+    }
+
+    pub fn to_owned(&self) -> OwnedBitString {
+        OwnedBitString {
+            bits: self.bits.to_vec().into(),
+        }
     }
 }
 

@@ -14,6 +14,10 @@ pub struct Bool {
 
 impl Bool {
     pub const TAG: Tag = Tag(1);
+
+    pub fn value(&self) -> bool {
+        self.flag
+    }
 }
 
 impl From<bool> for Bool {
@@ -54,7 +58,7 @@ impl<'data> Asn1Decoder<'data> for Bool {
             return Err(Error::from("Bool length must be equal to 1"));
         }
 
-        Ok(reader.read_byte()?.try_into()?)
+        reader.read_byte()?.try_into()
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
