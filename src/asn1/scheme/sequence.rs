@@ -1,5 +1,5 @@
 use asn1_parser::OwnedSequence;
-use yew::{Html, html, function_component, Properties};
+use yew::{function_component, html, Html, Properties};
 
 use crate::asn1::scheme::build_asn1_schema;
 

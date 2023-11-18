@@ -1,12 +1,14 @@
+mod primitive;
 mod sequence;
 mod strings;
 
-use asn1_parser::{Asn1Type, Asn1};
-use yew::{function_component, html, Html, Properties, virtual_dom::VNode};
-
-use crate::asn1::scheme::strings::{OctetStringNode, Utf8StringNode};
+use asn1_parser::{Asn1, Asn1Type};
+use yew::html;
+use yew::virtual_dom::VNode;
 
 use self::sequence::SequenceNode;
+use crate::asn1::scheme::primitive::BoolNode;
+use crate::asn1::scheme::strings::{BitStringNode, OctetStringNode, Utf8StringNode};
 
 // #[derive(PartialEq, Properties, Clone)]
 // pub struct Asn1SchemeProps {
@@ -24,10 +26,20 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>) -> VNode {
         Asn1Type::Sequence(sequence) => html! {
             <SequenceNode node={sequence.to_owned()} />
         },
-        // Asn1Type::BitString(bit) => bit.tag(),
-        // Asn1Type::Bool(boolean) => boolean.tag(),
+        Asn1Type::BitString(bit) => html! {
+            <BitStringNode node={bit.to_owned()} />
+        },
+        Asn1Type::Bool(boolean) => html! {
+            <BoolNode node={boolean.to_owned()} />
+        },
         // Asn1Type::ExplicitTag(e) => e.tag(),
-        _ => unimplemented!(""),
+        a => {
+            log::error!("{:?}", a);
+            // unimplemented!("{:?}", a)
+            html! {
+                <span>{format!("unimlemented: {:?}", a)}</span>
+            }
+        }
     }
 }
 

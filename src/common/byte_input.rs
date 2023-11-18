@@ -12,6 +12,8 @@ pub struct ByteInputProps {
     pub placeholder: String,
     pub bytes: Vec<u8>,
     pub setter: Callback<Vec<u8>>,
+    #[prop_or(2)]
+    pub rows: u16,
 }
 
 #[function_component(ByteInput)]
@@ -21,6 +23,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
         bytes,
         setter,
         placeholder,
+        rows,
     } = &props;
 
     let raw_value = use_state(|| encode_bytes(bytes, *format));
@@ -89,7 +92,7 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
                 }).collect::<Html>()
             }</div>
             <textarea
-                rows="2"
+                rows={rows.to_string()}
                 placeholder={format!("{}: place {} encoded input here", placeholder, (*bytes_format).as_ref())}
                 class={classes!("base-input", if !(*is_valid) { "input-error" } else { "" })}
                 value={(*raw_value).clone()}

@@ -6,7 +6,7 @@ pub struct HexBufferProps {
 }
 
 #[function_component(HexBuffer)]
-pub fn hex_buffer(props: &HexBufferProps) -> Html {
+pub fn hex_buffer(_props: &HexBufferProps) -> Html {
     html! {
         <div>
             {"hex buffer"}

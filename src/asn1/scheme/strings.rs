@@ -1,5 +1,5 @@
-use asn1_parser::{OwnedUtf8String, OwnedOctetString};
-use yew::{Html, html, function_component, Properties};
+use asn1_parser::{OwnedBitString, OwnedOctetString, OwnedUtf8String};
+use yew::{function_component, html, Html, Properties};
 
 use crate::common::BytesViewer;
 
@@ -24,12 +24,30 @@ pub struct OctetStringNodeProps {
 }
 
 #[function_component(OctetStringNode)]
-pub fn utf8_string(props: &OctetStringNodeProps) -> Html {
+pub fn octet_string(props: &OctetStringNodeProps) -> Html {
     let octets = props.node.octets();
 
     html! {
         <div class="terminal-asn1-node">
             <span>{"Octet String"}</span>
+            <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
+            // <span>{hex::encode(octets)}</span>
+            <BytesViewer bytes={octets.to_vec()} />
+        </div>
+    }
+}
+#[derive(PartialEq, Properties, Clone)]
+pub struct BitStringNodeProps {
+    pub node: OwnedBitString,
+}
+
+#[function_component(BitStringNode)]
+pub fn bit_string(props: &BitStringNodeProps) -> Html {
+    let octets = props.node.bits();
+
+    html! {
+        <div class="terminal-asn1-node">
+            <span>{"Bit String"}</span>
             <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
             // <span>{hex::encode(octets)}</span>
             <BytesViewer bytes={octets.to_vec()} />
