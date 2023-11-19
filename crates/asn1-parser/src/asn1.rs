@@ -5,8 +5,8 @@ use core::ops::Range;
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
-    Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, BitString, Bool, Error, ExplicitTag, OctetString, Sequence, Tag,
-    Utf8String,
+    Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, BitString, Bool, Error, ExplicitTag, Null, OctetString, Sequence,
+    Tag, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -17,6 +17,7 @@ pub enum Asn1Type<'data> {
     BitString(BitString<'data>),
 
     Bool(Bool),
+    Null(Null),
 
     ExplicitTag(ExplicitTag<'data>),
 }
@@ -31,6 +32,7 @@ impl Asn1Type<'_> {
             Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned()),
             Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
+            Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
             // Asn1Type::ExplicitTag(_) => todo!(),
             _ => unimplemented!(),
         }
@@ -46,6 +48,7 @@ impl Asn1Entity for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.tag(),
             Asn1Type::Bool(boolean) => boolean.tag(),
             Asn1Type::ExplicitTag(e) => e.tag(),
+            Asn1Type::Null(n) => n.tag(),
         }
     }
 }
@@ -70,6 +73,8 @@ impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
             Ok(Asn1Type::Bool(Bool::decode(reader)?))
         } else if ExplicitTag::compare_tags(&tag) {
             Ok(Asn1Type::ExplicitTag(ExplicitTag::decode(reader)?))
+        } else if Null::compare_tags(&tag) {
+            Ok(Asn1Type::Null(Null::decode(reader)?))
         } else {
             Err(Error::from("Invalid data"))
         }
@@ -90,6 +95,8 @@ impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
             Bool::decode_asn1(reader)
         } else if ExplicitTag::compare_tags(&tag) {
             ExplicitTag::decode_asn1(reader)
+        } else if Null::compare_tags(&tag) {
+            Null::decode_asn1(reader)
         } else {
             Err(Error::from("Invalid data"))
         }
@@ -105,6 +112,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
             Asn1Type::ExplicitTag(e) => e.needed_buf_size(),
+            Asn1Type::Null(n) => n.needed_buf_size(),
         }
     }
 
@@ -116,6 +124,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
             Asn1Type::ExplicitTag(e) => e.encode(writer),
+            Asn1Type::Null(n) => n.encode(writer),
         }
     }
 }
