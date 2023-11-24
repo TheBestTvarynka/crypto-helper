@@ -6,6 +6,11 @@ use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, RawAsn1EntityData, Tag};
 
+/// [Null](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/null.html)
+/// 
+/// The ASN.1 NULL type is used when you need a placeholder for which there is no value.
+/// For example, it can be used to mark a currently empty space.
+/// The NULL type has only one possible value, also called NULL.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Null;
 

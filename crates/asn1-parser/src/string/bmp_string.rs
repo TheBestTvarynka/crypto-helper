@@ -8,6 +8,9 @@ use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
+/// [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
+/// 
+/// The ASN.1 BMPString type contains UNICODE characters. They are two-byte characters, and are not recommended for use unless properly subtyped.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BmpString<'data> {
     data: Cow<'data, [u8]>,
@@ -18,10 +21,12 @@ pub type OwnedBmpString = BmpString<'static>;
 impl BmpString<'_> {
     pub const TAG: Tag = Tag(30);
 
+    /// Returns inner raw [BmpString] data
     pub fn raw_data(&self) -> &[u8] {
         &self.data
     }
 
+    /// Returns owned version of the [BmpString]
     pub fn to_owned(&self) -> OwnedBmpString {
         BmpString {
             data: self.data.to_vec().into(),

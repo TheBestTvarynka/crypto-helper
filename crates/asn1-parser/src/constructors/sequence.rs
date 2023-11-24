@@ -8,6 +8,9 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
+/// [ASN.1 SEQUENCE](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
+/// 
+/// In ASN.1, an ordered list of elements (or components) comprises a SEQUENCE.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Sequence<'data> {
     fields: Vec<Asn1<'data>>,
@@ -18,10 +21,12 @@ pub type OwnedSequence = Sequence<'static>;
 impl Sequence<'_> {
     pub const TAG: Tag = Tag(0x30);
 
+    /// Retuens [Sequence] fields
     pub fn fields(&self) -> &[Asn1<'_>] {
         &self.fields
     }
 
+    /// Returns owned version of the [Sequence]
     pub fn to_owned(&self) -> OwnedSequence {
         Sequence {
             fields: self.fields.iter().map(|f| f.to_owned()).collect(),

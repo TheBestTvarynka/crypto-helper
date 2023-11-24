@@ -8,6 +8,10 @@ use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
+/// [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
+/// 
+/// The ASN.1 OCTET STRING type contains arbitrary strings of octets. This type is very similar to BIT STRING,
+/// except that all values must be an integral number of eight bits.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OctetString<'data> {
     octets: Cow<'data, [u8]>,
@@ -18,10 +22,12 @@ pub type OwnedOctetString = OctetString<'static>;
 impl OctetString<'_> {
     pub const TAG: Tag = Tag(4);
 
+    /// Returns inner octets
     pub fn octets(&self) -> &[u8] {
         &self.octets
     }
 
+    /// Returns owned version of the [OctetString]
     pub fn to_owned(&self) -> OwnedOctetString {
         OctetString {
             octets: self.octets.to_vec().into(),

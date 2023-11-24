@@ -8,6 +8,10 @@ use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
 
+/// [BitString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bitstring.html)
+/// 
+/// ASN.1 BIT STRING type values are arbitrary length strings of bits.
+/// A BIT STRING value doesn't need to be an even multiple of eight bits.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BitString<'data> {
     bits: Cow<'data, [u8]>,
@@ -18,10 +22,12 @@ pub type OwnedBitString = BitString<'static>;
 impl BitString<'_> {
     pub const TAG: Tag = Tag(3);
 
+    /// Returns inner bits
     pub fn bits(&self) -> &[u8] {
         self.bits.as_ref()
     }
 
+    /// Creates a new [BitString] from amount of bits and actual bits buffer
     pub fn from_raw_vec(bits_amount: usize, mut bits: Vec<u8>) -> Asn1Result<Self> {
         let all_bits_amount = bits.len() * 8;
 
@@ -39,6 +45,7 @@ impl BitString<'_> {
         Ok(Self { bits: Cow::Owned(bits) })
     }
 
+    /// Returns owned version of the [BitString]
     pub fn to_owned(&self) -> OwnedBitString {
         OwnedBitString {
             bits: self.bits.to_vec().into(),

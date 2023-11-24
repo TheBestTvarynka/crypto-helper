@@ -9,6 +9,10 @@ use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
+/// [Utf8String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utf8string.html)
+/// 
+/// The ASN.1 UTF8String type is used for handling Unicode characters. UniversalString and UTF8String both support the same character set,
+/// however, their encoding is different.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Utf8String<'data> {
     string: Cow<'data, str>,
@@ -19,10 +23,17 @@ pub type OwnedUtf8String = Utf8String<'static>;
 impl Utf8String<'_> {
     pub const TAG: Tag = Tag(12);
 
+    /// Returns inner raw data
+    pub fn raw_data(&self) -> &[u8] {
+        self.string.as_bytes()
+    }
+
+    /// Returnds inner string data
     pub fn string(&self) -> &str {
         &self.string
     }
 
+    /// Returns owned version of the [BitString]
     pub fn to_owned(&self) -> OwnedUtf8String {
         Utf8String {
             string: self.string.to_string().into(),
