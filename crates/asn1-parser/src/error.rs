@@ -1,3 +1,4 @@
+use alloc::string::FromUtf16Error;
 use core::num::TryFromIntError;
 use core::str::Utf8Error;
 
@@ -12,15 +13,23 @@ impl Error {
     }
 }
 
-impl Error {
-    pub fn from(message: &'static str) -> Self {
+impl From<&'static str> for Error {
+    fn from(message: &'static str) -> Self {
         Self { message }
     }
 }
 
 impl From<Utf8Error> for Error {
     fn from(_value: Utf8Error) -> Self {
-        Self { message: "utf8error" }
+        Self { message: "Utf8error" }
+    }
+}
+
+impl From<FromUtf16Error> for Error {
+    fn from(_value: FromUtf16Error) -> Self {
+        Self {
+            message: "FromUtf16Error",
+        }
     }
 }
 
