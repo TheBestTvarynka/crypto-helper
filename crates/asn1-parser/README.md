@@ -14,7 +14,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 ## Supported `asn1` types
 
 - [X] [BitString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bitstring.html)
-- [ ] [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
+- [X] [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
 - [ ] [GraphicString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/graphicstring.html)
 - [ ] [IA5String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/ia5string.html)
 - [ ] [GeneralString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/generalstring.html)

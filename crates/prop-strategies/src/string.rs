@@ -1,4 +1,4 @@
-use asn1_parser::{BitString, OwnedBitString, OwnedOctetString, OwnedUtf8String};
+use asn1_parser::{BitString, OwnedBitString, OwnedOctetString, OwnedUtf8String, OwnedBmpString};
 use proptest::prop_compose;
 
 use crate::{bytes, string};
@@ -28,4 +28,11 @@ prop_compose! {
             data,
         ).unwrap()
     }
+}
+
+prop_compose! {
+    pub fn any_bmp_string()
+        (data in string(1024)) -> OwnedBmpString {
+            data.as_str().into()
+        }
 }

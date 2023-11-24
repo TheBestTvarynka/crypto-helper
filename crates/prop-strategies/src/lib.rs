@@ -29,6 +29,7 @@ pub fn any_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
         any_octet_string().prop_map(Asn1Type::OctetString),
         any_utf8_string().prop_map(Asn1Type::Utf8String),
         any_bit_string().prop_map(Asn1Type::BitString),
+        any_bmp_string().prop_map(Asn1Type::BmpString),
         any_bool().prop_map(Asn1Type::Bool),
         any_null().prop_map(Asn1Type::Null),
         recursive_empty_asn1_type(),

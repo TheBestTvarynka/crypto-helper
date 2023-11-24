@@ -1,5 +1,6 @@
 use alloc::borrow::Cow;
 use alloc::boxed::Box;
+use alloc::vec::Vec;
 
 use crate::asn1::RawAsn1EntityData;
 use crate::length::{len_size, read_len, write_len};
@@ -25,6 +26,13 @@ impl BmpString<'_> {
         BmpString {
             data: self.data.to_vec().into(),
         }
+    }
+}
+
+impl From<&str> for OwnedBmpString {
+    fn from(value: &str) -> Self {
+        let data: Vec<u8> = value.encode_utf16().flat_map(|c| c.to_be_bytes()).collect();
+        Self { data: Cow::Owned(data) }
     }
 }
 
