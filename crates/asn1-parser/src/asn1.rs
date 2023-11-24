@@ -34,7 +34,7 @@ impl Asn1Type<'_> {
             Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
-            // Asn1Type::ExplicitTag(_) => todo!(),
+            Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
             _ => unimplemented!(),
         }
     }

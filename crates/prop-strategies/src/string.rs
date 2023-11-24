@@ -1,4 +1,4 @@
-use asn1_parser::{BitString, OwnedBitString, OwnedOctetString, OwnedUtf8String, OwnedBmpString};
+use asn1_parser::{BitString, OwnedBitString, OwnedBmpString, OwnedOctetString, OwnedUtf8String};
 use proptest::prop_compose;
 
 use crate::{bytes, string};

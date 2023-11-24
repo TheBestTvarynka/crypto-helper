@@ -15,6 +15,22 @@ pub struct ExplicitTag<'data> {
 
 pub type OwnedExplicitTag = ExplicitTag<'static>;
 
+impl<'data> ExplicitTag<'data> {
+    pub fn new(tag: u8, inner: Asn1<'data>) -> Self {
+        Self {
+            tag,
+            inner,
+        }
+    }
+
+    pub fn to_owned(&self) -> OwnedExplicitTag {
+        OwnedExplicitTag {
+            tag: self.tag,
+            inner: self.inner.to_owned(),
+        }
+    }
+}
+
 impl Asn1Entity for ExplicitTag<'_> {
     fn tag(&self) -> Tag {
         Tag(self.tag)

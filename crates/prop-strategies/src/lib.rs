@@ -3,6 +3,7 @@ mod generic_types;
 mod string;
 
 use asn1_parser::{Asn1Type, OwnedAsn1Type};
+use constructors::recursive_empty_asn1_type;
 pub use constructors::*;
 pub use generic_types::*;
 use proptest::collection::vec;
@@ -10,8 +11,6 @@ use proptest::prelude::any;
 use proptest::prop_oneof;
 use proptest::strategy::Strategy;
 pub use string::*;
-
-use crate::constructors::recursive_empty_asn1_type;
 
 pub fn bytes(size: usize) -> impl Strategy<Value = Vec<u8>> {
     vec(any::<u8>(), 0..size).no_shrink()
