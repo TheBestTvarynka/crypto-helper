@@ -8,17 +8,17 @@ use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ExplicitTag<'data> {
+pub struct ApplicationTag<'data> {
     tag: u8,
     inner: Asn1<'data>,
 }
 
-pub type OwnedExplicitTag = ExplicitTag<'static>;
+pub type OwnedApplicationTag = ApplicationTag<'static>;
 
-impl<'data> ExplicitTag<'data> {
+impl<'data> ApplicationTag<'data> {
     pub fn new(tag: u8, inner: Asn1<'data>) -> Self {
         Self {
-            tag: tag & 0x1f | 0xa0,
+            tag: tag & 0x1f | 0x60,
             inner,
         }
     }
@@ -28,32 +28,32 @@ impl<'data> ExplicitTag<'data> {
         self
     }
 
-    pub fn to_owned(&self) -> OwnedExplicitTag {
-        OwnedExplicitTag {
+    pub fn to_owned(&self) -> OwnedApplicationTag {
+        OwnedApplicationTag {
             tag: self.tag,
             inner: self.inner.to_owned(),
         }
     }
 }
 
-impl Asn1Entity for ExplicitTag<'_> {
+impl Asn1Entity for ApplicationTag<'_> {
     fn tag(&self) -> Tag {
         Tag(self.tag)
     }
 }
 
-impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
+impl<'data> Asn1Decoder<'data> for ApplicationTag<'data> {
     fn compare_tags(tag: &Tag) -> bool {
         let raw_tag = tag.0;
 
-        raw_tag & 0xc0 == 0x80 && raw_tag & 0x20 == 0x20
+        raw_tag & 0xc0 == 0x40 && raw_tag & 0x20 == 0x20
     }
 
     fn decode(reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let tag = reader.read_byte()?;
 
         if !Self::compare_tags(&Tag(tag)) {
-            return Err(Error::from("Invalid explicit tag"));
+            return Err(Error::from("Invalid application tag"));
         }
 
         let (len, _len_range) = read_len(reader)?;
@@ -62,7 +62,7 @@ impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
 
         if len != inner.raw_data.raw_bytes().len() {
             return Err(Error::from(
-                "Invalid explicit tag len. Inner entity raw data len is not the same as explicit tag len.",
+                "Invalid application tag len. Inner entity raw data len is not the same as explicit tag len.",
             ));
         }
 
@@ -74,7 +74,7 @@ impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
         let tag = reader.read_byte()?;
 
         if !Self::compare_tags(&Tag(tag)) {
-            return Err(Error::from("Invalid explicit tag"));
+            return Err(Error::from("Invalid application tag"));
         }
 
         let (len, len_range) = read_len(reader)?;
@@ -83,7 +83,7 @@ impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
 
         if len != inner.raw_data.raw_bytes().len() {
             return Err(Error::from(
-                "Invalid explicit tag len. Inner entity raw data len is not the same as explicit tag len.",
+                "Invalid applicationTag tag len. Inner entity raw data len is not the same as explicit tag len.",
             ));
         }
 
@@ -96,12 +96,12 @@ impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
                 length: len_range,
                 data: inner.raw_data.tag_position()..inner_data_range.end,
             },
-            asn1_type: Box::new(Asn1Type::ExplicitTag(Self { tag, inner })),
+            asn1_type: Box::new(Asn1Type::ApplicationTag(Self { tag, inner })),
         })
     }
 }
 
-impl Asn1Encoder for ExplicitTag<'_> {
+impl Asn1Encoder for ApplicationTag<'_> {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.inner.asn1().needed_buf_size();
 
@@ -115,27 +115,5 @@ impl Asn1Encoder for ExplicitTag<'_> {
         write_len(data_len, writer)?;
 
         self.inner.asn1().encode(writer)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    extern crate std;
-
-    use std::dbg;
-
-    use crate::{Asn1Decoder, Asn1Type};
-
-    #[test]
-    fn example() {
-        let raw = [
-            48, 50, 161, 17, 12, 15, 116, 104, 101, 98, 101, 115, 116, 116, 118, 97, 114, 121, 110, 107, 97, 162, 9,
-            12, 7, 113, 107, 97, 116, 105, 111, 110, 163, 18, 4, 16, 252, 179, 92, 152, 40, 255, 170, 90, 80, 236, 156,
-            221, 80, 86, 181, 110,
-        ];
-
-        let asn1 = Asn1Type::decode_asn1_buff(&raw).unwrap();
-
-        dbg!("{:?}", asn1);
     }
 }
