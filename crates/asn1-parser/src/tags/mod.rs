@@ -1,3 +1,3 @@
-mod explicit_tag;
+mod explicit;
 
-pub use explicit_tag::{ExplicitTag, OwnedExplicitTag};
+pub use explicit::{ExplicitTag, OwnedExplicitTag};
