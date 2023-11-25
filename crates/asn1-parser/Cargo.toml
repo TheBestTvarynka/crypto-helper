@@ -8,6 +8,10 @@ readme = "README.md"
 license-file = "../../LICENSE"
 repository = "https://github.com/TheBestTvarynka/crypto-helper"
 
+[features]
+default-fearures = []
+std = []
+
 [dev-dependencies]
 prop-strategies = { path = "../prop-strategies" }
 proptest = "1.2.0"

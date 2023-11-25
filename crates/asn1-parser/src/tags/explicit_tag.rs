@@ -18,9 +18,14 @@ pub type OwnedExplicitTag = ExplicitTag<'static>;
 impl<'data> ExplicitTag<'data> {
     pub fn new(tag: u8, inner: Asn1<'data>) -> Self {
         Self {
-            tag,
+            tag: tag & 0x1F | 0xA0,
             inner,
         }
+    }
+
+    pub fn clear_raw_data(&mut self) -> &mut Self {
+        self.inner.clear_raw_data();
+        self
     }
 
     pub fn to_owned(&self) -> OwnedExplicitTag {

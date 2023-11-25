@@ -9,7 +9,7 @@ use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 /// [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
-/// 
+///
 /// The ASN.1 BMPString type contains UNICODE characters. They are two-byte characters, and are not recommended for use unless properly subtyped.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BmpString<'data> {

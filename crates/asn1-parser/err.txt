@@ -1,0 +1,78 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+
+running 1 test
+test asn1_type ... FAILED
+
+failures:
+
+---- asn1_type stdout ----
+proptest: FileFailurePersistence::SourceParallel set, but failed to find lib.rs or main.rs
+thread 'asn1_type' panicked at crates/asn1-parser/tests/decode_encode.rs:18:9:
+assertion `left == right` failed
+  left: Sequence(Sequence { fields: [Asn1 { raw_data: RawAsn1EntityData { raw_data: [3, 7, 2, 238, 177, 214, 162, 66, 184], tag: 2, length: 3..4, data: 4..11 }, asn1_type: BitString(BitString { bits: [2, 238, 177, 214, 162, 66, 184] }) }, Asn1 { raw_data: RawAsn1EntityData { raw_data: [4, 4, 94, 246, 128, 45], tag: 11, length: 12..13, data: 13..17 }, asn1_type: OctetString(OctetString { octets: [94, 246, 128, 45] }) }] })
+ right: Sequence(Sequence { fields: [Asn1 { raw_data: RawAsn1EntityData { raw_data: [], tag: 0, length: 0..0, data: 0..0 }, asn1_type: BitString(BitString { bits: [2, 238, 177, 214, 162, 66, 184] }) }, Asn1 { raw_data: RawAsn1EntityData { raw_data: [], tag: 0, length: 0..0, data: 0..0 }, asn1_type: OctetString(OctetString { octets: [94, 246, 128, 45] }) }] })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread 'asn1_type' panicked at crates/asn1-parser/tests/decode_encode.rs:7:5:
+Test failed: assertion `left == right` failed
+  left: Sequence(Sequence { fields: [Asn1 { raw_data: RawAsn1EntityData { raw_data: [3, 7, 2, 238, 177, 214, 162, 66, 184], tag: 2, length: 3..4, data: 4..11 }, asn1_type: BitString(BitString { bits: [2, 238, 177, 214, 162, 66, 184] }) }, Asn1 { raw_data: RawAsn1EntityData { raw_data: [4, 4, 94, 246, 128, 45], tag: 11, length: 12..13, data: 13..17 }, asn1_type: OctetString(OctetString { octets: [94, 246, 128, 45] }) }] })
+ right: Sequence(Sequence { fields: [Asn1 { raw_data: RawAsn1EntityData { raw_data: [], tag: 0, length: 0..0, data: 0..0 }, asn1_type: BitString(BitString { bits: [2, 238, 177, 214, 162, 66, 184] }) }, Asn1 { raw_data: RawAsn1EntityData { raw_data: [], tag: 0, length: 0..0, data: 0..0 }, asn1_type: OctetString(OctetString { octets: [94, 246, 128, 45] }) }] }).
+minimal failing input: asn1 = Sequence(
+    Sequence {
+        fields: [
+            Asn1 {
+                raw_data: RawAsn1EntityData {
+                    raw_data: [],
+                    tag: 0,
+                    length: 0..0,
+                    data: 0..0,
+                },
+                asn1_type: BitString(
+                    BitString {
+                        bits: [
+                            2,
+                            238,
+                            177,
+                            214,
+                            162,
+                            66,
+                            184,
+                        ],
+                    },
+                ),
+            },
+            Asn1 {
+                raw_data: RawAsn1EntityData {
+                    raw_data: [],
+                    tag: 0,
+                    length: 0..0,
+                    data: 0..0,
+                },
+                asn1_type: OctetString(
+                    OctetString {
+                        octets: [
+                            94,
+                            246,
+                            128,
+                            45,
+                        ],
+                    },
+                ),
+            },
+        ],
+    },
+)
+	successes: 0
+	local rejects: 0
+	global rejects: 0
+
+
+
+failures:
+    asn1_type
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+

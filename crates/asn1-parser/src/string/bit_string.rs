@@ -9,7 +9,7 @@ use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
 
 /// [BitString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bitstring.html)
-/// 
+///
 /// ASN.1 BIT STRING type values are arbitrary length strings of bits.
 /// A BIT STRING value doesn't need to be an even multiple of eight bits.
 #[derive(Debug, Clone, PartialEq, Eq)]

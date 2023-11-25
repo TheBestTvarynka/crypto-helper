@@ -26,6 +26,24 @@ pub enum Asn1Type<'data> {
 pub type OwnedAsn1Type = Asn1Type<'static>;
 
 impl Asn1Type<'_> {
+    pub fn clear_raw_data(&mut self) -> &mut Self {
+        match self {
+            Asn1Type::Sequence(s) => {
+                s.clear_raw_data();
+            }
+            Asn1Type::OctetString(_) => {}
+            Asn1Type::Utf8String(_) => {}
+            Asn1Type::BitString(_) => {}
+            Asn1Type::BmpString(_) => {}
+            Asn1Type::Bool(_) => {}
+            Asn1Type::Null(_) => {}
+            Asn1Type::ExplicitTag(e) => {
+                e.clear_raw_data();
+            }
+        };
+        self
+    }
+
     pub fn to_owned(&self) -> OwnedAsn1Type {
         match self {
             Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned()),
@@ -35,7 +53,7 @@ impl Asn1Type<'_> {
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
             Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
-            _ => unimplemented!(),
+            Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
         }
     }
 }
@@ -104,7 +122,7 @@ impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
         } else if Null::compare_tags(&tag) {
             Null::decode_asn1(reader)
         } else {
-            Err(Error::from("Invalid data"))
+            Err(Error::from("Asn1Type: Invalid data"))
         }
     }
 }
@@ -216,10 +234,16 @@ impl Asn1<'_> {
         &self.asn1_type
     }
 
+    pub fn clear_raw_data(&mut self) -> &mut Self {
+        self.raw_data = Default::default();
+        self.asn1_type.clear_raw_data();
+        self
+    }
+
     pub fn to_owned(&self) -> OwnedAsn1 {
         Asn1 {
             raw_data: self.raw_data.to_owned(),
-            asn1_type: Box::new(self.asn1_type.to_owned()),
+            asn1_type: Box::new((*self.asn1_type).to_owned()),
         }
     }
 }

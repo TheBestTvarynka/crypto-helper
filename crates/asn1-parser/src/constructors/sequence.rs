@@ -9,7 +9,7 @@ use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Tag};
 
 /// [ASN.1 SEQUENCE](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
-/// 
+///
 /// In ASN.1, an ordered list of elements (or components) comprises a SEQUENCE.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Sequence<'data> {
@@ -31,6 +31,13 @@ impl Sequence<'_> {
         Sequence {
             fields: self.fields.iter().map(|f| f.to_owned()).collect(),
         }
+    }
+
+    pub fn clear_raw_data(&mut self) -> &mut Self {
+        self.fields.iter_mut().for_each(|asn1| {
+            asn1.clear_raw_data();
+        });
+        self
     }
 }
 
