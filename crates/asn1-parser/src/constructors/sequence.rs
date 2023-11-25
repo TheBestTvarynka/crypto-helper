@@ -21,6 +21,10 @@ pub type OwnedSequence = Sequence<'static>;
 impl Sequence<'_> {
     pub const TAG: Tag = Tag(0x30);
 
+    pub fn new(fields: Vec<Asn1>) -> Sequence {
+        Sequence { fields }
+    }
+
     /// Retuens [Sequence] fields
     pub fn fields(&self) -> &[Asn1<'_>] {
         &self.fields

@@ -23,6 +23,14 @@ impl<'data> ExplicitTag<'data> {
         }
     }
 
+    pub fn tag_number(&self) -> u8 {
+        self.tag & 0x1f
+    }
+
+    pub fn inner(&self) -> &Asn1<'data> {
+        &self.inner
+    }
+
     pub fn clear_raw_data(&mut self) -> &mut Self {
         self.inner.clear_raw_data();
         self

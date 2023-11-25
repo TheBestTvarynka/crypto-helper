@@ -44,3 +44,29 @@ fn asn1() {
         assert_eq!(decoded.asn1(), &asn1);
     })
 }
+
+#[test]
+fn full_example() {
+    use asn1_parser::*;
+
+    let asn1 = Sequence::new(vec![
+        Asn1::new(Default::default(), Box::new(Asn1Type::Bool(true.into()))),
+        Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(0, Asn1::new(Default::default(), Box::new(Asn1Type::Utf8String("TbeBestTvarynka".into()))))))),
+        Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(1, Asn1::new(Default::default(), Box::new(Asn1Type::Sequence(Sequence::new(vec![
+            Asn1::new(Default::default(), Box::new(Asn1Type::Null(Null))),
+            Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(4, Asn1::new(Default::default(), Box::new(Asn1Type::OctetString(vec![48, 5, 160, 3, 1, 1, 255].into()))))))),
+            Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(4, Asn1::new(Default::default(), Box::new(Asn1Type::BitString(BitString::from_raw_vec(32, vec![64, 129, 0, 16]).unwrap()))))))),
+            Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(4, Asn1::new(Default::default(), Box::new(Asn1Type::ApplicationTag(ApplicationTag::new(12, Asn1::new(Default::default(), Box::new(Asn1Type::Sequence(Sequence::new(vec![
+                Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(0, Asn1::new(Default::default(), Box::new(Asn1Type::Null(Null))))))),
+                Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(1, Asn1::new(Default::default(), Box::new(Asn1Type::BmpString("Certificate".into()))))))),
+            ])))))))))))),
+        ])))))))),
+    ]);
+
+    let buff_len = asn1.needed_buf_size();
+    let mut buff = vec![0; buff_len];
+
+    asn1.encode_buff(&mut buff).unwrap();
+
+    println!("{:?}", buff);
+}
