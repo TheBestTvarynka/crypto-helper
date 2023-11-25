@@ -1,14 +1,16 @@
 mod primitive;
 mod sequence;
 mod strings;
+mod tag;
 
 use asn1_parser::{Asn1, Asn1Type};
 use yew::html;
 use yew::virtual_dom::VNode;
 
+use self::primitive::{BoolNode, NullNode};
 use self::sequence::SequenceNode;
-use crate::asn1::scheme::primitive::BoolNode;
-use crate::asn1::scheme::strings::{BitStringNode, OctetStringNode, Utf8StringNode};
+use self::strings::{BitStringNode, BmpStringNode, OctetStringNode, Utf8StringNode};
+use self::tag::{ApplicationTagNode, ExplicitTagNode};
 
 // #[derive(PartialEq, Properties, Clone)]
 // pub struct Asn1SchemeProps {
@@ -32,14 +34,18 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>) -> VNode {
         Asn1Type::Bool(boolean) => html! {
             <BoolNode node={boolean.to_owned()} />
         },
-        // Asn1Type::ExplicitTag(e) => e.tag(),
-        a => {
-            log::error!("{:?}", a);
-            // unimplemented!("{:?}", a)
-            html! {
-                <span>{format!("unimlemented: {:?}", a)}</span>
-            }
-        }
+        Asn1Type::BmpString(bmp) => html! {
+            <BmpStringNode node={bmp.to_owned()} />
+        },
+        Asn1Type::Null(_) => html! {
+            <NullNode />
+        },
+        Asn1Type::ExplicitTag(explicit) => html! {
+            <ExplicitTagNode node={explicit.to_owned()} />
+        },
+        Asn1Type::ApplicationTag(application) => html! {
+            <ApplicationTagNode node={application.to_owned()} />
+        },
     }
 }
 

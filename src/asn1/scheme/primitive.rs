@@ -15,3 +15,12 @@ pub fn bool(props: &BoolNodeProps) -> Html {
         </div>
     }
 }
+
+#[function_component(NullNode)]
+pub fn null() -> Html {
+    html! {
+        <div class="terminal-asn1-node">
+            <span>{"Null"}</span>
+        </div>
+    }
+}

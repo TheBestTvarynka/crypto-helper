@@ -1,4 +1,4 @@
-use asn1_parser::{OwnedBitString, OwnedOctetString, OwnedUtf8String};
+use asn1_parser::{OwnedBitString, OwnedBmpString, OwnedOctetString, OwnedUtf8String};
 use yew::{function_component, html, Html, Properties};
 
 use crate::common::BytesViewer;
@@ -51,6 +51,29 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
             <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
             // <span>{hex::encode(octets)}</span>
             <BytesViewer bytes={octets.to_vec()} />
+        </div>
+    }
+}
+#[derive(PartialEq, Properties, Clone)]
+pub struct BmpStringNodeProps {
+    pub node: OwnedBmpString,
+}
+
+#[function_component(BmpStringNode)]
+pub fn bit_string(props: &BmpStringNodeProps) -> Html {
+    let s = String::from_utf16_lossy(
+        &props
+            .node
+            .raw_data()
+            .chunks(2)
+            .map(|bytes| u16::from_be_bytes(bytes.try_into().unwrap()))
+            .collect::<Vec<_>>(),
+    );
+
+    html! {
+        <div class="terminal-asn1-node">
+            <span>{"Bmp String"}</span>
+            <span>{s}</span>
         </div>
     }
 }
