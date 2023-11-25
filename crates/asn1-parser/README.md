@@ -5,6 +5,8 @@ This crate has `no_std` support.
 
 > **Yet another `asn1` parser? https://users.rust-lang.org/t/comparison-of-way-too-many-rust-asn-1-der-libraries**
 
+![well yes, but actually no](https://i.imgflip.com/8789zm.jpg)
+
 Yes!
 
 > **Why?**
@@ -56,7 +58,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 
 - [X] [ExplicitTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
 - [ ] [ImplicitTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
-- [ ] [ApplicationTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
+- [X] [ApplicationTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
 
 ## Usage example
 
