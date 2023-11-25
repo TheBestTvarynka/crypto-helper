@@ -1,4 +1,4 @@
-use asn1_parser::{Asn1Type, OwnedAsn1, OwnedAsn1Type, OwnedExplicitTag, OwnedSequence};
+use asn1_parser::{Asn1Type, OwnedApplicationTag, OwnedAsn1, OwnedAsn1Type, OwnedExplicitTag, OwnedSequence};
 use proptest::collection::vec;
 use proptest::prop_oneof;
 use proptest::strategy::{Just, Strategy};
@@ -19,8 +19,10 @@ fn any_leaf_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
 
 pub fn recursive_empty_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
     any_leaf_asn1_type().prop_recursive(16, 64, 32, |inner| {
+        let explicit_tag_inner = inner.clone();
+        let application_tag_inner = inner.clone();
         prop_oneof![
-            vec(inner.clone(), 1..16).prop_map(|fields| {
+            vec(inner, 1..16).prop_map(|fields| {
                 Asn1Type::Sequence(OwnedSequence::from(
                     fields
                         .into_iter()
@@ -29,8 +31,14 @@ pub fn recursive_empty_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
                 ))
             }),
             (0_u8..31)
-                .prop_flat_map(move |tag| (Just(tag), inner.clone()))
+                .prop_flat_map(move |tag| (Just(tag), explicit_tag_inner.clone()))
                 .prop_map(|(tag, inner)| Asn1Type::ExplicitTag(OwnedExplicitTag::new(
+                    tag,
+                    OwnedAsn1::new(Default::default(), Box::new(inner))
+                ))),
+            (0_u8..31)
+                .prop_flat_map(move |tag| (Just(tag), application_tag_inner.clone()))
+                .prop_map(|(tag, inner)| Asn1Type::ApplicationTag(OwnedApplicationTag::new(
                     tag,
                     OwnedAsn1::new(Default::default(), Box::new(inner))
                 ))),
