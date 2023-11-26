@@ -23,8 +23,12 @@ impl BitString<'_> {
     pub const TAG: Tag = Tag(3);
 
     /// Returns inner bits
-    pub fn bits(&self) -> &[u8] {
+    pub fn raw_bits(&self) -> &[u8] {
         self.bits.as_ref()
+    }
+
+    pub fn bits_amount(&self) -> usize {
+        (self.bits.as_ref().len() - 1) * 8 - usize::from(self.bits.as_ref()[0])
     }
 
     /// Creates a new [BitString] from amount of bits and actual bits buffer

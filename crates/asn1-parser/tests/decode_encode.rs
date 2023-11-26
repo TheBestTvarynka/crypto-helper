@@ -51,6 +51,7 @@ fn full_example() {
 
     let asn1 = Sequence::new(vec![
         Asn1::new(Default::default(), Box::new(Asn1Type::Bool(true.into()))),
+        Asn1::new(Default::default(), Box::new(Asn1Type::Bool(false.into()))),
         Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(0, Asn1::new(Default::default(), Box::new(Asn1Type::Utf8String("TbeBestTvarynka".into()))))))),
         Asn1::new(Default::default(), Box::new(Asn1Type::ExplicitTag(ExplicitTag::new(1, Asn1::new(Default::default(), Box::new(Asn1Type::Sequence(Sequence::new(vec![
             Asn1::new(Default::default(), Box::new(Asn1Type::Null(Null))),
