@@ -1,12 +1,14 @@
 mod asn1_viewer;
 mod hex_buffer;
 mod scheme;
+mod hex_view;
 
 use asn1_parser::Asn1;
 use web_sys::KeyboardEvent;
 use yew::{classes, function_component, html, use_state, Callback, Html};
 
 use crate::asn1::asn1_viewer::Asn1Viewer;
+use crate::asn1::hex_view::HexViewer;
 use crate::common::{ByteInput, Checkbox};
 
 pub const TEST_ASN1: &[u8] = &[
@@ -73,7 +75,10 @@ pub fn asn1_parser_page() -> Html {
                 <button class="action-button" {onclick}>{"Process"}</button>
                 <Checkbox id={"auto-decode-asn1".to_owned()} name={"auto-decode".to_owned()} checked={*auto_decode} {set_checked} />
             </div>
-            <Asn1Viewer data={(*raw_asn1).clone()} structure={(*parsed_asn1).clone()} />
+            <div class="asn1-viewers">
+                <Asn1Viewer data={(*raw_asn1).clone()} structure={(*parsed_asn1).clone()} />
+                <HexViewer />
+            </div>
         </div>
     }
 }

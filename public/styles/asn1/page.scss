@@ -4,3 +4,10 @@
     width: 98%;
     color: #403735;
 }
+
+.asn1-viewers {
+    display: grid;
+    grid-template-columns: 70% auto;
+    gap: 0.1em;
+    width: 100%;
+}
