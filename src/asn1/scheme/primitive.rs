@@ -11,7 +11,11 @@ pub fn bool(props: &BoolNodeProps) -> Html {
     html! {
         <div class="terminal-asn1-node">
             <span>{"Bool"}</span>
-            <span>{props.node.value()}</span>
+            {if props.node.value() {html! {
+                <span class="asn-bool-true">{"true"}</span>
+            }} else {html! {
+                <span class="asn-bool-false">{"false"}</span>
+            }}}
         </div>
     }
 }

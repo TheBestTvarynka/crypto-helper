@@ -1,8 +1,6 @@
 use asn1_parser::{OwnedBitString, OwnedBmpString, OwnedOctetString, OwnedUtf8String};
 use yew::{function_component, html, Html, Properties};
 
-use crate::common::BytesViewer;
-
 #[derive(PartialEq, Properties, Clone)]
 pub struct Utf8StringNodeProps {
     pub node: OwnedUtf8String,
@@ -13,7 +11,7 @@ pub fn utf8_string(props: &Utf8StringNodeProps) -> Html {
     html! {
         <div class="terminal-asn1-node">
             <span>{"UTF8String"}</span>
-            <span>{props.node.string().to_owned()}</span>
+            <span class="asn-simple-value">{props.node.string().to_owned()}</span>
         </div>
     }
 }
@@ -31,8 +29,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
         <div class="terminal-asn1-node">
             <span>{"Octet String"}</span>
             <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
-            // <span>{hex::encode(octets)}</span>
-            <BytesViewer bytes={octets.to_vec()} />
+            <span class="asn-simple-value">{hex::encode(octets)}</span>
         </div>
     }
 }
@@ -43,14 +40,21 @@ pub struct BitStringNodeProps {
 
 #[function_component(BitStringNode)]
 pub fn bit_string(props: &BitStringNodeProps) -> Html {
-    let octets = props.node.bits();
+    let bits = props.node.raw_bits()[1..]
+        .iter()
+        .map(|byte| format!("{:08b}", byte))
+        .fold(String::new(), |mut ac, new| {
+            ac.push_str(&new);
+            ac
+        });
+    let bits_amount = props.node.bits_amount();
+    let bits = &bits[0..bits_amount];
 
     html! {
         <div class="terminal-asn1-node">
             <span>{"Bit String"}</span>
-            <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
-            // <span>{hex::encode(octets)}</span>
-            <BytesViewer bytes={octets.to_vec()} />
+            <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
+            <span class="asn-simple-value">{bits}</span>
         </div>
     }
 }
@@ -73,7 +77,7 @@ pub fn bit_string(props: &BmpStringNodeProps) -> Html {
     html! {
         <div class="terminal-asn1-node">
             <span>{"Bmp String"}</span>
-            <span>{s}</span>
+            <span class="asn-simple-value">{s}</span>
         </div>
     }
 }
