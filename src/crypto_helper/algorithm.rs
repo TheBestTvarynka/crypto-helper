@@ -417,6 +417,20 @@ impl Default for Argon2Input {
     }
 }
 
+impl From<bool> for Argon2Action {
+    fn from(value: bool) -> Self {
+        match value {
+            true => Argon2Action::Verify(Default::default()),
+            false => Argon2Action::Hash(Default::default())
+        }
+    }
+}
+
+impl From<&Argon2Action> for bool {
+    fn from(value: &Argon2Action) -> Self {
+        value.into()
+    }
+}
 
 
 #[allow(clippy::large_enum_variant)]
