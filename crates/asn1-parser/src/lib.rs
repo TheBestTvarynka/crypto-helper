@@ -44,7 +44,7 @@ pub trait Asn1Decoder<'data>: Sized {
     /// Decodes the asn1 entity using provided Reader.
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>>;
 
-    /// Decodes the asn1 entity using provided Reader.
+    /// Decodes the asn1 entity using provided buffer.
     fn decode_asn1_buff(buff: &'data [u8]) -> Asn1Result<Asn1<'data>> {
         Self::decode_asn1(&mut Reader::new(buff))
     }
@@ -68,4 +68,7 @@ pub trait Asn1Encoder {
 pub trait Asn1Entity {
     /// Returns asn1 tag of the entity
     fn tag(&self) -> Tag;
+
+    /// Returns a unique asn1 node id
+    fn id(&self) -> u64;
 }

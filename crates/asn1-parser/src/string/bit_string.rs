@@ -14,6 +14,7 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Er
 /// A BIT STRING value doesn't need to be an even multiple of eight bits.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BitString<'data> {
+    id: u64,
     bits: Cow<'data, [u8]>,
 }
 
@@ -32,7 +33,7 @@ impl BitString<'_> {
     }
 
     /// Creates a new [BitString] from amount of bits and actual bits buffer
-    pub fn from_raw_vec(bits_amount: usize, mut bits: Vec<u8>) -> Asn1Result<Self> {
+    pub fn from_raw_vec(id: u64, bits_amount: usize, mut bits: Vec<u8>) -> Asn1Result<Self> {
         let all_bits_amount = bits.len() * 8;
 
         if bits_amount > all_bits_amount {
@@ -46,27 +47,35 @@ impl BitString<'_> {
         let unused_bits: u8 = (all_bits_amount - bits_amount).try_into()?;
         bits.insert(0, unused_bits);
 
-        Ok(Self { bits: Cow::Owned(bits) })
+        Ok(Self {
+            id,
+            bits: Cow::Owned(bits),
+        })
     }
 
     /// Returns owned version of the [BitString]
     pub fn to_owned(&self) -> OwnedBitString {
         OwnedBitString {
+            id: self.id,
             bits: self.bits.to_vec().into(),
         }
     }
 }
 
 // we assume here that firs vector byte contains amount of unused bytes
-impl From<Vec<u8>> for BitString<'_> {
-    fn from(bits: Vec<u8>) -> Self {
-        Self { bits: Cow::Owned(bits) }
-    }
-}
+// impl From<Vec<u8>> for BitString<'_> {
+//     fn from(bits: Vec<u8>) -> Self {
+//         Self { bits: Cow::Owned(bits) }
+//     }
+// }
 
 impl Asn1Entity for BitString<'_> {
     fn tag(&self) -> Tag {
         Self::TAG
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 
@@ -83,6 +92,7 @@ impl<'data> Asn1Decoder<'data> for BitString<'data> {
         let data = reader.read(len)?;
 
         Ok(Self {
+            id: reader.next_id(),
             bits: Cow::Borrowed(data),
         })
     }
@@ -103,6 +113,7 @@ impl<'data> Asn1Decoder<'data> for BitString<'data> {
                 data: data_range,
             },
             asn1_type: Box::new(Asn1Type::BitString(Self {
+                id: reader.next_id(),
                 bits: Cow::Borrowed(data),
             })),
         })

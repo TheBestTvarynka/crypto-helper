@@ -4,6 +4,7 @@ use crate::{Asn1Result, Error};
 
 #[derive(Debug)]
 pub struct Reader<'data> {
+    next_node_id: u64,
     position: usize,
     inner: &'data [u8],
 }
@@ -11,9 +12,15 @@ pub struct Reader<'data> {
 impl<'data> Reader<'data> {
     pub fn new(data: &'data [u8]) -> Self {
         Self {
+            next_node_id: 0,
             position: 0,
             inner: data,
         }
+    }
+
+    pub fn next_id(&mut self) -> u64 {
+        self.next_node_id += 1;
+        self.next_node_id
     }
 
     pub fn position(&self) -> usize {

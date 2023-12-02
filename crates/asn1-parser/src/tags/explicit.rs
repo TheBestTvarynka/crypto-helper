@@ -9,6 +9,7 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Er
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExplicitTag<'data> {
+    id: u64,
     tag: u8,
     inner: Asn1<'data>,
 }
@@ -16,8 +17,9 @@ pub struct ExplicitTag<'data> {
 pub type OwnedExplicitTag = ExplicitTag<'static>;
 
 impl<'data> ExplicitTag<'data> {
-    pub fn new(tag: u8, inner: Asn1<'data>) -> Self {
+    pub fn new(id: u64, tag: u8, inner: Asn1<'data>) -> Self {
         Self {
+            id,
             tag: tag & 0x1f | 0xa0,
             inner,
         }
@@ -38,6 +40,7 @@ impl<'data> ExplicitTag<'data> {
 
     pub fn to_owned(&self) -> OwnedExplicitTag {
         OwnedExplicitTag {
+            id: self.id,
             tag: self.tag,
             inner: self.inner.to_owned(),
         }
@@ -47,6 +50,10 @@ impl<'data> ExplicitTag<'data> {
 impl Asn1Entity for ExplicitTag<'_> {
     fn tag(&self) -> Tag {
         Tag(self.tag)
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 
@@ -74,7 +81,11 @@ impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
             ));
         }
 
-        Ok(Self { tag, inner })
+        Ok(Self {
+            id: reader.next_id(),
+            tag,
+            inner,
+        })
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
@@ -104,7 +115,11 @@ impl<'data> Asn1Decoder<'data> for ExplicitTag<'data> {
                 length: len_range,
                 data: inner.raw_data.tag_position()..inner_data_range.end,
             },
-            asn1_type: Box::new(Asn1Type::ExplicitTag(Self { tag, inner })),
+            asn1_type: Box::new(Asn1Type::ExplicitTag(Self {
+                id: reader.next_id(),
+                tag,
+                inner,
+            })),
         })
     }
 }

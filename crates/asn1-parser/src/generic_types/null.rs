@@ -12,7 +12,9 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Er
 /// For example, it can be used to mark a currently empty space.
 /// The NULL type has only one possible value, also called NULL.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct Null;
+pub struct Null {
+    id: u64,
+}
 
 impl Null {
     pub const TAG: Tag = Tag(5);
@@ -21,6 +23,10 @@ impl Null {
 impl Asn1Entity for Null {
     fn tag(&self) -> Tag {
         Self::TAG
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 
@@ -38,7 +44,7 @@ impl<'data> Asn1Decoder<'data> for Null {
             return Err(Error::from("Bool length must be equal to 0"));
         }
 
-        Ok(Self)
+        Ok(Self { id: reader.next_id() })
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
@@ -60,7 +66,7 @@ impl<'data> Asn1Decoder<'data> for Null {
                 length: len_range,
                 data: data_range,
             },
-            asn1_type: Box::new(Asn1Type::Null(Self)),
+            asn1_type: Box::new(Asn1Type::Null(Self { id: reader.next_id() })),
         })
     }
 }

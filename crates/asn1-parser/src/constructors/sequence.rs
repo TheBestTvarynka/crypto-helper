@@ -13,6 +13,7 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Ta
 /// In ASN.1, an ordered list of elements (or components) comprises a SEQUENCE.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Sequence<'data> {
+    id: u64,
     fields: Vec<Asn1<'data>>,
 }
 
@@ -21,8 +22,8 @@ pub type OwnedSequence = Sequence<'static>;
 impl Sequence<'_> {
     pub const TAG: Tag = Tag(0x30);
 
-    pub fn new(fields: Vec<Asn1>) -> Sequence {
-        Sequence { fields }
+    pub fn new(id: u64, fields: Vec<Asn1>) -> Sequence {
+        Sequence { id, fields }
     }
 
     /// Retuens [Sequence] fields
@@ -33,6 +34,7 @@ impl Sequence<'_> {
     /// Returns owned version of the [Sequence]
     pub fn to_owned(&self) -> OwnedSequence {
         Sequence {
+            id: self.id,
             fields: self.fields.iter().map(|f| f.to_owned()).collect(),
         }
     }
@@ -45,15 +47,19 @@ impl Sequence<'_> {
     }
 }
 
-impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {
-    fn from(fields: Vec<Asn1<'data>>) -> Self {
-        Self { fields }
-    }
-}
+// impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {
+//     fn from(fields: Vec<Asn1<'data>>) -> Self {
+//         Self { id: 0, fields }
+//     }
+// }
 
 impl Asn1Entity for Sequence<'_> {
     fn tag(&self) -> Tag {
         Self::TAG
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 
@@ -91,7 +97,10 @@ impl<'data> Asn1Decoder<'data> for Sequence<'data> {
             fields.push(Asn1Type::decode_asn1(reader)?);
         }
 
-        Ok(Self { fields })
+        Ok(Self {
+            fields,
+            id: reader.next_id(),
+        })
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
@@ -115,7 +124,10 @@ impl<'data> Asn1Decoder<'data> for Sequence<'data> {
                 length: len_range,
                 data: data_range,
             },
-            asn1_type: Box::new(Asn1Type::Sequence(Sequence { fields })),
+            asn1_type: Box::new(Asn1Type::Sequence(Sequence {
+                fields,
+                id: reader.next_id(),
+            })),
         })
     }
 }
@@ -148,6 +160,7 @@ mod tests {
                     data: 2..29,
                 },
                 asn1_type: Box::new(Asn1Type::Sequence(Sequence {
+                    id: 0,
                     fields: vec![
                         Asn1 {
                             raw_data: RawAsn1EntityData {

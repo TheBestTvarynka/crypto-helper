@@ -15,6 +15,7 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Ta
 /// however, their encoding is different.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Utf8String<'data> {
+    id: u64,
     string: Cow<'data, str>,
 }
 
@@ -36,26 +37,27 @@ impl Utf8String<'_> {
     /// Returns owned version of the [BitString]
     pub fn to_owned(&self) -> OwnedUtf8String {
         Utf8String {
+            id: self.id,
             string: self.string.to_string().into(),
         }
     }
 }
 
-impl From<String> for OwnedUtf8String {
-    fn from(data: String) -> Self {
-        Self {
-            string: Cow::Owned(data),
-        }
-    }
-}
+// impl From<String> for OwnedUtf8String {
+//     fn from(data: String) -> Self {
+//         Self {
+//             string: Cow::Owned(data),
+//         }
+//     }
+// }
 
-impl From<&'static str> for OwnedUtf8String {
-    fn from(data: &'static str) -> Self {
-        Self {
-            string: Cow::Borrowed(data),
-        }
-    }
-}
+// impl From<&'static str> for OwnedUtf8String {
+//     fn from(data: &'static str) -> Self {
+//         Self {
+//             string: Cow::Borrowed(data),
+//         }
+//     }
+// }
 
 impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
     fn compare_tags(tag: &Tag) -> bool {
@@ -70,6 +72,7 @@ impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
         let data = reader.read(len)?;
 
         Ok(Self {
+            id: reader.next_id(),
             string: Cow::Borrowed(from_utf8(data)?),
         })
     }
@@ -90,6 +93,7 @@ impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
                 data: data_range,
             },
             asn1_type: Box::new(Asn1Type::Utf8String(Self {
+                id: reader.next_id(),
                 string: Cow::Borrowed(from_utf8(data)?),
             })),
         })
@@ -99,6 +103,10 @@ impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
 impl Asn1Entity for Utf8String<'_> {
     fn tag(&self) -> Tag {
         Utf8String::TAG
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 

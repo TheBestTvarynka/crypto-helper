@@ -14,6 +14,7 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Ta
 /// except that all values must be an integral number of eight bits.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OctetString<'data> {
+    id: u64,
     octets: Cow<'data, [u8]>,
 }
 
@@ -30,18 +31,19 @@ impl OctetString<'_> {
     /// Returns owned version of the [OctetString]
     pub fn to_owned(&self) -> OwnedOctetString {
         OctetString {
+            id: self.id,
             octets: self.octets.to_vec().into(),
         }
     }
 }
 
-impl From<Vec<u8>> for OwnedOctetString {
-    fn from(data: Vec<u8>) -> Self {
-        Self {
-            octets: Cow::Owned(data),
-        }
-    }
-}
+// impl From<Vec<u8>> for OwnedOctetString {
+//     fn from(data: Vec<u8>) -> Self {
+//         Self {
+//             octets: Cow::Owned(data),
+//         }
+//     }
+// }
 
 impl<'data> Asn1Decoder<'data> for OctetString<'data> {
     fn compare_tags(tag: &Tag) -> bool {
@@ -56,6 +58,7 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
         let data = reader.read(len)?;
 
         Ok(Self {
+            id: reader.next_id(),
             octets: Cow::Borrowed(data),
         })
     }
@@ -76,6 +79,7 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
                 data: data_range,
             },
             asn1_type: Box::new(Asn1Type::OctetString(Self {
+                id: reader.next_id(),
                 octets: Cow::Borrowed(data),
             })),
         })
@@ -85,6 +89,10 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
 impl Asn1Entity for OctetString<'_> {
     fn tag(&self) -> Tag {
         OctetString::TAG
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 

@@ -77,6 +77,20 @@ impl Asn1Entity for Asn1Type<'_> {
             Asn1Type::Null(n) => n.tag(),
         }
     }
+
+    fn id(&self) -> u64 {
+        match self {
+            Asn1Type::OctetString(octet) => octet.id(),
+            Asn1Type::Utf8String(utf8) => utf8.id(),
+            Asn1Type::Sequence(sequence) => sequence.id(),
+            Asn1Type::BitString(bit) => bit.id(),
+            Asn1Type::BmpString(bmp) => bmp.id(),
+            Asn1Type::Bool(boolean) => boolean.id(),
+            Asn1Type::ExplicitTag(e) => e.id(),
+            Asn1Type::ApplicationTag(a) => a.id(),
+            Asn1Type::Null(n) => n.id(),
+        }
+    }
 }
 
 impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {

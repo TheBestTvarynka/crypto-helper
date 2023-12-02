@@ -13,6 +13,7 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Ta
 /// The ASN.1 BMPString type contains UNICODE characters. They are two-byte characters, and are not recommended for use unless properly subtyped.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BmpString<'data> {
+    id: u64,
     data: Cow<'data, [u8]>,
 }
 
@@ -29,21 +30,26 @@ impl BmpString<'_> {
     /// Returns owned version of the [BmpString]
     pub fn to_owned(&self) -> OwnedBmpString {
         BmpString {
+            id: self.id,
             data: self.data.to_vec().into(),
         }
     }
 }
 
-impl From<&str> for OwnedBmpString {
-    fn from(value: &str) -> Self {
-        let data: Vec<u8> = value.encode_utf16().flat_map(|c| c.to_be_bytes()).collect();
-        Self { data: Cow::Owned(data) }
-    }
-}
+// impl From<&str> for OwnedBmpString {
+//     fn from(value: &str) -> Self {
+//         let data: Vec<u8> = value.encode_utf16().flat_map(|c| c.to_be_bytes()).collect();
+//         Self { data: Cow::Owned(data) }
+//     }
+// }
 
 impl Asn1Entity for BmpString<'_> {
     fn tag(&self) -> Tag {
         Self::TAG
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 
@@ -64,6 +70,7 @@ impl<'data> Asn1Decoder<'data> for BmpString<'data> {
         let data = reader.read(len)?;
 
         Ok(Self {
+            id: reader.next_id(),
             data: Cow::Borrowed(data),
         })
     }
@@ -84,6 +91,7 @@ impl<'data> Asn1Decoder<'data> for BmpString<'data> {
                 data: data_range,
             },
             asn1_type: Box::new(Asn1Type::BmpString(Self {
+                id: reader.next_id(),
                 data: Cow::Borrowed(data),
             })),
         })

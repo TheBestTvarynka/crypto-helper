@@ -3,12 +3,13 @@ use alloc::boxed::Box;
 
 use crate::asn1::RawAsn1EntityData;
 use crate::length::{len_size, read_len, write_len};
-use crate::reader::Reader;
+use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ApplicationTag<'data> {
+    id: u64,
     tag: u8,
     inner: Asn1<'data>,
 }
@@ -16,8 +17,9 @@ pub struct ApplicationTag<'data> {
 pub type OwnedApplicationTag = ApplicationTag<'static>;
 
 impl<'data> ApplicationTag<'data> {
-    pub fn new(tag: u8, inner: Asn1<'data>) -> Self {
+    pub fn new(id: u64, tag: u8, inner: Asn1<'data>) -> Self {
         Self {
+            id,
             tag: tag & 0x1f | 0x60,
             inner,
         }
@@ -38,6 +40,7 @@ impl<'data> ApplicationTag<'data> {
 
     pub fn to_owned(&self) -> OwnedApplicationTag {
         OwnedApplicationTag {
+            id: self.id,
             tag: self.tag,
             inner: self.inner.to_owned(),
         }
@@ -47,6 +50,10 @@ impl<'data> ApplicationTag<'data> {
 impl Asn1Entity for ApplicationTag<'_> {
     fn tag(&self) -> Tag {
         Tag(self.tag)
+    }
+
+    fn id(&self) -> u64 {
+        self.id
     }
 }
 
@@ -74,7 +81,11 @@ impl<'data> Asn1Decoder<'data> for ApplicationTag<'data> {
             ));
         }
 
-        Ok(Self { tag, inner })
+        Ok(Self {
+            id: reader.next_id(),
+            tag,
+            inner,
+        })
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
@@ -104,7 +115,11 @@ impl<'data> Asn1Decoder<'data> for ApplicationTag<'data> {
                 length: len_range,
                 data: inner.raw_data.tag_position()..inner_data_range.end,
             },
-            asn1_type: Box::new(Asn1Type::ApplicationTag(Self { tag, inner })),
+            asn1_type: Box::new(Asn1Type::ApplicationTag(Self {
+                id: reader.next_id(),
+                tag,
+                inner,
+            })),
         })
     }
 }
