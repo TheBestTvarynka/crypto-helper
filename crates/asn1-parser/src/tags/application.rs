@@ -3,7 +3,7 @@ use alloc::boxed::Box;
 
 use crate::asn1::RawAsn1EntityData;
 use crate::length::{len_size, read_len, write_len};
-use crate::reader::{read_data, Reader};
+use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Error, Tag};
 

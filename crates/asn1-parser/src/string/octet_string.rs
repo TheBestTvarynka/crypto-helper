@@ -35,15 +35,23 @@ impl OctetString<'_> {
             octets: self.octets.to_vec().into(),
         }
     }
+
+    pub fn new_owned(id: u64, octets: Vec<u8>) -> Self {
+        Self {
+            id,
+            octets: Cow::Owned(octets),
+        }
+    }
 }
 
-// impl From<Vec<u8>> for OwnedOctetString {
-//     fn from(data: Vec<u8>) -> Self {
-//         Self {
-//             octets: Cow::Owned(data),
-//         }
-//     }
-// }
+impl From<Vec<u8>> for OwnedOctetString {
+    fn from(data: Vec<u8>) -> Self {
+        Self {
+            id: 0,
+            octets: Cow::Owned(data),
+        }
+    }
+}
 
 impl<'data> Asn1Decoder<'data> for OctetString<'data> {
     fn compare_tags(tag: &Tag) -> bool {

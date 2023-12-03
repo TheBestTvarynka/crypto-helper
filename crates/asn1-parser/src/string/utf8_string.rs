@@ -41,23 +41,32 @@ impl Utf8String<'_> {
             string: self.string.to_string().into(),
         }
     }
+
+    pub fn new_owned(id: u64, string: String) -> Self {
+        Self {
+            id,
+            string: Cow::Owned(string),
+        }
+    }
 }
 
-// impl From<String> for OwnedUtf8String {
-//     fn from(data: String) -> Self {
-//         Self {
-//             string: Cow::Owned(data),
-//         }
-//     }
-// }
+impl From<String> for OwnedUtf8String {
+    fn from(data: String) -> Self {
+        Self {
+            id: 0,
+            string: Cow::Owned(data),
+        }
+    }
+}
 
-// impl From<&'static str> for OwnedUtf8String {
-//     fn from(data: &'static str) -> Self {
-//         Self {
-//             string: Cow::Borrowed(data),
-//         }
-//     }
-// }
+impl From<&'static str> for OwnedUtf8String {
+    fn from(data: &'static str) -> Self {
+        Self {
+            id: 0,
+            string: Cow::Borrowed(data),
+        }
+    }
+}
 
 impl<'data> Asn1Decoder<'data> for Utf8String<'data> {
     fn compare_tags(tag: &Tag) -> bool {
@@ -146,6 +155,7 @@ mod tests {
         assert_eq!(
             utf8_string.asn1(),
             &Asn1Type::Utf8String(Utf8String {
+                id: 0,
                 string: Cow::Borrowed("thebesttvarynka"),
             })
         );

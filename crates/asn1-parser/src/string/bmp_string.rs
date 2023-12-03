@@ -34,14 +34,24 @@ impl BmpString<'_> {
             data: self.data.to_vec().into(),
         }
     }
+
+    pub fn new_owned(id: u64, data: Vec<u8>) -> Self {
+        Self {
+            id,
+            data: Cow::Owned(data),
+        }
+    }
 }
 
-// impl From<&str> for OwnedBmpString {
-//     fn from(value: &str) -> Self {
-//         let data: Vec<u8> = value.encode_utf16().flat_map(|c| c.to_be_bytes()).collect();
-//         Self { data: Cow::Owned(data) }
-//     }
-// }
+impl From<&str> for OwnedBmpString {
+    fn from(value: &str) -> Self {
+        let data: Vec<u8> = value.encode_utf16().flat_map(|c| c.to_be_bytes()).collect();
+        Self {
+            id: 0,
+            data: Cow::Owned(data),
+        }
+    }
+}
 
 impl Asn1Entity for BmpString<'_> {
     fn tag(&self) -> Tag {

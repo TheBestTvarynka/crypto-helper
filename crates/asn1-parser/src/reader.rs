@@ -31,6 +31,10 @@ impl<'data> Reader<'data> {
         self.position == self.inner.len()
     }
 
+    pub fn remaining(&self) -> &'data [u8] {
+        &self.inner[self.position..]
+    }
+
     pub fn data_in_range(&self, range: Range<usize>) -> Asn1Result<&'data [u8]> {
         if range.end > self.inner.len() {
             return Err(Error::from("Invalid range"));

@@ -23,25 +23,20 @@ impl Bool {
         self.flag
     }
 
-    pub fn from_id_and_byte(id: u64, byte: u8) -> Asn1Result<Bool> {
-        Ok(Bool {
-            id,
-            flag: if byte == 0 {
-                false
-            } else if byte == 0xff {
-                true
-            } else {
-                return Err(Error::from("Invalid bool value"));
-            },
-        })
+    pub fn from_id_and_byte(id: u64, byte: u8) -> Self {
+        Bool { id, flag: byte != 0 }
+    }
+
+    pub fn new(id: u64, flag: bool) -> Self {
+        Bool { id, flag }
     }
 }
 
-// impl From<bool> for Bool {
-//     fn from(flag: bool) -> Self {
-//         Self { flag }
-//     }
-// }
+impl From<bool> for Bool {
+    fn from(flag: bool) -> Self {
+        Self { id: 0, flag }
+    }
+}
 
 // impl TryFrom<u8> for Bool {
 //     type Error = Error;
@@ -79,7 +74,7 @@ impl<'data> Asn1Decoder<'data> for Bool {
             return Err(Error::from("Bool length must be equal to 1"));
         }
 
-        Self::from_id_and_byte(reader.next_id(), reader.read_byte()?)
+        Ok(Self::from_id_and_byte(reader.next_id(), reader.read_byte()?))
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
@@ -101,10 +96,7 @@ impl<'data> Asn1Decoder<'data> for Bool {
                 length: len_range,
                 data: data_range,
             },
-            asn1_type: Box::new(Asn1Type::Bool(Self::from_id_and_byte(
-                reader.next_id(),
-                reader.read_byte()?,
-            )?)),
+            asn1_type: Box::new(Asn1Type::Bool(Self::from_id_and_byte(reader.next_id(), data[0]))),
         })
     }
 }

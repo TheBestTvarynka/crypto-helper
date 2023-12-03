@@ -63,11 +63,14 @@ impl BitString<'_> {
 }
 
 // we assume here that firs vector byte contains amount of unused bytes
-// impl From<Vec<u8>> for BitString<'_> {
-//     fn from(bits: Vec<u8>) -> Self {
-//         Self { bits: Cow::Owned(bits) }
-//     }
-// }
+impl From<Vec<u8>> for BitString<'_> {
+    fn from(bits: Vec<u8>) -> Self {
+        Self {
+            id: 0,
+            bits: Cow::Owned(bits),
+        }
+    }
+}
 
 impl Asn1Entity for BitString<'_> {
     fn tag(&self) -> Tag {
