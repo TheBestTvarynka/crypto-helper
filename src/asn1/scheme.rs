@@ -23,10 +23,8 @@ pub struct Asn1NodeProps {
 #[function_component(Asn1Node)]
 pub fn asn1_node(props: &Asn1NodeProps) -> Html {
     fn compare_ids(id: u64, cur_id: &Option<u64>) -> Classes {
-        log::debug!("compare: {} {:?}", id, cur_id);
         match cur_id {
             Some(cur_id) if *cur_id == id => {
-                log::debug!("set class");
                 classes!("hover_node")
             }
             _ => classes!(""),

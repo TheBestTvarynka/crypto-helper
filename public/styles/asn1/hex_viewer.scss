@@ -1,3 +1,10 @@
 .asn1-hex-viewer {
     background: #edd5ce;
 }
+
+.asn1-hex-node {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
