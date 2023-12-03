@@ -51,7 +51,9 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_node: &Option<u64>) -> VNode {
             </Asn1Node>
         },
         Asn1Type::Sequence(sequence) => html! {
-            <SequenceNode node={sequence.to_owned()} cur_node={cur_node.clone()} />
+            <Asn1Node id={sequence.id()} cur_id={cur_node.clone()}>
+                <SequenceNode node={sequence.to_owned()} cur_node={cur_node.clone()} />
+            </Asn1Node>
         },
         Asn1Type::BitString(bit) => html! {
             <Asn1Node id={bit.id()} cur_id={cur_node.clone()}>

@@ -1,4 +1,4 @@
-use asn1_parser::{Asn1Entity, OwnedSequence};
+use asn1_parser::OwnedSequence;
 use yew::{function_component, html, Html, Properties};
 
 use crate::asn1::scheme::build_asn1_schema;

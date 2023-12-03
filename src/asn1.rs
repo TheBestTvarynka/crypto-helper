@@ -1,5 +1,4 @@
 mod asn1_viewer;
-mod hex_buffer;
 mod hex_view;
 mod scheme;
 
