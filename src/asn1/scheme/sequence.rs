@@ -1,4 +1,4 @@
-use asn1_parser::OwnedSequence;
+use asn1_parser::{Asn1Entity, OwnedSequence};
 use yew::{function_component, html, Html, Properties};
 
 use crate::asn1::scheme::build_asn1_schema;
@@ -6,13 +6,17 @@ use crate::asn1::scheme::build_asn1_schema;
 #[derive(PartialEq, Properties, Clone)]
 pub struct SequenceNodeProps {
     pub node: OwnedSequence,
+    pub cur_node: Option<u64>,
 }
 
 #[function_component(SequenceNode)]
 pub fn sequence(props: &SequenceNodeProps) -> Html {
     let fields = props.node.fields();
 
-    let fields_components = fields.iter().map(|f| build_asn1_schema(f)).collect::<Vec<_>>();
+    let fields_components = fields
+        .iter()
+        .map(|f| build_asn1_schema(f, &props.cur_node))
+        .collect::<Vec<_>>();
 
     html! {
         <div>

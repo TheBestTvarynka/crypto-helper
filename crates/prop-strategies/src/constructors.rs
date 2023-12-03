@@ -23,7 +23,8 @@ pub fn recursive_empty_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
         let application_tag_inner = inner.clone();
         prop_oneof![
             vec(inner, 1..16).prop_map(|fields| {
-                Asn1Type::Sequence(OwnedSequence::from(
+                Asn1Type::Sequence(OwnedSequence::new(
+                    0,
                     fields
                         .into_iter()
                         .map(|asn1_type| OwnedAsn1::new(Default::default(), Box::new(asn1_type)))
@@ -33,12 +34,14 @@ pub fn recursive_empty_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
             (0_u8..31)
                 .prop_flat_map(move |tag| (Just(tag), explicit_tag_inner.clone()))
                 .prop_map(|(tag, inner)| Asn1Type::ExplicitTag(OwnedExplicitTag::new(
+                    0,
                     tag,
                     OwnedAsn1::new(Default::default(), Box::new(inner))
                 ))),
             (0_u8..31)
                 .prop_flat_map(move |tag| (Just(tag), application_tag_inner.clone()))
                 .prop_map(|(tag, inner)| Asn1Type::ApplicationTag(OwnedApplicationTag::new(
+                    0,
                     tag,
                     OwnedAsn1::new(Default::default(), Box::new(inner))
                 ))),

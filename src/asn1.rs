@@ -1,7 +1,7 @@
 mod asn1_viewer;
 mod hex_buffer;
-mod scheme;
 mod hex_view;
+mod scheme;
 
 use asn1_parser::Asn1;
 use web_sys::KeyboardEvent;
@@ -41,6 +41,11 @@ pub const TEST_ASN1: &[u8] = &[
     156, 243, 148, 132, 139, 241, 150, 160, 154, 241, 169, 185, 175, 226, 128, 174, 226, 128, 174, 0, 70, 45,
 ];
 
+#[derive(Clone, Debug, PartialEq, Default)]
+struct Asn1Context {
+    hover_node_id: Option<u64>,
+}
+
 #[function_component(Asn1ParserPage)]
 pub fn asn1_parser_page() -> Html {
     let auto_decode = use_state(|| true);
@@ -68,6 +73,10 @@ pub fn asn1_parser_page() -> Html {
 
     let raw_asn1_setter = raw_asn1.setter();
 
+    let ctx = use_state(|| Option::<u64>::None);
+    let ctx_setter_asn1 = ctx.setter();
+    let ctx_setter_hex = ctx.setter();
+
     html! {
         <div class={classes!("vertical", "asn1-page")} {onkeydown}>
             <ByteInput bytes={(*raw_asn1).clone()} setter={Callback::from(move |data| raw_asn1_setter.set(data))} placeholder={"asn1 data".to_owned()} rows={10} />
@@ -76,8 +85,17 @@ pub fn asn1_parser_page() -> Html {
                 <Checkbox id={"auto-decode-asn1".to_owned()} name={"auto-decode".to_owned()} checked={*auto_decode} {set_checked} />
             </div>
             <div class="asn1-viewers">
-                <Asn1Viewer data={(*raw_asn1).clone()} structure={(*parsed_asn1).clone()} />
-                <HexViewer />
+                <Asn1Viewer
+                    structure={(*parsed_asn1).clone()}
+                    cur_node={(*ctx).clone()}
+                    set_cur_node={move |id| ctx_setter_asn1.set(id)}
+                />
+                <HexViewer
+                    raw_data={(*raw_asn1).clone()}
+                    structure={(*parsed_asn1).clone()}
+                    cur_node={(*ctx).clone()}
+                    set_cur_node={move |id| ctx_setter_hex.set(id)}
+                />
             </div>
         </div>
     }
