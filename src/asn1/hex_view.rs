@@ -16,6 +16,9 @@ pub struct HexViewerProps {
 
 #[function_component(HexViewer)]
 pub fn hex_viewer(props: &HexViewerProps) -> Html {
+    log::debug!("{:?}", props.raw_data);
+    log::debug!("{:?}", props.structure.raw_entity_data());
+
     html! {
         <div class="asn1-hex-viewer">
             <div class="asn1-hex-node">

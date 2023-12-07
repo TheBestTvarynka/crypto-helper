@@ -82,9 +82,6 @@
 
 .asn1-node-options-container {
     height: 80%;
-    //position: absolute;
-    //top: 0;
-    //right: 0.3em;
 }
 
 .asn1-node-options {
@@ -97,13 +94,13 @@
     position: absolute;
     left: 0;
     bottom: 0;
-
     background: #dbcfbf;
     color: #50437f;
     border: 2px solid transparent;
     padding: 0.5em;
     border-radius: 0.3em;
     transition: all 0.4s;
+    box-shadow: 0 5px 6px -2px grey;
 }
 
 .asn1-node-options:hover {
