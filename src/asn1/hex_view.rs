@@ -3,7 +3,7 @@ use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties};
 
-use crate::asn1::HighlightAction;
+use crate::asn1::{compare_ids, HighlightAction};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct HexViewerProps {
@@ -46,10 +46,6 @@ fn format_bytes(
             <span class={classes!("asn1-hex-byte", class.clone())} {onmouseenter} {onmouseleave}>{format!("{:02x?}", byte)}</span>
         })
     });
-}
-
-fn compare_ids(asn1_node_id: u64, cur_node: &Option<u64>) -> bool {
-    matches!(cur_node, Some(node_id) if *node_id == asn1_node_id)
 }
 
 fn build_hex_bytes(

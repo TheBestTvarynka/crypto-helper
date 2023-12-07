@@ -43,6 +43,10 @@ pub const TEST_ASN1: &[u8] = &[
     156, 243, 148, 132, 139, 241, 150, 160, 154, 241, 169, 185, 175, 226, 128, 174, 226, 128, 174, 0, 70, 45,
 ];
 
+pub fn compare_ids(asn1_node_id: u64, cur_node: &Option<u64>) -> bool {
+    matches!(cur_node, Some(node_id) if *node_id == asn1_node_id)
+}
+
 pub enum HighlightAction {
     Show(u64),
     Hide(u64),

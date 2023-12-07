@@ -1,16 +1,23 @@
-use asn1_parser::Bool;
+use asn1_parser::{Bool, OwnedRawAsn1EntityData};
 use yew::{function_component, html, Html, Properties};
+
+use crate::asn1::node_options::NodeOptions;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct BoolNodeProps {
     pub node: Bool,
+    pub meta: OwnedRawAsn1EntityData,
 }
 
 #[function_component(BoolNode)]
 pub fn bool(props: &BoolNodeProps) -> Html {
+    let offset = props.meta.tag_position();
+    let length_len = props.meta.length_range().len();
+    let data_len = props.meta.data_range().len();
+
     html! {
         <div class="terminal-asn1-node">
-            <span>{"Bool"}</span>
+            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Bool")}/>
             {if props.node.value() {html! {
                 <span class="asn-bool-true">{"true"}</span>
             }} else {html! {
@@ -20,11 +27,20 @@ pub fn bool(props: &BoolNodeProps) -> Html {
     }
 }
 
+#[derive(PartialEq, Properties, Clone)]
+pub struct NullNodeProps {
+    pub meta: OwnedRawAsn1EntityData,
+}
+
 #[function_component(NullNode)]
-pub fn null() -> Html {
+pub fn null(props: &NullNodeProps) -> Html {
+    let offset = props.meta.tag_position();
+    let length_len = props.meta.length_range().len();
+    let data_len = props.meta.data_range().len();
+
     html! {
         <div class="terminal-asn1-node">
-            <span>{"Null"}</span>
+            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Null")}/>
         </div>
     }
 }

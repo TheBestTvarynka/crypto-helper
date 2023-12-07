@@ -1,21 +1,21 @@
 
 .terminal-asn1-node {
     display: inline-flex;
-    gap: 0.5em;
+    gap: 0.2em;
     align-items: center;
     cursor: crosshair;
 }
 
 .asn1-constructor-header {
     display: inline-flex;
-    gap: 0.5em;
+    gap: 0.2em;
 }
 
 .asn1-constructor-body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 0.1em;
+    gap: 0;
 
     padding-left: 1.5em;
     border-left: 2px solid #70a66c;
@@ -37,18 +37,20 @@
 
 .asn-bool-true {
     border: none;
-    border-radius: 0.2em;
-    padding: 0.2em;
+    border-radius: 0.1em;
+    padding: 0.1em 0.2em 0.1em 0.2em;
     background-color: #0e7e4a;
     color: #e1da97;
+    font-size: 0.9em;
 }
 
 .asn-bool-false {
     border: none;
-    border-radius: 0.2em;
-    padding: 0.2em;
+    border-radius: 0.1em;
+    padding: 0.1em 0.2em 0.1em 0.2em;
     background-color: #ba0021;
     color: #f5bdb6;
+    font-size: 0.9em;
 }
 
 .hover_node {
@@ -79,21 +81,39 @@
 }
 
 .asn1-node-options-container {
-
+    height: 80%;
+    //position: absolute;
+    //top: 0;
+    //right: 0.3em;
 }
 
 .asn1-node-options {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    gap: 0.3em;
     font-size: 0.8em;
     width: max-content;
     position: absolute;
     left: 0;
-    bottom: 0.5em;
+    bottom: 0;
 
     background: #dbcfbf;
     color: #50437f;
-    padding: 0.3em;
+    border: 2px solid transparent;
+    padding: 0.5em;
     border-radius: 0.3em;
+    transition: all 0.4s;
+}
+
+.asn1-node-options:hover {
+    border: 2px solid #94897b;
+}
+
+.asn1-node-container {
+    display: inline-flex;
+}
+
+.asn1-node-options-name {
+    cursor: pointer;
 }
