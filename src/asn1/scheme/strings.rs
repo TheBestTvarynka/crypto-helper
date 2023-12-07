@@ -1,5 +1,7 @@
-use asn1_parser::{OwnedBitString, OwnedBmpString, OwnedOctetString, OwnedUtf8String};
+use asn1_parser::{OwnedBitString, OwnedBmpString, OwnedOctetString, OwnedRawAsn1EntityData, OwnedUtf8String};
 use yew::{function_component, html, Html, Properties};
+
+use crate::asn1::node_options::NodeOptions;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Utf8StringNodeProps {
@@ -19,15 +21,21 @@ pub fn utf8_string(props: &Utf8StringNodeProps) -> Html {
 #[derive(PartialEq, Properties, Clone)]
 pub struct OctetStringNodeProps {
     pub node: OwnedOctetString,
+    pub meta: OwnedRawAsn1EntityData,
 }
 
 #[function_component(OctetStringNode)]
 pub fn octet_string(props: &OctetStringNodeProps) -> Html {
     let octets = props.node.octets();
 
+    let offset = props.meta.tag_position();
+    let length_len = props.meta.length_range().len();
+    let data_len = props.meta.data_range().len();
+
     html! {
         <div class="terminal-asn1-node">
             <span>{"Octet String"}</span>
+            <NodeOptions {offset} {length_len} {data_len}/>
             <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
             <span class="asn-simple-value">{hex::encode(octets)}</span>
         </div>

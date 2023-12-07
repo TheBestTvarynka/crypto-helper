@@ -55,7 +55,7 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &C
     match asn1.asn1() {
         Asn1Type::OctetString(octet) => html! {
             <Asn1Node id={octet.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <OctetStringNode node={octet.to_owned()} />
+                <OctetStringNode node={octet.to_owned()} meta={asn1.raw_entity_data().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::Utf8String(utf8) => html! {

@@ -1,5 +1,6 @@
 mod asn1_viewer;
 mod hex_view;
+mod node_options;
 mod scheme;
 
 use std::rc::Rc;

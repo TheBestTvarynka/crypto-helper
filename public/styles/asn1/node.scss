@@ -3,21 +3,12 @@
     display: inline-flex;
     gap: 0.5em;
     align-items: center;
-}
-
-.terminal-asn1-node:hover > span:first-child {
-    text-decoration: underline;
-    cursor: pointer;
+    cursor: crosshair;
 }
 
 .asn1-constructor-header {
     display: inline-flex;
     gap: 0.5em;
-}
-
-.asn1-constructor-header:hover {
-    font-weight: bold;
-    cursor: pointer;
 }
 
 .asn1-constructor-body {
@@ -38,9 +29,10 @@
 
 .asn-simple-value {
     border: none;
-    border-radius: 0.2em;
-    padding: 0.2em;
+    border-radius: 0.1em;
+    padding: 0.1em 0.2em 0.1em 0.2em;
     background-color: #aab7ce;
+    font-size: 0.9em;
 }
 
 .asn-bool-true {
@@ -60,6 +52,48 @@
 }
 
 .hover_node {
-    //border: 2px solid rebeccapurple;
     background: #edd5ce;
+}
+
+.asn1-button-with-icon {
+    font-size: 0.7em;
+    width: auto;
+    height: 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.1em 0.2em 0.1em 0.2em;
+    border-radius: 0.2em;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.asn1-button-with-icon>img {
+    height: 90%;
+}
+
+.asn1-button-with-icon:hover {
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.asn1-node-options-container {
+
+}
+
+.asn1-node-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 0.8em;
+    width: max-content;
+    position: absolute;
+    left: 0;
+    bottom: 0.5em;
+
+    background: #dbcfbf;
+    color: #50437f;
+    padding: 0.3em;
+    border-radius: 0.3em;
 }

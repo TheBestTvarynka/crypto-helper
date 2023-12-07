@@ -14,7 +14,7 @@ pub struct ExplicitTagProps {
 #[function_component(ExplicitTagNode)]
 pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
     html! {
-        <div>
+        <div style="cursor: crosshair">
             <div class="asn1-constructor-header">
                 <span>{format!("[{}]", props.node.tag_number())}</span>
             </div>
@@ -34,7 +34,7 @@ pub struct ApplicationTagProps {
 #[function_component(ApplicationTagNode)]
 pub fn application_tag(props: &ApplicationTagProps) -> Html {
     html! {
-        <div>
+        <div style="cursor: crosshair">
             <div class="asn1-constructor-header">
                 <span>{format!("Application {}", props.node.tag_number())}</span>
             </div>
