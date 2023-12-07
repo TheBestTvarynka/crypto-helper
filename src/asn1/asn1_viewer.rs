@@ -15,7 +15,7 @@ pub struct Asn1ViewerProps {
 pub fn asn1_viewer(props: &Asn1ViewerProps) -> Html {
     html! {
         <div>
-            {build_asn1_schema(&props.structure, &props.cur_node)}
+            {build_asn1_schema(&props.structure, &props.cur_node, &props.set_cur_node)}
         </div>
     }
 }

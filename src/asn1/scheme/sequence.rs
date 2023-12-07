@@ -1,5 +1,5 @@
 use asn1_parser::OwnedSequence;
-use yew::{function_component, html, Html, Properties};
+use yew::{function_component, html, Callback, Html, Properties};
 
 use crate::asn1::scheme::build_asn1_schema;
 
@@ -7,15 +7,17 @@ use crate::asn1::scheme::build_asn1_schema;
 pub struct SequenceNodeProps {
     pub node: OwnedSequence,
     pub cur_node: Option<u64>,
+    pub set_cur_node: Callback<Option<u64>>,
 }
 
 #[function_component(SequenceNode)]
 pub fn sequence(props: &SequenceNodeProps) -> Html {
     let fields = props.node.fields();
 
+    let set_cur_node = &props.set_cur_node;
     let fields_components = fields
         .iter()
-        .map(|f| build_asn1_schema(f, &props.cur_node))
+        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
         .collect::<Vec<_>>();
 
     html! {
