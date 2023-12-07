@@ -3,13 +3,15 @@ use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties};
 
+use crate::asn1::HighlightAction;
+
 #[derive(PartialEq, Properties, Clone)]
 pub struct HexViewerProps {
     pub raw_data: Vec<u8>,
     pub structure: OwnedAsn1,
 
     pub cur_node: Option<u64>,
-    pub set_cur_node: Callback<Option<u64>>,
+    pub set_cur_node: Callback<HighlightAction>,
 }
 
 #[function_component(HexViewer)]
@@ -32,14 +34,14 @@ fn format_bytes(
     bytes: &[u8],
     asn1_node_id: u64,
     class: Classes,
-    set_cur_node: Callback<Option<u64>>,
+    set_cur_node: Callback<HighlightAction>,
     formatted_bytes: &mut Vec<VNode>,
 ) {
     bytes.iter().for_each(|byte| {
         let set_cur_node_enter = set_cur_node.clone();
-        let onmouseenter = Callback::from(move |_: MouseEvent| set_cur_node_enter.emit(Some(asn1_node_id)));
+        let onmouseenter = Callback::from(move |_: MouseEvent| set_cur_node_enter.emit(HighlightAction::Show(asn1_node_id)));
         let set_cur_node = set_cur_node.clone();
-        let onmouseleave = Callback::from(move |_: MouseEvent| set_cur_node.emit(None));
+        let onmouseleave = Callback::from(move |_: MouseEvent| set_cur_node.emit(HighlightAction::Hide(asn1_node_id)));
         formatted_bytes.push(html! {
             <span class={classes!("asn1-hex-byte", class.clone())} {onmouseenter} {onmouseleave}>{format!("{:02x?}", byte)}</span>
         })
@@ -47,17 +49,14 @@ fn format_bytes(
 }
 
 fn compare_ids(asn1_node_id: u64, cur_node: &Option<u64>) -> bool {
-    match cur_node {
-        Some(node_id) if *node_id == asn1_node_id => true,
-        _ => false,
-    }
+    matches!(cur_node, Some(node_id) if *node_id == asn1_node_id)
 }
 
 fn build_hex_bytes(
     raw: &[u8],
     asn1: &Asn1<'_>,
     cur_node: &Option<u64>,
-    set_cur_node: Callback<Option<u64>>,
+    set_cur_node: Callback<HighlightAction>,
     bytes: &mut Vec<VNode>,
     select_all: bool,
 ) {
@@ -66,9 +65,9 @@ fn build_hex_bytes(
 
     let tag: u8 = asn1.asn1().tag().into();
     let tag_set_cur_node = set_cur_node.clone();
-    let onmouseenter = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(Some(asn1_node_id)));
+    let onmouseenter = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(HighlightAction::Show(asn1_node_id)));
     let tag_set_cur_node = set_cur_node.clone();
-    let onmouseleave = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(None));
+    let onmouseleave = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(HighlightAction::Hide(asn1_node_id)));
     bytes.push(html! {
         <span
             class={if select_all {
@@ -115,7 +114,7 @@ fn build_data_bytes(
     asn1: &Asn1<'_>,
     asn1_node_id: u64,
     cur_node: &Option<u64>,
-    set_cur_node: Callback<Option<u64>>,
+    set_cur_node: Callback<HighlightAction>,
     bytes: &mut Vec<VNode>,
     select_all: bool,
 ) {
@@ -123,7 +122,7 @@ fn build_data_bytes(
         raw: &[u8],
         asn1_node_id: u64,
         cur_node: &Option<u64>,
-        set_cur_node: Callback<Option<u64>>,
+        set_cur_node: Callback<HighlightAction>,
         asn1: &Asn1<'_>,
         bytes: &mut Vec<VNode>,
         select_all: bool,

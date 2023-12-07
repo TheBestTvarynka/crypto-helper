@@ -2,9 +2,11 @@ mod asn1_viewer;
 mod hex_view;
 mod scheme;
 
+use std::rc::Rc;
+
 use asn1_parser::Asn1;
 use web_sys::KeyboardEvent;
-use yew::{classes, function_component, html, use_state, Callback, Html};
+use yew::{classes, function_component, html, use_reducer, use_state, Callback, Html, Reducible};
 
 use crate::asn1::asn1_viewer::Asn1Viewer;
 use crate::asn1::hex_view::HexViewer;
@@ -40,9 +42,44 @@ pub const TEST_ASN1: &[u8] = &[
     156, 243, 148, 132, 139, 241, 150, 160, 154, 241, 169, 185, 175, 226, 128, 174, 226, 128, 174, 0, 70, 45,
 ];
 
-#[derive(Clone, Debug, PartialEq, Default)]
-struct Asn1Context {
-    hover_node_id: Option<u64>,
+pub enum HighlightAction {
+    Show(u64),
+    Hide(u64),
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct Highlight {
+    nodes: Vec<u64>,
+}
+
+impl Highlight {
+    fn show(&mut self, id: u64) {
+        self.hide(id);
+        self.nodes.push(id);
+    }
+
+    fn hide(&mut self, id: u64) {
+        while let Some(index) = self.nodes.iter().position(|asn1_id| *asn1_id == id) {
+            self.nodes.remove(index);
+        }
+    }
+
+    fn current(&self) -> Option<u64> {
+        self.nodes.last().copied()
+    }
+}
+
+impl Reducible for Highlight {
+    type Action = HighlightAction;
+
+    fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
+        let mut highlight = self.as_ref().clone();
+        match action {
+            HighlightAction::Show(id) => highlight.show(id),
+            HighlightAction::Hide(id) => highlight.hide(id),
+        }
+        Rc::new(highlight)
+    }
 }
 
 #[function_component(Asn1ParserPage)]
@@ -72,9 +109,9 @@ pub fn asn1_parser_page() -> Html {
 
     let raw_asn1_setter = raw_asn1.setter();
 
-    let ctx = use_state(|| Option::<u64>::None);
-    let ctx_setter_asn1 = ctx.setter();
-    let ctx_setter_hex = ctx.setter();
+    let ctx = use_reducer(Highlight::default);
+    let asn1_dispatcher = ctx.dispatcher();
+    let hex_dispatcher = ctx.dispatcher();
 
     html! {
         <div class={classes!("vertical", "asn1-page")} {onkeydown}>
@@ -86,14 +123,14 @@ pub fn asn1_parser_page() -> Html {
             <div class="asn1-viewers">
                 <Asn1Viewer
                     structure={(*parsed_asn1).clone()}
-                    cur_node={(*ctx).clone()}
-                    set_cur_node={move |id| ctx_setter_asn1.set(id)}
+                    cur_node={(*ctx).current()}
+                    set_cur_node={move |action| asn1_dispatcher.dispatch(action)}
                 />
                 <HexViewer
                     raw_data={(*raw_asn1).clone()}
                     structure={(*parsed_asn1).clone()}
-                    cur_node={(*ctx).clone()}
-                    set_cur_node={move |id| ctx_setter_hex.set(id)}
+                    cur_node={(*ctx).current()}
+                    set_cur_node={move |action| hex_dispatcher.dispatch(action)}
                 />
             </div>
         </div>
