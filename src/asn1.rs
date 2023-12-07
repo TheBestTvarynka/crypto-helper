@@ -5,7 +5,7 @@ mod scheme;
 
 use std::rc::Rc;
 
-use asn1_parser::{Asn1, Asn1Decoder, Asn1Type};
+use asn1_parser::{Asn1Decoder, Asn1Type};
 use web_sys::KeyboardEvent;
 use yew::{classes, function_component, html, use_reducer, use_state, Callback, Html, Reducible};
 use yew_notifications::{use_notification, Notification, NotificationType};
@@ -67,9 +67,9 @@ impl Reducible for Highlight {
 
 #[function_component(Asn1ParserPage)]
 pub fn asn1_parser_page() -> Html {
-    let auto_decode = use_state(|| false);
+    let auto_decode = use_state(|| true);
     let raw_asn1 = use_state(|| TEST_ASN1.to_vec());
-    let parsed_asn1 = use_state(|| (TEST_ASN1.to_vec(), Asn1::default()));
+    let parsed_asn1 = use_state(|| (TEST_ASN1.to_vec(), Asn1Type::decode_asn1_buff(TEST_ASN1).unwrap()));
 
     let set_auto_decode = auto_decode.setter();
     let set_checked = Callback::from(move |checked| {

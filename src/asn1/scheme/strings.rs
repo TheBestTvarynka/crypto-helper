@@ -1,7 +1,9 @@
 use asn1_parser::{OwnedBitString, OwnedBmpString, OwnedOctetString, OwnedRawAsn1EntityData, OwnedUtf8String};
-use yew::{function_component, html, Html, Properties};
+use yew::{function_component, html, Callback, Html, Properties};
 
 use crate::asn1::node_options::NodeOptions;
+use crate::asn1::scheme::build_asn1_schema;
+use crate::asn1::HighlightAction;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Utf8StringNodeProps {
@@ -27,6 +29,8 @@ pub fn utf8_string(props: &Utf8StringNodeProps) -> Html {
 pub struct OctetStringNodeProps {
     pub node: OwnedOctetString,
     pub meta: OwnedRawAsn1EntityData,
+    pub cur_node: Option<u64>,
+    pub set_cur_node: Callback<HighlightAction>,
 }
 
 #[function_component(OctetStringNode)]
@@ -37,12 +41,24 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
-    html! {
-        <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Octet String")} />
-            <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
-            <span class="asn-simple-value">{hex::encode(octets)}</span>
-        </div>
+    match props.node.inner() {
+        Some(asn1) => html! {
+            <div style="cursor: crosshair">
+                <div class="asn1-constructor-header">
+                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Octet String")}/>
+                </div>
+                <div class="asn1-constructor-body">
+                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node)}
+                </div>
+            </div>
+        },
+        None => html! {
+            <div class="terminal-asn1-node">
+                <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Octet String")} />
+                <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
+                <span class="asn-simple-value">{hex::encode(octets)}</span>
+            </div>
+        },
     }
 }
 #[derive(PartialEq, Properties, Clone)]

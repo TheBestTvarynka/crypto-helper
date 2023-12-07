@@ -16,9 +16,6 @@ pub struct HexViewerProps {
 
 #[function_component(HexViewer)]
 pub fn hex_viewer(props: &HexViewerProps) -> Html {
-    log::debug!("{:?}", props.raw_data);
-    log::debug!("{:?}", props.structure.raw_entity_data());
-
     html! {
         <div class="asn1-hex-viewer">
             <div class="asn1-hex-node">
@@ -149,7 +146,10 @@ fn build_data_bytes(
                 .iter()
                 .for_each(move |asn1| build_hex_bytes(raw, asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
-        Asn1Type::OctetString(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::OctetString(octet) => match octet.inner() {
+            Some(asn1) => build_hex_bytes(raw, asn1, cur_node, set_cur_node.clone(), bytes, select_all),
+            None => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        },
         Asn1Type::Utf8String(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::BitString(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::BmpString(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
