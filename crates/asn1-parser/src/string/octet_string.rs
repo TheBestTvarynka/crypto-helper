@@ -77,6 +77,7 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
 
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
+        inner_reader.set_offset(reader.full_offset() - data.len());
         let inner = Asn1Type::decode_asn1(&mut inner_reader).ok();
 
         reader.set_next_id(inner_reader.next_id());
@@ -99,7 +100,7 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
 
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
-        inner_reader.set_offset(reader.full_offset());
+        inner_reader.set_offset(reader.full_offset() - data.len());
         let inner = Asn1Type::decode_asn1(&mut inner_reader).ok();
 
         reader.set_next_id(inner_reader.next_id());
