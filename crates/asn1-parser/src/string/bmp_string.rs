@@ -86,7 +86,8 @@ impl<'data> Asn1Decoder<'data> for BmpString<'data> {
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
-        let tag_position = reader.position();
+        let tag_position = reader.full_offset();
+        let data_start = reader.position();
         check_tag!(in: reader);
 
         let (len, len_range) = read_len(reader)?;
@@ -95,7 +96,7 @@ impl<'data> Asn1Decoder<'data> for BmpString<'data> {
 
         Ok(Asn1 {
             raw_data: RawAsn1EntityData {
-                raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
+                raw_data: Cow::Borrowed(reader.data_in_range(data_start..data_range.end)?),
                 tag: tag_position,
                 length: len_range,
                 data: data_range,

@@ -16,6 +16,7 @@ use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1Type, Ta
 pub struct OctetString<'data> {
     id: u64,
     octets: Cow<'data, [u8]>,
+    inner: Option<Asn1<'data>>,
 }
 
 pub type OwnedOctetString = OctetString<'static>;
@@ -28,27 +29,36 @@ impl OctetString<'_> {
         &self.octets
     }
 
+    pub fn inner(&self) -> Option<&Asn1<'_>> {
+        self.inner.as_ref()
+    }
+
     /// Returns owned version of the [OctetString]
     pub fn to_owned(&self) -> OwnedOctetString {
         OctetString {
             id: self.id,
             octets: self.octets.to_vec().into(),
+            inner: self.inner.as_ref().map(|inner| inner.to_owned()),
         }
     }
 
-    pub fn new_owned(id: u64, octets: Vec<u8>) -> Self {
-        Self {
+    pub fn new_owned(id: u64, octets: Vec<u8>) -> OwnedOctetString {
+        let inner = Asn1Type::decode_asn1_buff(&octets).ok().map(|asn1| asn1.to_owned());
+        OwnedOctetString {
             id,
             octets: Cow::Owned(octets),
+            inner,
         }
     }
 }
 
 impl From<Vec<u8>> for OwnedOctetString {
     fn from(data: Vec<u8>) -> Self {
+        let inner = Asn1Type::decode_asn1_buff(&data).ok().map(|asn1| asn1.to_owned());
         Self {
             id: 0,
             octets: Cow::Owned(data),
+            inner,
         }
     }
 }
@@ -65,23 +75,38 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
 
         let data = reader.read(len)?;
 
+        let mut inner_reader = Reader::new(data);
+        inner_reader.set_next_id(reader.next_id());
+        let inner = Asn1Type::decode_asn1(&mut inner_reader).ok();
+
+        reader.set_next_id(inner_reader.next_id());
+
         Ok(Self {
             id: reader.next_id(),
             octets: Cow::Borrowed(data),
+            inner,
         })
     }
 
     fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
-        let tag_position = reader.position();
+        let tag_position = reader.full_offset();
+        let data_start = reader.position();
         check_tag!(in: reader);
 
         let (len, len_range) = read_len(reader)?;
 
         let (data, data_range) = read_data(reader, len)?;
 
+        let mut inner_reader = Reader::new(data);
+        inner_reader.set_next_id(reader.next_id());
+        inner_reader.set_offset(reader.full_offset());
+        let inner = Asn1Type::decode_asn1(&mut inner_reader).ok();
+
+        reader.set_next_id(inner_reader.next_id());
+
         Ok(Asn1 {
             raw_data: RawAsn1EntityData {
-                raw_data: Cow::Borrowed(reader.data_in_range(tag_position..data_range.end)?),
+                raw_data: Cow::Borrowed(reader.data_in_range(data_start..data_range.end)?),
                 tag: tag_position,
                 length: len_range,
                 data: data_range,
@@ -89,6 +114,7 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
             asn1_type: Box::new(Asn1Type::OctetString(Self {
                 id: reader.next_id(),
                 octets: Cow::Borrowed(data),
+                inner,
             })),
         })
     }

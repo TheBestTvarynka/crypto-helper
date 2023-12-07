@@ -46,28 +46,6 @@ fn asn1() {
 }
 
 #[test]
-fn bug() {
-    use asn1_parser::*;
-
-    let asn1 = Asn1Type::ExplicitTag(ExplicitTag::new(
-        0,
-        4,
-        Asn1::new(Default::default(), Box::new(Asn1Type::Bool(false.into()))),
-    ));
-
-    let asn1_tag = asn1.tag();
-
-    let buff_len = asn1.needed_buf_size();
-    let mut buff = vec![0; buff_len];
-
-    asn1.encode_buff(&mut buff).unwrap();
-
-    println!("encoded: {:?}", buff);
-
-    let mut decoded = Asn1Type::decode_asn1_buff(&buff).unwrap();
-}
-
-#[test]
 fn full_example() {
     use asn1_parser::*;
 

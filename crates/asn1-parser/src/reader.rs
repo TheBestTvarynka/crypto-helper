@@ -5,6 +5,7 @@ use crate::{Asn1Result, Error};
 #[derive(Debug)]
 pub struct Reader<'data> {
     next_node_id: u64,
+    offset: usize,
     position: usize,
     inner: &'data [u8],
 }
@@ -12,10 +13,15 @@ pub struct Reader<'data> {
 impl<'data> Reader<'data> {
     pub fn new(data: &'data [u8]) -> Self {
         Self {
+            offset: 0,
             next_node_id: 0,
             position: 0,
             inner: data,
         }
+    }
+
+    pub fn set_offset(&mut self, offset: usize) {
+        self.offset = offset;
     }
 
     pub fn next_id(&mut self) -> u64 {
@@ -23,8 +29,16 @@ impl<'data> Reader<'data> {
         self.next_node_id
     }
 
+    pub fn set_next_id(&mut self, next_node_id: u64) {
+        self.next_node_id = next_node_id;
+    }
+
     pub fn position(&self) -> usize {
         self.position
+    }
+
+    pub fn full_offset(&self) -> usize {
+        self.offset + self.position
     }
 
     pub fn empty(&self) -> bool {
