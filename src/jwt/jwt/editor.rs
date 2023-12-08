@@ -55,6 +55,32 @@ fn format_json<E: Debug>(
     })
 }
 
+#[derive(Clone, Copy, Debug, Default)]
+enum JsonView {
+    Raw,
+    #[default]
+    Table,
+}
+
+impl From<bool> for JsonView {
+    fn from(value: bool) -> Self {
+        if value {
+            JsonView::Table
+        } else {
+            JsonView::Raw
+        }
+    }
+}
+
+impl From<JsonView> for bool {
+    fn from(value: JsonView) -> Self {
+        match value {
+            JsonView::Raw => false,
+            JsonView::Table => true,
+        }
+    }
+}
+
 #[function_component(JwtEditor)]
 pub fn jwt_editor(props: &JwtEditorProps) -> Html {
     let header = props.jwt.parsed_header.clone();
@@ -142,10 +168,8 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
         set_jwt.emit(jwt);
     });
 
-    // false - raw view
-    // true - table view
-    let header_view = use_state(|| true);
-    let payload_view = use_state(|| true);
+    let header_view = use_state(JsonView::default);
+    let payload_view = use_state(JsonView::default);
 
     let header_view_setter = header_view.setter();
     let payload_view_setter = payload_view.setter();
@@ -162,11 +186,11 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
                     <button onclick={header_on_minify} class="jwt-util-button">{"Minify"}</button>
                     <div class="horizontal">
                         <span class="total">{"raw"}</span>
-                        <Switch id={String::from("jwt-header-view")} state={*header_view} setter={Callback::from(move |view| header_view_setter.set(view))} />
+                        <Switch id={String::from("jwt-header-view")} state={bool::from(*header_view)} setter={Callback::from(move |view: bool| header_view_setter.set(view.into()))} />
                         <span class="total">{"table"}</span>
                     </div>
                 </div>
-                {if !*header_view {html! {
+                {if !bool::from(*header_view) {html! {
                     <textarea rows="4" class="base-input" value={header} oninput={on_header_input} />
                 }} else {html! {
                     <TableView value={serde_json::from_str::<Value>(&props.jwt.parsed_header).unwrap()} />
@@ -179,11 +203,11 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
                     <button onclick={payload_on_minify} class="jwt-util-button">{"Minify"}</button>
                     <div class="horizontal">
                         <span class="total">{"raw"}</span>
-                        <Switch id={String::from("jwt-payload-view")} state={*payload_view} setter={Callback::from(move |view| payload_view_setter.set(view))} />
+                        <Switch id={String::from("jwt-payload-view")} state={bool::from(*payload_view)} setter={Callback::from(move |view: bool| payload_view_setter.set(view.into()))} />
                         <span class="total">{"table"}</span>
                     </div>
                 </div>
-                {if !*payload_view {html! {
+                {if !bool::from(*payload_view) {html! {
                     <textarea rows="6" class="base-input" value={payload} oninput={on_payload_input} />
                 }} else {html! {
                     <TableView value={serde_json::from_str::<Value>(&props.jwt.parsed_payload).unwrap()} />
