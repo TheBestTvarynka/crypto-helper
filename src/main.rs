@@ -45,7 +45,7 @@ fn switch(routes: Route) -> Html {
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let component_creator = NotificationFactory::default();
+    let component_creator = NotificationFactory;
 
     html! {
         <BrowserRouter>
