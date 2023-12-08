@@ -1,8 +1,9 @@
-use asn1_parser::{Asn1, Asn1Entity, Asn1Type, OwnedAsn1};
+use asn1_parser::{Asn1, Asn1Entity, Asn1Type, OwnedAsn1, RawAsn1EntityData};
 use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties};
 
+use crate::asn1::node_options::NodeOptions;
 use crate::asn1::{compare_ids, HighlightAction};
 
 #[derive(PartialEq, Properties, Clone)]
@@ -31,19 +32,26 @@ pub fn hex_viewer(props: &HexViewerProps) -> Html {
 }
 
 fn format_bytes(
+    meta: &RawAsn1EntityData,
     bytes: &[u8],
     asn1_node_id: u64,
     class: Classes,
     set_cur_node: Callback<HighlightAction>,
     formatted_bytes: &mut Vec<VNode>,
 ) {
+    let offset = meta.tag_position();
+    let length_len = meta.length_range().len();
+    let data_len = meta.data_range().len();
+
     bytes.iter().for_each(|byte| {
         let set_cur_node_enter = set_cur_node.clone();
         let onmouseenter = Callback::from(move |_: MouseEvent| set_cur_node_enter.emit(HighlightAction::Show(asn1_node_id)));
         let set_cur_node = set_cur_node.clone();
         let onmouseleave = Callback::from(move |_: MouseEvent| set_cur_node.emit(HighlightAction::Hide(asn1_node_id)));
         formatted_bytes.push(html! {
-            <span class={classes!("asn1-hex-byte", class.clone())} {onmouseenter} {onmouseleave}>{format!("{:02x?}", byte)}</span>
+            <span class={classes!("asn1-hex-byte", class.clone())} {onmouseenter} {onmouseleave}>
+                <NodeOptions node_bytes={meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("{:02x?}", byte)}/>
+            </span>
         })
     });
 }
@@ -64,6 +72,13 @@ fn build_hex_bytes(
     let onmouseenter = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(HighlightAction::Show(asn1_node_id)));
     let tag_set_cur_node = set_cur_node.clone();
     let onmouseleave = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(HighlightAction::Hide(asn1_node_id)));
+
+    let meta = asn1.raw_entity_data();
+
+    let offset = meta.tag_position();
+    let length_len = meta.length_range().len();
+    let data_len = meta.data_range().len();
+
     bytes.push(html! {
         <span
             class={if select_all {
@@ -76,11 +91,12 @@ fn build_hex_bytes(
             {onmouseenter}
             {onmouseleave}
         >
-            {format!("{:02x?}", tag)}
+            <NodeOptions node_bytes={meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("{:02x?}", tag)}/>
         </span>
     });
 
     format_bytes(
+        meta,
         &raw[asn1.raw_entity_data().length.clone()],
         asn1_node_id,
         if select_all {
@@ -126,6 +142,7 @@ fn build_data_bytes(
         let if_selected = compare_ids(asn1_node_id, cur_node);
 
         format_bytes(
+            asn1.raw_entity_data(),
             &raw[asn1.raw_entity_data().data.clone()],
             asn1_node_id,
             if if_selected || select_all {
