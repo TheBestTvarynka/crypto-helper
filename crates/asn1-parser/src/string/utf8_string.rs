@@ -156,7 +156,7 @@ mod tests {
         assert_eq!(
             utf8_string.asn1(),
             &Asn1Type::Utf8String(Utf8String {
-                id: 0,
+                id: 1,
                 string: Cow::Borrowed("thebesttvarynka"),
             })
         );

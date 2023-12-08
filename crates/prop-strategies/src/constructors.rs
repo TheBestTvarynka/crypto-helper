@@ -3,7 +3,7 @@ use proptest::collection::vec;
 use proptest::prop_oneof;
 use proptest::strategy::{Just, Strategy};
 
-use crate::{any_bit_string, any_bmp_string, any_bool, any_null, any_octet_string, any_utf8_string};
+use crate::{any_bit_string, any_bmp_string, any_bool, any_integer, any_null, any_octet_string, any_utf8_string};
 
 fn any_leaf_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
     prop_oneof![
@@ -13,6 +13,7 @@ fn any_leaf_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
         any_bmp_string().prop_map(Asn1Type::BmpString),
         any_bool().prop_map(Asn1Type::Bool),
         any_null().prop_map(Asn1Type::Null),
+        any_integer().prop_map(Asn1Type::Integer),
     ]
     .no_shrink()
 }
