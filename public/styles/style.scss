@@ -176,3 +176,25 @@ article {
 .action-button:focus {
     box-shadow: 0 0 0 2px #314157;
 }
+
+.table-container {
+    background: #e0e0e0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 30% auto;
+    gap: 0.2em;
+}
+
+.table-cell {
+    padding: 0.2em;
+    background: #dbcfbf;
+    cursor: pointer;
+    color: #50437f;
+    border-radius: 0.2em;
+    border: 2px solid transparent;
+}
+
+.table-cell:hover {
+    transition: all 0.3s;
+    border: 2px solid #50437f;
+}

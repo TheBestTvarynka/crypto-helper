@@ -2,12 +2,12 @@ use std::fmt::Debug;
 
 use serde_json::{to_string_pretty, Value};
 use web_sys::{HtmlInputElement, MouseEvent};
-use yew::{function_component, html, Callback, Html, Properties, TargetCast};
+use yew::{function_component, html, use_state, Callback, Html, Properties, TargetCast};
 use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use super::Jwt;
-use crate::common::{build_simple_output, BytesFormat};
+use crate::common::{build_simple_output, BytesFormat, Switch, TableView};
 use crate::utils::copy_to_clipboard_with_notification;
 
 #[derive(PartialEq, Properties)]
@@ -53,6 +53,32 @@ fn format_json<E: Debug>(
             }
         }
     })
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+enum JsonView {
+    Raw,
+    #[default]
+    Table,
+}
+
+impl From<bool> for JsonView {
+    fn from(value: bool) -> Self {
+        if value {
+            JsonView::Table
+        } else {
+            JsonView::Raw
+        }
+    }
+}
+
+impl From<JsonView> for bool {
+    fn from(value: JsonView) -> Self {
+        match value {
+            JsonView::Raw => false,
+            JsonView::Table => true,
+        }
+    }
 }
 
 #[function_component(JwtEditor)]
@@ -142,6 +168,12 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
         set_jwt.emit(jwt);
     });
 
+    let header_view = use_state(JsonView::default);
+    let payload_view = use_state(JsonView::default);
+
+    let header_view_setter = header_view.setter();
+    let payload_view_setter = payload_view.setter();
+
     let notifications = use_notification::<Notification>();
     let clipboard = use_clipboard();
 
@@ -152,16 +184,34 @@ pub fn jwt_editor(props: &JwtEditorProps) -> Html {
                     <span class="jwt-header" onclick={copy_to_clipboard_with_notification(header.clone(), clipboard.clone(), "Header", notifications.clone())}>{"Header"}</span>
                     <button onclick={header_on_pretty} class="jwt-util-button">{"Prettify"}</button>
                     <button onclick={header_on_minify} class="jwt-util-button">{"Minify"}</button>
+                    <div class="horizontal">
+                        <span class="total">{"raw"}</span>
+                        <Switch id={String::from("jwt-header-view")} state={bool::from(*header_view)} setter={Callback::from(move |view: bool| header_view_setter.set(view.into()))} />
+                        <span class="total">{"table"}</span>
+                    </div>
                 </div>
-                <textarea rows="4" class="base-input" value={header} oninput={on_header_input} />
+                {if !bool::from(*header_view) {html! {
+                    <textarea rows="4" class="base-input" value={header} oninput={on_header_input} />
+                }} else {html! {
+                    <TableView value={serde_json::from_str::<Value>(&props.jwt.parsed_header).unwrap()} />
+                }}}
             </div>
             <div class="vertical">
                 <div class="horizontal">
                     <span class="jwt-payload" onclick={copy_to_clipboard_with_notification(payload.clone(), clipboard.clone(), "Payload", notifications.clone())}>{"Payload"}</span>
                     <button onclick={payload_on_pretty} class="jwt-util-button">{"Prettify"}</button>
                     <button onclick={payload_on_minify} class="jwt-util-button">{"Minify"}</button>
+                    <div class="horizontal">
+                        <span class="total">{"raw"}</span>
+                        <Switch id={String::from("jwt-payload-view")} state={bool::from(*payload_view)} setter={Callback::from(move |view: bool| payload_view_setter.set(view.into()))} />
+                        <span class="total">{"table"}</span>
+                    </div>
                 </div>
-                <textarea rows="6" class="base-input" value={payload} oninput={on_payload_input} />
+                {if !bool::from(*payload_view) {html! {
+                    <textarea rows="6" class="base-input" value={payload} oninput={on_payload_input} />
+                }} else {html! {
+                    <TableView value={serde_json::from_str::<Value>(&props.jwt.parsed_payload).unwrap()} />
+                }}}
             </div>
             <div class="vertical">
                 <span class="jwt-signature" onclick={copy_to_clipboard_with_notification(signature.clone(), clipboard, "Signature", notifications.clone())}>{"Signature"}</span>
