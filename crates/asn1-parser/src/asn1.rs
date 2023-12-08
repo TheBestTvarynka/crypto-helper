@@ -6,7 +6,7 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, BitString, BmpString, Bool, Error, ExplicitTag,
-    Null, OctetString, Sequence, Tag, Utf8String,
+    Integer, Null, OctetString, Sequence, Tag, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -19,6 +19,7 @@ pub enum Asn1Type<'data> {
 
     Bool(Bool),
     Null(Null),
+    Integer(Integer<'data>),
 
     ExplicitTag(ExplicitTag<'data>),
     ApplicationTag(ApplicationTag<'data>),
@@ -38,6 +39,7 @@ impl Asn1Type<'_> {
             Asn1Type::BmpString(_) => {}
             Asn1Type::Bool(_) => {}
             Asn1Type::Null(_) => {}
+            Asn1Type::Integer(_) => {}
             Asn1Type::ExplicitTag(e) => {
                 e.clear_raw_data();
             }
@@ -56,6 +58,7 @@ impl Asn1Type<'_> {
             Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
+            Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
             Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
             Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned()),
             Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
@@ -72,6 +75,7 @@ impl Asn1Entity for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.tag(),
             Asn1Type::BmpString(bmp) => bmp.tag(),
             Asn1Type::Bool(boolean) => boolean.tag(),
+            Asn1Type::Integer(integer) => integer.tag(),
             Asn1Type::ExplicitTag(e) => e.tag(),
             Asn1Type::ApplicationTag(a) => a.tag(),
             Asn1Type::Null(n) => n.tag(),
@@ -86,6 +90,7 @@ impl Asn1Entity for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.id(),
             Asn1Type::BmpString(bmp) => bmp.id(),
             Asn1Type::Bool(boolean) => boolean.id(),
+            Asn1Type::Integer(integer) => integer.id(),
             Asn1Type::ExplicitTag(e) => e.id(),
             Asn1Type::ApplicationTag(a) => a.id(),
             Asn1Type::Null(n) => n.id(),
@@ -94,8 +99,9 @@ impl Asn1Entity for Asn1Type<'_> {
 }
 
 impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
-    fn compare_tags(tag: &Tag) -> bool {
-        OctetString::compare_tags(tag) || Utf8String::compare_tags(tag)
+    fn compare_tags(_tag: &Tag) -> bool {
+        // OctetString::compare_tags(tag) || Utf8String::compare_tags(tag)
+        true
     }
 
     fn decode(reader: &mut Reader<'data>) -> Asn1Result<Self> {
@@ -113,6 +119,8 @@ impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
             Ok(Asn1Type::BmpString(BmpString::decode(reader)?))
         } else if Bool::compare_tags(&tag) {
             Ok(Asn1Type::Bool(Bool::decode(reader)?))
+        } else if Integer::compare_tags(&tag) {
+            Ok(Asn1Type::Integer(Integer::decode(reader)?))
         } else if ExplicitTag::compare_tags(&tag) {
             Ok(Asn1Type::ExplicitTag(ExplicitTag::decode(reader)?))
         } else if ApplicationTag::compare_tags(&tag) {
@@ -139,6 +147,8 @@ impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
             BmpString::decode_asn1(reader)
         } else if Bool::compare_tags(&tag) {
             Bool::decode_asn1(reader)
+        } else if Integer::compare_tags(&tag) {
+            Integer::decode_asn1(reader)
         } else if ExplicitTag::compare_tags(&tag) {
             ExplicitTag::decode_asn1(reader)
         } else if ApplicationTag::compare_tags(&tag) {
@@ -160,6 +170,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.needed_buf_size(),
             Asn1Type::BmpString(bmp) => bmp.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
+            Asn1Type::Integer(integer) => integer.needed_buf_size(),
             Asn1Type::ExplicitTag(e) => e.needed_buf_size(),
             Asn1Type::ApplicationTag(a) => a.needed_buf_size(),
             Asn1Type::Null(n) => n.needed_buf_size(),
@@ -174,6 +185,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.encode(writer),
             Asn1Type::BmpString(bmp) => bmp.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
+            Asn1Type::Integer(integer) => integer.encode(writer),
             Asn1Type::ExplicitTag(e) => e.encode(writer),
             Asn1Type::ApplicationTag(a) => a.encode(writer),
             Asn1Type::Null(n) => n.encode(writer),

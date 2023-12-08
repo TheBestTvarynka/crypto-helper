@@ -72,7 +72,6 @@ impl<'data> Asn1Decoder<'data> for OctetString<'data> {
         check_tag!(in: reader);
 
         let (len, _len_range) = read_len(reader)?;
-
         let data = reader.read(len)?;
 
         let mut inner_reader = Reader::new(data);
