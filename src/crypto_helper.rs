@@ -117,7 +117,7 @@ pub fn crypto_helper() -> Html {
             <Input algorithm={(*algorithm).clone()} setter={algorithm.setter()} />
             <div class="horizontal">
                 <button class="action-button" {onclick}>{"Go"}</button>
-                <span class="total">{"(ctrl + enter)"}</span>
+                <span class="total">{"(ctrl+enter)"}</span>
             </div>
             <Output algorithm={(*algorithm).clone()} output={(*output).clone()} />
             <div class="horizontal">

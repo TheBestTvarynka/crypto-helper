@@ -12,7 +12,7 @@ use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::asn1::asn1_viewer::Asn1Viewer;
 use crate::asn1::hex_view::HexViewer;
-use crate::common::{ByteInput, Checkbox};
+use crate::common::ByteInput;
 
 pub const TEST_ASN1: &[u8] = &[
     48, 87, 1, 1, 255, 1, 1, 0, 160, 17, 12, 15, 84, 98, 101, 66, 101, 115, 116, 84, 118, 97, 114, 121, 110, 107, 97,
@@ -67,14 +67,8 @@ impl Reducible for Highlight {
 
 #[function_component(Asn1ParserPage)]
 pub fn asn1_parser_page() -> Html {
-    let auto_decode = use_state(|| true);
     let raw_asn1 = use_state(|| TEST_ASN1.to_vec());
-    let parsed_asn1 = use_state(|| (TEST_ASN1.to_vec(), Asn1Type::decode_asn1_buff(TEST_ASN1).unwrap()));
-
-    let set_auto_decode = auto_decode.setter();
-    let set_checked = Callback::from(move |checked| {
-        set_auto_decode.set(checked);
-    });
+    let parsed_asn1 = use_state(|| Asn1Type::decode_asn1_buff(TEST_ASN1).unwrap());
 
     let notifications = use_notification::<Notification>();
     let asn1_setter = parsed_asn1.setter();
@@ -82,7 +76,7 @@ pub fn asn1_parser_page() -> Html {
     let parse_asn1 = Callback::from(move |_| match Asn1Type::decode_asn1_buff(&raw_data) {
         Ok(asn1) => {
             log::debug!("parsed!");
-            asn1_setter.set((raw_data.clone(), asn1.to_owned()));
+            asn1_setter.set(asn1.to_owned());
         }
         Err(error) => notifications.spawn(Notification::new(
             NotificationType::Error,
@@ -92,10 +86,10 @@ pub fn asn1_parser_page() -> Html {
         )),
     });
 
-    let go = parse_asn1.clone();
+    let process = parse_asn1.clone();
     let onkeydown = Callback::from(move |event: KeyboardEvent| {
         if event.ctrl_key() && event.code() == "Enter" {
-            go.emit(());
+            process.emit(());
         }
     });
 
@@ -114,17 +108,17 @@ pub fn asn1_parser_page() -> Html {
             <ByteInput bytes={(*raw_asn1).clone()} setter={Callback::from(move |data| raw_asn1_setter.set(data))} placeholder={"asn1 data".to_owned()} rows={10} />
             <div class="horizontal">
                 <button class="action-button" {onclick}>{"Process"}</button>
-                <Checkbox id={"auto-decode-asn1".to_owned()} name={"auto-decode".to_owned()} checked={*auto_decode} {set_checked} />
+                <span class="total">{"(ctrl+enter)"}</span>
             </div>
             <div class="asn1-viewers">
                 <Asn1Viewer
-                    structure={parsed_asn1.1.clone()}
+                    structure={(*parsed_asn1).clone()}
                     cur_node={(*ctx).current()}
                     set_cur_node={move |action| asn1_dispatcher.dispatch(action)}
                 />
                 <HexViewer
-                    raw_data={parsed_asn1.0.clone()}
-                    structure={parsed_asn1.1.clone()}
+                    raw_data={parsed_asn1.raw_entity_data().raw_bytes().to_vec()}
+                    structure={(*parsed_asn1).clone()}
                     cur_node={(*ctx).current()}
                     set_cur_node={move |action| hex_dispatcher.dispatch(action)}
                 />
