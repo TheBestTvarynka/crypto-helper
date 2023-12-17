@@ -2,6 +2,8 @@ use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
+use num_bigint_dig::BigUint;
+
 use crate::length::{len_size, read_len, write_len};
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
@@ -20,6 +22,20 @@ impl Integer<'_> {
 
     pub fn raw_data(&self) -> &[u8] {
         self.bytes.as_ref()
+    }
+
+    pub fn as_big_uint(&self) -> BigUint {
+        BigUint::from_bytes_be(if self.bytes.len() > 1 {
+            if self.bytes[0] == 0x00 {
+                &self.bytes[1..]
+            } else {
+                &self.bytes
+            }
+        } else if self.bytes.is_empty() {
+            &[0]
+        } else {
+            &self.bytes
+        })
     }
 
     pub fn to_owned(&self) -> OwnedInteger {

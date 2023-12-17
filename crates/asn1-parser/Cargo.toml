@@ -15,3 +15,6 @@ std = []
 [dev-dependencies]
 prop-strategies = { path = "../prop-strategies" }
 proptest = "1.2.0"
+
+[dependencies]
+num-bigint-dig = { version = "0.8.4", default-features = false }
