@@ -198,3 +198,17 @@ article {
     transition: all 0.3s;
     border: 2px solid #50437f;
 }
+
+.a-link {
+    color: inherit;
+    text-decoration: underline;
+    padding: 0 0.2em 0 0.2em;
+    border-radius: 0.2em;
+    transition: all 0.2s;
+}
+
+.a-link:hover {
+    background-color: #50437f;
+    color: #dbcfbf;
+    cursor: pointer;
+}

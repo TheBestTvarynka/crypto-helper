@@ -105,6 +105,13 @@ pub fn asn1_parser_page() -> Html {
 
     html! {
         <div class={classes!("vertical", "asn1-page")} {onkeydown}>
+            <span>
+                {"Still in β (beta). See "}
+                    <a href="https://github.com/TheBestTvarynka/crypto-helper/tree/main/crates/asn1-parser#supported-asn1-types" class="a-link">
+                        {"list of supported asn1 types"}
+                    </a>
+                {". Report a bug "}<a href="https://github.com/TheBestTvarynka/crypto-helper/issues/new" class="a-link">{"here"}</a>{"."}
+            </span>
             <ByteInput bytes={(*raw_asn1).clone()} setter={Callback::from(move |data| raw_asn1_setter.set(data))} placeholder={"asn1 data".to_owned()} rows={10} />
             <div class="horizontal">
                 <button class="action-button" {onclick}>{"Process"}</button>
