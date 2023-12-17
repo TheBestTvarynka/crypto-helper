@@ -20,7 +20,7 @@ pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
     let data_len = props.meta.data_range().len();
 
     html! {
-        <div style="cursor: crosshair">
+        <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
                 <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("[{}]", props.node.tag_number())}/>
             </div>
@@ -45,7 +45,7 @@ pub fn application_tag(props: &ApplicationTagProps) -> Html {
     let data_len = props.meta.data_range().len();
 
     html! {
-        <div style="cursor: crosshair">
+        <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
                 <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("Application {}", props.node.tag_number())}/>
             </div>

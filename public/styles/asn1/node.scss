@@ -4,6 +4,7 @@
     gap: 0.2em;
     align-items: center;
     cursor: crosshair;
+    width: 100%;
 }
 
 .asn1-constructor-header {
@@ -18,6 +19,7 @@
     gap: 0;
 
     padding-left: 1.5em;
+    width: calc(100% - 1.5em);
     border-left: 2px solid #70a66c;
 }
 
@@ -32,7 +34,8 @@
     border-radius: 0.1em;
     padding: 0.1em 0.2em 0.1em 0.2em;
     background-color: #aab7ce;
-    font-size: 0.9em;
+    font-size: 0.8em;
+    overflow: hidden;
 }
 
 .asn-bool-true {
@@ -105,6 +108,7 @@
 
 .asn1-node-container {
     display: inline-flex;
+    width: 100%;
 }
 
 .asn1-node-options-name {

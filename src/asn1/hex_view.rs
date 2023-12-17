@@ -172,6 +172,7 @@ fn build_data_bytes(
         Asn1Type::BmpString(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::Bool(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::Null(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::Integer(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::ExplicitTag(explicit) => {
             build_hex_bytes(raw, explicit.inner(), cur_node, set_cur_node.clone(), bytes, select_all)
         }

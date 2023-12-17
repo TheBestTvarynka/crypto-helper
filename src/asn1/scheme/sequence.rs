@@ -28,7 +28,7 @@ pub fn sequence(props: &SequenceNodeProps) -> Html {
     let data_len = props.meta.data_range().len();
 
     html! {
-        <div style="cursor: crosshair">
+        <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
                 <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Sequence")}/>
                 <span class="asn1-node-info-label">{format!("({} fields)", fields.len())}</span>
