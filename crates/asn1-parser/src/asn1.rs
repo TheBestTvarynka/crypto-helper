@@ -1,28 +1,26 @@
 use alloc::borrow::Cow;
-use alloc::boxed::Box;
 use core::ops::Range;
 
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, BitString, BmpString, Bool, Error, ExplicitTag,
-    Integer, Null, OctetString, Sequence, Tag, Utf8String,
+    Integer, Null, OctetString, Sequence, Tag, Tlv, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1Type<'data> {
-    Sequence(Sequence<'data>),
-    OctetString(OctetString<'data>),
-    Utf8String(Utf8String<'data>),
-    BitString(BitString<'data>),
-    BmpString(BmpString<'data>),
+    Sequence(Tlv<'data, Sequence<'data>>),
+    OctetString(Tlv<'data, OctetString<'data>>),
+    Utf8String(Tlv<'data, Utf8String<'data>>),
+    BitString(Tlv<'data, BitString<'data>>),
+    BmpString(Tlv<'data, BmpString<'data>>),
 
-    Bool(Bool),
-    Null(Null),
-    Integer(Integer<'data>),
-
-    ExplicitTag(ExplicitTag<'data>),
-    ApplicationTag(ApplicationTag<'data>),
+    Bool(Tlv<'data, Bool>),
+    Null(Tlv<'data, Null>),
+    Integer(Tlv<'data, Integer<'data>>),
+    ExplicitTag(Tlv<'data, ExplicitTag<'data>>),
+    ApplicationTag(Tlv<'data, ApplicationTag<'data>>),
 }
 
 pub type OwnedAsn1Type = Asn1Type<'static>;
@@ -30,9 +28,7 @@ pub type OwnedAsn1Type = Asn1Type<'static>;
 impl Asn1Type<'_> {
     pub fn clear_raw_data(&mut self) -> &mut Self {
         match self {
-            Asn1Type::Sequence(s) => {
-                s.clear_raw_data();
-            }
+            Asn1Type::Sequence(_) => {}
             Asn1Type::OctetString(_) => {}
             Asn1Type::Utf8String(_) => {}
             Asn1Type::BitString(_) => {}
@@ -40,28 +36,25 @@ impl Asn1Type<'_> {
             Asn1Type::Bool(_) => {}
             Asn1Type::Null(_) => {}
             Asn1Type::Integer(_) => {}
-            Asn1Type::ExplicitTag(e) => {
-                e.clear_raw_data();
-            }
-            Asn1Type::ApplicationTag(a) => {
-                a.clear_raw_data();
-            }
+            Asn1Type::ExplicitTag(_) => {}
+            Asn1Type::ApplicationTag(_) => {}
         };
+
         self
     }
 
     pub fn to_owned(&self) -> OwnedAsn1Type {
         match self {
-            Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned()),
-            Asn1Type::OctetString(o) => Asn1Type::OctetString(o.to_owned()),
-            Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned()),
-            Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
-            Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
-            Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
-            Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
-            Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
-            Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned()),
-            Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
+            Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned_with_asn1(s.inner_asn1().to_owned())),
+            Asn1Type::OctetString(o) => Asn1Type::OctetString(o.to_owned_with_asn1(o.inner_asn1().to_owned())),
+            Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned_with_asn1(u.inner_asn1().to_owned())),
+            Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned_with_asn1(b.inner_asn1().to_owned())),
+            Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned_with_asn1(b.inner_asn1().to_owned())),
+            Asn1Type::Bool(b) => Asn1Type::Bool(b.to_owned_with_asn1(b.inner_asn1().clone())),
+            Asn1Type::Null(n) => Asn1Type::Null(n.to_owned_with_asn1(Null)),
+            Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned_with_asn1(i.inner_asn1().to_owned())),
+            Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned_with_asn1(e.inner_asn1().to_owned())),
+            Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned_with_asn1(a.inner_asn1().to_owned())),
         }
     }
 }
@@ -99,64 +92,35 @@ impl Asn1Entity for Asn1Type<'_> {
 }
 
 impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
-    fn compare_tags(_tag: &Tag) -> bool {
-        // OctetString::compare_tags(tag) || Utf8String::compare_tags(tag)
+    fn compare_tags(_tag: Tag) -> bool {
         true
     }
 
     fn decode(reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let tag = Tag(reader.peek_byte()?);
 
-        if OctetString::compare_tags(&tag) {
-            Ok(Asn1Type::OctetString(OctetString::decode(reader)?))
-        } else if Utf8String::compare_tags(&tag) {
-            Ok(Asn1Type::Utf8String(Utf8String::decode(reader)?))
-        } else if Sequence::compare_tags(&tag) {
-            Ok(Asn1Type::Sequence(Sequence::decode(reader)?))
-        } else if BitString::compare_tags(&tag) {
-            Ok(Asn1Type::BitString(BitString::decode(reader)?))
-        } else if BmpString::compare_tags(&tag) {
-            Ok(Asn1Type::BmpString(BmpString::decode(reader)?))
-        } else if Bool::compare_tags(&tag) {
-            Ok(Asn1Type::Bool(Bool::decode(reader)?))
-        } else if Integer::compare_tags(&tag) {
-            Ok(Asn1Type::Integer(Integer::decode(reader)?))
-        } else if ExplicitTag::compare_tags(&tag) {
-            Ok(Asn1Type::ExplicitTag(ExplicitTag::decode(reader)?))
-        } else if ApplicationTag::compare_tags(&tag) {
-            Ok(Asn1Type::ApplicationTag(ApplicationTag::decode(reader)?))
-        } else if Null::compare_tags(&tag) {
-            Ok(Asn1Type::Null(Null::decode(reader)?))
+        if Tlv::<OctetString>::compare_tags(tag) {
+            Ok(Asn1Type::OctetString(Tlv::decode(reader)?))
+        } else if Tlv::<Utf8String>::compare_tags(tag) {
+            Ok(Asn1Type::Utf8String(Tlv::decode(reader)?))
+        } else if Tlv::<Sequence>::compare_tags(tag) {
+            Ok(Asn1Type::Sequence(Tlv::decode(reader)?))
+        } else if Tlv::<BitString>::compare_tags(tag) {
+            Ok(Asn1Type::BitString(Tlv::decode(reader)?))
+        } else if Tlv::<BmpString>::compare_tags(tag) {
+            Ok(Asn1Type::BmpString(Tlv::decode(reader)?))
+        } else if Tlv::<Bool>::compare_tags(tag) {
+            Ok(Asn1Type::Bool(Tlv::decode(reader)?))
+        } else if Tlv::<Integer>::compare_tags(tag) {
+            Ok(Asn1Type::Integer(Tlv::decode(reader)?))
+        } else if Tlv::<ExplicitTag>::compare_tags(tag) {
+            Ok(Asn1Type::ExplicitTag(Tlv::decode(reader)?))
+        } else if Tlv::<ApplicationTag>::compare_tags(tag) {
+            Ok(Asn1Type::ApplicationTag(Tlv::decode(reader)?))
+        } else if Tlv::<Null>::compare_tags(tag) {
+            Ok(Asn1Type::Null(Tlv::decode(reader)?))
         } else {
             Err(Error::from("Invalid data"))
-        }
-    }
-
-    fn decode_asn1(reader: &mut Reader<'data>) -> Asn1Result<Asn1<'data>> {
-        let tag = Tag(reader.peek_byte()?);
-
-        if OctetString::compare_tags(&tag) {
-            OctetString::decode_asn1(reader)
-        } else if Utf8String::compare_tags(&tag) {
-            Utf8String::decode_asn1(reader)
-        } else if Sequence::compare_tags(&tag) {
-            Sequence::decode_asn1(reader)
-        } else if BitString::compare_tags(&tag) {
-            BitString::decode_asn1(reader)
-        } else if BmpString::compare_tags(&tag) {
-            BmpString::decode_asn1(reader)
-        } else if Bool::compare_tags(&tag) {
-            Bool::decode_asn1(reader)
-        } else if Integer::compare_tags(&tag) {
-            Integer::decode_asn1(reader)
-        } else if ExplicitTag::compare_tags(&tag) {
-            ExplicitTag::decode_asn1(reader)
-        } else if ApplicationTag::compare_tags(&tag) {
-            ApplicationTag::decode_asn1(reader)
-        } else if Null::compare_tags(&tag) {
-            Null::decode_asn1(reader)
-        } else {
-            Err(Error::from("Asn1Type: Invalid data"))
         }
     }
 }
@@ -243,58 +207,5 @@ impl RawAsn1EntityData<'_> {
             length: self.length.clone(),
             data: self.data.clone(),
         }
-    }
-}
-
-/// [`Asn1`] structure represents generic `asn1` value.
-/// It contains raw data and parsed values.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Asn1<'data> {
-    /// Information about raw data of the asn1
-    pub(crate) raw_data: RawAsn1EntityData<'data>,
-
-    /// Parsed asn1 data
-    pub(crate) asn1_type: Box<Asn1Type<'data>>,
-}
-
-pub type OwnedAsn1 = Asn1<'static>;
-
-impl Asn1<'_> {
-    pub fn new<'data>(raw_data: RawAsn1EntityData<'data>, asn1_type: Box<Asn1Type<'data>>) -> Asn1<'data> {
-        Asn1 { raw_data, asn1_type }
-    }
-
-    pub fn raw_entity_data(&self) -> &RawAsn1EntityData<'_> {
-        &self.raw_data
-    }
-
-    pub fn asn1(&self) -> &Asn1Type<'_> {
-        &self.asn1_type
-    }
-
-    pub fn clear_raw_data(&mut self) -> &mut Self {
-        self.raw_data = Default::default();
-        self.asn1_type.clear_raw_data();
-        self
-    }
-
-    pub fn to_owned(&self) -> OwnedAsn1 {
-        Asn1 {
-            raw_data: self.raw_data.to_owned(),
-            asn1_type: Box::new((*self.asn1_type).to_owned()),
-        }
-    }
-}
-
-impl Default for Asn1<'_> {
-    fn default() -> Self {
-        // those values are just for testing purpose during development
-        Asn1Type::decode_asn1_buff(&[
-            48, 87, 1, 1, 255, 1, 1, 0, 160, 17, 12, 15, 84, 98, 101, 66, 101, 115, 116, 84, 118, 97, 114, 121, 110,
-            107, 97, 161, 60, 48, 58, 5, 0, 164, 9, 4, 7, 48, 5, 160, 3, 1, 1, 255, 164, 7, 3, 5, 0, 64, 129, 0, 16,
-            164, 34, 108, 32, 48, 30, 160, 2, 5, 0, 161, 24, 30, 22, 0, 67, 0, 101, 0, 114, 0, 116, 0, 105, 0, 102, 0,
-            105, 0, 99, 0, 97, 0, 116, 0, 101,
-        ])
-        .unwrap()
     }
 }

@@ -30,7 +30,6 @@ name = "asn1-parser"
 version = "0.1.0"
 dependencies = [
  "num-bigint-dig",
- "prop-strategies",
  "proptest",
 ]
 
