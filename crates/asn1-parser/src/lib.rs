@@ -17,7 +17,7 @@ mod tags;
 mod tlv;
 mod writer;
 
-pub use asn1::{Asn1Type, OwnedAsn1Type, OwnedRawAsn1EntityData, RawAsn1EntityData};
+pub use asn1::{Asn1, Asn1Type, OwnedAsn1, OwnedAsn1Type, OwnedRawAsn1EntityData, RawAsn1EntityData};
 pub use constructors::*;
 pub use error::Error;
 pub use generic_types::*;

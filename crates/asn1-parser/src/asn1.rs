@@ -4,124 +4,77 @@ use core::ops::Range;
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
-    ApplicationTag, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, BitString, BmpString, Bool, Error, ExplicitTag,
-    Integer, Null, OctetString, Sequence, Tag, Tlv, Utf8String,
+    ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag, Integer,
+    Null, OctetString, Sequence, Tag, Tlv, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1Type<'data> {
-    Sequence(Tlv<'data, Sequence<'data>>),
-    OctetString(Tlv<'data, OctetString<'data>>),
-    Utf8String(Tlv<'data, Utf8String<'data>>),
-    BitString(Tlv<'data, BitString<'data>>),
-    BmpString(Tlv<'data, BmpString<'data>>),
+    Sequence(Sequence<'data>),
+    OctetString(OctetString<'data>),
+    Utf8String(Utf8String<'data>),
+    BitString(BitString<'data>),
+    BmpString(BmpString<'data>),
 
-    Bool(Tlv<'data, Bool>),
-    Null(Tlv<'data, Null>),
-    Integer(Tlv<'data, Integer<'data>>),
-    ExplicitTag(Tlv<'data, ExplicitTag<'data>>),
-    ApplicationTag(Tlv<'data, ApplicationTag<'data>>),
+    Bool(Bool),
+    Null(Null),
+    Integer(Integer<'data>),
+
+    ExplicitTag(ExplicitTag<'data>),
+    ApplicationTag(ApplicationTag<'data>),
 }
+
+pub type Asn1<'data> = Tlv<'data, Asn1Type<'data>>;
+pub type OwnedAsn1 = Tlv<'static, Asn1Type<'static>>;
 
 pub type OwnedAsn1Type = Asn1Type<'static>;
 
 impl Asn1Type<'_> {
-    pub fn clear_raw_data(&mut self) -> &mut Self {
-        match self {
-            Asn1Type::Sequence(_) => {}
-            Asn1Type::OctetString(_) => {}
-            Asn1Type::Utf8String(_) => {}
-            Asn1Type::BitString(_) => {}
-            Asn1Type::BmpString(_) => {}
-            Asn1Type::Bool(_) => {}
-            Asn1Type::Null(_) => {}
-            Asn1Type::Integer(_) => {}
-            Asn1Type::ExplicitTag(_) => {}
-            Asn1Type::ApplicationTag(_) => {}
-        };
-
-        self
-    }
-
     pub fn to_owned(&self) -> OwnedAsn1Type {
         match self {
-            Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned_with_asn1(s.inner_asn1().to_owned())),
-            Asn1Type::OctetString(o) => Asn1Type::OctetString(o.to_owned_with_asn1(o.inner_asn1().to_owned())),
-            Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned_with_asn1(u.inner_asn1().to_owned())),
-            Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned_with_asn1(b.inner_asn1().to_owned())),
-            Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned_with_asn1(b.inner_asn1().to_owned())),
-            Asn1Type::Bool(b) => Asn1Type::Bool(b.to_owned_with_asn1(b.inner_asn1().clone())),
-            Asn1Type::Null(n) => Asn1Type::Null(n.to_owned_with_asn1(Null)),
-            Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned_with_asn1(i.inner_asn1().to_owned())),
-            Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned_with_asn1(e.inner_asn1().to_owned())),
-            Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned_with_asn1(a.inner_asn1().to_owned())),
+            Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned()),
+            Asn1Type::OctetString(o) => Asn1Type::OctetString(o.to_owned()),
+            Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned()),
+            Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
+            Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
+            Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
+            Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
+            Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
+            Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned()),
+            Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
         }
     }
 }
 
-impl Asn1Entity for Asn1Type<'_> {
-    fn tag(&self) -> Tag {
-        match self {
-            Asn1Type::OctetString(octet) => octet.tag(),
-            Asn1Type::Utf8String(utf8) => utf8.tag(),
-            Asn1Type::Sequence(sequence) => sequence.tag(),
-            Asn1Type::BitString(bit) => bit.tag(),
-            Asn1Type::BmpString(bmp) => bmp.tag(),
-            Asn1Type::Bool(boolean) => boolean.tag(),
-            Asn1Type::Integer(integer) => integer.tag(),
-            Asn1Type::ExplicitTag(e) => e.tag(),
-            Asn1Type::ApplicationTag(a) => a.tag(),
-            Asn1Type::Null(n) => n.tag(),
-        }
-    }
-
-    fn id(&self) -> u64 {
-        match self {
-            Asn1Type::OctetString(octet) => octet.id(),
-            Asn1Type::Utf8String(utf8) => utf8.id(),
-            Asn1Type::Sequence(sequence) => sequence.id(),
-            Asn1Type::BitString(bit) => bit.id(),
-            Asn1Type::BmpString(bmp) => bmp.id(),
-            Asn1Type::Bool(boolean) => boolean.id(),
-            Asn1Type::Integer(integer) => integer.id(),
-            Asn1Type::ExplicitTag(e) => e.id(),
-            Asn1Type::ApplicationTag(a) => a.id(),
-            Asn1Type::Null(n) => n.id(),
-        }
-    }
-}
-
-impl<'data> Asn1Decoder<'data> for Asn1Type<'data> {
-    fn compare_tags(_tag: Tag) -> bool {
-        true
-    }
-
-    fn decode(reader: &mut Reader<'data>) -> Asn1Result<Self> {
-        let tag = Tag(reader.peek_byte()?);
-
-        if Tlv::<OctetString>::compare_tags(tag) {
-            Ok(Asn1Type::OctetString(Tlv::decode(reader)?))
-        } else if Tlv::<Utf8String>::compare_tags(tag) {
-            Ok(Asn1Type::Utf8String(Tlv::decode(reader)?))
-        } else if Tlv::<Sequence>::compare_tags(tag) {
-            Ok(Asn1Type::Sequence(Tlv::decode(reader)?))
-        } else if Tlv::<BitString>::compare_tags(tag) {
-            Ok(Asn1Type::BitString(Tlv::decode(reader)?))
-        } else if Tlv::<BmpString>::compare_tags(tag) {
-            Ok(Asn1Type::BmpString(Tlv::decode(reader)?))
-        } else if Tlv::<Bool>::compare_tags(tag) {
-            Ok(Asn1Type::Bool(Tlv::decode(reader)?))
-        } else if Tlv::<Integer>::compare_tags(tag) {
-            Ok(Asn1Type::Integer(Tlv::decode(reader)?))
-        } else if Tlv::<ExplicitTag>::compare_tags(tag) {
-            Ok(Asn1Type::ExplicitTag(Tlv::decode(reader)?))
-        } else if Tlv::<ApplicationTag>::compare_tags(tag) {
-            Ok(Asn1Type::ApplicationTag(Tlv::decode(reader)?))
-        } else if Tlv::<Null>::compare_tags(tag) {
-            Ok(Asn1Type::Null(Tlv::decode(reader)?))
+impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
+    fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
+        if OctetString::compare_tags(tag) {
+            Ok(Asn1Type::OctetString(OctetString::decode(tag, reader)?))
+        } else if Utf8String::compare_tags(tag) {
+            Ok(Asn1Type::Utf8String(Utf8String::decode(tag, reader)?))
+        } else if Sequence::compare_tags(tag) {
+            Ok(Asn1Type::Sequence(Sequence::decode(tag, reader)?))
+        } else if BitString::compare_tags(tag) {
+            Ok(Asn1Type::BitString(BitString::decode(tag, reader)?))
+        } else if BmpString::compare_tags(tag) {
+            Ok(Asn1Type::BmpString(BmpString::decode(tag, reader)?))
+        } else if Bool::compare_tags(tag) {
+            Ok(Asn1Type::Bool(Bool::decode(tag, reader)?))
+        } else if Integer::compare_tags(tag) {
+            Ok(Asn1Type::Integer(Integer::decode(tag, reader)?))
+        } else if ExplicitTag::compare_tags(tag) {
+            Ok(Asn1Type::ExplicitTag(ExplicitTag::decode(tag, reader)?))
+        } else if ApplicationTag::compare_tags(tag) {
+            Ok(Asn1Type::ApplicationTag(ApplicationTag::decode(tag, reader)?))
+        } else if Null::compare_tags(tag) {
+            Ok(Asn1Type::Null(Null::decode(tag, reader)?))
         } else {
             Err(Error::from("Invalid data"))
         }
+    }
+
+    fn compare_tags(_tag: Tag) -> bool {
+        true
     }
 }
 

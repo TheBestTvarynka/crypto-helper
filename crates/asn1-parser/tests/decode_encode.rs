@@ -1,4 +1,5 @@
-use asn1_parser::{Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Type};
+#![allow(unused_imports)]
+use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Type};
 // use prop_strategies::any_asn1_type;
 // use proptest::proptest;
 //
@@ -53,7 +54,7 @@ fn decode_default() {
         108, 32, 48, 30, 160, 2, 5, 0, 161, 24, 30, 22, 0, 67, 0, 101, 0, 114, 0, 116, 0, 105, 0, 102, 0, 105, 0, 99,
         0, 97, 0, 116, 0, 101,
     ];
-    let asn1 = Asn1Type::decode_buff(raw).unwrap();
+    let asn1 = Asn1::decode_buff(raw).unwrap();
     println!("{:?}", asn1);
 }
 

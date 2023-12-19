@@ -2,10 +2,11 @@ use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
+use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1Type, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
 
 /// [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
 ///
@@ -14,7 +15,7 @@ use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1Type, Asn1ValueDecoder, Ta
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OctetString<'data> {
     octets: Cow<'data, [u8]>,
-    inner: Option<Box<Asn1Type<'data>>>,
+    inner: Option<Box<Asn1<'data>>>,
 }
 
 pub type OwnedOctetString = OctetString<'static>;
@@ -27,7 +28,7 @@ impl OctetString<'_> {
         &self.octets
     }
 
-    pub fn inner(&self) -> Option<&Asn1Type<'_>> {
+    pub fn inner(&self) -> Option<&Asn1<'_>> {
         self.inner.as_ref().map(|i| i.as_ref())
     }
 
@@ -35,14 +36,17 @@ impl OctetString<'_> {
     pub fn to_owned(&self) -> OwnedOctetString {
         OctetString {
             octets: self.octets.to_vec().into(),
-            inner: self.inner.as_ref().map(|inner| Box::new(inner.to_owned())),
+            inner: self
+                .inner
+                .as_ref()
+                .map(|inner| Box::new(inner.to_owned_with_asn1(inner.inner_asn1().to_owned()))),
         }
     }
 
     pub fn new_owned(octets: Vec<u8>) -> OwnedOctetString {
-        let inner = Asn1Type::decode_buff(&octets)
+        let inner = Asn1::decode_buff(&octets)
             .ok()
-            .map(|asn1| Box::new(asn1.to_owned()));
+            .map(|asn1| Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
         OwnedOctetString {
             octets: Cow::Owned(octets),
             inner,
@@ -52,7 +56,9 @@ impl OctetString<'_> {
 
 impl From<Vec<u8>> for OwnedOctetString {
     fn from(data: Vec<u8>) -> Self {
-        let inner = Asn1Type::decode_buff(&data).ok().map(|asn1| Box::new(asn1.to_owned()));
+        let inner = Asn1::decode_buff(&data)
+            .ok()
+            .map(|asn1| Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
         Self {
             octets: Cow::Owned(data),
             inner,
@@ -67,7 +73,7 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString<'data> {
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
         inner_reader.set_offset(reader.full_offset() - data.len());
-        let inner = Asn1Type::decode(&mut inner_reader).ok().map(Box::new);
+        let inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
 
         if !inner_reader.empty() {
             return Err("octet string inner data contains leftovers".into());

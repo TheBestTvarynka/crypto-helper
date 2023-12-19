@@ -1,38 +1,44 @@
 use alloc::vec::Vec;
 
+use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1Type, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
 
 /// [ASN.1 SEQUENCE](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
 ///
 /// In ASN.1, an ordered list of elements (or components) comprises a SEQUENCE.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct Sequence<'data>(Vec<Asn1Type<'data>>);
+pub struct Sequence<'data>(Vec<Asn1<'data>>);
 
 pub type OwnedSequence = Sequence<'static>;
 
 impl Sequence<'_> {
     pub const TAG: Tag = Tag(0x30);
 
-    pub fn new(fields: Vec<Asn1Type>) -> Sequence {
+    pub fn new(fields: Vec<Asn1>) -> Sequence {
         Sequence(fields)
     }
 
-    /// Retuens [Sequence] fields
-    pub fn fields(&self) -> &[Asn1Type<'_>] {
+    /// Returns [Sequence] fields
+    pub fn fields(&self) -> &[Asn1<'_>] {
         &self.0
     }
 
     /// Returns owned version of the [Sequence]
     pub fn to_owned(&self) -> OwnedSequence {
-        Sequence(self.0.iter().map(|f| f.to_owned()).collect())
+        Sequence(
+            self.0
+                .iter()
+                .map(|f| f.to_owned_with_asn1(f.inner_asn1().to_owned()))
+                .collect(),
+        )
     }
 }
 
-impl<'data> From<Vec<Asn1Type<'data>>> for Sequence<'data> {
-    fn from(fields: Vec<Asn1Type<'data>>) -> Self {
+impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {
+    fn from(fields: Vec<Asn1<'data>>) -> Self {
         Self(fields)
     }
 }
@@ -65,7 +71,7 @@ impl<'data> Asn1ValueDecoder<'data> for Sequence<'data> {
         let mut fields = Vec::new();
 
         while !reader.empty() {
-            fields.push(Asn1Type::decode(reader)?);
+            fields.push(Asn1::decode(reader)?);
         }
 
         Ok(Self(fields))

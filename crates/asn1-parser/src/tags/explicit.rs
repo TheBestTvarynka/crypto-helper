@@ -1,20 +1,21 @@
 use alloc::boxed::Box;
 
+use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1Type, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExplicitTag<'data> {
     tag: u8,
-    inner: Box<Asn1Type<'data>>,
+    inner: Box<Asn1<'data>>,
 }
 
 pub type OwnedExplicitTag = ExplicitTag<'static>;
 
 impl<'data> ExplicitTag<'data> {
-    pub fn new(tag: u8, inner: Box<Asn1Type<'data>>) -> Self {
+    pub fn new(tag: u8, inner: Box<Asn1<'data>>) -> Self {
         Self {
             tag: tag & 0x1f | 0xa0,
             inner,
@@ -25,14 +26,14 @@ impl<'data> ExplicitTag<'data> {
         self.tag & 0x1f
     }
 
-    pub fn inner(&self) -> &Asn1Type<'data> {
+    pub fn inner(&self) -> &Asn1<'data> {
         &self.inner
     }
 
     pub fn to_owned(&self) -> OwnedExplicitTag {
         OwnedExplicitTag {
             tag: self.tag,
-            inner: Box::new(self.inner.to_owned()),
+            inner: Box::new(self.inner.to_owned_with_asn1(self.inner.inner_asn1().to_owned())),
         }
     }
 }
@@ -45,7 +46,7 @@ impl Taggable for ExplicitTag<'_> {
 
 impl<'data> Asn1ValueDecoder<'data> for ExplicitTag<'data> {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
-        let inner = Box::new(Asn1Type::decode(reader)?);
+        let inner = Box::new(Asn1::decode(reader)?);
 
         if !reader.empty() {
             return Err("explicit tag inner data contains leftovers".into());
