@@ -64,13 +64,17 @@ impl<'data, A: Asn1ValueDecoder<'data>> Asn1Decoder<'data> for Tlv<'data, A> {
 
         reader.set_next_id(inner_reader.next_id());
 
+        let raw_data = Cow::Borrowed(reader.data_in_range(data_start..data_range.end)?);
+        let length = (len_range.start - data_start)..(len_range.end - data_start);
+        let data = (data_range.start - data_start)..(data_range.end - data_start);
+
         Ok(Tlv {
             id: reader.next_id(),
             raw: RawAsn1EntityData {
-                raw_data: Cow::Borrowed(reader.data_in_range(data_start..data_range.end)?),
+                raw_data,
                 tag: tag_position,
-                length: len_range,
-                data: data_range,
+                length,
+                data,
             },
             asn1,
         })

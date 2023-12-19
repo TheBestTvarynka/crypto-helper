@@ -5,7 +5,7 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag, Integer,
-    Null, OctetString, Sequence, Tag, Tlv, Utf8String,
+    Null, OctetString, Sequence, Tag, Taggable, Tlv, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -42,6 +42,23 @@ impl Asn1Type<'_> {
             Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
             Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned()),
             Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
+        }
+    }
+}
+
+impl Taggable for Asn1Type<'_> {
+    fn tag(&self) -> Tag {
+        match self {
+            Asn1Type::Sequence(s) => s.tag(),
+            Asn1Type::OctetString(o) => o.tag(),
+            Asn1Type::Utf8String(u) => u.tag(),
+            Asn1Type::BitString(b) => b.tag(),
+            Asn1Type::BmpString(b) => b.tag(),
+            Asn1Type::Bool(b) => b.tag(),
+            Asn1Type::Null(n) => n.tag(),
+            Asn1Type::Integer(i) => i.tag(),
+            Asn1Type::ExplicitTag(e) => e.tag(),
+            Asn1Type::ApplicationTag(a) => a.tag(),
         }
     }
 }
@@ -113,16 +130,16 @@ impl Asn1Encoder for Asn1Type<'_> {
 /// Information about raw data of the asn1 entity
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct RawAsn1EntityData<'data> {
-    /// Raw input bytes
+    /// Raw input bytes for the current asn1 node
     pub raw_data: Cow<'data, [u8]>,
 
     /// Position of the tag in the input data
     pub tag: usize,
 
-    /// Range that corresponds to the encoded length bytes
+    /// Range that corresponds to the encoded length bytes in the raw_data
     pub length: Range<usize>,
 
-    /// Range that corresponds to the inner raw data
+    /// Range that corresponds to the inner data in the raw_data
     pub data: Range<usize>,
 }
 

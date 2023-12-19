@@ -17,4 +17,5 @@ std = []
 proptest = "1.2.0"
 
 [dependencies]
+log = "0.4.20"
 num-bigint-dig = { version = "0.8.4", default-features = false }
