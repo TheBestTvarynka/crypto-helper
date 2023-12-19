@@ -8,7 +8,6 @@ use crate::asn1::{compare_ids, HighlightAction};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct HexViewerProps {
-    pub raw_data: Vec<u8>,
     pub structure: OwnedAsn1,
 
     pub cur_node: Option<u64>,
@@ -22,8 +21,8 @@ pub fn hex_viewer(props: &HexViewerProps) -> Html {
             <div class="asn1-hex-node">
                 {{
                     let set_cur_node = props.set_cur_node.clone();
-                    let mut bytes = Vec::with_capacity(props.structure.raw_entity_data().raw_data.len());
-                    build_hex_bytes(&props.raw_data, &props.structure, &props.cur_node.clone(), set_cur_node, &mut bytes, false);
+                    let mut bytes = Vec::with_capacity(props.structure.raw().raw_data.len());
+                    build_hex_bytes(&props.structure, &props.cur_node.clone(), set_cur_node, &mut bytes, false);
                     bytes
                 }}
             </div>
@@ -57,23 +56,22 @@ fn format_bytes(
 }
 
 fn build_hex_bytes(
-    raw: &[u8],
     asn1: &Asn1<'_>,
     cur_node: &Option<u64>,
     set_cur_node: Callback<HighlightAction>,
     bytes: &mut Vec<VNode>,
     select_all: bool,
 ) {
-    let asn1_node_id = asn1.asn1().id();
+    let asn1_node_id = asn1.id();
     let if_selected = compare_ids(asn1_node_id, cur_node);
 
-    let tag: u8 = asn1.asn1().tag().into();
+    let tag: u8 = asn1.tag().into();
     let tag_set_cur_node = set_cur_node.clone();
     let onmouseenter = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(HighlightAction::Show(asn1_node_id)));
     let tag_set_cur_node = set_cur_node.clone();
     let onmouseleave = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(HighlightAction::Hide(asn1_node_id)));
 
-    let meta = asn1.raw_entity_data();
+    let meta = asn1.raw();
 
     let offset = meta.tag_position();
     let length_len = meta.length_range().len();
@@ -97,7 +95,7 @@ fn build_hex_bytes(
 
     format_bytes(
         meta,
-        &raw[asn1.raw_entity_data().length.clone()],
+        asn1.raw().length_bytes(),
         asn1_node_id,
         if select_all {
             classes!("asn1-hex-byte-data-selected")
@@ -111,7 +109,6 @@ fn build_hex_bytes(
     );
 
     build_data_bytes(
-        raw,
         asn1,
         asn1_node_id,
         cur_node,
@@ -122,7 +119,6 @@ fn build_hex_bytes(
 }
 
 fn build_data_bytes(
-    raw: &[u8],
     asn1: &Asn1<'_>,
     asn1_node_id: u64,
     cur_node: &Option<u64>,
@@ -131,7 +127,6 @@ fn build_data_bytes(
     select_all: bool,
 ) {
     fn default_bytes(
-        raw: &[u8],
         asn1_node_id: u64,
         cur_node: &Option<u64>,
         set_cur_node: Callback<HighlightAction>,
@@ -142,8 +137,8 @@ fn build_data_bytes(
         let if_selected = compare_ids(asn1_node_id, cur_node);
 
         format_bytes(
-            asn1.raw_entity_data(),
-            &raw[asn1.raw_entity_data().data.clone()],
+            asn1.raw(),
+            asn1.raw().data_bytes(),
             asn1_node_id,
             if if_selected || select_all {
                 classes!("asn1-hex-byte-data-selected")
@@ -155,34 +150,29 @@ fn build_data_bytes(
         );
     }
 
-    match asn1.asn1() {
+    match asn1.inner_asn1() {
         Asn1Type::Sequence(sequence) => {
             let set_cur_node = set_cur_node.clone();
             sequence
                 .fields()
                 .iter()
-                .for_each(move |asn1| build_hex_bytes(raw, asn1, cur_node, set_cur_node.clone(), bytes, select_all));
+                .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
         Asn1Type::OctetString(octet) => match octet.inner() {
-            Some(asn1) => build_hex_bytes(raw, asn1, cur_node, set_cur_node.clone(), bytes, select_all),
-            None => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+            Some(asn1) => build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all),
+            None => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         },
-        Asn1Type::Utf8String(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
-        Asn1Type::BitString(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
-        Asn1Type::BmpString(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
-        Asn1Type::Bool(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
-        Asn1Type::Null(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
-        Asn1Type::Integer(_) => default_bytes(raw, asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::Utf8String(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::BitString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::BmpString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::Bool(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::Null(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::Integer(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::ExplicitTag(explicit) => {
-            build_hex_bytes(raw, explicit.inner(), cur_node, set_cur_node.clone(), bytes, select_all)
+            build_hex_bytes(explicit.inner(), cur_node, set_cur_node.clone(), bytes, select_all)
         }
-        Asn1Type::ApplicationTag(application) => build_hex_bytes(
-            raw,
-            application.inner(),
-            cur_node,
-            set_cur_node.clone(),
-            bytes,
-            select_all,
-        ),
+        Asn1Type::ApplicationTag(application) => {
+            build_hex_bytes(application.inner(), cur_node, set_cur_node.clone(), bytes, select_all)
+        }
     }
 }

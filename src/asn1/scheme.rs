@@ -52,55 +52,55 @@ pub fn asn1_node(props: &Asn1NodeProps) -> Html {
 }
 
 pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &Callback<HighlightAction>) -> VNode {
-    match asn1.asn1() {
+    match asn1.inner_asn1() {
         Asn1Type::OctetString(octet) => html! {
-            <Asn1Node id={octet.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <OctetStringNode node={octet.to_owned()} meta={asn1.raw_entity_data().to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <OctetStringNode node={octet.to_owned()} meta={asn1.raw().to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
             </Asn1Node>
         },
         Asn1Type::Utf8String(utf8) => html! {
-            <Asn1Node id={utf8.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <Utf8StringNode node={utf8.to_owned()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <Utf8StringNode node={utf8.to_owned()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::Sequence(sequence) => html! {
-            <Asn1Node id={sequence.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <SequenceNode node={sequence.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <SequenceNode node={sequence.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::BitString(bit) => html! {
-            <Asn1Node id={bit.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BitStringNode node={bit.to_owned()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <BitStringNode node={bit.to_owned()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::Bool(boolean) => html! {
-            <Asn1Node id={boolean.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BoolNode node={boolean.to_owned()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <BoolNode node={boolean.to_owned()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::BmpString(bmp) => html! {
-            <Asn1Node id={bmp.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BmpStringNode node={bmp.to_owned()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <BmpStringNode node={bmp.to_owned()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
-        Asn1Type::Null(null) => html! {
-            <Asn1Node id={null.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <NullNode meta={asn1.raw_entity_data().to_owned()} />
+        Asn1Type::Null(_) => html! {
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <NullNode meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::Integer(integer) => html! {
-            <Asn1Node id={integer.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <IntegerNode node={integer.to_owned()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <IntegerNode node={integer.to_owned()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::ExplicitTag(explicit) => html! {
-            <Asn1Node id={explicit.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ExplicitTagNode node={explicit.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <ExplicitTagNode node={explicit.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::ApplicationTag(application) => html! {
-            <Asn1Node id={application.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ApplicationTagNode node={application.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.raw_entity_data().to_owned()} />
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <ApplicationTagNode node={application.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.raw().to_owned()} />
             </Asn1Node>
         },
     }

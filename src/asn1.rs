@@ -5,7 +5,7 @@ mod scheme;
 
 use std::rc::Rc;
 
-use asn1_parser::{Asn1Decoder, Asn1Type};
+use asn1_parser::{Asn1, Asn1Decoder};
 use web_sys::KeyboardEvent;
 use yew::{classes, function_component, html, use_reducer, use_state, Callback, Html, Reducible};
 use yew_notifications::{use_notification, Notification, NotificationType};
@@ -68,15 +68,15 @@ impl Reducible for Highlight {
 #[function_component(Asn1ParserPage)]
 pub fn asn1_parser_page() -> Html {
     let raw_asn1 = use_state(|| TEST_ASN1.to_vec());
-    let parsed_asn1 = use_state(|| Asn1Type::decode_asn1_buff(TEST_ASN1).unwrap());
+    let parsed_asn1 = use_state(|| Asn1::decode_buff(TEST_ASN1).unwrap());
 
     let notifications = use_notification::<Notification>();
     let asn1_setter = parsed_asn1.setter();
     let raw_data = (*raw_asn1).clone();
-    let parse_asn1 = Callback::from(move |_| match Asn1Type::decode_asn1_buff(&raw_data) {
+    let parse_asn1 = Callback::from(move |_| match Asn1::decode_buff(&raw_data) {
         Ok(asn1) => {
             log::debug!("parsed!");
-            asn1_setter.set(asn1.to_owned());
+            asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
         }
         Err(error) => notifications.spawn(Notification::new(
             NotificationType::Error,
@@ -124,7 +124,6 @@ pub fn asn1_parser_page() -> Html {
                     set_cur_node={move |action| asn1_dispatcher.dispatch(action)}
                 />
                 <HexViewer
-                    raw_data={parsed_asn1.raw_entity_data().raw_bytes().to_vec()}
                     structure={(*parsed_asn1).clone()}
                     cur_node={(*ctx).current()}
                     set_cur_node={move |action| hex_dispatcher.dispatch(action)}
