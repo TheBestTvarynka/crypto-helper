@@ -1,0 +1,39 @@
+.asn1-hex-viewer {
+    background: #edd5ce;
+    cursor: crosshair;
+}
+
+.asn1-hex-node {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.asn1-hex-byte {
+    padding: 0.1em;
+}
+
+.asn1-hex-byte-tag {
+    color: mediumvioletred;
+}
+
+.asn1-hex-byte-len {
+    color: #63348d;
+}
+
+.asn1-hex-byte-data {
+    color: #588555;
+}
+
+.asn1-hex-byte-tag-selected {
+    background-color: mediumvioletred;
+}
+
+.asn1-hex-byte-len-selected {
+    background-color: #a562e3;
+}
+
+.asn1-hex-byte-data-selected {
+    background-color: #70a66c;
+}

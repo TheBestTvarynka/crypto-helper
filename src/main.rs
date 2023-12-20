@@ -1,4 +1,5 @@
 mod about;
+mod asn1;
 mod common;
 mod crypto_helper;
 mod footer;
@@ -9,6 +10,7 @@ mod url_query_params;
 mod utils;
 
 use about::About;
+use asn1::Asn1ParserPage;
 use crypto_helper::CryptoHelper;
 use footer::footer;
 use header::Header;
@@ -22,6 +24,8 @@ use yew_router::{BrowserRouter, Routable, Switch};
 enum Route {
     #[at("/")]
     Home,
+    #[at("/asn1")]
+    Asn1Parser,
     #[at("/crypto-helper")]
     CryptoHelper,
     #[at("/jwt")]
@@ -36,6 +40,7 @@ enum Route {
 fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => html! { <CryptoHelper /> },
+        Route::Asn1Parser => html! { <Asn1ParserPage /> },
         Route::CryptoHelper => html! { <CryptoHelper /> },
         Route::Jwt => html! { <Jwt /> },
         Route::About => html! { <About /> },
