@@ -4,7 +4,7 @@ use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExplicitTag<'data> {
@@ -75,5 +75,11 @@ impl Asn1Encoder for ExplicitTag<'_> {
         write_len(data_len, writer)?;
 
         self.inner.encode(writer)
+    }
+}
+
+impl MetaInfo for ExplicitTag<'_> {
+    fn clear_meta(&mut self) {
+        self.inner.clear_meta()
     }
 }

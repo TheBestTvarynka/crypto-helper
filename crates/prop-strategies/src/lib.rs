@@ -1,11 +1,11 @@
 mod constructors;
-mod generic_types;
+mod primitives;
 mod string;
 
 use asn1_parser::{Asn1Type, OwnedAsn1Type};
 use constructors::recursive_empty_asn1_type;
 pub use constructors::*;
-pub use generic_types::*;
+pub use primitives::*;
 use proptest::collection::vec;
 use proptest::prelude::any;
 use proptest::prop_oneof;

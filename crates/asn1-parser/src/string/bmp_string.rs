@@ -34,8 +34,7 @@ impl BmpString<'_> {
 
 impl From<&str> for OwnedBmpString {
     fn from(value: &str) -> Self {
-        let data: Vec<u8> = value.encode_utf16().flat_map(|c| c.to_be_bytes()).collect();
-        Self(Cow::Owned(data))
+        Self(Cow::Owned(value.encode_utf16().flat_map(|c| c.to_le_bytes()).collect()))
     }
 }
 

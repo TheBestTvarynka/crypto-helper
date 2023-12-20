@@ -13,7 +13,7 @@ default-fearures = []
 std = []
 
 [dev-dependencies]
-#prop-strategies = { path = "../prop-strategies" }
+prop-strategies = { path = "../prop-strategies" }
 proptest = "1.2.0"
 
 [dependencies]

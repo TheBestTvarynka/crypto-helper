@@ -3,20 +3,26 @@ use alloc::borrow::Cow;
 use crate::length::read_len;
 use crate::reader::{read_data, Reader};
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1ValueDecoder, RawAsn1EntityData, Tag, Taggable};
+use crate::{
+    Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1ValueDecoder, MetaInfo, RawAsn1EntityData, Tag, Taggable,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Tlv<'data, A> {
     id: u64,
-    raw: RawAsn1EntityData<'data>,
+    meta: RawAsn1EntityData<'data>,
     asn1: A,
 }
 
 pub type OwnedTlv<A> = Tlv<'static, A>;
 
 impl<A> Tlv<'_, A> {
-    pub fn raw(&self) -> &RawAsn1EntityData {
-        &self.raw
+    pub fn new(id: u64, raw: RawAsn1EntityData, asn1: A) -> Tlv<A> {
+        Tlv { id, meta: raw, asn1 }
+    }
+
+    pub fn meta(&self) -> &RawAsn1EntityData {
+        &self.meta
     }
 
     pub fn inner_asn1(&self) -> &A {
@@ -26,9 +32,17 @@ impl<A> Tlv<'_, A> {
     pub fn to_owned_with_asn1<B>(&self, asn1: B) -> OwnedTlv<B> {
         OwnedTlv {
             id: self.id,
-            raw: self.raw.to_owned(),
+            meta: self.meta.to_owned(),
             asn1,
         }
+    }
+}
+
+impl<A: MetaInfo> MetaInfo for Tlv<'_, A> {
+    fn clear_meta(&mut self) {
+        self.id = Default::default();
+        self.meta = Default::default();
+        self.asn1.clear_meta()
     }
 }
 
@@ -70,7 +84,7 @@ impl<'data, A: Asn1ValueDecoder<'data>> Asn1Decoder<'data> for Tlv<'data, A> {
 
         Ok(Tlv {
             id: reader.next_id(),
-            raw: RawAsn1EntityData {
+            meta: RawAsn1EntityData {
                 raw_data,
                 tag: tag_position,
                 length,

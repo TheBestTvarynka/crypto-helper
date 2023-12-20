@@ -77,3 +77,7 @@ pub trait Taggable {
     /// Returns asn1 tag of the entity
     fn tag(&self) -> Tag;
 }
+
+pub trait MetaInfo {
+    fn clear_meta(&mut self);
+}

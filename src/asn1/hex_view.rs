@@ -21,7 +21,7 @@ pub fn hex_viewer(props: &HexViewerProps) -> Html {
             <div class="asn1-hex-node">
                 {{
                     let set_cur_node = props.set_cur_node.clone();
-                    let mut bytes = Vec::with_capacity(props.structure.raw().raw_data.len());
+                    let mut bytes = Vec::with_capacity(props.structure.meta().raw_data.len());
                     build_hex_bytes(&props.structure, &props.cur_node.clone(), set_cur_node, &mut bytes, false);
                     bytes
                 }}
@@ -71,7 +71,7 @@ fn build_hex_bytes(
     let tag_set_cur_node = set_cur_node.clone();
     let onmouseleave = Callback::from(move |_: MouseEvent| tag_set_cur_node.emit(HighlightAction::Hide(asn1_node_id)));
 
-    let meta = asn1.raw();
+    let meta = asn1.meta();
 
     let offset = meta.tag_position();
     let length_len = meta.length_range().len();
@@ -95,7 +95,7 @@ fn build_hex_bytes(
 
     format_bytes(
         meta,
-        asn1.raw().length_bytes(),
+        asn1.meta().length_bytes(),
         asn1_node_id,
         if select_all {
             classes!("asn1-hex-byte-data-selected")
@@ -137,8 +137,8 @@ fn build_data_bytes(
         let if_selected = compare_ids(asn1_node_id, cur_node);
 
         format_bytes(
-            asn1.raw(),
-            asn1.raw().data_bytes(),
+            asn1.meta(),
+            asn1.meta().data_bytes(),
             asn1_node_id,
             if if_selected || select_all {
                 classes!("asn1-hex-byte-data-selected")

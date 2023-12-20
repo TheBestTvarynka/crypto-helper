@@ -5,7 +5,7 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag, Integer,
-    Null, OctetString, Sequence, Tag, Taggable, Tlv, Utf8String,
+    MetaInfo, Null, OctetString, Sequence, Tag, Taggable, Tlv, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -123,6 +123,23 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::ExplicitTag(e) => e.encode(writer),
             Asn1Type::ApplicationTag(a) => a.encode(writer),
             Asn1Type::Null(n) => n.encode(writer),
+        }
+    }
+}
+
+impl MetaInfo for Asn1Type<'_> {
+    fn clear_meta(&mut self) {
+        match self {
+            Asn1Type::OctetString(_) => {}
+            Asn1Type::Utf8String(_) => {}
+            Asn1Type::Sequence(sequence) => sequence.clear_meta(),
+            Asn1Type::BitString(_) => {}
+            Asn1Type::BmpString(_) => {}
+            Asn1Type::Bool(_) => {}
+            Asn1Type::Integer(_) => {}
+            Asn1Type::ExplicitTag(explicit_tag) => explicit_tag.clear_meta(),
+            Asn1Type::ApplicationTag(application_tag) => application_tag.clear_meta(),
+            Asn1Type::Null(_) => {}
         }
     }
 }

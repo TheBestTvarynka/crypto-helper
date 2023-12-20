@@ -5,11 +5,11 @@ use proptest::strategy::{Just, Strategy};
 use crate::bytes;
 
 pub fn any_bool() -> impl Strategy<Value = Bool> {
-    any::<bool>().prop_map(|flag| Bool::new(0, flag))
+    any::<bool>().prop_map(|flag| flag.into())
 }
 
 pub fn any_null() -> impl Strategy<Value = Null> {
-    Just(Null::default())
+    Just(Null)
 }
 
 pub fn any_integer() -> impl Strategy<Value = OwnedInteger> {

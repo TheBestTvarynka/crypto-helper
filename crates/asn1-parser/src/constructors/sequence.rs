@@ -4,7 +4,7 @@ use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
 
 /// [ASN.1 SEQUENCE](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
 ///
@@ -79,5 +79,11 @@ impl<'data> Asn1ValueDecoder<'data> for Sequence<'data> {
 
     fn compare_tags(tag: Tag) -> bool {
         Self::TAG == tag
+    }
+}
+
+impl MetaInfo for Sequence<'_> {
+    fn clear_meta(&mut self) {
+        self.0.iter_mut().for_each(|f| f.clear_meta())
     }
 }
