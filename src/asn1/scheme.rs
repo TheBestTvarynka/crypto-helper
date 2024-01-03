@@ -1,3 +1,4 @@
+mod oid;
 mod primitive;
 mod sequence;
 mod strings;
@@ -8,6 +9,7 @@ use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
 use yew::{classes, function_component, html, Callback, Children, Classes, Html, Properties};
 
+use self::oid::ObjectIdentifierNode;
 use self::primitive::{BoolNode, IntegerNode, NullNode};
 use self::sequence::SequenceNode;
 use self::strings::{BitStringNode, BmpStringNode, OctetStringNode, Utf8StringNode};
@@ -91,6 +93,11 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &C
         Asn1Type::Integer(integer) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
                 <IntegerNode node={integer.to_owned()} meta={asn1.meta().to_owned()} />
+            </Asn1Node>
+        },
+        Asn1Type::ObjectIdentifier(object_identifier) => html! {
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <ObjectIdentifierNode node={object_identifier.clone()} meta={asn1.meta().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::ExplicitTag(explicit) => html! {

@@ -1,3 +1,4 @@
+use alloc::string::String;
 use alloc::vec::Vec;
 
 use crate::length::{len_size, write_len};
@@ -13,6 +14,10 @@ impl ObjectIdentifier {
 
     pub fn oid(&self) -> &oid::ObjectIdentifier {
         &self.0
+    }
+
+    pub fn format(&self) -> String {
+        { &self.0 }.into()
     }
 }
 

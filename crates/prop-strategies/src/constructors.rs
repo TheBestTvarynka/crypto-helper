@@ -3,7 +3,10 @@ use proptest::collection::vec;
 use proptest::prop_oneof;
 use proptest::strategy::{Just, Strategy};
 
-use crate::{any_bit_string, any_bmp_string, any_bool, any_integer, any_null, any_object_identifier, any_octet_string, any_utf8_string};
+use crate::{
+    any_bit_string, any_bmp_string, any_bool, any_integer, any_null, any_object_identifier, any_octet_string,
+    any_utf8_string,
+};
 
 fn any_leaf_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
     prop_oneof![

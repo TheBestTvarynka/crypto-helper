@@ -53,3 +53,4 @@ flate2 = { version = "1.0.26", features = ["zlib"] }
 
 # asn1
 asn1-parser = { path = "./crates/asn1-parser" }
+oid = { version = "0.2.1", default-features = false }
