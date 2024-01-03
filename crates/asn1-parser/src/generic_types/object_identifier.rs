@@ -1,5 +1,6 @@
 use alloc::vec::Vec;
 
+use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
@@ -40,11 +41,15 @@ impl Asn1ValueDecoder<'_> for ObjectIdentifier {
 impl Asn1Encoder for ObjectIdentifier {
     fn needed_buf_size(&self) -> usize {
         let encoded: Vec<u8> = self.0.clone().into();
-        encoded.len()
+        encoded.len() + len_size(encoded.len()) + 1 /* tag */
     }
 
     fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
         let encoded: Vec<u8> = self.0.clone().into();
+
+        writer.write_byte(Self::TAG.into())?;
+        write_len(encoded.len(), writer)?;
+
         writer.write_slice(&encoded)
     }
 }

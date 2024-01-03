@@ -1390,6 +1390,7 @@ name = "prop-strategies"
 version = "0.1.0"
 dependencies = [
  "asn1-parser",
+ "oid",
  "proptest",
 ]
 

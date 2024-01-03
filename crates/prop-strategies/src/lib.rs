@@ -32,6 +32,7 @@ pub fn any_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
         any_bool().prop_map(Asn1Type::Bool),
         any_null().prop_map(Asn1Type::Null),
         any_integer().prop_map(Asn1Type::Integer),
+        any_object_identifier().prop_map(Asn1Type::ObjectIdentifier),
         recursive_empty_asn1_type(),
     ]
     .no_shrink()
