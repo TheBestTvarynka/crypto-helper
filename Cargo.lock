@@ -40,6 +40,7 @@ version = "0.1.0"
 dependencies = [
  "log",
  "num-bigint-dig",
+ "oid",
  "prop-strategies",
  "proptest",
 ]

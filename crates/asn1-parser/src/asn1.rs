@@ -5,7 +5,7 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag, Integer,
-    MetaInfo, Null, OctetString, Sequence, Tag, Taggable, Tlv, Utf8String,
+    MetaInfo, Null, ObjectIdentifier, OctetString, Sequence, Tag, Taggable, Tlv, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -19,6 +19,7 @@ pub enum Asn1Type<'data> {
     Bool(Bool),
     Null(Null),
     Integer(Integer<'data>),
+    ObjectIdentifier(ObjectIdentifier),
 
     ExplicitTag(ExplicitTag<'data>),
     ApplicationTag(ApplicationTag<'data>),
@@ -39,6 +40,7 @@ impl Asn1Type<'_> {
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
             Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
+            Asn1Type::ObjectIdentifier(o) => Asn1Type::ObjectIdentifier(o.clone()),
             Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
             Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned()),
             Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
@@ -57,6 +59,7 @@ impl Taggable for Asn1Type<'_> {
             Asn1Type::Bool(b) => b.tag(),
             Asn1Type::Null(n) => n.tag(),
             Asn1Type::Integer(i) => i.tag(),
+            Asn1Type::ObjectIdentifier(o) => o.tag(),
             Asn1Type::ExplicitTag(e) => e.tag(),
             Asn1Type::ApplicationTag(a) => a.tag(),
         }
@@ -79,6 +82,8 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
             Ok(Asn1Type::Bool(Bool::decode(tag, reader)?))
         } else if Integer::compare_tags(tag) {
             Ok(Asn1Type::Integer(Integer::decode(tag, reader)?))
+        } else if ObjectIdentifier::compare_tags(tag) {
+            Ok(Asn1Type::ObjectIdentifier(ObjectIdentifier::decode(tag, reader)?))
         } else if ExplicitTag::compare_tags(tag) {
             Ok(Asn1Type::ExplicitTag(ExplicitTag::decode(tag, reader)?))
         } else if ApplicationTag::compare_tags(tag) {
@@ -105,6 +110,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BmpString(bmp) => bmp.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
             Asn1Type::Integer(integer) => integer.needed_buf_size(),
+            Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.needed_buf_size(),
             Asn1Type::ExplicitTag(e) => e.needed_buf_size(),
             Asn1Type::ApplicationTag(a) => a.needed_buf_size(),
             Asn1Type::Null(n) => n.needed_buf_size(),
@@ -120,6 +126,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BmpString(bmp) => bmp.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
             Asn1Type::Integer(integer) => integer.encode(writer),
+            Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.encode(writer),
             Asn1Type::ExplicitTag(e) => e.encode(writer),
             Asn1Type::ApplicationTag(a) => a.encode(writer),
             Asn1Type::Null(n) => n.encode(writer),
@@ -137,6 +144,7 @@ impl MetaInfo for Asn1Type<'_> {
             Asn1Type::BmpString(_) => {}
             Asn1Type::Bool(_) => {}
             Asn1Type::Integer(_) => {}
+            Asn1Type::ObjectIdentifier(_) => {}
             Asn1Type::ExplicitTag(explicit_tag) => explicit_tag.clear_meta(),
             Asn1Type::ApplicationTag(application_tag) => application_tag.clear_meta(),
             Asn1Type::Null(_) => {}

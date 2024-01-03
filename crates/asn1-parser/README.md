@@ -30,9 +30,6 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 
 ---
 
-- [ ] [Date](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utf8string.html)
-- [ ] [DateTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/datetime.html)
-- [ ] [Duration](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/duration.html)
 - [ ] [GeneralizedTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/generalizedtime.html)
 - [ ] [Time](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/time.html)
 - [ ] [UtcTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utctime.html)
@@ -43,7 +40,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 - [X] [Integer](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/integer.html)
 - [X] [Boolean](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/boolean.html)
 - [X] [Null](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/null.html)
-- [ ] [ObjectIdentifier](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/object-identifier.html)
+- [X] [ObjectIdentifier](https://learn.microsoft.com/en-us/windows/win32/seccertenroll/about-object-identifier)
 - [ ] [Real](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/real.html)
 
 ---

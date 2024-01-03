@@ -2,6 +2,8 @@ use alloc::string::FromUtf16Error;
 use core::num::TryFromIntError;
 use core::str::Utf8Error;
 
+use oid::ObjectIdentifierError;
+
 #[derive(Debug)]
 pub struct Error {
     message: &'static str,
@@ -37,6 +39,14 @@ impl From<TryFromIntError> for Error {
     fn from(_value: TryFromIntError) -> Self {
         Self {
             message: "Numbers conversion error",
+        }
+    }
+}
+
+impl From<ObjectIdentifierError> for Error {
+    fn from(_value: ObjectIdentifierError) -> Self {
+        Self {
+            message: "ObjectIdentifierError",
         }
     }
 }
