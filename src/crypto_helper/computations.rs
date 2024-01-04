@@ -1,6 +1,7 @@
 use std::convert::TryInto;
 use std::io::Write;
 
+use argon2::{PasswordHasher, PasswordVerifier};
 use bcrypt::Version;
 use flate2::write::{ZlibDecoder, ZlibEncoder};
 use flate2::Compression;
@@ -11,7 +12,8 @@ use rand_chacha::ChaCha8Rng;
 use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
 
 use super::algorithm::{
-    BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput, ZlibInput, ZlibMode, Argon2Input, Argon2Action,
+    Argon2Action, Argon2Input, BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput,
+    ZlibInput, ZlibMode,
 };
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
@@ -94,5 +96,35 @@ pub fn process_zlib(input: &ZlibInput) -> Result<Vec<u8>, String> {
 }
 
 pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
-    todo!()
+    match &input.action {
+        Argon2Action::Hash(hash_action) => {
+            let argon2ctx = argon2::Argon2::new(
+                hash_action.variant.into(),
+                hash_action.version.into(),
+                hash_action.into(),
+            );
+            let salt: argon2::password_hash::Salt = hash_action.try_into()?;
+
+            let bytes: Vec<u8> = argon2ctx
+                .hash_password(&hash_action.data, salt)
+                .map(|pwd| pwd.hash.unwrap())
+                .map_err(|err| err.to_string())?
+                .as_bytes()
+                .into();
+
+            Ok(bytes)
+        }
+        Argon2Action::Verify(data) => {
+            let hash: argon2::PasswordHash = std::str::from_utf8(data)
+                .map_err(|err| err.to_string())?
+                .try_into()
+                .map_err(|err: argon2::password_hash::Error| err.to_string())?;
+
+            if argon2::Argon2::default().verify_password(data, &hash).is_ok() {
+                Ok(vec![1])
+            } else {
+                Ok(vec![0])
+            }
+        }
+    }
 }

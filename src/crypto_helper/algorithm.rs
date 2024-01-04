@@ -363,13 +363,30 @@ pub struct ZlibInput {
     #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub data: Vec<u8>,
 }
-
+#[derive(Eq, Clone, Copy, PartialEq, Debug, Serialize, Deserialize, Default)]
+pub enum Argon2Variant {
+    Argon2i,
+    Argon2d,
+    #[default]
+    Argon2id,
+}
+#[derive(Eq, Clone, Copy, PartialEq, Debug, Serialize, Deserialize, Default)]
+pub enum Argon2Version {
+    Version10,
+    #[default]
+    Version13,
+}
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct Argon2HashAction {
-    memory: u32,
-    iters: u32,
-    paralelism: u32,
-    output_len: u32,
+    pub memory: u32,
+    pub iters: u32,
+    pub paralelism: u32,
+    pub output_len: u32,
+    pub salt: Vec<u8>,
+    pub data: Vec<u8>,
+    pub secret: Vec<u8>,
+    pub variant: Argon2Variant,
+    pub version: Argon2Version,
 }
 
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
@@ -384,22 +401,56 @@ pub struct Argon2Input {
     pub data: Vec<u8>,
 }
 
-impl From<argon2::Params> for Argon2HashAction {
-    fn from(value: argon2::Params) -> Self {
-        let params = argon2::Params::DEFAULT;
-        Self {
-            memory: params.m_cost(),
-            iters: params.t_cost(),
-            paralelism: params.p_cost(),
-            output_len: 32
+impl From<Argon2Variant> for argon2::Algorithm {
+    fn from(value: Argon2Variant) -> Self {
+        match value {
+            Argon2Variant::Argon2d => argon2::Algorithm::Argon2d,
+            Argon2Variant::Argon2i => argon2::Algorithm::Argon2i,
+            Argon2Variant::Argon2id => argon2::Algorithm::Argon2id,
         }
+    }
+}
+
+impl From<Argon2Version> for argon2::Version {
+    fn from(value: Argon2Version) -> Self {
+        match value {
+            Argon2Version::Version10 => argon2::Version::V0x10,
+            Argon2Version::Version13 => argon2::Version::V0x13,
+        }
+    }
+}
+
+impl From<&Argon2HashAction> for argon2::Params {
+    fn from(value: &Argon2HashAction) -> Self {
+        argon2::ParamsBuilder::new()
+            .m_cost(value.memory)
+            .p_cost(value.paralelism)
+            .t_cost(value.iters)
+            .build()
+            .unwrap()
+    }
+}
+
+impl<'a> TryFrom<&'a Argon2HashAction> for argon2::password_hash::Salt<'a> {
+    type Error = String;
+    fn try_from(hash_action: &'a Argon2HashAction) -> Result<Self, Self::Error> {
+        argon2::password_hash::Salt::from_b64(
+            std::str::from_utf8(&hash_action.salt).map_err(|_| "Non UTF-8 salt".to_owned())?,
+        )
+        .map_err(|err| err.to_string())
     }
 }
 
 impl Default for Argon2HashAction {
     fn default() -> Self {
-        argon2::Params::DEFAULT.into()
-    } 
+        Self {
+            memory: 19456,
+            iters: 2,
+            paralelism: 1,
+            output_len: 32,
+            ..Default::default()
+        }
+    }
 }
 
 impl Default for Argon2Action {
@@ -412,7 +463,7 @@ impl Default for Argon2Input {
     fn default() -> Self {
         Self {
             action: Argon2Action::default(),
-            data: Vec::new()
+            data: Vec::new(),
         }
     }
 }
@@ -421,7 +472,7 @@ impl From<bool> for Argon2Action {
     fn from(value: bool) -> Self {
         match value {
             true => Argon2Action::Verify(Default::default()),
-            false => Argon2Action::Hash(Default::default())
+            false => Argon2Action::Hash(Default::default()),
         }
     }
 }
@@ -431,7 +482,6 @@ impl From<&Argon2Action> for bool {
         value.into()
     }
 }
-
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
