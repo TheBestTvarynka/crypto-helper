@@ -47,7 +47,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 
 - [X] [Sequence](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
 - [ ] [SequenceOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequenceof.html)
-- [ ] [Set](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/set.html)
+- [X] [Set](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/set.html)
 - [ ] [SetOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/setof.html)
 - [ ] [Choice](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/choice.html)
 

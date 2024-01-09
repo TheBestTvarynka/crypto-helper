@@ -158,6 +158,12 @@ fn build_data_bytes(
                 .iter()
                 .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
+        Asn1Type::Set(set) => {
+            let set_cur_node = set_cur_node.clone();
+            set.fields()
+                .iter()
+                .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
+        }
         Asn1Type::OctetString(octet) => match octet.inner() {
             Some(asn1) => build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all),
             None => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
