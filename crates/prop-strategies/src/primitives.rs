@@ -30,10 +30,10 @@ prop_compose! {
             second_node in Just(second_node),
             nodes in vec(0..u32::MAX - 1, all_nodes)
         ) -> ObjectIdentifier {
-        let mut formatted_oid = format!("{}.{}", dbg!(first_node), dbg!(second_node));
+        let mut formatted_oid = format!("{}.{}", first_node, second_node);
         for node in nodes {
             formatted_oid.push_str(&format!(".{}", node));
         }
-        ObjectIdentifier::from(oid::ObjectIdentifier::try_from(formatted_oid).expect("Valid object identifier."))
+        ObjectIdentifier::from(oid::ObjectIdentifier::try_from(dbg!(formatted_oid)).expect("Valid object identifier."))
     }
 }

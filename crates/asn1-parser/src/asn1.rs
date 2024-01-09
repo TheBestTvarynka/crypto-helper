@@ -5,12 +5,14 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag, Integer,
-    MetaInfo, Null, ObjectIdentifier, OctetString, Sequence, Tag, Taggable, Tlv, Utf8String,
+    MetaInfo, Null, ObjectIdentifier, OctetString, Sequence, Set, Tag, Taggable, Tlv, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1Type<'data> {
     Sequence(Sequence<'data>),
+    Set(Set<'data>),
+
     OctetString(OctetString<'data>),
     Utf8String(Utf8String<'data>),
     BitString(BitString<'data>),
@@ -34,6 +36,7 @@ impl Asn1Type<'_> {
     pub fn to_owned(&self) -> OwnedAsn1Type {
         match self {
             Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned()),
+            Asn1Type::Set(s) => Asn1Type::Set(s.to_owned()),
             Asn1Type::OctetString(o) => Asn1Type::OctetString(o.to_owned()),
             Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned()),
             Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
@@ -52,6 +55,7 @@ impl Taggable for Asn1Type<'_> {
     fn tag(&self) -> Tag {
         match self {
             Asn1Type::Sequence(s) => s.tag(),
+            Asn1Type::Set(s) => s.tag(),
             Asn1Type::OctetString(o) => o.tag(),
             Asn1Type::Utf8String(u) => u.tag(),
             Asn1Type::BitString(b) => b.tag(),
@@ -74,6 +78,8 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
             Ok(Asn1Type::Utf8String(Utf8String::decode(tag, reader)?))
         } else if Sequence::compare_tags(tag) {
             Ok(Asn1Type::Sequence(Sequence::decode(tag, reader)?))
+        } else if Set::compare_tags(tag) {
+            Ok(Asn1Type::Set(Set::decode(tag, reader)?))
         } else if BitString::compare_tags(tag) {
             Ok(Asn1Type::BitString(BitString::decode(tag, reader)?))
         } else if BmpString::compare_tags(tag) {
@@ -106,6 +112,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::OctetString(octet) => octet.needed_buf_size(),
             Asn1Type::Utf8String(utf8) => utf8.needed_buf_size(),
             Asn1Type::Sequence(sequence) => sequence.needed_buf_size(),
+            Asn1Type::Set(set) => set.needed_buf_size(),
             Asn1Type::BitString(bit) => bit.needed_buf_size(),
             Asn1Type::BmpString(bmp) => bmp.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
@@ -122,6 +129,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::OctetString(octet) => octet.encode(writer),
             Asn1Type::Utf8String(utf8) => utf8.encode(writer),
             Asn1Type::Sequence(sequence) => sequence.encode(writer),
+            Asn1Type::Set(set) => set.encode(writer),
             Asn1Type::BitString(bit) => bit.encode(writer),
             Asn1Type::BmpString(bmp) => bmp.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
@@ -137,9 +145,10 @@ impl Asn1Encoder for Asn1Type<'_> {
 impl MetaInfo for Asn1Type<'_> {
     fn clear_meta(&mut self) {
         match self {
-            Asn1Type::OctetString(_) => {}
+            Asn1Type::OctetString(octet_string) => octet_string.clear_meta(),
             Asn1Type::Utf8String(_) => {}
             Asn1Type::Sequence(sequence) => sequence.clear_meta(),
+            Asn1Type::Set(set) => set.clear_meta(),
             Asn1Type::BitString(_) => {}
             Asn1Type::BmpString(_) => {}
             Asn1Type::Bool(_) => {}

@@ -1,4 +1,4 @@
-use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, MetaInfo, Taggable};
+use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Type, MetaInfo, ObjectIdentifier, Taggable};
 use prop_strategies::any_asn1_type;
 use proptest::proptest;
 
@@ -25,6 +25,38 @@ fn asn1() {
         decoded.clear_meta();
         assert_eq!(decoded.inner_asn1(), &asn1);
     })
+}
+
+// TODO: bug. need to be fixed
+#[test]
+fn oi() {
+    let asn1 = Asn1Type::ObjectIdentifier(ObjectIdentifier::from(oid::ObjectIdentifier::try_from("2.29.1432919503.268680342.2607450773.2297838964.2800989460.3536442839.826751377.97234221.883516388.2427681722").unwrap()));
+    println!("asn1: {:?}", asn1);
+    let asn1_tag = asn1.tag();
+
+    let buff_len = asn1.needed_buf_size();
+    let mut buff = vec![0; buff_len];
+
+    asn1.encode_buff(&mut buff).unwrap();
+    println!("buff: {:?}", buff);
+
+    let mut decoded = Asn1::decode_buff(&buff).unwrap();
+    let decoded_inner_asn1 = decoded.inner_asn1();
+    let decoded_meta = decoded.meta();
+
+    println!("decoded_inner_asn1: {:?}", decoded_inner_asn1);
+
+    assert_eq!(decoded_inner_asn1.needed_buf_size(), buff_len);
+    assert_eq!(
+        1 + decoded_meta.length_bytes().len() + decoded_meta.data_bytes().len(),
+        buff_len
+    );
+    assert_eq!(decoded_inner_asn1.tag(), asn1_tag);
+    assert_eq!(decoded_meta.tag_position(), 0);
+    assert_eq!(decoded_meta.raw_bytes(), buff);
+
+    decoded.clear_meta();
+    assert_eq!(decoded.inner_asn1(), &asn1);
 }
 
 #[test]
