@@ -48,6 +48,7 @@ impl OctetString<'_> {
             asn1.clear_meta();
             Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))
         });
+
         OwnedOctetString {
             octets: Cow::Owned(octets),
             inner,

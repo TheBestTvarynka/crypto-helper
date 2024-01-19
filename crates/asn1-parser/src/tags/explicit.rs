@@ -56,8 +56,7 @@ impl<'data> Asn1ValueDecoder<'data> for ExplicitTag<'data> {
     }
 
     fn compare_tags(tag: Tag) -> bool {
-        let raw_tag = tag.0;
-        raw_tag & 0xc0 == 0x80 && raw_tag & 0x20 == 0x20
+        tag.is_context_specific() && tag.is_constructed()
     }
 }
 

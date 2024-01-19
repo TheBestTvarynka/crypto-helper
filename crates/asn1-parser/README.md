@@ -54,7 +54,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 ---
 
 - [X] [ExplicitTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
-- [ ] [ImplicitTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
+- [X] [ImplicitTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
 - [X] [ApplicationTag](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/asn1-tags.html)
 
 ## Usage example
