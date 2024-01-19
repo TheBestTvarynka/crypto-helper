@@ -39,6 +39,10 @@ impl<'data> ImplicitTag<'data> {
         self.inner.as_ref().map(|asn1| asn1.as_ref())
     }
 
+    pub fn octets(&self) -> &[u8] {
+        self.octets.as_ref()
+    }
+
     pub fn to_owned(&self) -> OwnedImplicitTag {
         OwnedImplicitTag {
             tag: self.tag,
@@ -64,10 +68,10 @@ impl<'data> Asn1ValueDecoder<'data> for ImplicitTag<'data> {
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
         inner_reader.set_offset(reader.full_offset() - data.len());
-        let inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
+        let mut inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
 
         if !inner_reader.empty() && inner.is_some() {
-            return Err("implicit tag inner data contains leftovers".into());
+            inner = None;
         }
 
         reader.set_next_id(inner_reader.next_id());
@@ -100,8 +104,6 @@ impl Asn1Encoder for ImplicitTag<'_> {
 
 impl MetaInfo for ImplicitTag<'_> {
     fn clear_meta(&mut self) {
-        if let Some(asn1) = self.inner.as_mut() {
-            asn1.clear_meta()
-        }
+        self.inner = None;
     }
 }

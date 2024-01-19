@@ -75,10 +75,10 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString<'data> {
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
         inner_reader.set_offset(reader.full_offset() - data.len());
-        let inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
+        let mut inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
 
         if !inner_reader.empty() && inner.is_some() {
-            return Err("octet string inner data contains leftovers".into());
+            inner = None;
         }
 
         reader.set_next_id(inner_reader.next_id());
@@ -116,8 +116,6 @@ impl Asn1Encoder for OctetString<'_> {
 
 impl MetaInfo for OctetString<'_> {
     fn clear_meta(&mut self) {
-        if let Some(asn1) = self.inner.as_mut() {
-            asn1.clear_meta()
-        }
+        self.inner = None;
     }
 }

@@ -3,7 +3,7 @@ use proptest::prop_compose;
 
 use crate::{bytes, string};
 
-const STRING_LEN: usize = 12;
+const STRING_LEN: usize = 32;
 
 prop_compose! {
     pub fn any_octet_string()

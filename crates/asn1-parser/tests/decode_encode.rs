@@ -4,7 +4,7 @@ use proptest::proptest;
 
 #[test]
 fn asn1() {
-    proptest!(|(asn1 in any_asn1_type())| {
+    proptest!(|(mut asn1 in any_asn1_type())| {
         let asn1_tag = asn1.tag();
 
         let buff_len = asn1.needed_buf_size();
@@ -23,6 +23,7 @@ fn asn1() {
         assert_eq!(decoded_meta.raw_bytes(), buff);
 
         decoded.clear_meta();
+        asn1.clear_meta();
         assert_eq!(decoded.inner_asn1(), &asn1);
     })
 }
