@@ -1,4 +1,6 @@
-use asn1_parser::{OwnedBitString, OwnedBmpString, OwnedOctetString, OwnedRawAsn1EntityData, OwnedUtf8String};
+use asn1_parser::{
+    OwnedBitString, OwnedBmpString, OwnedIA5String, OwnedOctetString, OwnedRawAsn1EntityData, OwnedUtf8String,
+};
 use yew::{function_component, html, Callback, Html, Properties};
 
 use crate::asn1::node_options::NodeOptions;
@@ -116,6 +118,26 @@ pub fn bit_string(props: &BmpStringNodeProps) -> Html {
         <div class="terminal-asn1-node">
             <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Bmp String")} />
             <span class="asn-simple-value">{s}</span>
+        </div>
+    }
+}
+
+#[derive(PartialEq, Properties, Clone)]
+pub struct IA5StringNodeProps {
+    pub node: OwnedIA5String,
+    pub meta: OwnedRawAsn1EntityData,
+}
+
+#[function_component(IA5StringNode)]
+pub fn utf8_string(props: &IA5StringNodeProps) -> Html {
+    let offset = props.meta.tag_position();
+    let length_len = props.meta.length_range().len();
+    let data_len = props.meta.data_range().len();
+
+    html! {
+        <div class="terminal-asn1-node">
+            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("IA5String")}/>
+            <span class="asn-simple-value">{props.node.string().to_owned()}</span>
         </div>
     }
 }
