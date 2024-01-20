@@ -14,7 +14,9 @@ use yew::{classes, function_component, html, Callback, Children, Classes, Html, 
 use self::oid::ObjectIdentifierNode;
 use self::primitive::{BoolNode, IntegerNode, NullNode};
 use self::sequence::SequenceNode;
-use self::strings::{BitStringNode, BmpStringNode, IA5StringNode, OctetStringNode, Utf8StringNode};
+use self::strings::{
+    BitStringNode, BmpStringNode, IA5StringNode, OctetStringNode, PrintableStringNode, Utf8StringNode,
+};
 use self::tag::{ApplicationTagNode, ExplicitTagNode, ImplicitTagNode};
 use self::time::UtcTimeNode;
 use crate::asn1::scheme::set::SetNode;
@@ -72,6 +74,11 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &C
         Asn1Type::IA5String(ia5) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
                 <IA5StringNode node={ia5.to_owned()} meta={asn1.meta().to_owned()} />
+            </Asn1Node>
+        },
+        Asn1Type::PrintableString(printable) => html! {
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <PrintableStringNode node={printable.to_owned()} meta={asn1.meta().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::Sequence(sequence) => html! {
