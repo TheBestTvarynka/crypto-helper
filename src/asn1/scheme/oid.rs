@@ -206,6 +206,14 @@ fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {
         "1.3.6.1.4.1.311.20.2.3" => ("User Principal Name", "http://www.oid-info.com/get/1.3.6.1.4.1.311.20.2.3"),
         "1.2.840.113549.1.9.16.2.47" => ("Signing certificate V2", "http://oid-info.com/get/1.2.840.113549.1.9.16.2.47"),
         "1.2.840.113549.1.9.52" => ("id-aa-CMSAlgorithmProtection", "https://oidref.com/1.2.840.113549.1.9.52"),
+        "2.5.29.31" => ("cRLDistributionPoints (X509 extension)", "http://www.oid-info.com/get/2.5.29.31"),
+        "1.3.6.1.5.5.7.2.1" => ("PKIX CPS pointer qualifier", "http://www.oid-info.com/get/1.3.6.1.5.5.7.2.1"),
+        "1.3.6.1.4.1.44947.1.1.1" => ("ISRG Domain Validated (by Let's Encrypt)", "https://www.alvestrand.no/objectid/submissions/1.3.6.1.4.1.44947.1.1.1.html"),
+        "2.23.140.1.2.1" => ("domain-validated", "http://www.oid-info.com/get/2.23.140.1.2.1"),
+        "2.5.29.32" => ("id-ce-certificatePolicies", "http://www.oid-info.com/get/2.5.29.32"),
+        "1.3.6.1.5.5.7.48.2" => ("id-ad-caIssuers", "http://www.oid-info.com/get/1.3.6.1.5.5.7.48.2"),
+        "1.3.6.1.5.5.7.48.1" => ("id-pkix-ocsp", "http://www.oid-info.com/get/1.3.6.1.5.5.7.48.1"),
+        "1.3.6.1.5.5.7.1.1" => ("id-pe-authorityInfoAccess", "http://www.oid-info.com/get/1.3.6.1.5.5.7.1.1"),
         _ => ("-", "https://github.com/TheBestTvarynka/crypto-helper/issues/new"),
     }
 }
