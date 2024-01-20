@@ -45,12 +45,12 @@ define_nt!(Second);
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UtcTime {
-    year: Year,
-    month: Month,
-    day: Day,
-    hour: Hour,
-    minute: Minute,
-    second: Option<Second>,
+    pub year: Year,
+    pub month: Month,
+    pub day: Day,
+    pub hour: Hour,
+    pub minute: Minute,
+    pub second: Option<Second>,
 }
 
 impl UtcTime {

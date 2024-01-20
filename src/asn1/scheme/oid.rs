@@ -204,7 +204,8 @@ fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {
         "1.2.840.113549.1.9.20" => ("pkcs-9-at-friendlyName", "http://www.oid-info.com/get/1.2.840.113549.1.9.20"),
         "1.2.840.113549.1.9.21" => ("pkcs-9-at-localKeyId", "http://www.oid-info.com/get/1.2.840.113549.1.9.21"),
         "1.3.6.1.4.1.311.20.2.3" => ("User Principal Name", "http://www.oid-info.com/get/1.3.6.1.4.1.311.20.2.3"),
-        "1.2.840.113549.1.9.16.2.47" => ("Signing certificate V2 ", "http://oid-info.com/get/1.2.840.113549.1.9.16.2.47"),
+        "1.2.840.113549.1.9.16.2.47" => ("Signing certificate V2", "http://oid-info.com/get/1.2.840.113549.1.9.16.2.47"),
+        "1.2.840.113549.1.9.52" => ("id-aa-CMSAlgorithmProtection", "https://oidref.com/1.2.840.113549.1.9.52"),
         _ => ("-", "https://github.com/TheBestTvarynka/crypto-helper/issues/new"),
     }
 }

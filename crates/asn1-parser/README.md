@@ -32,7 +32,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 
 - [ ] [GeneralizedTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/generalizedtime.html)
 - [ ] [Time](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/time.html)
-- [ ] [UtcTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utctime.html)
+- [X] [UtcTime](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utctime.html)
 - [ ] [TimeOfDay](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/timeofday.html)
 
 ---

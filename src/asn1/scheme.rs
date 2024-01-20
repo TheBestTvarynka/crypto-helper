@@ -4,6 +4,7 @@ mod sequence;
 mod set;
 mod strings;
 mod tag;
+mod time;
 
 use asn1_parser::{Asn1, Asn1Entity, Asn1Type};
 use web_sys::MouseEvent;
@@ -15,6 +16,7 @@ use self::primitive::{BoolNode, IntegerNode, NullNode};
 use self::sequence::SequenceNode;
 use self::strings::{BitStringNode, BmpStringNode, OctetStringNode, Utf8StringNode};
 use self::tag::{ApplicationTagNode, ExplicitTagNode, ImplicitTagNode};
+use self::time::UtcTimeNode;
 use crate::asn1::scheme::set::SetNode;
 use crate::asn1::HighlightAction;
 
@@ -120,6 +122,11 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &C
         Asn1Type::ApplicationTag(application) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
                 <ApplicationTagNode node={application.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().to_owned()} />
+            </Asn1Node>
+        },
+        Asn1Type::UtcTime(utc_time) => html! {
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <UtcTimeNode node={utc_time.to_owned()} meta={asn1.meta().to_owned()} />
             </Asn1Node>
         },
     }

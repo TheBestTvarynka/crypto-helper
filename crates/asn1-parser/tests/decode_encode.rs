@@ -28,6 +28,17 @@ fn asn1() {
     })
 }
 
+#[test]
+fn utc_time() {
+    let raw = [23, 11, 57, 54, 48, 52, 49, 53, 50, 48, 51, 48, 90];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+
+    let raw = [23, 13, 49, 57, 49, 48, 49, 55, 49, 55, 52, 49, 50, 56, 90];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+}
+
 // TODO: bug. need to be fixed
 #[test]
 fn oi() {
