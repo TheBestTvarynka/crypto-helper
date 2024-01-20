@@ -8,12 +8,13 @@ mod macros;
 mod asn1;
 mod constructors;
 mod error;
-mod primitives;
 mod length;
+mod primitives;
 mod reader;
 mod string;
 mod tag;
 mod tags;
+mod time;
 mod tlv;
 mod writer;
 
@@ -25,6 +26,7 @@ use reader::Reader;
 pub use string::*;
 pub use tag::Tag;
 pub use tags::*;
+pub use time::*;
 pub use tlv::Tlv;
 use writer::Writer;
 
