@@ -29,7 +29,7 @@ impl Utf8String<'_> {
         &self.0
     }
 
-    /// Returns owned version of the [BitString]
+    /// Returns owned version of the [Utf8String]
     pub fn to_owned(&self) -> OwnedUtf8String {
         Utf8String(self.0.to_string().into())
     }
@@ -63,7 +63,7 @@ impl<'data> Asn1ValueDecoder<'data> for Utf8String<'data> {
 
 impl Taggable for Utf8String<'_> {
     fn tag(&self) -> Tag {
-        Utf8String::TAG
+        Self::TAG
     }
 }
 

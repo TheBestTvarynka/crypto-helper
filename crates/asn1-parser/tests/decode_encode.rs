@@ -29,6 +29,13 @@ fn asn1() {
 }
 
 #[test]
+fn ia5_string() {
+    let raw = [22, 9, 65, 66, 67, 68, 32, 69, 70, 71, 72];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+}
+
+#[test]
 fn utc_time() {
     let raw = [23, 11, 57, 54, 48, 52, 49, 53, 50, 48, 51, 48, 90];
     let asn1 = Asn1::decode_buff(&raw).unwrap();

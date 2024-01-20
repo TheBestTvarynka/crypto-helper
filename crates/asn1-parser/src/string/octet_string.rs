@@ -96,7 +96,7 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString<'data> {
 
 impl Taggable for OctetString<'_> {
     fn tag(&self) -> Tag {
-        OctetString::TAG
+        Self::TAG
     }
 }
 
