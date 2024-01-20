@@ -5,8 +5,8 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag,
-    IA5String, ImplicitTag, Integer, MetaInfo, Null, ObjectIdentifier, OctetString, Sequence, Set, Tag, Taggable, Tlv,
-    UtcTime, Utf8String,
+    IA5String, ImplicitTag, Integer, MetaInfo, Null, ObjectIdentifier, OctetString, PrintableString, Sequence, Set,
+    Tag, Taggable, Tlv, UtcTime, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -19,6 +19,7 @@ pub enum Asn1Type<'data> {
     BitString(BitString<'data>),
     BmpString(BmpString<'data>),
     IA5String(IA5String<'data>),
+    PrintableString(PrintableString<'data>),
 
     UtcTime(UtcTime),
 
@@ -46,6 +47,7 @@ impl Asn1Type<'_> {
             Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned()),
             Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
             Asn1Type::IA5String(i) => Asn1Type::IA5String(i.to_owned()),
+            Asn1Type::PrintableString(p) => Asn1Type::PrintableString(p.to_owned()),
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
             Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
@@ -69,6 +71,7 @@ impl Taggable for Asn1Type<'_> {
             Asn1Type::BitString(b) => b.tag(),
             Asn1Type::BmpString(b) => b.tag(),
             Asn1Type::IA5String(i) => i.tag(),
+            Asn1Type::PrintableString(p) => p.tag(),
             Asn1Type::Bool(b) => b.tag(),
             Asn1Type::Null(n) => n.tag(),
             Asn1Type::Integer(i) => i.tag(),
@@ -97,6 +100,8 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
             Ok(Asn1Type::BmpString(BmpString::decode(tag, reader)?))
         } else if IA5String::compare_tags(tag) {
             Ok(Asn1Type::IA5String(IA5String::decode(tag, reader)?))
+        } else if PrintableString::compare_tags(tag) {
+            Ok(Asn1Type::PrintableString(PrintableString::decode(tag, reader)?))
         } else if Bool::compare_tags(tag) {
             Ok(Asn1Type::Bool(Bool::decode(tag, reader)?))
         } else if Integer::compare_tags(tag) {
@@ -133,6 +138,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.needed_buf_size(),
             Asn1Type::BmpString(bmp) => bmp.needed_buf_size(),
             Asn1Type::IA5String(i) => i.needed_buf_size(),
+            Asn1Type::PrintableString(p) => p.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
             Asn1Type::Integer(integer) => integer.needed_buf_size(),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.needed_buf_size(),
@@ -153,6 +159,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BitString(bit) => bit.encode(writer),
             Asn1Type::BmpString(bmp) => bmp.encode(writer),
             Asn1Type::IA5String(ia5) => ia5.encode(writer),
+            Asn1Type::PrintableString(printable) => printable.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
             Asn1Type::Integer(integer) => integer.encode(writer),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.encode(writer),
@@ -175,6 +182,7 @@ impl MetaInfo for Asn1Type<'_> {
             Asn1Type::BitString(_) => {}
             Asn1Type::BmpString(_) => {}
             Asn1Type::IA5String(_) => {}
+            Asn1Type::PrintableString(_) => {}
             Asn1Type::Bool(_) => {}
             Asn1Type::Integer(_) => {}
             Asn1Type::ObjectIdentifier(_) => {}

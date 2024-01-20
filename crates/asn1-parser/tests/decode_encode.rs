@@ -36,6 +36,13 @@ fn ia5_string() {
 }
 
 #[test]
+fn printable_string() {
+    let raw = [19, 6, 80, 97, 114, 107, 101, 114];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+}
+
+#[test]
 fn utc_time() {
     let raw = [23, 11, 57, 54, 48, 52, 49, 53, 50, 48, 51, 48, 90];
     let asn1 = Asn1::decode_buff(&raw).unwrap();
