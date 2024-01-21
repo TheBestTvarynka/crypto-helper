@@ -1,6 +1,6 @@
 use asn1_parser::{
-    OwnedBitString, OwnedBmpString, OwnedIA5String, OwnedOctetString, OwnedPrintableString, OwnedRawAsn1EntityData,
-    OwnedUtf8String,
+    OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedOctetString, OwnedPrintableString,
+    OwnedRawAsn1EntityData, OwnedUtf8String,
 };
 use yew::{function_component, html, Callback, Html, Properties};
 
@@ -164,6 +164,26 @@ pub fn utf8_string(props: &PrintableStringNodeProps) -> Html {
     html! {
         <div class="terminal-asn1-node">
             <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("PrintableString")}/>
+            <span class="asn-simple-value">{props.node.string().to_owned()}</span>
+        </div>
+    }
+}
+
+#[derive(PartialEq, Properties, Clone)]
+pub struct GeneralStringNodeProps {
+    pub node: OwnedGeneralString,
+    pub meta: OwnedRawAsn1EntityData,
+}
+
+#[function_component(GeneralStringNode)]
+pub fn utf8_string(props: &GeneralStringNodeProps) -> Html {
+    let offset = props.meta.tag_position();
+    let length_len = props.meta.length_range().len();
+    let data_len = props.meta.data_range().len();
+
+    html! {
+        <div class="terminal-asn1-node">
+            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("GeneralString")}/>
             <span class="asn-simple-value">{props.node.string().to_owned()}</span>
         </div>
     }

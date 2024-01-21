@@ -171,6 +171,7 @@ fn build_data_bytes(
         Asn1Type::Utf8String(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::IA5String(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::PrintableString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::GeneralString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::UtcTime(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::BitString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::BmpString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
