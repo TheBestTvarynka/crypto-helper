@@ -55,13 +55,19 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
                 </div>
             </div>
         },
-        None => html! {
-            <div class="terminal-asn1-node">
-                <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Octet String")} />
-                <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
-                <span class="asn-simple-value">{hex::encode(octets)}</span>
-            </div>
-        },
+        None => {
+            let encoded_octets = match std::str::from_utf8(octets) {
+                Ok(s) => s.to_owned(),
+                Err(_) => hex::encode(octets),
+            };
+            html! {
+                <div class="terminal-asn1-node">
+                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Octet String")} />
+                    <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
+                    <span class="asn-simple-value">{encoded_octets}</span>
+                </div>
+            }
+        }
     }
 }
 #[derive(PartialEq, Properties, Clone)]
