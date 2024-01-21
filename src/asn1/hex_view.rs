@@ -179,14 +179,22 @@ fn build_data_bytes(
         Asn1Type::Integer(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::ObjectIdentifier(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::ExplicitTag(explicit) => {
-            build_hex_bytes(explicit.inner(), cur_node, set_cur_node.clone(), bytes, select_all)
+            let set_cur_node = set_cur_node.clone();
+            explicit
+                .inner()
+                .iter()
+                .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
         Asn1Type::ImplicitTag(implicit) => match implicit.inner_asn1() {
             Some(asn1) => build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all),
             None => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         },
         Asn1Type::ApplicationTag(application) => {
-            build_hex_bytes(application.inner(), cur_node, set_cur_node.clone(), bytes, select_all)
+            let set_cur_node = set_cur_node.clone();
+            application
+                .inner()
+                .iter()
+                .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
     }
 }

@@ -15,6 +15,14 @@ pub struct ExplicitTagProps {
 
 #[function_component(ExplicitTagNode)]
 pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
+    let set_cur_node = &props.set_cur_node;
+    let inner_components = props
+        .node
+        .inner()
+        .iter()
+        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
+        .collect::<Vec<_>>();
+
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
@@ -25,7 +33,7 @@ pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
                 <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("[{}]", props.node.tag_number())}/>
             </div>
             <div class="asn1-constructor-body">
-                {build_asn1_schema(props.node.inner(), &props.cur_node, &props.set_cur_node)}
+                {inner_components}
             </div>
         </div>
     }
@@ -41,6 +49,14 @@ pub struct ApplicationTagProps {
 
 #[function_component(ApplicationTagNode)]
 pub fn application_tag(props: &ApplicationTagProps) -> Html {
+    let set_cur_node = &props.set_cur_node;
+    let inner_components = props
+        .node
+        .inner()
+        .iter()
+        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
+        .collect::<Vec<_>>();
+
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
@@ -51,7 +67,7 @@ pub fn application_tag(props: &ApplicationTagProps) -> Html {
                 <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("Application {}", props.node.tag_number())}/>
             </div>
             <div class="asn1-constructor-body">
-                {build_asn1_schema(props.node.inner(), &props.cur_node, &props.set_cur_node)}
+                {inner_components}
             </div>
         </div>
     }
