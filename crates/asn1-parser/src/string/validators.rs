@@ -2,6 +2,12 @@ pub fn validate_utf8(_: &str) -> bool {
     true
 }
 
+pub fn validate_general(_: &str) -> bool {
+    // TODO: properly validate GeneralString
+    // I'm too lazy to do it. UTF8 is enough
+    true
+}
+
 pub fn validate_printable(data: &str) -> bool {
     const ALLOWED_SPECIAL: &[u8] = &[b' ', b'\'', b'(', b')', b'+', b',', b'-', b'.', b'/', b':', b'=', b'?'];
 

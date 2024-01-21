@@ -69,3 +69,15 @@ macro_rules! impl_utf8_asn1 {
         }
     };
 }
+
+macro_rules! decode_asn1 {
+    ($($name:ident),*; in $tag:expr, $reader:expr)  => {
+        {
+            $(
+                if $name::compare_tags($tag) {
+                    return Ok(Asn1Type::$name($name::decode($tag, $reader)?));
+                }
+            )*
+        }
+    };
+}

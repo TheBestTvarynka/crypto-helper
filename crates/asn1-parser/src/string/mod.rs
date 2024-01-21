@@ -10,7 +10,7 @@ use core::str::from_utf8;
 pub use bit_string::{BitString, OwnedBitString};
 pub use bmp_string::{BmpString, OwnedBmpString};
 pub use octet_string::{OctetString, OwnedOctetString};
-use validators::{validate_ia5, validate_printable, validate_utf8};
+use validators::{validate_general, validate_ia5, validate_printable, validate_utf8};
 
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
@@ -70,3 +70,4 @@ impl<const TAG: u8> Asn1Encoder for Utf8Value<'_, TAG> {
 impl_utf8_asn1!(PrintableString, 19, validate_printable);
 impl_utf8_asn1!(Utf8String, 12, validate_utf8);
 impl_utf8_asn1!(IA5String, 22, validate_ia5);
+impl_utf8_asn1!(GeneralString, 27, validate_general);

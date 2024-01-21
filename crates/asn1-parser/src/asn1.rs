@@ -5,8 +5,8 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag,
-    IA5String, ImplicitTag, Integer, MetaInfo, Null, ObjectIdentifier, OctetString, PrintableString, Sequence, Set,
-    Tag, Taggable, Tlv, UtcTime, Utf8String,
+    GeneralString, IA5String, ImplicitTag, Integer, MetaInfo, Null, ObjectIdentifier, OctetString, PrintableString,
+    Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,6 +20,7 @@ pub enum Asn1Type<'data> {
     BmpString(BmpString<'data>),
     IA5String(IA5String<'data>),
     PrintableString(PrintableString<'data>),
+    GeneralString(GeneralString<'data>),
 
     UtcTime(UtcTime),
 
@@ -48,6 +49,7 @@ impl Asn1Type<'_> {
             Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
             Asn1Type::IA5String(i) => Asn1Type::IA5String(i.to_owned()),
             Asn1Type::PrintableString(p) => Asn1Type::PrintableString(p.to_owned()),
+            Asn1Type::GeneralString(g) => Asn1Type::GeneralString(g.to_owned()),
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
             Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
@@ -72,6 +74,7 @@ impl Taggable for Asn1Type<'_> {
             Asn1Type::BmpString(b) => b.tag(),
             Asn1Type::IA5String(i) => i.tag(),
             Asn1Type::PrintableString(p) => p.tag(),
+            Asn1Type::GeneralString(g) => g.tag(),
             Asn1Type::Bool(b) => b.tag(),
             Asn1Type::Null(n) => n.tag(),
             Asn1Type::Integer(i) => i.tag(),
@@ -86,41 +89,28 @@ impl Taggable for Asn1Type<'_> {
 
 impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
-        if OctetString::compare_tags(tag) {
-            Ok(Asn1Type::OctetString(OctetString::decode(tag, reader)?))
-        } else if Utf8String::compare_tags(tag) {
-            Ok(Asn1Type::Utf8String(Utf8String::decode(tag, reader)?))
-        } else if Sequence::compare_tags(tag) {
-            Ok(Asn1Type::Sequence(Sequence::decode(tag, reader)?))
-        } else if Set::compare_tags(tag) {
-            Ok(Asn1Type::Set(Set::decode(tag, reader)?))
-        } else if BitString::compare_tags(tag) {
-            Ok(Asn1Type::BitString(BitString::decode(tag, reader)?))
-        } else if BmpString::compare_tags(tag) {
-            Ok(Asn1Type::BmpString(BmpString::decode(tag, reader)?))
-        } else if IA5String::compare_tags(tag) {
-            Ok(Asn1Type::IA5String(IA5String::decode(tag, reader)?))
-        } else if PrintableString::compare_tags(tag) {
-            Ok(Asn1Type::PrintableString(PrintableString::decode(tag, reader)?))
-        } else if Bool::compare_tags(tag) {
-            Ok(Asn1Type::Bool(Bool::decode(tag, reader)?))
-        } else if Integer::compare_tags(tag) {
-            Ok(Asn1Type::Integer(Integer::decode(tag, reader)?))
-        } else if ObjectIdentifier::compare_tags(tag) {
-            Ok(Asn1Type::ObjectIdentifier(ObjectIdentifier::decode(tag, reader)?))
-        } else if ExplicitTag::compare_tags(tag) {
-            Ok(Asn1Type::ExplicitTag(ExplicitTag::decode(tag, reader)?))
-        } else if ImplicitTag::compare_tags(tag) {
-            Ok(Asn1Type::ImplicitTag(ImplicitTag::decode(tag, reader)?))
-        } else if ApplicationTag::compare_tags(tag) {
-            Ok(Asn1Type::ApplicationTag(ApplicationTag::decode(tag, reader)?))
-        } else if Null::compare_tags(tag) {
-            Ok(Asn1Type::Null(Null::decode(tag, reader)?))
-        } else if UtcTime::compare_tags(tag) {
-            Ok(Asn1Type::UtcTime(UtcTime::decode(tag, reader)?))
-        } else {
-            Err(Error::from("Invalid data"))
-        }
+        decode_asn1!(
+            OctetString,
+            Utf8String,
+            Sequence,
+            Set,
+            BitString,
+            BmpString,
+            IA5String,
+            PrintableString,
+            GeneralString,
+            Bool,
+            Integer,
+            ObjectIdentifier,
+            ExplicitTag,
+            ImplicitTag,
+            ApplicationTag,
+            Null,
+            UtcTime;
+            in tag, reader
+        );
+
+        Err(Error::from("Invalid asn1 data"))
     }
 
     fn compare_tags(_tag: Tag) -> bool {
@@ -139,6 +129,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BmpString(bmp) => bmp.needed_buf_size(),
             Asn1Type::IA5String(i) => i.needed_buf_size(),
             Asn1Type::PrintableString(p) => p.needed_buf_size(),
+            Asn1Type::GeneralString(g) => g.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
             Asn1Type::Integer(integer) => integer.needed_buf_size(),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.needed_buf_size(),
@@ -160,6 +151,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::BmpString(bmp) => bmp.encode(writer),
             Asn1Type::IA5String(ia5) => ia5.encode(writer),
             Asn1Type::PrintableString(printable) => printable.encode(writer),
+            Asn1Type::GeneralString(general) => general.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
             Asn1Type::Integer(integer) => integer.encode(writer),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.encode(writer),
@@ -183,6 +175,7 @@ impl MetaInfo for Asn1Type<'_> {
             Asn1Type::BmpString(_) => {}
             Asn1Type::IA5String(_) => {}
             Asn1Type::PrintableString(_) => {}
+            Asn1Type::GeneralString(_) => {}
             Asn1Type::Bool(_) => {}
             Asn1Type::Integer(_) => {}
             Asn1Type::ObjectIdentifier(_) => {}
