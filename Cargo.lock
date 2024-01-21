@@ -2066,6 +2066,7 @@ dependencies = [
  "log",
  "md5",
  "oid",
+ "paste",
  "picky",
  "picky-krb",
  "rand",

@@ -19,7 +19,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 - [X] [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
 - [ ] [GraphicString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/graphicstring.html)
 - [X] [IA5String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/ia5string.html)
-- [ ] [GeneralString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/generalstring.html)
+- [X] [GeneralString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/generalstring.html)
 - [X] [PrintableString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/printablestring.html)
 - [X] [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
 - [ ] [NumericString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/numericstring.html)

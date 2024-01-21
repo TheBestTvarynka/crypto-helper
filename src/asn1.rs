@@ -1,3 +1,6 @@
+#[macro_use]
+mod macros;
+
 mod asn1_viewer;
 mod hex_view;
 mod node_options;
