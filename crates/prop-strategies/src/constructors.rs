@@ -44,13 +44,13 @@ pub fn recursive_empty_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
                 .prop_flat_map(move |tag| (Just(tag), explicit_tag_inner.clone()))
                 .prop_map(|(tag, inner)| Asn1Type::ExplicitTag(OwnedExplicitTag::new(
                     tag,
-                    Box::new(OwnedAsn1::new(0, Default::default(), inner))
+                    vec![OwnedAsn1::new(0, Default::default(), inner)]
                 ))),
             (0_u8..31)
                 .prop_flat_map(move |tag| (Just(tag), application_tag_inner.clone()))
                 .prop_map(|(tag, inner)| Asn1Type::ApplicationTag(OwnedApplicationTag::new(
                     tag,
-                    Box::new(OwnedAsn1::new(0, Default::default(), inner))
+                    vec![OwnedAsn1::new(0, Default::default(), inner)]
                 ))),
         ]
     })

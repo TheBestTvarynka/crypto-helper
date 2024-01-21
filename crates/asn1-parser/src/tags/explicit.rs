@@ -1,4 +1,4 @@
-use alloc::boxed::Box;
+use alloc::vec::Vec;
 
 use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
@@ -9,13 +9,13 @@ use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Ta
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExplicitTag<'data> {
     tag: u8,
-    inner: Box<Asn1<'data>>,
+    inner: Vec<Asn1<'data>>,
 }
 
 pub type OwnedExplicitTag = ExplicitTag<'static>;
 
 impl<'data> ExplicitTag<'data> {
-    pub fn new(tag: u8, inner: Box<Asn1<'data>>) -> Self {
+    pub fn new(tag: u8, inner: Vec<Asn1<'data>>) -> Self {
         Self {
             tag: tag & 0x1f | 0xa0,
             inner,
@@ -26,14 +26,18 @@ impl<'data> ExplicitTag<'data> {
         self.tag & 0x1f
     }
 
-    pub fn inner(&self) -> &Asn1<'data> {
+    pub fn inner(&self) -> &[Asn1<'data>] {
         &self.inner
     }
 
     pub fn to_owned(&self) -> OwnedExplicitTag {
         OwnedExplicitTag {
             tag: self.tag,
-            inner: Box::new(self.inner.to_owned_with_asn1(self.inner.inner_asn1().to_owned())),
+            inner: self
+                .inner
+                .iter()
+                .map(|f| f.to_owned_with_asn1(f.inner_asn1().to_owned()))
+                .collect(),
         }
     }
 }
@@ -46,10 +50,10 @@ impl Taggable for ExplicitTag<'_> {
 
 impl<'data> Asn1ValueDecoder<'data> for ExplicitTag<'data> {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
-        let inner = Box::new(Asn1::decode(reader)?);
+        let mut inner = Vec::new();
 
-        if !reader.empty() {
-            return Err("explicit tag inner data contains leftovers".into());
+        while !reader.empty() {
+            inner.push(Asn1::decode(reader)?);
         }
 
         Ok(Self { tag: tag.0, inner })
@@ -62,7 +66,7 @@ impl<'data> Asn1ValueDecoder<'data> for ExplicitTag<'data> {
 
 impl Asn1Encoder for ExplicitTag<'_> {
     fn needed_buf_size(&self) -> usize {
-        let data_len = self.inner.needed_buf_size();
+        let data_len = self.inner.iter().map(|f| f.needed_buf_size()).sum();
 
         1 /* tag */ + len_size(data_len) + data_len
     }
@@ -70,15 +74,15 @@ impl Asn1Encoder for ExplicitTag<'_> {
     fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
         writer.write_byte(self.tag)?;
 
-        let data_len = self.inner.needed_buf_size();
+        let data_len = self.inner.iter().map(|f| f.needed_buf_size()).sum();
         write_len(data_len, writer)?;
 
-        self.inner.encode(writer)
+        self.inner.iter().try_for_each(|f| f.encode(writer))
     }
 }
 
 impl MetaInfo for ExplicitTag<'_> {
     fn clear_meta(&mut self) {
-        self.inner.clear_meta()
+        self.inner.iter_mut().for_each(|f| f.clear_meta())
     }
 }
