@@ -15,7 +15,7 @@ prop_compose! {
 prop_compose! {
     pub fn any_utf8_string()
         (data in string(STRING_LEN)) -> OwnedUtf8String {
-        OwnedUtf8String::new_owned(data)
+        data.into()
     }
 }
 
