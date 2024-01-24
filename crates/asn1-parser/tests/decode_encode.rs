@@ -29,6 +29,31 @@ fn asn1() {
 }
 
 #[test]
+fn generalized_time() {
+    let raw = [
+        0x18, 0x0f, 0x32, 0x30, 0x33, 0x37, 0x30, 0x39, 0x31, 0x33, 0x30, 0x32, 0x34, 0x38, 0x30, 0x35, 0x5a,
+    ];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+
+    let raw = [24, 16, 49, 57, 56, 53, 49, 49, 48, 54, 50, 49, 48, 54, 50, 55, 46, 51];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+
+    let raw = [
+        24, 17, 49, 57, 56, 53, 49, 49, 48, 54, 50, 49, 48, 54, 50, 55, 46, 51, 90,
+    ];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+
+    let raw = [
+        24, 21, 49, 57, 56, 53, 49, 49, 48, 54, 50, 49, 48, 54, 50, 55, 46, 51, 45, 48, 53, 48, 48,
+    ];
+    let asn1 = Asn1::decode_buff(&raw).unwrap();
+    println!("{:?}", asn1);
+}
+
+#[test]
 fn ia5_string() {
     let raw = [22, 9, 65, 66, 67, 68, 32, 69, 70, 71, 72];
     let asn1 = Asn1::decode_buff(&raw).unwrap();

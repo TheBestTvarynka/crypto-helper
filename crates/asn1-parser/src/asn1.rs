@@ -5,8 +5,8 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag,
-    GeneralString, IA5String, ImplicitTag, Integer, MetaInfo, Null, ObjectIdentifier, OctetString, PrintableString,
-    Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String,
+    GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, MetaInfo, Null, ObjectIdentifier, OctetString,
+    PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -23,6 +23,7 @@ pub enum Asn1Type<'data> {
     GeneralString(GeneralString<'data>),
 
     UtcTime(UtcTime),
+    GeneralizedTime(GeneralizedTime),
 
     Bool(Bool),
     Null(Null),
@@ -59,6 +60,7 @@ impl Asn1Type<'_> {
             Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned()),
             Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
             Asn1Type::UtcTime(u) => Asn1Type::UtcTime(u.clone()),
+            Asn1Type::GeneralizedTime(u) => Asn1Type::GeneralizedTime(u.clone()),
         }
     }
 }
@@ -83,6 +85,7 @@ impl Taggable for Asn1Type<'_> {
             Asn1Type::ImplicitTag(i) => i.tag(),
             Asn1Type::ApplicationTag(a) => a.tag(),
             Asn1Type::UtcTime(u) => u.tag(),
+            Asn1Type::GeneralizedTime(u) => u.tag(),
         }
     }
 }
@@ -106,7 +109,8 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
             ImplicitTag,
             ApplicationTag,
             Null,
-            UtcTime;
+            UtcTime,
+            GeneralizedTime;
             in tag, reader
         );
 
@@ -138,6 +142,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::ApplicationTag(a) => a.needed_buf_size(),
             Asn1Type::Null(n) => n.needed_buf_size(),
             Asn1Type::UtcTime(u) => u.needed_buf_size(),
+            Asn1Type::GeneralizedTime(u) => u.needed_buf_size(),
         }
     }
 
@@ -160,6 +165,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::ApplicationTag(a) => a.encode(writer),
             Asn1Type::Null(n) => n.encode(writer),
             Asn1Type::UtcTime(utc_time) => utc_time.encode(writer),
+            Asn1Type::GeneralizedTime(generalized_time) => generalized_time.encode(writer),
         }
     }
 }
@@ -184,6 +190,7 @@ impl MetaInfo for Asn1Type<'_> {
             Asn1Type::ApplicationTag(application_tag) => application_tag.clear_meta(),
             Asn1Type::Null(_) => {}
             Asn1Type::UtcTime(_) => {}
+            Asn1Type::GeneralizedTime(_) => {}
         }
     }
 }

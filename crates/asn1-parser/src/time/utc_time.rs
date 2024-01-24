@@ -1,47 +1,10 @@
 use alloc::format;
 
+use super::{read_number, Day, Hour, Minute, Month, Second, Year};
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, Tag, Taggable};
-
-macro_rules! define_nt {
-    ($name:ident) => {
-        #[derive(Debug, Clone, PartialEq, Eq)]
-        pub struct $name(u8);
-
-        impl From<$name> for u8 {
-            fn from(value: $name) -> Self {
-                value.0
-            }
-        }
-
-        impl AsRef<u8> for $name {
-            fn as_ref(&self) -> &u8 {
-                &self.0
-            }
-        }
-
-        impl TryFrom<u8> for $name {
-            type Error = Error;
-
-            fn try_from(value: u8) -> Result<Self, Self::Error> {
-                if value < 100 {
-                    Ok($name(value))
-                } else {
-                    Err("invalid value".into())
-                }
-            }
-        }
-    };
-}
-
-define_nt!(Year);
-define_nt!(Month);
-define_nt!(Day);
-define_nt!(Hour);
-define_nt!(Minute);
-define_nt!(Second);
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UtcTime {
@@ -128,17 +91,4 @@ impl Asn1Encoder for UtcTime {
 
         writer.write_byte(b'Z')
     }
-}
-
-fn read_number(reader: &mut Reader<'_>) -> Asn1Result<u8> {
-    const ASCII_SHIFT: u8 = 48;
-
-    let f = char::from(reader.read_byte()?);
-    let s = char::from(reader.read_byte()?);
-
-    if !f.is_numeric() || !s.is_numeric() {
-        return Err("invalid bytes for utctime".into());
-    }
-
-    Ok((f as u8 - ASCII_SHIFT) * 10 + (s as u8 - ASCII_SHIFT))
 }
