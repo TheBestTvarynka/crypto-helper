@@ -5,12 +5,11 @@ mod simple_output;
 mod switch;
 mod table;
 
-pub use byte_input::{build_byte_input, ByteInput, ByteInputProps};
-pub use bytes_viewer::{BytesViewer, BytesViewerProps};
-pub use checkbox::{Checkbox, CheckboxProps};
+pub use byte_input::{build_byte_input, ByteInput};
+pub use checkbox::Checkbox;
 pub use simple_output::build_simple_output;
-pub use switch::{Switch, SwitchProps};
-pub use table::{TableView, TableViewProps};
+pub use switch::Switch;
+pub use table::TableView;
 use web_sys::MouseEvent;
 use yew::{classes, Callback, Classes, UseStateSetter};
 

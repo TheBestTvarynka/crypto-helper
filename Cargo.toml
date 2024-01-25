@@ -52,6 +52,6 @@ bcrypt = "0.14.0"
 flate2 = { version = "1.0.26", features = ["zlib"] }
 
 # asn1
-asn1-parser = { path = "./crates/asn1-parser" }
+asn1-parser = { path = "./crates/asn1-parser", features = ["std"] }
 oid = { version = "0.2.1", default-features = false }
 paste = "1.0.14"

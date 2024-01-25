@@ -30,6 +30,12 @@ impl Year {
     }
 }
 
+impl AsRef<u16> for Year {
+    fn as_ref(&self) -> &u16 {
+        &self.0
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Second(f32);
 
@@ -81,6 +87,15 @@ impl TryFrom<f32> for Second {
 pub enum LocalTimeDirection {
     Plus,
     Minus,
+}
+
+impl From<LocalTimeDirection> for char {
+    fn from(value: LocalTimeDirection) -> Self {
+        match value {
+            LocalTimeDirection::Minus => '-',
+            LocalTimeDirection::Plus => '+',
+        }
+    }
 }
 
 impl From<LocalTimeDirection> for u8 {

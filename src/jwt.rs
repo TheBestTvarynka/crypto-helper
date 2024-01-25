@@ -8,7 +8,6 @@ mod macros;
 
 use std::str::FromStr;
 
-pub use jwt::Jwt as JwtData;
 use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
 use yew_hooks::use_location;
