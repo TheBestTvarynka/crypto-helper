@@ -15,8 +15,10 @@ pub struct Sequence<'data>(Vec<Asn1<'data>>);
 pub type OwnedSequence = Sequence<'static>;
 
 impl Sequence<'_> {
+    /// Tag value of the [SEQUENCE] type
     pub const TAG: Tag = Tag(0x30);
 
+    /// Creates a new [Sequence] from passed fields
     pub fn new(fields: Vec<Asn1>) -> Sequence {
         Sequence(fields)
     }

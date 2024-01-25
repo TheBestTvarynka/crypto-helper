@@ -1,4 +1,4 @@
-use asn1_parser::{Asn1Type, OwnedApplicationTag, OwnedAsn1, OwnedAsn1Type, OwnedExplicitTag, OwnedSequence};
+use asn1_parser::{Asn1Type, OwnedApplicationTag, OwnedAsn1, OwnedAsn1Type, OwnedExplicitTag, OwnedSequence, OwnedSet};
 use proptest::collection::vec;
 use proptest::prop_oneof;
 use proptest::strategy::{Just, Strategy};
@@ -14,6 +14,7 @@ fn any_leaf_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
         any_bool().prop_map(Asn1Type::Bool),
         any_null().prop_map(Asn1Type::Null),
         any_integer().prop_map(Asn1Type::Integer),
+        // any_object_identifier().prop_map(Asn1Type::ObjectIdentifier),
     ]
     .no_shrink()
 }
@@ -23,8 +24,16 @@ pub fn recursive_empty_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
         let explicit_tag_inner = inner.clone();
         let application_tag_inner = inner.clone();
         prop_oneof![
-            vec(inner, 1..16).prop_map(|fields| {
+            vec(inner.clone(), 1..16).prop_map(|fields| {
                 Asn1Type::Sequence(OwnedSequence::new(
+                    fields
+                        .into_iter()
+                        .map(|asn1_type| OwnedAsn1::new(0, Default::default(), asn1_type))
+                        .collect::<Vec<_>>(),
+                ))
+            }),
+            vec(inner, 1..16).prop_map(|fields| {
+                Asn1Type::Set(OwnedSet::new(
                     fields
                         .into_iter()
                         .map(|asn1_type| OwnedAsn1::new(0, Default::default(), asn1_type))
@@ -35,13 +44,13 @@ pub fn recursive_empty_asn1_type() -> impl Strategy<Value = OwnedAsn1Type> {
                 .prop_flat_map(move |tag| (Just(tag), explicit_tag_inner.clone()))
                 .prop_map(|(tag, inner)| Asn1Type::ExplicitTag(OwnedExplicitTag::new(
                     tag,
-                    Box::new(OwnedAsn1::new(0, Default::default(), inner))
+                    vec![OwnedAsn1::new(0, Default::default(), inner)]
                 ))),
             (0_u8..31)
                 .prop_flat_map(move |tag| (Just(tag), application_tag_inner.clone()))
                 .prop_map(|(tag, inner)| Asn1Type::ApplicationTag(OwnedApplicationTag::new(
                     tag,
-                    Box::new(OwnedAsn1::new(0, Default::default(), inner))
+                    vec![OwnedAsn1::new(0, Default::default(), inner)]
                 ))),
         ]
     })

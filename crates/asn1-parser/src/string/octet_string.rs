@@ -6,7 +6,7 @@ use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
 
 /// [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
 ///
@@ -44,9 +44,11 @@ impl OctetString<'_> {
     }
 
     pub fn new_owned(octets: Vec<u8>) -> OwnedOctetString {
-        let inner = Asn1::decode_buff(&octets)
-            .ok()
-            .map(|asn1| Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
+        let inner = Asn1::decode_buff(&octets).ok().map(|mut asn1| {
+            asn1.clear_meta();
+            Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))
+        });
+
         OwnedOctetString {
             octets: Cow::Owned(octets),
             inner,
@@ -73,10 +75,10 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString<'data> {
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
         inner_reader.set_offset(reader.full_offset() - data.len());
-        let inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
+        let mut inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
 
         if !inner_reader.empty() && inner.is_some() {
-            return Err("octet string inner data contains leftovers".into());
+            inner = None;
         }
 
         reader.set_next_id(inner_reader.next_id());
@@ -94,7 +96,7 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString<'data> {
 
 impl Taggable for OctetString<'_> {
     fn tag(&self) -> Tag {
-        OctetString::TAG
+        Self::TAG
     }
 }
 
@@ -109,5 +111,11 @@ impl Asn1Encoder for OctetString<'_> {
         writer.write_byte(Self::TAG.into())?;
         write_len(self.octets.len(), writer)?;
         writer.write_slice(&self.octets)
+    }
+}
+
+impl MetaInfo for OctetString<'_> {
+    fn clear_meta(&mut self) {
+        self.inner = None;
     }
 }

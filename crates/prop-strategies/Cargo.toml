@@ -11,3 +11,4 @@ repository = "https://github.com/TheBestTvarynka/crypto-helper"
 [dependencies]
 proptest = "1.2.0"
 asn1-parser = { path = "../asn1-parser" }
+oid = { version = "0.2.1", default-features = false }

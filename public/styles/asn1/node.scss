@@ -27,6 +27,7 @@
     font-size: 0.8em;
     color: #4c5159;
     align-self: center;
+    white-space: nowrap;
 }
 
 .asn-simple-value {
@@ -113,4 +114,5 @@
 
 .asn1-node-options-name {
     cursor: pointer;
+    white-space: nowrap;
 }

@@ -8,23 +8,25 @@ mod macros;
 mod asn1;
 mod constructors;
 mod error;
-mod generic_types;
 mod length;
+mod primitives;
 mod reader;
 mod string;
 mod tag;
 mod tags;
+mod time;
 mod tlv;
 mod writer;
 
 pub use asn1::{Asn1, Asn1Type, OwnedAsn1, OwnedAsn1Type, OwnedRawAsn1EntityData, RawAsn1EntityData};
 pub use constructors::*;
 pub use error::Error;
-pub use generic_types::*;
+pub use primitives::*;
 use reader::Reader;
 pub use string::*;
 pub use tag::Tag;
 pub use tags::*;
+pub use time::*;
 pub use tlv::Tlv;
 use writer::Writer;
 
