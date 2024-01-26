@@ -22,9 +22,9 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 - [X] [GeneralString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/generalstring.html)
 - [X] [PrintableString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/printablestring.html)
 - [X] [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
-- [ ] [NumericString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/numericstring.html)
+- [X] [NumericString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/numericstring.html)
 - [ ] [UniversalString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/universalstring.html)
-- [ ] [VisibleString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/visiblestring.html)
+- [X] [VisibleString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/visiblestring.html)
 - [ ] [VideotextString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/videotexstring.html)
 - [X] [Utf8String](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/utf8string.html)
 
