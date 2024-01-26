@@ -1,6 +1,6 @@
 use asn1_parser::{
-    OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedOctetString, OwnedPrintableString,
-    OwnedRawAsn1EntityData, OwnedUtf8String,
+    OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedNumericString, OwnedOctetString,
+    OwnedPrintableString, OwnedRawAsn1EntityData, OwnedUtf8String,
 };
 use yew::{function_component, html, Callback, Html, Properties};
 
@@ -131,3 +131,4 @@ define_string_node!(GeneralString);
 define_string_node!(IA5String);
 define_string_node!(PrintableString);
 define_string_node!(Utf8String);
+define_string_node!(NumericString);
