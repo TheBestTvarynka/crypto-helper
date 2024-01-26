@@ -1,4 +1,5 @@
 use alloc::borrow::Cow;
+use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::length::{len_size, write_len};
@@ -49,7 +50,7 @@ impl BitString<'_> {
         let unused_bits: u8 = (all_bits_amount - bits_amount).try_into()?;
         bits.insert(0, unused_bits);
 
-        let inner = if bits.len() > 0 {
+        let inner = if !bits.is_empty() {
             Asn1::decode_buff(&bits[1..]).ok().map(|mut asn1| {
                 asn1.clear_meta();
                 Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))
@@ -99,7 +100,7 @@ impl<'data> Asn1ValueDecoder<'data> for BitString<'data> {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let data = reader.read_remaining();
 
-        let inner = if data.len() > 0 {
+        let inner = if !data.is_empty() {
             let mut inner_reader = Reader::new(&data[1..]);
             inner_reader.set_next_id(reader.next_id());
             inner_reader.set_offset(reader.full_offset() - data.len());
