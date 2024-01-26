@@ -99,7 +99,7 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &C
         },
         Asn1Type::BitString(bit) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BitStringNode node={bit.to_owned()} meta={asn1.meta().to_owned()} />
+                <BitStringNode node={bit.to_owned()} meta={asn1.meta().to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
             </Asn1Node>
         },
         Asn1Type::Bool(boolean) => html! {
