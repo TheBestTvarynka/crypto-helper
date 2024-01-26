@@ -6,7 +6,7 @@ use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag,
     GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, MetaInfo, Null, NumericString, ObjectIdentifier,
-    OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String,
+    OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String, VisibleString,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -22,6 +22,7 @@ pub enum Asn1Type<'data> {
     PrintableString(PrintableString<'data>),
     GeneralString(GeneralString<'data>),
     NumericString(NumericString<'data>),
+    VisibleString(VisibleString<'data>),
 
     UtcTime(UtcTime),
     GeneralizedTime(GeneralizedTime),
@@ -53,6 +54,7 @@ impl Asn1Type<'_> {
             Asn1Type::PrintableString(p) => Asn1Type::PrintableString(p.to_owned()),
             Asn1Type::GeneralString(g) => Asn1Type::GeneralString(g.to_owned()),
             Asn1Type::NumericString(n) => Asn1Type::NumericString(n.to_owned()),
+            Asn1Type::VisibleString(n) => Asn1Type::VisibleString(n.to_owned()),
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
             Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
@@ -80,6 +82,7 @@ impl Taggable for Asn1Type<'_> {
             Asn1Type::PrintableString(p) => p.tag(),
             Asn1Type::GeneralString(g) => g.tag(),
             Asn1Type::NumericString(g) => g.tag(),
+            Asn1Type::VisibleString(g) => g.tag(),
             Asn1Type::Bool(b) => b.tag(),
             Asn1Type::Null(n) => n.tag(),
             Asn1Type::Integer(i) => i.tag(),
@@ -106,6 +109,7 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
             PrintableString,
             GeneralString,
             NumericString,
+            VisibleString,
             Bool,
             Integer,
             ObjectIdentifier,
@@ -139,6 +143,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::PrintableString(p) => p.needed_buf_size(),
             Asn1Type::GeneralString(g) => g.needed_buf_size(),
             Asn1Type::NumericString(g) => g.needed_buf_size(),
+            Asn1Type::VisibleString(g) => g.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
             Asn1Type::Integer(integer) => integer.needed_buf_size(),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.needed_buf_size(),
@@ -163,6 +168,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::PrintableString(printable) => printable.encode(writer),
             Asn1Type::GeneralString(general) => general.encode(writer),
             Asn1Type::NumericString(numeric) => numeric.encode(writer),
+            Asn1Type::VisibleString(numeric) => numeric.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
             Asn1Type::Integer(integer) => integer.encode(writer),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.encode(writer),
@@ -189,6 +195,7 @@ impl MetaInfo for Asn1Type<'_> {
             Asn1Type::PrintableString(_) => {}
             Asn1Type::GeneralString(_) => {}
             Asn1Type::NumericString(_) => {}
+            Asn1Type::VisibleString(_) => {}
             Asn1Type::Bool(_) => {}
             Asn1Type::Integer(_) => {}
             Asn1Type::ObjectIdentifier(_) => {}

@@ -37,3 +37,12 @@ pub fn validate_numeric(data: &str) -> bool {
     }
     true
 }
+
+pub fn validate_visible(data: &str) -> bool {
+    for c in data.chars() {
+        if !c.is_ascii_control() && c.is_ascii() {
+            return false;
+        }
+    }
+    true
+}
