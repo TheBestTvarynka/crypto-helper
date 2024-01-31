@@ -404,6 +404,33 @@ pub struct Argon2Input {
     pub data: Vec<u8>,
 }
 
+impl Argon2Input {
+    pub fn set_variant(&self, variant: Argon2Variant) -> Self {
+        let mut input = self.clone();
+        if let Argon2Action::Hash(ref mut action) = input.action {
+            action.variant = variant;
+        }
+        input
+    }
+    pub fn set_version(&self, version: Argon2Version) -> Self {
+        let mut input = self.clone();
+        if let Argon2Action::Hash(ref mut action) = input.action {
+            action.version = version;
+        }
+        input
+    }
+}
+impl<'a> TryFrom<&'a str> for Argon2Version {
+    type Error = (); // todo: proper error type
+
+    fn try_from(value: &'a str) -> Result<Self, Self::Error> {
+        match value {
+            "Argon13" => Ok(Self::Version13),
+            "Argon10" => Ok(Self::Version10),
+            _ => Err(()),
+        }
+    }
+}
 impl From<Argon2Variant> for argon2::Algorithm {
     fn from(value: Argon2Variant) -> Self {
         match value {
