@@ -381,9 +381,12 @@ pub struct Argon2HashAction {
     pub memory: u32,
     pub iters: u32,
     pub paralelism: u32,
-    pub output_len: u32,
+    pub output_len: usize,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub salt: Vec<u8>,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub data: Vec<u8>,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub secret: Vec<u8>,
     pub variant: Argon2Variant,
     pub version: Argon2Version,
@@ -392,7 +395,7 @@ pub struct Argon2HashAction {
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub enum Argon2Action {
     Hash(Argon2HashAction),
-    Verify(Vec<u8>),
+    Verify(#[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")] Vec<u8>),
 }
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct Argon2Input {
@@ -434,21 +437,23 @@ impl From<&Argon2HashAction> for argon2::Params {
 impl<'a> TryFrom<&'a Argon2HashAction> for argon2::password_hash::Salt<'a> {
     type Error = String;
     fn try_from(hash_action: &'a Argon2HashAction) -> Result<Self, Self::Error> {
-        argon2::password_hash::Salt::from_b64(
-            std::str::from_utf8(&hash_action.salt).map_err(|_| "Non UTF-8 salt".to_owned())?,
-        )
-        .map_err(|err| err.to_string())
+        argon2::password_hash::Salt::from_b64(unsafe { std::str::from_utf8_unchecked(&hash_action.salt) })
+            .map_err(|err| err.to_string())
     }
 }
 
 impl Default for Argon2HashAction {
     fn default() -> Self {
         Self {
-            memory: 19456,
-            iters: 2,
-            paralelism: 1,
-            output_len: 32,
-            ..Default::default()
+            memory: 19456u32,
+            iters: 2u32,
+            paralelism: 1u32,
+            output_len: 32usize,
+            salt: Default::default(),
+            data: Default::default(),
+            secret: Default::default(),
+            variant: Default::default(),
+            version: Default::default(),
         }
     }
 }
@@ -479,7 +484,10 @@ impl From<bool> for Argon2Action {
 
 impl From<&Argon2Action> for bool {
     fn from(value: &Argon2Action) -> Self {
-        value.into()
+        match value {
+            Argon2Action::Verify(_) => true,
+            Argon2Action::Hash(_) => false,
+        }
     }
 }
 
