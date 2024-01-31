@@ -1,3 +1,4 @@
+use base64::engine::{general_purpose::STANDARD as B64ENCODER, Engine};
 use picky::hash::HashAlgorithm;
 use picky::key::{PrivateKey, PublicKey};
 use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
@@ -464,8 +465,8 @@ impl From<&Argon2HashAction> for argon2::Params {
 impl<'a> TryFrom<&'a Argon2HashAction> for argon2::password_hash::Salt<'a> {
     type Error = String;
     fn try_from(hash_action: &'a Argon2HashAction) -> Result<Self, Self::Error> {
-        argon2::password_hash::Salt::from_b64(unsafe { std::str::from_utf8_unchecked(&hash_action.salt) })
-            .map_err(|err| err.to_string())
+        let string = B64ENCODER.encode(&hash_action.salt);
+        argon2::password_hash::Salt::from_b64(&string).map_err(|err| err.to_string())
     }
 }
 
