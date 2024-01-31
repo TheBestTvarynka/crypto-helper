@@ -1,4 +1,3 @@
-use base64::engine::{general_purpose::STANDARD as B64ENCODER, Engine};
 use picky::hash::HashAlgorithm;
 use picky::key::{PrivateKey, PublicKey};
 use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
@@ -398,7 +397,7 @@ pub enum Argon2Action {
     Hash(Argon2HashAction),
     Verify(#[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")] Vec<u8>),
 }
-#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
 pub struct Argon2Input {
     pub action: Argon2Action,
     #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
@@ -462,14 +461,6 @@ impl From<&Argon2HashAction> for argon2::Params {
     }
 }
 
-impl<'a> TryFrom<&'a Argon2HashAction> for argon2::password_hash::Salt<'a> {
-    type Error = String;
-    fn try_from(hash_action: &'a Argon2HashAction) -> Result<Self, Self::Error> {
-        let string = B64ENCODER.encode(&hash_action.salt);
-        argon2::password_hash::Salt::from_b64(&string).map_err(|err| err.to_string())
-    }
-}
-
 impl Default for Argon2HashAction {
     fn default() -> Self {
         Self {
@@ -489,15 +480,6 @@ impl Default for Argon2HashAction {
 impl Default for Argon2Action {
     fn default() -> Self {
         Self::Hash(Argon2HashAction::default())
-    }
-}
-
-impl Default for Argon2Input {
-    fn default() -> Self {
-        Self {
-            action: Argon2Action::default(),
-            data: Vec::new(),
-        }
     }
 }
 

@@ -102,7 +102,8 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                 hash_action.version.into(),
                 hash_action.into(),
             );
-            let salt: argon2::password_hash::Salt = hash_action.try_into()?;
+            let b64 = base64::encode(&hash_action.salt);
+            let salt = argon2::password_hash::Salt::from_b64(&b64).unwrap();
 
             let bytes: Vec<u8> = argon2ctx
                 .hash_password(&hash_action.data, salt)
