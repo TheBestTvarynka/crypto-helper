@@ -28,3 +28,21 @@ pub fn validate_ia5(data: &str) -> bool {
     }
     true
 }
+
+pub fn validate_numeric(data: &str) -> bool {
+    for c in data.chars() {
+        if !c.is_ascii_digit() && c != ' ' {
+            return false;
+        }
+    }
+    true
+}
+
+pub fn validate_visible(data: &str) -> bool {
+    for c in data.chars() {
+        if c.is_ascii_control() || !c.is_ascii() {
+            return false;
+        }
+    }
+    true
+}

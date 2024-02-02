@@ -1,3 +1,5 @@
+use std::str::from_utf8;
+
 use asn1_parser::{OwnedApplicationTag, OwnedExplicitTag, OwnedImplicitTag, OwnedRawAsn1EntityData};
 use yew::{function_component, html, Callback, Html, Properties};
 
@@ -102,7 +104,11 @@ pub fn implicit_tag(props: &ImplicitTagProps) -> Html {
             <div class="terminal-asn1-node">
                 <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("[{}]", props.node.tag_number())} />
                 <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
-                <span class="asn-simple-value">{hex::encode(octets)}</span>
+                {if let Ok(s) = from_utf8(octets) { html! {
+                    <span class="asn-simple-value">{s}</span>
+                }} else { html!{
+                    <span class="asn-simple-value">{hex::encode(octets)}</span>
+                }}}
             </div>
         },
     }

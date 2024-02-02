@@ -1,6 +1,6 @@
 use asn1_parser::{
-    OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedOctetString, OwnedPrintableString,
-    OwnedRawAsn1EntityData, OwnedUtf8String,
+    OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedNumericString, OwnedOctetString,
+    OwnedPrintableString, OwnedRawAsn1EntityData, OwnedUtf8String, OwnedVisibleString,
 };
 use yew::{function_component, html, Callback, Html, Properties};
 
@@ -29,6 +29,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
             <div style="cursor: crosshair">
                 <div class="asn1-constructor-header">
                     <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("OctetString")}/>
+                    <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                 </div>
                 <div class="asn1-constructor-body">
                     {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node)}
@@ -54,6 +55,8 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
 pub struct BitStringNodeProps {
     pub node: OwnedBitString,
     pub meta: OwnedRawAsn1EntityData,
+    pub cur_node: Option<u64>,
+    pub set_cur_node: Callback<HighlightAction>,
 }
 
 #[function_component(BitStringNode)]
@@ -72,12 +75,27 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
-    html! {
-        <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("BitString")} />
-            <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
-            <span class="asn-simple-value">{bits}</span>
-        </div>
+    match props.node.inner() {
+        Some(asn1) => html! {
+            <div style="cursor: crosshair">
+                <div class="asn1-constructor-header">
+                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("BitString")} />
+                    <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
+                </div>
+                <div class="asn1-constructor-body">
+                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node)}
+                </div>
+            </div>
+        },
+        None => {
+            html! {
+                <div class="terminal-asn1-node">
+                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("BitString")} />
+                    <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
+                    <span class="asn-simple-value">{bits}</span>
+                </div>
+            }
+        }
     }
 }
 #[derive(PartialEq, Properties, Clone)]
@@ -87,7 +105,7 @@ pub struct BmpStringNodeProps {
 }
 
 #[function_component(BmpStringNode)]
-pub fn bit_string(props: &BmpStringNodeProps) -> Html {
+pub fn bmp_string(props: &BmpStringNodeProps) -> Html {
     let s = String::from_utf16_lossy(
         &props
             .node
@@ -113,3 +131,5 @@ define_string_node!(GeneralString);
 define_string_node!(IA5String);
 define_string_node!(PrintableString);
 define_string_node!(Utf8String);
+define_string_node!(NumericString);
+define_string_node!(VisibleString);

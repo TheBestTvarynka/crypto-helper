@@ -214,6 +214,14 @@ fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {
         "1.3.6.1.5.5.7.48.2" => ("id-ad-caIssuers", "http://www.oid-info.com/get/1.3.6.1.5.5.7.48.2"),
         "1.3.6.1.5.5.7.48.1" => ("id-pkix-ocsp", "http://www.oid-info.com/get/1.3.6.1.5.5.7.48.1"),
         "1.3.6.1.5.5.7.1.1" => ("id-pe-authorityInfoAccess", "http://www.oid-info.com/get/1.3.6.1.5.5.7.1.1"),
+        "2.23.140.1.2.2" => ("organization-validated", "http://www.oid-info.com/get/2.23.140.1.2.2"),
+        "1.3.6.1.4.1.11129.2.4.2" => ("Rec. ITU-T X.509v3 certificate extension", "http://www.oid-info.com/get/1.3.6.1.4.1.11129.2.4.2"),
+        "2.23.140.1.1" => ("ev-guidelines", "http://www.oid-info.com/get/2.23.140.1.1"),
+        "2.23.140.1.2.3" => ("individual-validated", "http://www.oid-info.com/get/2.23.140.1.2.3"),
+        "0.9.2342.19200300.100.1.25" => ("domainComponent", "http://www.oid-info.com/get/0.9.2342.19200300.100.1.25"),
+        "1.3.6.1.4.1.311.21.7" => ("szOID_CERTIFICATE_TEMPLATE", "http://www.oid-info.com/get/1.3.6.1.4.1.311.21.7"),
+        "1.3.6.1.4.1.311.20.2.2" => ("Smartcard logon (Microsoft enhanced key usage)", "http://www.oid-info.com/get/1.3.6.1.4.1.311.20.2.2"),
+        "1.3.6.1.4.1.311.21.10" => ("szOID_APPLICATION_CERT_POLICIES", "http://www.oid-info.com/get/1.3.6.1.4.1.311.21.10"),
         _ => ("-", "https://github.com/TheBestTvarynka/crypto-helper/issues/new"),
     }
 }

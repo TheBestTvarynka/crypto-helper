@@ -14,6 +14,7 @@ use validators::{validate_general, validate_ia5, validate_printable, validate_ut
 
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
+use crate::string::validators::{validate_numeric, validate_visible};
 use crate::writer::Writer;
 use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag};
 
@@ -67,7 +68,9 @@ impl<const TAG: u8> Asn1Encoder for Utf8Value<'_, TAG> {
     }
 }
 
-impl_utf8_asn1!(PrintableString, 19, validate_printable);
 impl_utf8_asn1!(Utf8String, 12, validate_utf8);
+impl_utf8_asn1!(NumericString, 18, validate_numeric);
+impl_utf8_asn1!(PrintableString, 19, validate_printable);
 impl_utf8_asn1!(IA5String, 22, validate_ia5);
+impl_utf8_asn1!(VisibleString, 26, validate_visible);
 impl_utf8_asn1!(GeneralString, 27, validate_general);
