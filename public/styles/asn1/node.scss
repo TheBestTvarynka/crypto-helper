@@ -4,7 +4,7 @@
     gap: 0.2em;
     align-items: center;
     cursor: crosshair;
-    width: 100%;
+    width: calc(100% - 0.5em);
 }
 
 .asn1-constructor-header {
@@ -37,6 +37,7 @@
     background-color: #aab7ce;
     font-size: 0.7em;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .asn-bool-true {
