@@ -4,7 +4,7 @@ mod info;
 mod input;
 mod macros;
 mod output;
-mod serde;
+pub mod serde;
 
 pub use algorithm::Algorithm;
 use info::Info;
