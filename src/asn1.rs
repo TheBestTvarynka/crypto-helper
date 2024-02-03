@@ -10,12 +10,15 @@ use std::rc::Rc;
 
 use asn1_parser::{Asn1, Asn1Decoder};
 use web_sys::KeyboardEvent;
-use yew::{classes, function_component, html, use_reducer, use_state, Callback, Html, Reducible};
+use yew::{classes, function_component, html, use_effect_with_deps, use_reducer, use_state, Callback, Html, Reducible};
+use yew_hooks::{use_clipboard, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::asn1::asn1_viewer::Asn1Viewer;
 use crate::asn1::hex_view::HexViewer;
 use crate::common::ByteInput;
+use crate::url_query_params;
+use crate::url_query_params::generate_asn1_link;
 
 pub const TEST_ASN1: &[u8] = &[
     48, 87, 1, 1, 255, 1, 1, 0, 160, 17, 12, 15, 84, 98, 101, 66, 101, 115, 116, 84, 118, 97, 114, 121, 110, 107, 97,
@@ -70,6 +73,8 @@ impl Reducible for Highlight {
 
 #[function_component(Asn1ParserPage)]
 pub fn asn1_parser_page() -> Html {
+    let notification_manager = use_notification::<Notification>();
+
     let raw_asn1 = use_state(|| TEST_ASN1.to_vec());
     let parsed_asn1 = use_state(|| Asn1::decode_buff(TEST_ASN1).unwrap());
 
@@ -100,6 +105,57 @@ pub fn asn1_parser_page() -> Html {
         parse_asn1.emit(());
     });
 
+    let location = use_location();
+    let notifications = notification_manager.clone();
+    let raw_asn1_setter = raw_asn1.setter();
+    let asn1_setter = parsed_asn1.setter();
+    use_effect_with_deps(
+        move |_: &[(); 0]| {
+            let query = &location.search;
+
+            if query.len() < 2 {
+                return;
+            }
+
+            match serde_qs::from_str(&query[1..]) {
+                Ok(asn1) => {
+                    let url_query_params::Asn1 { asn1: asn1_data } = asn1;
+                    match Asn1::decode_buff(&asn1_data) {
+                        Ok(asn1) => {
+                            log::debug!("parsed!");
+                            asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
+                        }
+                        Err(error) => notifications.spawn(Notification::new(
+                            NotificationType::Error,
+                            "Invalid asn1 data",
+                            error.message(),
+                            Notification::NOTIFICATION_LIFETIME,
+                        )),
+                    };
+                    raw_asn1_setter.set(asn1_data);
+                }
+                Err(err) => notifications.spawn(Notification::new(
+                    NotificationType::Error,
+                    "Can not load data from url",
+                    err.to_string(),
+                    Notification::NOTIFICATION_LIFETIME,
+                )),
+            }
+        },
+        [],
+    );
+
+    let clipboard = use_clipboard();
+    let raw_asn1_data = (*raw_asn1).clone();
+    let share_by_link = Callback::from(move |_| {
+        clipboard.write_text(generate_asn1_link(raw_asn1_data.clone()));
+
+        notification_manager.spawn(Notification::from_description_and_type(
+            NotificationType::Info,
+            "link copied",
+        ));
+    });
+
     let raw_asn1_setter = raw_asn1.setter();
 
     let ctx = use_reducer(Highlight::default);
@@ -119,6 +175,9 @@ pub fn asn1_parser_page() -> Html {
             <div class="horizontal">
                 <button class="action-button" {onclick}>{"Process"}</button>
                 <span class="total">{"(ctrl+enter)"}</span>
+                <button class="button-with-icon" onclick={share_by_link}>
+                    <img src="/public/img/icons/share_by_link.png" />
+                </button>
             </div>
             <div class="asn1-viewers">
                 <Asn1Viewer

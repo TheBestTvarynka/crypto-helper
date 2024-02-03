@@ -176,7 +176,10 @@ fn build_data_bytes(
         Asn1Type::VisibleString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::UtcTime(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::GeneralizedTime(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
-        Asn1Type::BitString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        Asn1Type::BitString(bit) => match bit.inner() {
+            Some(asn1) => build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all),
+            None => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
+        },
         Asn1Type::BmpString(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::Bool(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
         Asn1Type::Null(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, bytes, select_all),
