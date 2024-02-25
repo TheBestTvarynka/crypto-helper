@@ -105,9 +105,10 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                 hash_action.into(),
             );
 
+            log::debug!("salt: {:?}", hash_action.salt);
             let b64 = if hash_action.salt.is_empty() {
                 let mut rng = rand::rngs::StdRng::from_rng(rand::thread_rng()).unwrap();
-                let mut bytes = [0u8; 16];
+                let mut bytes = [0u8; 24];
                 rng.fill_bytes(&mut bytes);
                 base64::encode(bytes)
             } else {
