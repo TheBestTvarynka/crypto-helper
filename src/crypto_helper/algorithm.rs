@@ -440,6 +440,17 @@ impl From<Argon2Variant> for argon2::Algorithm {
         }
     }
 }
+impl TryFrom<&str> for Argon2Variant {
+    type Error = ();
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Argon2i" => Ok(Self::Argon2i),
+            "Argon2d" => Ok(Self::Argon2d),
+            "Argon2id" => Ok(Self::Argon2id),
+            _ => Err(()),
+        }
+    }
+}
 
 impl From<Argon2Version> for argon2::Version {
     fn from(value: Argon2Version) -> Self {
