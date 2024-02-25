@@ -1,8 +1,9 @@
-use yew::{classes, function_component, html, Callback, Html, Properties};
+use web_sys::HtmlInputElement;
+use yew::{classes, function_component, html, html::TargetCast, Callback, Html, Properties};
 
 use crate::{
     common::{build_byte_input, BytesFormat, Switch},
-    crypto_helper::algorithm::{Argon2Action, Argon2Input as Argon2InputData, Argon2Variant, Argon2Version},
+    crypto_helper::algorithm::{Argon2Action, Argon2HashAction, Argon2Input as Argon2InputData},
 };
 
 #[derive(PartialEq, Properties, Clone)]
@@ -18,10 +19,25 @@ pub fn argon2_input(props: &Argon2InputProps) -> Html {
     let input_setter = props.argon2_input_setter.clone();
     let action: Argon2Action = props.input.action.clone();
     let setter = Callback::from(move |data| {
+        log::debug!("setting data: {data:?}");
         input_setter.emit(Argon2InputData {
             action: action.clone(),
             data,
         })
+    });
+
+    let data: Vec<u8> = props.input.data.clone();
+    let input_setter = props.argon2_input_setter.clone();
+    let action: Argon2Action = props.input.action.clone();
+
+    let salt_setter = Callback::from(move |salt| {
+        log::debug!("setting salt with data: {data:?}");
+        if let Argon2Action::Hash(hash_action) = action.clone() {
+            input_setter.emit(Argon2InputData {
+                action: Argon2Action::Hash(Argon2HashAction { salt, ..hash_action }),
+                data: data.clone(),
+            })
+        }
     });
 
     let input_setter = props.argon2_input_setter.clone();
@@ -33,25 +49,27 @@ pub fn argon2_input(props: &Argon2InputProps) -> Html {
             data,
         })
     });
-    let input = props.input.clone();
-    let get_hash_verify_switch_state = Callback::from(move |()| -> bool { (&input.action).into() });
-
     let hash_verify_switch_state = bool::from(&props.input.action);
 
     let input_setter = props.argon2_input_setter.clone();
     let input = props.input.clone();
-    let set_version = move |event: web_sys::Event| {
-        let target = event.target().expect("NO TARGET");
-        let version: String = js_sys::Reflect::get(target.as_ref(), &"value".into())
-            .unwrap()
-            .as_string()
-            .unwrap();
 
-        let input = input.clone();
-        let input = input.set_version(version.as_str().try_into().unwrap());
-        log::debug!("{input:?}");
+    let set_version = move |event: yew::html::onchange::Event| {
+        let html_element: HtmlInputElement = event.target_unchecked_into();
+        let input = input.set_version(html_element.value().as_str().try_into().unwrap());
         input_setter.emit(input.clone());
     };
+
+    let input_setter = props.argon2_input_setter.clone();
+    let input = props.input.clone();
+
+    let set_variant = move |event: yew::html::onchange::Event| {
+        let html_element: HtmlInputElement = event.target_unchecked_into();
+        let input = input.set_variant(html_element.value().as_str().try_into().unwrap());
+        input_setter.emit(input.clone());
+    };
+
+    let data: Vec<u8> = props.input.data.clone();
     html! {
         <div class={classes!("wide-input", "vertical")}>
             <div class="horizontal">
@@ -60,24 +78,20 @@ pub fn argon2_input(props: &Argon2InputProps) -> Html {
                 <span class="total">{"verify"}</span>
             </div>
             {build_byte_input(data, setter, Some(BytesFormat::Ascii), Some("argon2".into()))}
-
-            {
-                if !get_hash_verify_switch_state.emit(()) {
-                    html! {
-                        <>
-                            {"Version"}
-                            <select onchange={set_version}>
-                                <option value="Argon10">{"Argon10"}</option>
-                                <option value="Argon13">{"Argon13"}</option>
-                            </select>
-                        </>
-                    }
-                } else {
-                    html! {
-
-                    }
-                }
-            }
+            {if let Argon2Action::Hash(hash_action) = &props.input.action {html! {
+                <>
+                    {build_byte_input(hash_action.salt.clone(), salt_setter, Some(BytesFormat::Ascii), Some("salt".into()))}
+                    <select onchange={set_version} class="base-input">
+                        <option value="Argon10">{"Argon10"}</option>
+                        <option value="Argon13">{"Argon13"}</option>
+                    </select>
+                    <select onchange={set_variant} class="base-input">
+                        <option value="Argon2i">{"Argon2i"}</option>
+                        <option value="Argon2d">{"Argon2d"}</option>
+                        <option value="Argon2id">{"Argon2id"}</option>
+                    </select>
+                </>
+            }} else {html! {}}}
         </div>
     }
 }
