@@ -45,3 +45,4 @@ yew-hooks = "0.2.0"
 bcrypt = "0.14.0"
 flate2 = { version = "1.0.26", features = ["zlib"] }
 argon2 = "0.5.2"
+password-hash = "0.5.0"

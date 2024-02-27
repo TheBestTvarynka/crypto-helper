@@ -96,8 +96,6 @@ pub fn process_zlib(input: &ZlibInput) -> Result<Vec<u8>, String> {
 }
 
 pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
-    use rand::RngCore;
-
     match &input.action {
         Argon2Action::Hash(hash_action) => {
             let argon2ctx = argon2::Argon2::new(
@@ -106,20 +104,16 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                 hash_action.into(),
             );
 
-            let b64 = if hash_action.salt.is_empty() {
-                let mut rng = rand::rngs::StdRng::from_rng(rand::thread_rng()).unwrap();
-                let mut bytes = [0u8; 24];
-                rng.fill_bytes(&mut bytes);
-                base64::encode(bytes)
+            let salt = if hash_action.salt.is_empty() {
+                password_hash::SaltString::generate(rand::thread_rng())
             } else {
-                base64::encode(&hash_action.salt)
+                let config = base64::Config::new(base64::CharacterSet::Standard, false);
+                password_hash::SaltString::from_b64(&base64::encode_config(&hash_action.salt, config))
+                    .map_err(|e| e.to_string())?
             };
 
-            let salt = argon2::password_hash::Salt::from_b64(&b64)
-                .map_err(|err| format!("Error while building salt: {err:?}"))?;
-
             let bytes: Vec<u8> = argon2ctx
-                .hash_password(&input.data, salt)
+                .hash_password(&input.data, salt.as_salt())
                 .map(|pwd| pwd.hash.unwrap())
                 .map_err(|err| err.to_string())?
                 .as_bytes()
