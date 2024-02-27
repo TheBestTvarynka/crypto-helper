@@ -104,22 +104,23 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                 hash_action.into(),
             );
 
+            // SaltString expects base64 input to be "unpadded"
+            let config = base64::Config::new(base64::CharacterSet::Standard, false);
+
             let salt = if hash_action.salt.is_empty() {
                 password_hash::SaltString::generate(rand::thread_rng())
             } else {
-                let config = base64::Config::new(base64::CharacterSet::Standard, false);
                 password_hash::SaltString::from_b64(&base64::encode_config(&hash_action.salt, config))
                     .map_err(|e| e.to_string())?
             };
 
-            let bytes: Vec<u8> = argon2ctx
+            // Returned hash is encoded in base64, though it's not explicit and obvious
+            let b64 = argon2ctx
                 .hash_password(&input.data, salt.as_salt())
                 .map(|pwd| pwd.hash.unwrap())
-                .map_err(|err| err.to_string())?
-                .as_bytes()
-                .into();
+                .map_err(|err| err.to_string())?;
 
-            Ok(bytes)
+            Ok(base64::encode_config(b64.as_bytes(), config).into_bytes())
         }
         Argon2Action::Verify(data) => {
             let hash: argon2::PasswordHash = std::str::from_utf8(data)
