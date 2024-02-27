@@ -111,14 +111,13 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                     .map_err(|e| e.to_string())?
             };
 
-            let bytes: Vec<u8> = argon2ctx
+            // Returned hash is encoded in base64, though it's not explicit and obvious
+            let b64 = argon2ctx
                 .hash_password(&input.data, salt.as_salt())
                 .map(|pwd| pwd.hash.unwrap())
-                .map_err(|err| err.to_string())?
-                .as_bytes()
-                .into();
+                .map_err(|err| err.to_string())?;
 
-            Ok(bytes)
+            Ok(base64::engine::general_purpose::STANDARD_NO_PAD.encode(b64.as_bytes()).into_bytes())
         }
         Argon2Action::Verify(data) => {
             let hash: argon2::PasswordHash = std::str::from_utf8(data)
