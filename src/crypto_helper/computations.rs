@@ -105,7 +105,6 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                 hash_action.into(),
             );
 
-            log::debug!("salt: {:?}", hash_action.salt);
             let b64 = if hash_action.salt.is_empty() {
                 let mut rng = rand::rngs::StdRng::from_rng(rand::thread_rng()).unwrap();
                 let mut bytes = [0u8; 24];
@@ -119,7 +118,7 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                 .map_err(|err| format!("Error while building salt: {err:?}"))?;
 
             let bytes: Vec<u8> = argon2ctx
-                .hash_password(&hash_action.data, salt)
+                .hash_password(&input.data, salt)
                 .map(|pwd| pwd.hash.unwrap())
                 .map_err(|err| err.to_string())?
                 .as_bytes()
