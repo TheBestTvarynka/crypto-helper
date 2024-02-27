@@ -385,8 +385,6 @@ pub struct Argon2HashAction {
     #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub salt: Vec<u8>,
     #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
-    pub data: Vec<u8>,
-    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub secret: Vec<u8>,
     pub variant: Argon2Variant,
     pub version: Argon2Version,
@@ -480,7 +478,6 @@ impl Default for Argon2HashAction {
             paralelism: 1u32,
             output_len: 32usize,
             salt: Default::default(),
-            data: Default::default(),
             secret: Default::default(),
             variant: Default::default(),
             version: Default::default(),
