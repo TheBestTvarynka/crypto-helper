@@ -1946,6 +1946,7 @@ version = "0.9.0-alpha.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8d31e63ea85be51c423e52ba8f2e68a3efd53eed30203ee029dd09947333693e"
 dependencies = [
+ "rand_chacha 0.9.0-alpha.1",
  "rand_core 0.9.0-alpha.1",
  "zerocopy",
 ]
