@@ -10,8 +10,6 @@ pub fn about() -> Html {
                 <li>{"Argon2"}</li>
                 <li>{"BCrypt"}</li>
                 <li>{"MD5"}</li>
-                <li>{"Argon2"}</li>
-                <li>{"BCRYPT"}</li>
                 <li>{"SHA1/SHA256/SHA384/SHA512"}</li>
                 <li>{"Kerberos ciphers: AES128-CTS-HMAC-SHA1-96/AES256-CTS-HMAC-SHA1-96"}</li>
                 <li>{"Kerberos HMAC: HMAC-SHA1-96-AES128/HMAC-SHA1-96-AES256"}</li>
