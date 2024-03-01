@@ -75,6 +75,8 @@ pub fn crypto_helper() -> Html {
         move |_: &[(); 0]| {
             let query = &location.search;
 
+            debug!("query len: {}", query.len());
+
             if query.len() < 2 {
                 return;
             }

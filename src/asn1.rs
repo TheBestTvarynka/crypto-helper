@@ -83,7 +83,7 @@ pub fn asn1_parser_page() -> Html {
     let raw_data = (*raw_asn1).clone();
     let parse_asn1 = Callback::from(move |_| match Asn1::decode_buff(&raw_data) {
         Ok(asn1) => {
-            log::debug!("parsed!");
+            debug!("parsed!");
             asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
         }
         Err(error) => notifications.spawn(Notification::new(
@@ -122,7 +122,7 @@ pub fn asn1_parser_page() -> Html {
                     let url_query_params::Asn1 { asn1: asn1_data } = asn1;
                     match Asn1::decode_buff(&asn1_data) {
                         Ok(asn1) => {
-                            log::debug!("parsed!");
+                            debug!("parsed!");
                             asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
                         }
                         Err(error) => notifications.spawn(Notification::new(

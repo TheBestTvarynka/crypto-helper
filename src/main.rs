@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 mod about;
 mod asn1;
 mod common;
