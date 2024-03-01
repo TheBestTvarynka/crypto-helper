@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 mod about;
 mod asn1;
 mod common;
@@ -6,6 +9,7 @@ mod footer;
 mod header;
 mod jwt;
 mod not_found;
+pub mod serde;
 mod url_query_params;
 mod utils;
 

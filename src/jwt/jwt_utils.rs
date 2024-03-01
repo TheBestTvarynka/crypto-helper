@@ -427,7 +427,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
     Some(jwt.signature == calculated_signature)
 }
 
-fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {
+pub fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {
     let signature = calculate_signature(jwt, spawn_notification)?;
 
     let header = base64::encode_config(jwt.parsed_header.as_bytes(), base64::URL_SAFE_NO_PAD);

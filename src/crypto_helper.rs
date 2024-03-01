@@ -4,7 +4,6 @@ mod info;
 mod input;
 mod macros;
 mod output;
-pub mod serde;
 
 pub use algorithm::Algorithm;
 use info::Info;
@@ -14,12 +13,14 @@ use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
 use web_sys::KeyboardEvent;
 use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html};
-use yew_hooks::{use_clipboard, use_location};
+use yew_hooks::{use_clipboard, use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use self::computations::{process_krb_cipher, process_krb_hmac, process_rsa, process_zlib};
 use crate::crypto_helper::computations::process_bcrypt;
 use crate::url_query_params::generate_crypto_helper_link;
+
+const CRYPTO_HELPER_LOCAL_STORAGE_KEY: &str = "CRYPTO_HELPER_DATA";
 
 fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
     match algrithm {
@@ -71,27 +72,57 @@ pub fn crypto_helper() -> Html {
     let algorithm_setter = algorithm.setter();
     let location = use_location();
     let notifications = notification_manager.clone();
+    let local_storage = use_local_storage::<String>(CRYPTO_HELPER_LOCAL_STORAGE_KEY.to_owned());
     use_effect_with_deps(
         move |_: &[(); 0]| {
             let query = &location.search;
 
-            if query.len() < 2 {
-                return;
-            }
-
-            match serde_qs::from_str(&query[1..]) {
-                Ok(algorithm) => {
-                    algorithm_setter.set(algorithm);
+            // First, we try to load data from the url.
+            // question mark + one any other char
+            if query.len() >= 2 {
+                match serde_qs::from_str(&query[1..]) {
+                    Ok(algorithm) => {
+                        algorithm_setter.set(algorithm);
+                    }
+                    Err(err) => notifications.spawn(Notification::new(
+                        NotificationType::Error,
+                        "Can not load data from url",
+                        err.to_string(),
+                        Notification::NOTIFICATION_LIFETIME,
+                    )),
                 }
-                Err(err) => notifications.spawn(Notification::new(
-                    NotificationType::Error,
-                    "Can not load data from url",
-                    err.to_string(),
-                    Notification::NOTIFICATION_LIFETIME,
-                )),
+            } else {
+                // Otherwise, we try to find a data in the local storage.
+                let raw_data = if let Some(raw_data) = (*local_storage).as_ref() {
+                    raw_data.as_str()
+                } else {
+                    return;
+                };
+                match serde_json::from_str(raw_data) {
+                    Ok(algorithm) => {
+                        algorithm_setter.set(algorithm);
+                    }
+                    Err(err) => notifications.spawn(Notification::new(
+                        NotificationType::Error,
+                        "Can not load data from the local storage",
+                        err.to_string(),
+                        Notification::NOTIFICATION_LIFETIME,
+                    )),
+                }
             }
         },
         [],
+    );
+
+    let local_storage = use_local_storage::<String>(CRYPTO_HELPER_LOCAL_STORAGE_KEY.to_owned());
+    use_effect_with_deps(
+        move |algorithm| {
+            let algorithm: &Algorithm = algorithm;
+            local_storage.set(
+                serde_json::to_string(algorithm).expect("algorithm serialization into json string should never fail"),
+            );
+        },
+        algorithm.clone(),
     );
 
     let algorithm_data = (*algorithm).clone();

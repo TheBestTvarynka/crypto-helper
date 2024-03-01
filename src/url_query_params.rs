@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::crypto_helper::serde::{deserialize_bytes, serialize_bytes};
 use crate::crypto_helper::Algorithm;
+use crate::serde::{deserialize_bytes, serialize_bytes};
 
 const APP_HOST: &str = env!("APP_HOST");
 

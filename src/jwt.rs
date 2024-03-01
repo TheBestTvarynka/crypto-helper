@@ -10,7 +10,7 @@ use std::str::FromStr;
 
 use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
-use yew_hooks::use_location;
+use yew_hooks::{use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::common::Checkbox;
@@ -20,6 +20,7 @@ use crate::jwt::jwt_utils::JwtUtils;
 use crate::jwt::jwte::Jwte;
 use crate::url_query_params;
 
+const JWT_LOCAL_STORAGE_KEY: &str = "JWT_DATA";
 const TEST_JWT: &str = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY3MDAwNDI1NCwiaWF0IjoxNjcwMDA0MjU0fQ.ZGsN42vr-bM4uxXowtlNl7xRerkdKu6i29VS8DFQ4Tw";
 
 #[function_component(Jwt)]
@@ -86,11 +87,23 @@ pub fn jwt() -> Html {
     let jwt_setter = raw_jwt.setter();
     let jwte_setter = jwte.setter();
     let notifications = use_notification::<Notification>();
+    let local_storage = use_local_storage::<String>(JWT_LOCAL_STORAGE_KEY.to_owned());
     use_effect_with_deps(
         move |_: &[(); 0]| {
             let query = &location.search;
 
             if query.len() < 2 {
+                // URL query params is empty. We try to load JWT from local storage.
+                if let Some(raw_jwt) = (*local_storage).as_ref() {
+                    match serde_json::from_str(raw_jwt.as_str()) {
+                        Ok(jwt) => {
+                            jwte_setter.set(Some(Jwte::Jwt(jwt)));
+                        }
+                        Err(err) => {
+                            error!("Can not load JWT from local storage: {:?}", err);
+                        }
+                    }
+                }
                 return;
             }
 
@@ -123,6 +136,17 @@ pub fn jwt() -> Html {
             };
         },
         [],
+    );
+
+    let local_storage = use_local_storage::<String>(JWT_LOCAL_STORAGE_KEY.to_owned());
+    use_effect_with_deps(
+        move |jwte| {
+            let jwte: &Option<Jwte> = jwte;
+            if let Some(Jwte::Jwt(jwt)) = jwte {
+                local_storage.set(serde_json::to_string(jwt).expect("JWT serialization should not fail"));
+            }
+        },
+        jwte.clone(),
     );
 
     let jwte_setter = jwte.setter();

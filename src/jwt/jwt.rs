@@ -1,11 +1,13 @@
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use super::signature::JwtSignatureAlgorithm;
+use crate::serde::{deserialize_bytes, serialize_bytes};
 
 pub mod editor;
 pub mod viewer;
 
-#[derive(Debug, PartialEq, Eq, Default, Clone)]
+#[derive(Debug, PartialEq, Eq, Default, Clone, Serialize, Deserialize)]
 pub struct Jwt {
     pub raw_header: String,
     pub parsed_header: String,
@@ -15,6 +17,7 @@ pub struct Jwt {
 
     pub raw_signature: String,
     pub parsed_signature: String,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub signature: Vec<u8>,
     pub signature_algorithm: JwtSignatureAlgorithm,
 

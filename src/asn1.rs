@@ -8,15 +8,15 @@ mod scheme;
 
 use std::rc::Rc;
 
-use asn1_parser::{Asn1, Asn1Decoder};
+use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder};
 use web_sys::KeyboardEvent;
 use yew::{classes, function_component, html, use_effect_with_deps, use_reducer, use_state, Callback, Html, Reducible};
-use yew_hooks::{use_clipboard, use_location};
+use yew_hooks::{use_clipboard, use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::asn1::asn1_viewer::Asn1Viewer;
 use crate::asn1::hex_view::HexViewer;
-use crate::common::ByteInput;
+use crate::common::{encode_bytes, ByteInput, BytesFormat};
 use crate::url_query_params;
 use crate::url_query_params::generate_asn1_link;
 
@@ -26,6 +26,7 @@ pub const TEST_ASN1: &[u8] = &[
     48, 30, 160, 2, 5, 0, 161, 24, 30, 22, 0, 67, 0, 101, 0, 114, 0, 116, 0, 105, 0, 102, 0, 105, 0, 99, 0, 97, 0, 116,
     0, 101,
 ];
+const ASN1_LOCAL_STORAGE_KEY: &str = "ASN1_DATA";
 
 pub fn compare_ids(asn1_node_id: u64, cur_node: &Option<u64>) -> bool {
     matches!(cur_node, Some(node_id) if *node_id == asn1_node_id)
@@ -83,7 +84,7 @@ pub fn asn1_parser_page() -> Html {
     let raw_data = (*raw_asn1).clone();
     let parse_asn1 = Callback::from(move |_| match Asn1::decode_buff(&raw_data) {
         Ok(asn1) => {
-            log::debug!("parsed!");
+            debug!("parsed!");
             asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
         }
         Err(error) => notifications.spawn(Notification::new(
@@ -109,11 +110,25 @@ pub fn asn1_parser_page() -> Html {
     let notifications = notification_manager.clone();
     let raw_asn1_setter = raw_asn1.setter();
     let asn1_setter = parsed_asn1.setter();
+    let local_storage = use_local_storage::<String>(ASN1_LOCAL_STORAGE_KEY.to_owned());
     use_effect_with_deps(
         move |_: &[(); 0]| {
             let query = &location.search;
 
             if query.len() < 2 {
+                // URL query params is empty. We try to load ASN1 from local storage.
+                if let Some(raw_asn1) = (*local_storage).as_ref() {
+                    if let Ok(bytes) = hex::decode(raw_asn1) {
+                        match Asn1::decode_buff(&bytes) {
+                            Ok(asn1) => {
+                                asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
+                            }
+                            Err(err) => {
+                                error!("Can not decode asn1: {:?}", err);
+                            }
+                        }
+                    }
+                }
                 return;
             }
 
@@ -122,7 +137,6 @@ pub fn asn1_parser_page() -> Html {
                     let url_query_params::Asn1 { asn1: asn1_data } = asn1;
                     match Asn1::decode_buff(&asn1_data) {
                         Ok(asn1) => {
-                            log::debug!("parsed!");
                             asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
                         }
                         Err(error) => notifications.spawn(Notification::new(
@@ -143,6 +157,16 @@ pub fn asn1_parser_page() -> Html {
             }
         },
         [],
+    );
+
+    let local_storage = use_local_storage::<String>(ASN1_LOCAL_STORAGE_KEY.to_owned());
+    use_effect_with_deps(
+        move |asn1| {
+            let mut encoded = vec![0; asn1.needed_buf_size()];
+            asn1.encode_buff(&mut encoded).expect("ASN1 encoding should not fail");
+            local_storage.set(encode_bytes(encoded, BytesFormat::Hex));
+        },
+        parsed_asn1.clone(),
     );
 
     let clipboard = use_clipboard();
