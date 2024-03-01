@@ -18,6 +18,7 @@ members = [
 yew = { version = "0.20", features = ["csr"] }
 yew-router = "0.17.0"
 yew-notifications = { git = "https://github.com/TheBestTvarynka/yew-notifications.git", features = ["standard-notification"] }
+yew-hooks = "0.2.0"
 
 # wasm
 js-sys = "0.3.60"
@@ -47,7 +48,6 @@ sha1 = "0.10.5"
 hmac-sha256 = "1.1.5"
 hmac-sha512 = { version = "1.1.2", features = ["sha384"] }
 rsa = "0.7.2"
-yew-hooks = "0.2.0"
 bcrypt = "0.14.0"
 flate2 = { version = "1.0.26", features = ["zlib"] }
 
