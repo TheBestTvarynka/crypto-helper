@@ -93,7 +93,7 @@ pub fn jwt() -> Html {
             let query = &location.search;
 
             if query.len() < 2 {
-                // URL query params is empty. We try to local JWT from local storage.
+                // URL query params is empty. We try to load JWT from local storage.
                 if let Some(raw_jwt) = (*local_storage).as_ref() {
                     match serde_json::from_str(raw_jwt.as_str()) {
                         Ok(jwt) => {

@@ -63,7 +63,7 @@ pub const BYTES_FORMATS: [BytesFormat; 5] = [
     BytesFormat::Binary,
 ];
 
-fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
+pub fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
     match format {
         BytesFormat::Hex => hex::encode(bytes),
         BytesFormat::Base64 => base64::encode(bytes),
