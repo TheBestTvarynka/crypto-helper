@@ -4,7 +4,7 @@ use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey};
 use rsa::{RsaPrivateKey, RsaPublicKey};
 use serde::{Deserialize, Serialize};
 
-use super::serde::*;
+use crate::serde::*;
 
 pub const MD5: &str = "MD5";
 pub const SHA1: &str = "SHA1";

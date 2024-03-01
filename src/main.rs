@@ -9,6 +9,7 @@ mod footer;
 mod header;
 mod jwt;
 mod not_found;
+pub mod serde;
 mod url_query_params;
 mod utils;
 

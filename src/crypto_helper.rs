@@ -4,7 +4,6 @@ mod info;
 mod input;
 mod macros;
 mod output;
-pub mod serde;
 
 pub use algorithm::Algorithm;
 use info::Info;
@@ -118,7 +117,7 @@ pub fn crypto_helper() -> Html {
     let local_storage = use_local_storage::<String>(CRYPTO_HELPER_LOCAL_STORAGE_KEY.to_owned());
     use_effect_with_deps(
         move |algorithm| {
-            let algorithm: &Algorithm = &*algorithm;
+            let algorithm: &Algorithm = algorithm;
             local_storage.set(
                 serde_json::to_string(algorithm).expect("algorithm serialization into json string should never fail"),
             );

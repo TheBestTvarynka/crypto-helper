@@ -1,22 +1,28 @@
 use std::fmt::{self, Display};
 
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
+
+use crate::serde::{deserialize_bytes, serialize_bytes};
 
 const JWT_SIGNATURE_ALGORITHMS: [&str; 10] = [
     "HS256", "HS512", "none", "RS256", "HS384", "RS384", "RS512", "ES256", "ES384", "ES512",
 ];
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum JwtSignatureAlgorithm {
     None,
 
     /// HMAC using SHA-256
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Hs256(Vec<u8>),
 
     /// HMAC using SHA-384
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Hs384(Vec<u8>),
 
     /// HMAC using SHA-512
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     Hs512(Vec<u8>),
 
     /// RSASSA-PKCS1-v1_5 using SHA-256
