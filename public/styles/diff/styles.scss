@@ -1,0 +1,19 @@
+
+.diff-changes-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+.diff-insert {
+    background-color: #97e0bd;
+    color: #016939;
+}
+
+.diff-remove {
+    background-color: #d38693;
+    color: #9d0620;
+}
