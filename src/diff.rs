@@ -1,13 +1,18 @@
 mod diff_viewer;
 
-use similar::{capture_diff_slices, Algorithm, DiffOp};
+use similar::{capture_diff_slices, Algorithm, DiffOp, TextDiff};
 use web_sys::HtmlInputElement;
 use yew::{classes, function_component, html, use_state, Callback, Html, TargetCast};
 
 use self::diff_viewer::DiffViewer;
 
-const DEFAULT_ORIGINAL: &str = "TheBestTvarynka";
-const DEFAULT_CHANGED: &str = "thebesttravynka";
+const DEFAULT_ORIGINAL: &str = "TheBestTvarynka
+TheBestTvarynka
+TheBestTvarynka";
+const DEFAULT_CHANGED: &str = "thebesttravynka
+thebesttravynka
+thebesttravynka
+";
 
 #[derive(Debug, Clone, PartialEq)]
 struct DiffData {
@@ -23,12 +28,15 @@ pub fn diff_page() -> Html {
     let diffs = use_state(|| {
         let original = DEFAULT_ORIGINAL.chars().collect::<Vec<_>>();
         let changed = DEFAULT_CHANGED.chars().collect::<Vec<_>>();
-        let changes = capture_diff_slices(Algorithm::Myers, &original, &changed);
+        let changes = TextDiff::configure()
+            .algorithm(Algorithm::Myers)
+            .newline_terminated(true)
+            .diff_chars(DEFAULT_ORIGINAL, DEFAULT_CHANGED);
 
         DiffData {
             original,
             changed,
-            changes,
+            changes: changes.ops().to_owned(),
         }
     });
 
