@@ -7,6 +7,9 @@
     align-items: center;
     width: 100%;
     flex-wrap: wrap;
+    //background-color: #edd5ce;
+    //border-radius: 0.2em;
+    //padding: 0.5em;
 }
 
 .diff-insert {
@@ -24,4 +27,10 @@
 .diff-new-line {
     height: 0;
     flex-basis: 100%;
+}
+
+.diff-line-number {
+    background-color: #edd5ce;
+    padding-right: 0.3em;
+    padding-left: 0.3em;
 }

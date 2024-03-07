@@ -9,56 +9,80 @@ pub struct DiffViewerProps {
     pub diff: DiffData,
 }
 
-fn text_spans(chars: &[char], class: &'static str) -> Vec<VNode> {
+fn text_spans(chars: &[char], class: &'static str, line_number: &mut usize) -> Vec<VNode> {
     chars
         .iter()
-        .map(|c| {
+        .flat_map(|c| {
             if *c == '\n' {
-                html! {
-                    <span class="diff-new-line" />
-                }
+                vec![
+                    html! {
+                        <span class="diff-new-line" />
+                    },
+                    html! {
+                        <span class="diff-line-number">{{
+                            *line_number = *line_number + 1;
+                            *line_number - 1
+                        }}</span>
+                    },
+                ]
             } else {
-                html! {
+                vec![html! {
                     <span class={class}>{c}</span>
-                }
+                }]
             }
         })
         .collect()
 }
 
 fn render_changes(diff: &DiffData) -> Vec<VNode> {
+    let mut line_number = 2;
+
     let old = diff.original.as_slice();
     let new = diff.changed.as_slice();
-    diff.changes
+
+    let mut changes = diff
+        .changes
         .iter()
         .flat_map(|op| match op {
             DiffOp::Equal {
                 old_index,
                 len,
                 new_index: _,
-            } => text_spans(&old[*old_index..*old_index + *len], ""),
+            } => text_spans(&old[*old_index..*old_index + *len], "", &mut line_number),
             DiffOp::Delete {
                 old_index,
                 old_len,
                 new_index: _,
-            } => text_spans(&old[*old_index..*old_index + *old_len], "diff-remove"),
+            } => text_spans(&old[*old_index..*old_index + *old_len], "diff-remove", &mut line_number),
             DiffOp::Insert {
                 old_index: _,
                 new_index,
                 new_len,
-            } => text_spans(&new[*new_index..*new_index + *new_len], "diff-insert"),
+            } => text_spans(&new[*new_index..*new_index + *new_len], "diff-insert", &mut line_number),
             DiffOp::Replace {
                 old_index,
                 old_len,
                 new_index,
                 new_len,
             } => {
-                let mut spans = text_spans(&old[*old_index..*old_index + *old_len], "diff-remove");
-                spans.extend_from_slice(&text_spans(&new[*new_index..*new_index + *new_len], "diff-insert"));
+                let mut spans = text_spans(&old[*old_index..*old_index + *old_len], "diff-remove", &mut line_number);
+                spans.extend_from_slice(&text_spans(
+                    &new[*new_index..*new_index + *new_len],
+                    "diff-insert",
+                    &mut line_number,
+                ));
                 spans
             }
         })
-        .collect()
+        .collect::<Vec<_>>();
+    changes.insert(
+        0,
+        html! {
+            <span class="diff-line-number">{"1"}</span>
+        },
+    );
+    changes.remove(changes.len() - 1);
+    changes
 }
 
 #[function_component(DiffViewer)]
