@@ -194,7 +194,7 @@ pub fn asn1_parser_page() -> Html {
             </span>
             <ByteInput bytes={(*raw_asn1).clone()} setter={Callback::from(move |data| raw_asn1_setter.set(data))} placeholder={"asn1 data".to_owned()} rows={10} />
             <div class="horizontal">
-                <button class="action-button" {onclick}>{"Process"}</button>
+                <button class="action-button" {onclick}>{"Decode"}</button>
                 <span class="total">{"(ctrl+enter)"}</span>
                 <button class="button-with-icon" onclick={share_by_link}>
                     <img src="/public/img/icons/share_by_link.png" />
