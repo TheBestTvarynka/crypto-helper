@@ -83,10 +83,7 @@ pub fn asn1_parser_page() -> Html {
     let asn1_setter = parsed_asn1.setter();
     let raw_data = (*raw_asn1).clone();
     let parse_asn1 = Callback::from(move |_| match Asn1::decode_buff(&raw_data) {
-        Ok(asn1) => {
-            debug!("parsed!");
-            asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
-        }
+        Ok(asn1) => asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())),
         Err(error) => notifications.spawn(Notification::new(
             NotificationType::Error,
             "Invalid asn1 data",
@@ -197,7 +194,7 @@ pub fn asn1_parser_page() -> Html {
             </span>
             <ByteInput bytes={(*raw_asn1).clone()} setter={Callback::from(move |data| raw_asn1_setter.set(data))} placeholder={"asn1 data".to_owned()} rows={10} />
             <div class="horizontal">
-                <button class="action-button" {onclick}>{"Process"}</button>
+                <button class="action-button" {onclick}>{"Decode"}</button>
                 <span class="total">{"(ctrl+enter)"}</span>
                 <button class="button-with-icon" onclick={share_by_link}>
                     <img src="/public/img/icons/share_by_link.png" />

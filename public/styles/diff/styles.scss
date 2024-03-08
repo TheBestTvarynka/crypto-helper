@@ -1,0 +1,36 @@
+
+.diff-changes-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    //background-color: #edd5ce;
+    //border-radius: 0.2em;
+    //padding: 0.5em;
+}
+
+.diff-insert {
+    white-space: pre-wrap;
+    background-color: #97e0bd;
+    color: #016939;
+}
+
+.diff-remove {
+    white-space: pre-wrap;
+    background-color: #d38693;
+    color: #9d0620;
+}
+
+.diff-new-line {
+    height: 0;
+    flex-basis: 100%;
+}
+
+.diff-line-number {
+    background-color: #edd5ce;
+    padding-right: 0.3em;
+    padding-left: 0.3em;
+}

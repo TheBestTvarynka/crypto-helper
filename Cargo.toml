@@ -32,8 +32,6 @@ log = "0.4.17"
 # utils
 hex = "0.4.3"
 gloo-timers = "0.2.4"
-rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
-rand_chacha = "0.3.1"
 serde = { version = "1.0.162", features = ["derive"] }
 serde_qs = "0.12.0"
 serde_json = "1.0.89"
@@ -50,8 +48,13 @@ hmac-sha512 = { version = "1.1.2", features = ["sha384"] }
 rsa = "0.7.2"
 bcrypt = "0.14.0"
 flate2 = { version = "1.0.26", features = ["zlib"] }
+rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
+rand_chacha = "0.3.1"
 
 # asn1
 asn1-parser = { path = "./crates/asn1-parser", features = ["std"] }
 oid = { version = "0.2.1", default-features = false }
 paste = "1.0.14"
+
+# diff
+similar = "2.4.0"

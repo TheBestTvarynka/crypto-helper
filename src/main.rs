@@ -5,6 +5,7 @@ mod about;
 mod asn1;
 mod common;
 mod crypto_helper;
+mod diff;
 mod footer;
 mod header;
 mod jwt;
@@ -16,6 +17,7 @@ mod utils;
 use about::About;
 use asn1::Asn1ParserPage;
 use crypto_helper::CryptoHelper;
+use diff::DiffPage;
 use footer::footer;
 use header::Header;
 use jwt::Jwt;
@@ -34,6 +36,8 @@ enum Route {
     CryptoHelper,
     #[at("/jwt")]
     Jwt,
+    #[at("/diff")]
+    Diff,
     #[at("/about")]
     About,
     #[not_found]
@@ -47,6 +51,7 @@ fn switch(routes: Route) -> Html {
         Route::Asn1Parser => html! { <Asn1ParserPage /> },
         Route::CryptoHelper => html! { <CryptoHelper /> },
         Route::Jwt => html! { <Jwt /> },
+        Route::Diff => html! { <DiffPage /> },
         Route::About => html! { <About /> },
         Route::NotFound => not_found(),
     }
