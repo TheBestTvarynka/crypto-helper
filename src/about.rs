@@ -26,6 +26,8 @@ pub fn about() -> Html {
                     <li>{"ES384"}</li>
                     <li>{"ES512"}</li>
                 </ul>
+                <li>{"ASN1 decoder"}</li>
+                <li>{"Diff checker"}</li>
                 <li>{"Ability to share the sample by url"}</li>
             </ul>
             <span>{"All computations are performed on the client side."}</span>
