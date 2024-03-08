@@ -2,7 +2,7 @@ mod diff_algo;
 mod diff_viewer;
 
 use similar::{capture_diff_slices, Algorithm, DiffOp, TextDiff};
-use web_sys::HtmlInputElement;
+use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::html::onchange::Event;
 use yew::virtual_dom::VNode;
 use yew::{classes, function_component, html, use_state, Callback, Html, TargetCast};
@@ -79,7 +79,7 @@ pub fn diff_page() -> Html {
     let changed_data = changed.chars().collect::<Vec<_>>();
     let diffs_setter = diffs.setter();
     let algo = *algorithm;
-    let onclick = move |_| {
+    let compute_diff = Callback::from(move |_: ()| {
         let changes = capture_diff_slices(algo.into(), &original_data, &changed_data);
 
         diffs_setter.set(DiffData {
@@ -87,7 +87,12 @@ pub fn diff_page() -> Html {
             changed: changed_data.clone(),
             changes,
         });
-    };
+    });
+
+    let diff = compute_diff.clone();
+    let onclick = Callback::from(move |_| {
+        diff.emit(());
+    });
 
     let algorithm_setter = algorithm.setter();
     let on_algorithm_change = Callback::from(move |event: Event| {
@@ -97,8 +102,14 @@ pub fn diff_page() -> Html {
         }
     });
 
+    let onkeydown = Callback::from(move |event: KeyboardEvent| {
+        if event.ctrl_key() && event.code() == "Enter" {
+            compute_diff.emit(());
+        }
+    });
+
     html! {
-        <div class={classes!("vertical", "asn1-page")}>
+        <div class={classes!("vertical", "asn1-page")} {onkeydown}>
             <div class="horizontal">
                 <span>{"Diff algorithm:"}</span>
                 <div>
@@ -125,6 +136,7 @@ pub fn diff_page() -> Html {
             </div>
             <div class="horizontal">
                 <button class="action-button" onclick={onclick}>{"Diff"}</button>
+                <span class="total">{"(ctrl+enter)"}</span>
             </div>
             <DiffViewer diff={(*diffs).clone()} />
         </div>
