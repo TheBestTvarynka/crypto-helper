@@ -189,6 +189,8 @@ pub fn diff_page() -> Html {
                         {render_algorithm_options(*algorithm)}
                     </select>
                 </div>
+                <span class="total">{"Alternatively, you can use this tool, which is quite good too:"}</span>
+                <a class="a-link" href="https://diffviewer.vercel.app/v2">{"diffviewer.vercel.app"}</a>
             </div>
             <div class="horizontal">
                 <textarea
