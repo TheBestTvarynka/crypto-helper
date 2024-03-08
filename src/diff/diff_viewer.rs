@@ -20,7 +20,7 @@ fn text_spans(chars: &[char], class: &'static str, line_number: &mut usize) -> V
                     },
                     html! {
                         <span class="diff-line-number">{{
-                            *line_number = *line_number + 1;
+                            *line_number += 1;
                             *line_number - 1
                         }}</span>
                     },
