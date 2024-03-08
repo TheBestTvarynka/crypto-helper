@@ -5,7 +5,8 @@ use similar::{capture_diff_slices, Algorithm, DiffOp, TextDiff};
 use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::html::onchange::Event;
 use yew::virtual_dom::VNode;
-use yew::{classes, function_component, html, use_state, Callback, Html, TargetCast};
+use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
+use yew_hooks::use_local_storage;
 
 use self::diff_algo::DiffAlgo;
 use self::diff_viewer::DiffViewer;
@@ -19,6 +20,10 @@ thebesttravynka
 ";
 const DEFAULT_ALGORITHM: DiffAlgo = DiffAlgo(Algorithm::Myers);
 
+const LOCAL_STORAGE_ORIGINAL: &str = "ORIGINAL_DATA";
+const LOCAL_STORAGE_ALGORITHM: &str = "ALGORITHM";
+const LOCAL_STORAGE_CHANGED: &str = "CHANGED_DATA";
+
 const ALL_ALGORITHMS: &[DiffAlgo] = &[
     DiffAlgo(Algorithm::Myers),
     DiffAlgo(Algorithm::Lcs),
@@ -30,6 +35,16 @@ struct DiffData {
     pub original: Vec<char>,
     pub changed: Vec<char>,
     pub changes: Vec<DiffOp>,
+}
+
+impl DiffData {
+    pub fn empty() -> Self {
+        Self {
+            original: Vec::new(),
+            changed: Vec::new(),
+            changes: Vec::new(),
+        }
+    }
 }
 
 fn render_algorithm_options(current_algorithm: DiffAlgo) -> Vec<VNode> {
@@ -63,18 +78,6 @@ pub fn diff_page() -> Html {
         }
     });
 
-    let original_setter = original.setter();
-    let on_original_input = Callback::from(move |event: html::oninput::Event| {
-        let input: HtmlInputElement = event.target_unchecked_into();
-        original_setter.set(input.value());
-    });
-
-    let changed_setter = changed.setter();
-    let on_changed_input = Callback::from(move |event: html::oninput::Event| {
-        let input: HtmlInputElement = event.target_unchecked_into();
-        changed_setter.set(input.value());
-    });
-
     let original_data = original.chars().collect::<Vec<_>>();
     let changed_data = changed.chars().collect::<Vec<_>>();
     let diffs_setter = diffs.setter();
@@ -87,6 +90,75 @@ pub fn diff_page() -> Html {
             changed: changed_data.clone(),
             changes,
         });
+    });
+
+    let original_local_storage = use_local_storage::<String>(LOCAL_STORAGE_ORIGINAL.to_owned());
+    let original_setter = original.setter();
+    let changed_local_storage = use_local_storage::<String>(LOCAL_STORAGE_CHANGED.to_owned());
+    let changed_setter = changed.setter();
+    let algorithm_local_storage = use_local_storage::<String>(LOCAL_STORAGE_ALGORITHM.to_owned());
+    let algorithm_setter = algorithm.setter();
+    let diffs_setter = diffs.setter();
+    use_effect_with_deps(
+        move |_: &[(); 0]| {
+            let mut flag = false;
+
+            if let Some(original) = (*original_local_storage).as_ref() {
+                original_setter.set(original.to_string());
+                flag = true;
+            }
+            if let Some(changed) = (*changed_local_storage).as_ref() {
+                changed_setter.set(changed.to_string());
+                flag = true;
+            }
+            if let Some(raw_algorithm) = (*algorithm_local_storage).as_ref() {
+                if let Ok(algorithm) = raw_algorithm.as_str().try_into() {
+                    algorithm_setter.set(algorithm);
+                    flag = true;
+                }
+            }
+
+            if flag {
+                diffs_setter.set(DiffData::empty());
+            }
+        },
+        [],
+    );
+
+    let local_storage = use_local_storage::<String>(LOCAL_STORAGE_ORIGINAL.to_owned());
+    use_effect_with_deps(
+        move |[original]| {
+            local_storage.set((*original).to_string());
+        },
+        [original.clone()],
+    );
+
+    let local_storage = use_local_storage::<String>(LOCAL_STORAGE_CHANGED.to_owned());
+    use_effect_with_deps(
+        move |[changed]| {
+            local_storage.set((*changed).to_string());
+        },
+        [changed.clone()],
+    );
+
+    let local_storage = use_local_storage::<String>(LOCAL_STORAGE_ALGORITHM.to_owned());
+    use_effect_with_deps(
+        move |[algorithm]| {
+            local_storage.set((*algorithm).to_string());
+        },
+        [algorithm.clone()],
+    );
+
+    let original_setter = original.setter();
+    let on_original_input = Callback::from(move |event: html::oninput::Event| {
+        let input: HtmlInputElement = event.target_unchecked_into();
+        original_setter.set(input.value());
+    });
+
+    let changed_setter = changed.setter();
+    let on_changed_input = Callback::from(move |event: html::oninput::Event| {
+        let input: HtmlInputElement = event.target_unchecked_into();
+        changed_setter.set(input.value());
     });
 
     let diff = compute_diff.clone();
