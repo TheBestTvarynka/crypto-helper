@@ -1,5 +1,7 @@
 use yew::{classes, function_component, html, Html, Properties};
 
+use crate::common::hex_format_byte;
+
 #[derive(PartialEq, Eq, Properties)]
 pub struct BytesViewerProps {
     pub bytes: Vec<u8>,
@@ -21,7 +23,7 @@ fn byte_color_class(byte: u8) -> &'static str {
 
 fn byte_component(byte: u8) -> Html {
     html! {
-        <span class={classes!(byte_color_class(byte))}>{format!("{:02x?}", byte)}</span>
+        <span class={classes!(byte_color_class(byte))}>{hex_format_byte(byte)}</span>
     }
 }
 

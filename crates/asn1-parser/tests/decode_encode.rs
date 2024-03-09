@@ -121,3 +121,15 @@ fn decode_default() {
     let asn1 = Asn1::decode_buff(raw).unwrap();
     println!("{:?}", asn1);
 }
+
+#[test]
+fn decode_utc() {
+    std::env::set_var("RUST_LOG", "trace");
+    env_logger::init();
+
+    let raw = &[23, 13, 49, 56, 48, 55, 49, 54, 49, 52, 53, 54, 51, 53, 90];
+    let asn1 = Asn1::decode_buff(raw).unwrap();
+
+    let mut encoded = vec![0; asn1.needed_buf_size()];
+    asn1.encode_buff(&mut encoded).expect("ASN1 encoding should not fail");
+}

@@ -212,7 +212,7 @@ impl MetaInfo for Asn1Type<'_> {
 /// Information about raw data of the asn1 entity
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct RawAsn1EntityData<'data> {
-    /// Raw input bytes for the current asn1 node
+    /// Raw input bytes for the *current* asn1 node
     pub raw_data: Cow<'data, [u8]>,
 
     /// Position of the tag in the input data

@@ -2,10 +2,12 @@ use yew::{function_component, html, use_state, Callback, Html, Properties};
 use yew_hooks::use_clipboard;
 use yew_notifications::{use_notification, Notification, NotificationType};
 
+use crate::common::RcSlice;
+
 #[derive(PartialEq, Properties, Clone)]
 pub struct NodeOptionsProps {
     pub name: String,
-    pub node_bytes: Vec<u8>,
+    pub node_bytes: RcSlice,
     pub offset: usize,
     pub length_len: usize,
     pub data_len: usize,
@@ -28,9 +30,10 @@ pub fn node_options(props: &NodeOptionsProps) -> Html {
 
     let clipboard = use_clipboard();
     let notifications = use_notification::<Notification>();
-    let value_raw = props.node_bytes[props.length_len + 1..].to_vec();
+    let node_bytes_len = props.node_bytes.len();
+    let value_raw = props.node_bytes.with_range(props.length_len + 1, node_bytes_len);
     let copy_value = Callback::from(move |_| {
-        clipboard.write_text(hex::encode(&value_raw));
+        clipboard.write_text(hex::encode(value_raw.data()));
 
         notifications.spawn(Notification::from_description_and_type(
             NotificationType::Info,
@@ -42,7 +45,7 @@ pub fn node_options(props: &NodeOptionsProps) -> Html {
     let notifications = use_notification::<Notification>();
     let node_raw = props.node_bytes.clone();
     let copy_node = Callback::from(move |_| {
-        clipboard.write_text(hex::encode(&node_raw));
+        clipboard.write_text(hex::encode(node_raw.data()));
 
         notifications.spawn(Notification::from_description_and_type(
             NotificationType::Info,
