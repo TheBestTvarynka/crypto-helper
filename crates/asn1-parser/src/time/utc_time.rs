@@ -31,7 +31,8 @@ impl UtcTime {
     }
 
     fn calc_data_len(&self) -> usize {
-        2 /* year */ + 2 /* month */ + 2 /* day */ + 2 /* hour */ + 2 /* minute */ + self.second.is_some().then_some(2).unwrap_or_default()
+        2 /* year */ + 2 /* month */ + 2 /* day */ + 2 /* hour */ + 2 /* minute */ + self.second.is_some().then_some(2).unwrap_or_default() + 1
+        /* 'Z' */
     }
 }
 

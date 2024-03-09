@@ -5,6 +5,10 @@ extern crate alloc;
 #[macro_use]
 mod macros;
 
+#[allow(unused_imports)]
+#[macro_use]
+extern crate log;
+
 mod asn1;
 mod constructors;
 mod error;
