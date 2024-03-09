@@ -124,6 +124,7 @@ pub fn asn1_parser_page() -> Html {
                                 error!("Can not decode asn1: {:?}", err);
                             }
                         }
+                        raw_asn1_setter.set(bytes);
                     }
                 }
                 return;
