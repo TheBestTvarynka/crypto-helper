@@ -30,6 +30,8 @@ pub fn hex_viewer(props: &HexViewerProps) -> Html {
     }
 }
 
+const MAX_BYTES_TO_RENDER: usize = 512;
+
 fn format_bytes(
     meta: &RawAsn1EntityData,
     bytes: &[u8],
@@ -42,17 +44,47 @@ fn format_bytes(
     let length_len = meta.length_range().len();
     let data_len = meta.data_range().len();
 
-    bytes.iter().for_each(|byte| {
-        let set_cur_node_enter = set_cur_node.clone();
-        let onmouseenter = Callback::from(move |_: MouseEvent| set_cur_node_enter.emit(HighlightAction::Show(asn1_node_id)));
-        let set_cur_node = set_cur_node.clone();
-        let onmouseleave = Callback::from(move |_: MouseEvent| set_cur_node.emit(HighlightAction::Hide(asn1_node_id)));
+    let set_cur_node_enter = set_cur_node.clone();
+    let onmouseenter =
+        Callback::from(move |_: MouseEvent| set_cur_node_enter.emit(HighlightAction::Show(asn1_node_id)));
+    let set_cur_node_leave = set_cur_node.clone();
+    let onmouseleave =
+        Callback::from(move |_: MouseEvent| set_cur_node_leave.emit(HighlightAction::Hide(asn1_node_id)));
+
+    let bytes_len = bytes.len();
+    if bytes_len > MAX_BYTES_TO_RENDER {
+        format_bytes(
+            meta,
+            &bytes[0..MAX_BYTES_TO_RENDER / 2],
+            asn1_node_id,
+            class.clone(),
+            set_cur_node.clone(),
+            formatted_bytes,
+        );
+
         formatted_bytes.push(html! {
             <span class={classes!("asn1-hex-byte", class.clone())} {onmouseenter} {onmouseleave}>
-                <NodeOptions node_bytes={meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("{:02x?}", byte)}/>
+                <NodeOptions node_bytes={meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={".."}/>
             </span>
-        })
-    });
+        });
+
+        format_bytes(
+            meta,
+            &bytes[bytes_len - MAX_BYTES_TO_RENDER / 2..],
+            asn1_node_id,
+            class,
+            set_cur_node.clone(),
+            formatted_bytes,
+        );
+    } else {
+        bytes.iter().for_each(|byte| {
+            formatted_bytes.push(html! {
+                <span class={classes!("asn1-hex-byte", class.clone())} onmouseenter={onmouseenter.clone()} onmouseleave={onmouseleave.clone()}>
+                    <NodeOptions node_bytes={meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={format!("{:02x?}", byte)}/>
+                </span>
+            })
+        });
+    }
 }
 
 fn build_hex_bytes(
