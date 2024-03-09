@@ -1,11 +1,11 @@
 use asn1_parser::{Asn1, Asn1Entity, Asn1Type, OwnedAsn1, RawAsn1EntityData};
 use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
-use yew::{classes, function_component, html, Callback, Classes, Html, Properties};
+use yew::{function_component, html, Callback, Classes, Html, Properties};
 
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::{compare_ids, HighlightAction};
-use crate::common::RcSlice;
+use crate::common::{hex_format_byte, RcSlice};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct HexViewerProps {
@@ -38,7 +38,7 @@ fn format_bytes(
     raw_bytes: RcSlice,
     bytes: &[u8],
     asn1_node_id: u64,
-    class: Classes,
+    class: &'static str,
     set_cur_node: Callback<HighlightAction>,
     formatted_bytes: &mut Vec<VNode>,
 ) {
@@ -52,6 +52,7 @@ fn format_bytes(
     let set_cur_node_leave = set_cur_node.clone();
     let onmouseleave =
         Callback::from(move |_: MouseEvent| set_cur_node_leave.emit(HighlightAction::Hide(asn1_node_id)));
+    let yew_class = Classes::from(&["asn1-hex-byte", class] as &[&'static str]);
 
     let bytes_len = bytes.len();
     if bytes_len > MAX_BYTES_TO_RENDER {
@@ -60,14 +61,14 @@ fn format_bytes(
             raw_bytes.clone(),
             &bytes[0..MAX_BYTES_TO_RENDER / 2],
             asn1_node_id,
-            class.clone(),
+            class,
             set_cur_node.clone(),
             formatted_bytes,
         );
 
         formatted_bytes.push(html! {
-            <span class={classes!("asn1-hex-byte", class.clone())} {onmouseenter} {onmouseleave}>
-                <NodeOptions node_bytes={raw_bytes.clone()} {offset} {length_len} {data_len} name={".."}/>
+            <span class={yew_class} {onmouseenter} {onmouseleave}>
+                <NodeOptions node_bytes={raw_bytes.clone()} {offset} {length_len} {data_len} name={".."} />
             </span>
         });
 
@@ -83,8 +84,8 @@ fn format_bytes(
     } else {
         bytes.iter().for_each(|byte| {
             formatted_bytes.push(html! {
-                <span class={classes!("asn1-hex-byte", class.clone())} onmouseenter={onmouseenter.clone()} onmouseleave={onmouseleave.clone()}>
-                    <NodeOptions node_bytes={raw_bytes.clone()} {offset} {length_len} {data_len} name={format!("{:02x?}", byte)}/>
+                <span class={yew_class.clone()} onmouseenter={onmouseenter.clone()} onmouseleave={onmouseleave.clone()}>
+                    <NodeOptions node_bytes={raw_bytes.clone()} {offset} {length_len} {data_len} name={hex_format_byte(*byte)}/>
                 </span>
             })
         });
@@ -126,7 +127,7 @@ fn build_hex_bytes(
             {onmouseenter}
             {onmouseleave}
         >
-            <NodeOptions node_bytes={raw_bytes.clone()} {offset} {length_len} {data_len} name={format!("{:02x?}", tag)}/>
+            <NodeOptions node_bytes={raw_bytes.clone()} {offset} {length_len} {data_len} name={hex_format_byte(tag)}/>
         </span>
     });
 
@@ -136,11 +137,11 @@ fn build_hex_bytes(
         asn1.meta().length_bytes(),
         asn1_node_id,
         if select_all {
-            classes!("asn1-hex-byte-data-selected")
+            "asn1-hex-byte-data-selected"
         } else if if_selected {
-            classes!("asn1-hex-byte-len-selected")
+            "asn1-hex-byte-len-selected"
         } else {
-            classes!("asn1-hex-byte-len")
+            "asn1-hex-byte-len"
         },
         set_cur_node.clone(),
         bytes,
@@ -183,9 +184,9 @@ fn build_data_bytes(
             asn1.meta().data_bytes(),
             asn1_node_id,
             if if_selected || select_all {
-                classes!("asn1-hex-byte-data-selected")
+                "asn1-hex-byte-data-selected"
             } else {
-                classes!("asn1-hex-byte-data")
+                "asn1-hex-byte-data"
             },
             set_cur_node,
             bytes,
