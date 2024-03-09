@@ -7,6 +7,7 @@ use yew::{function_component, html, Callback, Html, Properties};
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::scheme::build_asn1_schema;
 use crate::asn1::HighlightAction;
+use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct OctetStringNodeProps {
@@ -28,7 +29,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
         Some(asn1) => html! {
             <div style="cursor: crosshair; width: 100%;">
                 <div class="asn1-constructor-header">
-                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("OctetString")}/>
+                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("OctetString")}/>
                     <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                 </div>
                 <div class="asn1-constructor-body">
@@ -43,7 +44,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
             };
             html! {
                 <div class="terminal-asn1-node">
-                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("OctetString")} />
+                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("OctetString")} />
                     <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                     <span class="asn-simple-value">{encoded_octets}</span>
                 </div>
@@ -79,7 +80,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
         Some(asn1) => html! {
             <div style="cursor: crosshair; width: 100%;">
                 <div class="asn1-constructor-header">
-                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("BitString")} />
+                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BitString")} />
                     <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
                 </div>
                 <div class="asn1-constructor-body">
@@ -90,7 +91,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
         None => {
             html! {
                 <div class="terminal-asn1-node">
-                    <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("BitString")} />
+                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BitString")} />
                     <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
                     <span class="asn-simple-value">{bits}</span>
                 </div>
@@ -121,7 +122,7 @@ pub fn bmp_string(props: &BmpStringNodeProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("BmpString")} />
+            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BmpString")} />
             <span class="asn-simple-value">{s}</span>
         </div>
     }

@@ -2,6 +2,7 @@ use asn1_parser::{ObjectIdentifier, OwnedRawAsn1EntityData};
 use yew::{function_component, html, Html, Properties};
 
 use crate::asn1::node_options::NodeOptions;
+use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct ObjectIdentifierProps {
@@ -19,7 +20,7 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Object Identifier")}/>
+            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Object Identifier")}/>
             <span class="asn-simple-value">{&formatted}</span>
             {{
                 let (name, url) = oid_name(&formatted);

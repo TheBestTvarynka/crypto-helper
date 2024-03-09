@@ -16,7 +16,7 @@ macro_rules! define_string_node {
 
                 html! {
                     <div class="terminal-asn1-node">
-                        <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={stringify!($name)}/>
+                        <NodeOptions node_bytes={crate::common::RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={stringify!($name)}/>
                         <span class="asn-simple-value">{props.node.string().to_owned()}</span>
                     </div>
                 }

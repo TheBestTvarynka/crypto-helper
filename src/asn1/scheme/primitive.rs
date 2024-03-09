@@ -2,6 +2,7 @@ use asn1_parser::{Bool, OwnedInteger, OwnedRawAsn1EntityData};
 use yew::{function_component, html, Html, Properties};
 
 use crate::asn1::node_options::NodeOptions;
+use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct BoolNodeProps {
@@ -17,7 +18,7 @@ pub fn bool(props: &BoolNodeProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Bool")}/>
+            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Bool")}/>
             {if props.node.value() {html! {
                 <span class="asn-bool-true">{"true"}</span>
             }} else {html! {
@@ -40,7 +41,7 @@ pub fn null(props: &NullNodeProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Null")}/>
+            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Null")}/>
         </div>
     }
 }
@@ -59,7 +60,7 @@ pub fn integer(props: &IntegerNodeProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Integer")}/>
+            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Integer")}/>
             <span class="asn-simple-value">{format!("{}", props.node.as_big_uint())}</span>
         </div>
     }

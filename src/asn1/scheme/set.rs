@@ -4,6 +4,7 @@ use yew::{function_component, html, Callback, Html, Properties};
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::scheme::build_asn1_schema;
 use crate::asn1::HighlightAction;
+use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct SetNodeProps {
@@ -30,7 +31,7 @@ pub fn set(props: &SetNodeProps) -> Html {
     html! {
         <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
-                <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("Set")}/>
+                <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Set")}/>
                 <span class="asn1-node-info-label">{format!("({} fields)", fields.len())}</span>
             </div>
             <div class="asn1-constructor-body">

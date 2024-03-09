@@ -2,6 +2,7 @@ use asn1_parser::{GeneralizedTime, OwnedRawAsn1EntityData, UtcTime};
 use yew::{function_component, html, Html, Properties};
 
 use crate::asn1::node_options::NodeOptions;
+use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct UtcTimeNodeProps {
@@ -17,7 +18,7 @@ pub fn utc_time_string(props: &UtcTimeNodeProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("UtcTime")}/>
+            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("UtcTime")}/>
             <span class="asn-simple-value">{format_utc_time(&props.node)}</span>
         </div>
     }
@@ -37,7 +38,7 @@ pub fn general_time_string(props: &GeneralizedTimeNodeProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={props.meta.raw_bytes().to_vec()} {offset} {length_len} {data_len} name={String::from("GeneralizedTime")}/>
+            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("GeneralizedTime")}/>
             <span class="asn-simple-value">{format_generalized_time(&props.node)}</span>
         </div>
     }

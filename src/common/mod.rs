@@ -1,12 +1,14 @@
 mod byte_input;
 mod bytes_viewer;
 mod checkbox;
+mod rc_slice;
 mod simple_output;
 mod switch;
 mod table;
 
 pub use byte_input::{build_byte_input, ByteInput};
 pub use checkbox::Checkbox;
+pub use rc_slice::RcSlice;
 pub use simple_output::build_simple_output;
 pub use switch::Switch;
 pub use table::TableView;
