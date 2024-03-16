@@ -472,11 +472,12 @@ impl From<&Argon2HashAction> for argon2::Params {
 
 impl Default for Argon2HashAction {
     fn default() -> Self {
+        use argon2::Params;
         Self {
-            memory: 19456u32,
-            iters: 2u32,
-            paralelism: 1u32,
-            output_len: 32usize,
+            memory: Params::DEFAULT_M_COST,
+            iters: Params::DEFAULT_T_COST,
+            paralelism: Params::DEFAULT_P_COST,
+            output_len: Params::DEFAULT_OUTPUT_LEN,
             salt: Default::default(),
             secret: Default::default(),
             variant: Default::default(),
