@@ -1,6 +1,6 @@
 use web_sys::{Event, FocusEvent, HtmlInputElement, InputEvent, KeyboardEvent, MouseEvent};
 use yew::{
-    classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties, TargetCast,
+    classes, function_component, html, use_effect_with, use_state, Callback, Html, Properties, TargetCast,
     UseStateSetter,
 };
 
@@ -46,13 +46,10 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
     let algos = use_state(Vec::new);
 
     let algos_setter = algos.setter();
-    use_effect_with_deps(
-        move |pattern| {
-            let pattern = (**pattern).clone();
-            algos_setter.set(search_algorithms(pattern));
-        },
-        pattern.clone(),
-    );
+    use_effect_with(pattern.clone(), move |pattern| {
+        let pattern = (**pattern).clone();
+        algos_setter.set(search_algorithms(pattern));
+    });
 
     let pattern_setter = pattern.setter();
     let oninput = Callback::from(move |event: InputEvent| {

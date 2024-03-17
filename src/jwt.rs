@@ -9,7 +9,7 @@ mod macros;
 use std::str::FromStr;
 
 use web_sys::{HtmlInputElement, KeyboardEvent};
-use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
+use yew::{function_component, html, use_effect_with, use_state, Callback, Html, TargetCast};
 use yew_hooks::{use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
@@ -88,66 +88,60 @@ pub fn jwt() -> Html {
     let jwte_setter = jwte.setter();
     let notifications = use_notification::<Notification>();
     let local_storage = use_local_storage::<String>(JWT_LOCAL_STORAGE_KEY.to_owned());
-    use_effect_with_deps(
-        move |_: &[(); 0]| {
-            let query = &location.search;
+    use_effect_with([], move |_: &[(); 0]| {
+        let query = &location.search;
 
-            if query.len() < 2 {
-                // URL query params is empty. We try to load JWT from local storage.
-                if let Some(raw_jwt) = (*local_storage).as_ref() {
-                    match serde_json::from_str(raw_jwt.as_str()) {
-                        Ok(jwt) => {
-                            jwte_setter.set(Some(Jwte::Jwt(jwt)));
-                        }
-                        Err(err) => {
-                            error!("Can not load JWT from local storage: {:?}", err);
-                        }
+        if query.len() < 2 {
+            // URL query params is empty. We try to load JWT from local storage.
+            if let Some(raw_jwt) = (*local_storage).as_ref() {
+                match serde_json::from_str(raw_jwt.as_str()) {
+                    Ok(jwt) => {
+                        jwte_setter.set(Some(Jwte::Jwt(jwt)));
+                    }
+                    Err(err) => {
+                        error!("Can not load JWT from local storage: {:?}", err);
                     }
                 }
+            }
+            return;
+        }
+
+        let jwt: url_query_params::Jwt = match serde_qs::from_str(&query[1..]) {
+            Ok(jwt) => jwt,
+            Err(err) => {
+                notifications.spawn(Notification::new(
+                    NotificationType::Error,
+                    "Can not load data from url",
+                    err.to_string(),
+                    Notification::NOTIFICATION_LIFETIME,
+                ));
                 return;
             }
+        };
 
-            let jwt: url_query_params::Jwt = match serde_qs::from_str(&query[1..]) {
-                Ok(jwt) => jwt,
-                Err(err) => {
-                    notifications.spawn(Notification::new(
-                        NotificationType::Error,
-                        "Can not load data from url",
-                        err.to_string(),
-                        Notification::NOTIFICATION_LIFETIME,
-                    ));
-                    return;
-                }
-            };
+        jwt_setter.set(jwt.jwt.clone());
+        match Jwte::from_str(&jwt.jwt) {
+            Ok(jwte) => jwte_setter.set(Some(jwte)),
+            Err(error) => {
+                jwte_setter.set(None);
 
-            jwt_setter.set(jwt.jwt.clone());
-            match Jwte::from_str(&jwt.jwt) {
-                Ok(jwte) => jwte_setter.set(Some(jwte)),
-                Err(error) => {
-                    jwte_setter.set(None);
-
-                    notifications.spawn(Notification::new(
-                        NotificationType::Error,
-                        "Invalid token",
-                        error,
-                        Notification::NOTIFICATION_LIFETIME,
-                    ));
-                }
-            };
-        },
-        [],
-    );
+                notifications.spawn(Notification::new(
+                    NotificationType::Error,
+                    "Invalid token",
+                    error,
+                    Notification::NOTIFICATION_LIFETIME,
+                ));
+            }
+        };
+    });
 
     let local_storage = use_local_storage::<String>(JWT_LOCAL_STORAGE_KEY.to_owned());
-    use_effect_with_deps(
-        move |jwte| {
-            let jwte: &Option<Jwte> = jwte;
-            if let Some(Jwte::Jwt(jwt)) = jwte {
-                local_storage.set(serde_json::to_string(jwt).expect("JWT serialization should not fail"));
-            }
-        },
-        jwte.clone(),
-    );
+    use_effect_with(jwte.clone(), move |jwte| {
+        let jwte: &Option<Jwte> = jwte;
+        if let Some(Jwte::Jwt(jwt)) = jwte {
+            local_storage.set(serde_json::to_string(jwt).expect("JWT serialization should not fail"));
+        }
+    });
 
     let jwte_setter = jwte.setter();
     let set_jwt = Callback::from(move |jwt| {

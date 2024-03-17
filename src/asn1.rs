@@ -10,7 +10,7 @@ use std::rc::Rc;
 
 use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder};
 use web_sys::KeyboardEvent;
-use yew::{classes, function_component, html, use_effect_with_deps, use_reducer, use_state, Callback, Html, Reducible};
+use yew::{classes, function_component, html, use_effect_with, use_reducer, use_state, Callback, Html, Reducible};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
@@ -108,64 +108,58 @@ pub fn asn1_parser_page() -> Html {
     let raw_asn1_setter = raw_asn1.setter();
     let asn1_setter = parsed_asn1.setter();
     let local_storage = use_local_storage::<String>(ASN1_LOCAL_STORAGE_KEY.to_owned());
-    use_effect_with_deps(
-        move |_: &[(); 0]| {
-            let query = &location.search;
+    use_effect_with([], move |_: &[(); 0]| {
+        let query = &location.search;
 
-            if query.len() < 2 {
-                // URL query params is empty. We try to load ASN1 from local storage.
-                if let Some(raw_asn1) = (*local_storage).as_ref() {
-                    if let Ok(bytes) = hex::decode(raw_asn1) {
-                        match Asn1::decode_buff(&bytes) {
-                            Ok(asn1) => {
-                                asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
-                            }
-                            Err(err) => {
-                                error!("Can not decode asn1: {:?}", err);
-                            }
-                        }
-                        raw_asn1_setter.set(bytes);
-                    }
-                }
-                return;
-            }
-
-            match serde_qs::from_str(&query[1..]) {
-                Ok(asn1) => {
-                    let url_query_params::Asn1 { asn1: asn1_data } = asn1;
-                    match Asn1::decode_buff(&asn1_data) {
+        if query.len() < 2 {
+            // URL query params is empty. We try to load ASN1 from local storage.
+            if let Some(raw_asn1) = (*local_storage).as_ref() {
+                if let Ok(bytes) = hex::decode(raw_asn1) {
+                    match Asn1::decode_buff(&bytes) {
                         Ok(asn1) => {
                             asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
                         }
-                        Err(error) => notifications.spawn(Notification::new(
-                            NotificationType::Error,
-                            "Invalid asn1 data",
-                            error.message(),
-                            Notification::NOTIFICATION_LIFETIME,
-                        )),
-                    };
-                    raw_asn1_setter.set(asn1_data);
+                        Err(err) => {
+                            error!("Can not decode asn1: {:?}", err);
+                        }
+                    }
+                    raw_asn1_setter.set(bytes);
                 }
-                Err(err) => notifications.spawn(Notification::new(
-                    NotificationType::Error,
-                    "Can not load data from url",
-                    err.to_string(),
-                    Notification::NOTIFICATION_LIFETIME,
-                )),
             }
-        },
-        [],
-    );
+            return;
+        }
+
+        match serde_qs::from_str(&query[1..]) {
+            Ok(asn1) => {
+                let url_query_params::Asn1 { asn1: asn1_data } = asn1;
+                match Asn1::decode_buff(&asn1_data) {
+                    Ok(asn1) => {
+                        asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
+                    }
+                    Err(error) => notifications.spawn(Notification::new(
+                        NotificationType::Error,
+                        "Invalid asn1 data",
+                        error.message(),
+                        Notification::NOTIFICATION_LIFETIME,
+                    )),
+                };
+                raw_asn1_setter.set(asn1_data);
+            }
+            Err(err) => notifications.spawn(Notification::new(
+                NotificationType::Error,
+                "Can not load data from url",
+                err.to_string(),
+                Notification::NOTIFICATION_LIFETIME,
+            )),
+        }
+    });
 
     let local_storage = use_local_storage::<String>(ASN1_LOCAL_STORAGE_KEY.to_owned());
-    use_effect_with_deps(
-        move |asn1| {
-            let mut encoded = vec![0; asn1.needed_buf_size()];
-            asn1.encode_buff(&mut encoded).expect("ASN1 encoding should not fail");
-            local_storage.set(encode_bytes(encoded, BytesFormat::Hex));
-        },
-        parsed_asn1.clone(),
-    );
+    use_effect_with(parsed_asn1.clone(), move |asn1| {
+        let mut encoded = vec![0; asn1.needed_buf_size()];
+        asn1.encode_buff(&mut encoded).expect("ASN1 encoding should not fail");
+        local_storage.set(encode_bytes(encoded, BytesFormat::Hex));
+    });
 
     let clipboard = use_clipboard();
     let raw_asn1_data = (*raw_asn1).clone();

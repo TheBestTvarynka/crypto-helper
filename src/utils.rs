@@ -1,3 +1,5 @@
+use base64::engine::GeneralPurpose;
+use base64::Engine;
 use yew::Callback;
 use yew_hooks::UseClipboardHandle;
 use yew_notifications::{Notification, NotificationType, NotificationsManager};
@@ -21,6 +23,8 @@ pub fn copy_to_clipboard_with_notification<T>(
 }
 
 pub fn decode_base64(input: &str) -> Result<Vec<u8>, String> {
+    let engine = GeneralPurpose::new(&base64::alphabet::STANDARD, base64::engine::general_purpose::NO_PAD);
+
     if input.contains('_') || input.contains('-') {
         let input = input
             .chars()
@@ -30,9 +34,9 @@ pub fn decode_base64(input: &str) -> Result<Vec<u8>, String> {
                 c => c,
             })
             .collect::<String>();
-        base64::decode(input).map_err(|err| format!("invalid base64: {:?}", err))
+        engine.decode(input).map_err(|err| format!("invalid base64: {:?}", err))
     } else {
-        base64::decode(input).map_err(|err| format!("invalid base64: {:?}", err))
+        engine.decode(input).map_err(|err| format!("invalid base64: {:?}", err))
     }
 }
 

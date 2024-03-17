@@ -1,5 +1,5 @@
 use picky::key::{PrivateKey, PublicKey};
-use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey, EncodeRsaPublicKey};
+use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey, EncodeRsaPrivateKey, EncodeRsaPublicKey};
 use rsa::{RsaPrivateKey, RsaPublicKey};
 use web_sys::{Event, HtmlInputElement};
 use yew::{classes, function_component, html, Callback, Classes, Html, Properties, TargetCast};
@@ -130,7 +130,7 @@ fn generate_rsa_input(
                         rows="4"
                         placeholder={"RSA private key in PEM (-----BEGIN RSA PRIVATE KEY-----)"}
                         class="base-input"
-                        value={input.to_pkcs1_pem(Default::default()).unwrap()}
+                        value={input.to_pkcs1_pem(Default::default()).unwrap().to_string()}
                         {oninput}
                     />
                 </div>
