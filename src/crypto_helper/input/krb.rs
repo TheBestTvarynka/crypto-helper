@@ -1,7 +1,7 @@
 use picky_krb::crypto::CipherSuite;
 use web_sys::{HtmlInputElement, InputEvent, MouseEvent};
 use yew::{
-    classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties, TargetCast,
+    classes, function_component, html, use_effect_with, use_state, Callback, Html, Properties, TargetCast,
     UseStateSetter,
 };
 use yew_notifications::{use_notification, Notification, NotificationType};
@@ -68,12 +68,9 @@ pub fn krb_input(props: &KrbInputProps) -> Html {
     let krb_input = use_state(|| krb_input);
 
     let krb_input_setter = krb_input.setter();
-    use_effect_with_deps(
-        move |props| {
-            krb_input_setter.set(props.krb_input.clone());
-        },
-        props.clone(),
-    );
+    use_effect_with(props.clone(), move |props| {
+        krb_input_setter.set(props.krb_input.clone());
+    });
 
     // false - user provides the key by yourself
     // true - generate key from the password

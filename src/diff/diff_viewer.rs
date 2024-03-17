@@ -81,7 +81,7 @@ fn render_changes(diff: &DiffData) -> Vec<VNode> {
             <span class="diff-line-number">{"1"}</span>
         },
     );
-    changes.remove(changes.len() - 1);
+    let _ = changes.remove(changes.len() - 1);
     changes
 }
 

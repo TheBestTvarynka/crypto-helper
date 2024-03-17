@@ -1,4 +1,4 @@
-use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties};
+use yew::{function_component, html, use_effect_with, use_state, Callback, Html, Properties};
 use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType};
 
@@ -23,12 +23,9 @@ pub fn simple_output(props: &SimpleOutputProps) -> Html {
     let bytes_format = use_state(|| format);
 
     let format_setter = bytes_format.setter();
-    use_effect_with_deps(
-        move |format| {
-            format_setter.set(**format);
-        },
-        bytes_format.clone(),
-    );
+    use_effect_with(bytes_format.clone(), move |format| {
+        format_setter.set(**format);
+    });
 
     let encoded_bytes = encode_bytes(&output, *bytes_format);
 

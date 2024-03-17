@@ -6,6 +6,7 @@ mod simple_output;
 mod switch;
 mod table;
 
+use base64::Engine;
 pub use byte_input::{build_byte_input, ByteInput};
 pub use checkbox::Checkbox;
 pub use rc_slice::RcSlice;
@@ -68,7 +69,7 @@ pub const BYTES_FORMATS: [BytesFormat; 5] = [
 pub fn encode_bytes(bytes: impl AsRef<[u8]>, format: BytesFormat) -> String {
     match format {
         BytesFormat::Hex => hex::encode(bytes),
-        BytesFormat::Base64 => base64::encode(bytes),
+        BytesFormat::Base64 => base64::engine::general_purpose::STANDARD.encode(bytes),
         BytesFormat::Ascii => bytes.as_ref().iter().map(|c| *c as char).collect(),
         BytesFormat::Decimal => bytes
             .as_ref()
