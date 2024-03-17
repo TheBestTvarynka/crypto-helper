@@ -8,13 +8,13 @@ use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::html::onchange::Event;
 use yew::platform::spawn_local;
 use yew::virtual_dom::VNode;
+use yew::{function_component, html, use_effect_with, use_state, Callback, Html, TargetCast};
 use yew_agent::oneshot::{use_oneshot_runner, OneshotProvider};
-use yew::{classes, function_component, html, use_effect_with, use_state, Callback, Html, TargetCast};
-use yew_hooks::{use_async, use_local_storage};
+use yew_hooks::use_local_storage;
 
 use self::diff_algo::DiffAlgo;
 use self::diff_viewer::DiffViewer;
-use self::task::{DiffTask, DiffTaskParams};
+pub use self::task::{DiffTask, DiffTaskParams};
 
 const DEFAULT_ORIGINAL: &str = "TheBestTvarynka
 TheBestTvarynka
@@ -36,7 +36,7 @@ const ALL_ALGORITHMS: &[DiffAlgo] = &[
 ];
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-struct DiffData {
+pub struct DiffData {
     pub original: Vec<char>,
     pub changed: Vec<char>,
     pub changes: Vec<DiffOp>,
@@ -105,11 +105,17 @@ pub fn diff_page() -> Html {
     let diffs_setter = diffs.setter();
     let diff_task = use_oneshot_runner::<DiffTask>();
     let diffs_worker = {
-        let diff_agent = diff_task.clone();
         Callback::from(move |_| {
+            let diff_agent = diff_task.clone();
+            let diff_task_params = diff_task_params.clone();
+            let diffs_setter = diffs_setter.clone();
+
             spawn_local(async move {
+                debug!("started worker as async task");
                 let diff_data = diff_agent.run(diff_task_params).await;
+                debug!("finished calculation");
                 diffs_setter.set(diff_data);
+                debug!("data has been set!");
             });
         })
     };
@@ -193,7 +199,7 @@ pub fn diff_page() -> Html {
     });
 
     html! {
-        <OneshotProvider<DiffTask> path="/worker.js" class={classes!("vertical", "asn1-page")} {onkeydown}>
+        <div class={"vertical asn1-page"} {onkeydown}>
             <div class="horizontal">
                 <span>{"Diff algorithm:"}</span>
                 <div>
@@ -225,6 +231,6 @@ pub fn diff_page() -> Html {
                 <span class="total">{"(ctrl+enter)"}</span>
             </div>
             <DiffViewer diff={(*diffs).clone()} />
-        </OneshotProvider<DiffTask>>
+        </div>
     }
 }

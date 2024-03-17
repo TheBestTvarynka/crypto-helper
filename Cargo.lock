@@ -380,6 +380,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "crypto-helper"
+version = "0.10.0"
+dependencies = [
+ "asn1-parser",
+ "base64 0.22.0",
+ "bcrypt",
+ "flate2",
+ "gloo-timers 0.3.0",
+ "hex",
+ "hmac-sha256",
+ "hmac-sha512",
+ "js-sys",
+ "log",
+ "md5",
+ "oid",
+ "paste",
+ "picky",
+ "picky-krb",
+ "rand 0.9.0-alpha.0",
+ "rand_chacha 0.9.0-alpha.0",
+ "rsa",
+ "serde",
+ "serde_json",
+ "serde_qs",
+ "sha1 0.11.0-pre.3",
+ "similar",
+ "time",
+ "wasm-bindgen",
+ "wasm-logger",
+ "web-sys",
+ "yew",
+ "yew-agent",
+ "yew-hooks",
+ "yew-notifications",
+ "yew-router",
+]
+
+[[package]]
 name = "curve25519-dalek"
 version = "4.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2217,6 +2255,9 @@ name = "similar"
 version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32fea41aca09ee824cc9724996433064c89f7777e60762749a4170a14abbfa21"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "slab"
@@ -2542,44 +2583,6 @@ dependencies = [
  "log",
  "wasm-bindgen",
  "web-sys",
-]
-
-[[package]]
-name = "web-app"
-version = "0.10.0"
-dependencies = [
- "asn1-parser",
- "base64 0.22.0",
- "bcrypt",
- "flate2",
- "gloo-timers 0.3.0",
- "hex",
- "hmac-sha256",
- "hmac-sha512",
- "js-sys",
- "log",
- "md5",
- "oid",
- "paste",
- "picky",
- "picky-krb",
- "rand 0.9.0-alpha.0",
- "rand_chacha 0.9.0-alpha.0",
- "rsa",
- "serde",
- "serde_json",
- "serde_qs",
- "sha1 0.11.0-pre.3",
- "similar",
- "time",
- "wasm-bindgen",
- "wasm-logger",
- "web-sys",
- "yew",
- "yew-agent",
- "yew-hooks",
- "yew-notifications",
- "yew-router",
 ]
 
 [[package]]

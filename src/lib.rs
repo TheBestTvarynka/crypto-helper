@@ -5,7 +5,7 @@ mod about;
 mod asn1;
 mod common;
 mod crypto_helper;
-mod diff;
+pub mod diff;
 mod footer;
 mod header;
 mod jwt;
@@ -23,8 +23,11 @@ use header::Header;
 use jwt::Jwt;
 use not_found::not_found;
 use yew::{function_component, html, Html};
+use yew_agent::oneshot::OneshotProvider;
 use yew_notifications::{Notification, NotificationFactory, NotificationsProvider};
 use yew_router::{BrowserRouter, Routable, Switch};
+
+use crate::diff::DiffTask;
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
@@ -51,7 +54,11 @@ fn switch(routes: Route) -> Html {
         Route::Asn1Parser => html! { <Asn1ParserPage /> },
         Route::CryptoHelper => html! { <CryptoHelper /> },
         Route::Jwt => html! { <Jwt /> },
-        Route::Diff => html! { <DiffPage /> },
+        Route::Diff => html! {
+            <OneshotProvider<DiffTask> path="worker.js">
+                <DiffPage />
+            </OneshotProvider<DiffTask>>
+        },
         Route::About => html! { <About /> },
         Route::NotFound => not_found(),
     }
@@ -72,10 +79,4 @@ pub fn app() -> Html {
             </NotificationsProvider<Notification, NotificationFactory>>
         </BrowserRouter>
     }
-}
-
-fn main() {
-    wasm_logger::init(wasm_logger::Config::default());
-
-    yew::Renderer::<App>::new().render();
 }
