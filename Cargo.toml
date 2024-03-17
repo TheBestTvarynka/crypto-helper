@@ -19,6 +19,7 @@ yew = { version = "0.20", features = ["csr"] }
 yew-router = "0.17.0"
 yew-notifications = { git = "https://github.com/TheBestTvarynka/yew-notifications.git", features = ["standard-notification"] }
 yew-hooks = "0.2.0"
+yew-agent = "0.3.0"
 
 # wasm
 js-sys = "0.3.60"

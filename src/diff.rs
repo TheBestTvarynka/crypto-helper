@@ -1,15 +1,20 @@
 mod diff_algo;
 mod diff_viewer;
+mod task;
 
+use serde::{Deserialize, Serialize};
 use similar::{capture_diff_slices, Algorithm, DiffOp, TextDiff};
 use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::html::onchange::Event;
+use yew::platform::spawn_local;
 use yew::virtual_dom::VNode;
 use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
-use yew_hooks::use_local_storage;
+use yew_agent::oneshot::{use_oneshot_runner, OneshotProvider};
+use yew_hooks::{use_async, use_local_storage};
 
 use self::diff_algo::DiffAlgo;
 use self::diff_viewer::DiffViewer;
+use self::task::{DiffTask, DiffTaskParams};
 
 const DEFAULT_ORIGINAL: &str = "TheBestTvarynka
 TheBestTvarynka
@@ -30,7 +35,7 @@ const ALL_ALGORITHMS: &[DiffAlgo] = &[
     DiffAlgo(Algorithm::Patience),
 ];
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct DiffData {
     pub original: Vec<char>,
     pub changed: Vec<char>,
@@ -91,6 +96,23 @@ pub fn diff_page() -> Html {
             changes,
         });
     });
+
+    let diff_task_params = DiffTaskParams {
+        original: original.chars().collect::<Vec<_>>(),
+        changed: changed.chars().collect::<Vec<_>>(),
+        algo: *algorithm,
+    };
+    let diffs_setter = diffs.setter();
+    let diff_task = use_oneshot_runner::<DiffTask>();
+    let diffs_worker = {
+        let diff_agent = diff_task.clone();
+        Callback::from(move |_| {
+            spawn_local(async move {
+                let diff_data = diff_agent.run(diff_task_params).await;
+                diffs_setter.set(diff_data);
+            });
+        })
+    };
 
     let original_local_storage = use_local_storage::<String>(LOCAL_STORAGE_ORIGINAL.to_owned());
     let original_setter = original.setter();
@@ -161,10 +183,12 @@ pub fn diff_page() -> Html {
         changed_setter.set(input.value());
     });
 
-    let diff = compute_diff.clone();
-    let onclick = Callback::from(move |_| {
-        diff.emit(());
-    });
+    let onclick = {
+        Callback::from(move |_| {
+            debug!("started worker thread task");
+            diffs_worker.emit(());
+        })
+    };
 
     let algorithm_setter = algorithm.setter();
     let on_algorithm_change = Callback::from(move |event: Event| {
@@ -181,7 +205,7 @@ pub fn diff_page() -> Html {
     });
 
     html! {
-        <div class={classes!("vertical", "asn1-page")} {onkeydown}>
+        <OneshotProvider<DiffTask> path="/worker.js" class={classes!("vertical", "asn1-page")} {onkeydown}>
             <div class="horizontal">
                 <span>{"Diff algorithm:"}</span>
                 <div>
@@ -213,6 +237,6 @@ pub fn diff_page() -> Html {
                 <span class="total">{"(ctrl+enter)"}</span>
             </div>
             <DiffViewer diff={(*diffs).clone()} />
-        </div>
+        </OneshotProvider<DiffTask>>
     }
 }
