@@ -12,7 +12,7 @@ use output::Output;
 use picky_krb::crypto::{ChecksumSuite, CipherSuite};
 use sha1::{Digest, Sha1};
 use web_sys::KeyboardEvent;
-use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html};
+use yew::{function_component, html, use_effect_with, use_state, Callback, Html};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
@@ -73,57 +73,50 @@ pub fn crypto_helper() -> Html {
     let location = use_location();
     let notifications = notification_manager.clone();
     let local_storage = use_local_storage::<String>(CRYPTO_HELPER_LOCAL_STORAGE_KEY.to_owned());
-    use_effect_with_deps(
-        move |_: &[(); 0]| {
-            let query = &location.search;
+    use_effect_with([], move |_: &[(); 0]| {
+        let query = &location.search;
 
-            // First, we try to load data from the url.
-            // question mark + one any other char
-            if query.len() >= 2 {
-                match serde_qs::from_str(&query[1..]) {
-                    Ok(algorithm) => {
-                        algorithm_setter.set(algorithm);
-                    }
-                    Err(err) => notifications.spawn(Notification::new(
-                        NotificationType::Error,
-                        "Can not load data from url",
-                        err.to_string(),
-                        Notification::NOTIFICATION_LIFETIME,
-                    )),
+        // First, we try to load data from the url.
+        // question mark + one any other char
+        if query.len() >= 2 {
+            match serde_qs::from_str(&query[1..]) {
+                Ok(algorithm) => {
+                    algorithm_setter.set(algorithm);
                 }
-            } else {
-                // Otherwise, we try to find a data in the local storage.
-                let raw_data = if let Some(raw_data) = (*local_storage).as_ref() {
-                    raw_data.as_str()
-                } else {
-                    return;
-                };
-                match serde_json::from_str(raw_data) {
-                    Ok(algorithm) => {
-                        algorithm_setter.set(algorithm);
-                    }
-                    Err(err) => notifications.spawn(Notification::new(
-                        NotificationType::Error,
-                        "Can not load data from the local storage",
-                        err.to_string(),
-                        Notification::NOTIFICATION_LIFETIME,
-                    )),
-                }
+                Err(err) => notifications.spawn(Notification::new(
+                    NotificationType::Error,
+                    "Can not load data from url",
+                    err.to_string(),
+                    Notification::NOTIFICATION_LIFETIME,
+                )),
             }
-        },
-        [],
-    );
+        } else {
+            // Otherwise, we try to find a data in the local storage.
+            let raw_data = if let Some(raw_data) = (*local_storage).as_ref() {
+                raw_data.as_str()
+            } else {
+                return;
+            };
+            match serde_json::from_str(raw_data) {
+                Ok(algorithm) => {
+                    algorithm_setter.set(algorithm);
+                }
+                Err(err) => notifications.spawn(Notification::new(
+                    NotificationType::Error,
+                    "Can not load data from the local storage",
+                    err.to_string(),
+                    Notification::NOTIFICATION_LIFETIME,
+                )),
+            }
+        }
+    });
 
     let local_storage = use_local_storage::<String>(CRYPTO_HELPER_LOCAL_STORAGE_KEY.to_owned());
-    use_effect_with_deps(
-        move |algorithm| {
-            let algorithm: &Algorithm = algorithm;
-            local_storage.set(
-                serde_json::to_string(algorithm).expect("algorithm serialization into json string should never fail"),
-            );
-        },
-        algorithm.clone(),
-    );
+    use_effect_with(algorithm.clone(), move |algorithm| {
+        let algorithm: &Algorithm = algorithm;
+        local_storage
+            .set(serde_json::to_string(algorithm).expect("algorithm serialization into json string should never fail"));
+    });
 
     let algorithm_data = (*algorithm).clone();
     let clipboard = use_clipboard();

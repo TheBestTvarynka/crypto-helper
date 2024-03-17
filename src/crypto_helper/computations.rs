@@ -6,9 +6,8 @@ use flate2::write::{ZlibDecoder, ZlibEncoder};
 use flate2::Compression;
 use picky::signature::SignatureAlgorithm;
 use picky_krb::crypto::{Checksum, Cipher};
-use rand::SeedableRng;
-use rand_chacha::ChaCha8Rng;
-use rsa::{PaddingScheme, PublicKey as PublicKeyTrait};
+use rsa::rand_core::OsRng;
+use rsa::Pkcs1v15Encrypt;
 
 use super::algorithm::{
     BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput, ZlibInput, ZlibMode,
@@ -18,13 +17,13 @@ pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
     let payload = &input.payload;
     match &input.action {
         RsaAction::Encrypt(public_key) => {
-            let mut rng = ChaCha8Rng::from_entropy();
+            let mut rng = OsRng;
             public_key
-                .encrypt(&mut rng, PaddingScheme::PKCS1v15Encrypt, payload)
+                .encrypt(&mut rng, Pkcs1v15Encrypt, payload)
                 .map_err(|err| err.to_string())
         }
         RsaAction::Decrypt(private_key) => private_key
-            .decrypt(PaddingScheme::PKCS1v15Encrypt, payload)
+            .decrypt(Pkcs1v15Encrypt, payload)
             .map_err(|err| err.to_string()),
         RsaAction::Sign(input) => Ok(SignatureAlgorithm::RsaPkcs1v15(input.hash_algorithm.0)
             .sign(payload, &input.rsa_private_key)

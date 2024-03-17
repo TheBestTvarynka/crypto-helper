@@ -1,5 +1,5 @@
 use web_sys::HtmlInputElement;
-use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, Properties, TargetCast};
+use yew::{classes, function_component, html, use_effect_with, use_state, Callback, Html, Properties, TargetCast};
 
 use super::BytesFormat;
 use crate::common::{encode_bytes, get_format_button_class, get_set_format_callback, parse_bytes, BYTES_FORMATS};
@@ -34,27 +34,21 @@ pub fn byte_input(props: &ByteInputProps) -> Html {
     let format_setter = bytes_format.setter();
     let raw_value_setter = raw_value.setter();
     let parsed_bytes = (*bytes).clone();
-    use_effect_with_deps(
-        move |format| {
-            format_setter.set(**format);
-            raw_value_setter.set(encode_bytes(parsed_bytes, **format));
-        },
-        bytes_format.clone(),
-    );
+    use_effect_with(bytes_format.clone(), move |format| {
+        format_setter.set(**format);
+        raw_value_setter.set(encode_bytes(parsed_bytes, **format));
+    });
 
     let bytes_setter = bytes.setter();
     let raw_value_setter = raw_value.setter();
     let format_value = *bytes_format;
-    use_effect_with_deps(
-        move |props| {
-            let bytes = props.bytes.clone();
-            let raw = encode_bytes(&bytes, format_value);
+    use_effect_with(props.clone(), move |props| {
+        let bytes = props.bytes.clone();
+        let raw = encode_bytes(&bytes, format_value);
 
-            bytes_setter.set(bytes);
-            raw_value_setter.set(raw);
-        },
-        props.clone(),
-    );
+        bytes_setter.set(bytes);
+        raw_value_setter.set(raw);
+    });
 
     let setter = setter.clone();
     let raw_value_setter = raw_value.setter();

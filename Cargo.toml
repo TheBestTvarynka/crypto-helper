@@ -15,47 +15,47 @@ members = [
 ]
 
 [dependencies]
-yew = { version = "0.20", features = ["csr"] }
-yew-router = "0.17.0"
+yew = { version = "0.21", features = ["csr"] }
+yew-router = "0.18"
 yew-notifications = { git = "https://github.com/TheBestTvarynka/yew-notifications.git", features = ["standard-notification"] }
-yew-hooks = "0.2.0"
-yew-agent = "0.3.0"
+yew-hooks = "0.3"
+yew-agent = "0.3"
 
 # wasm
-js-sys = "0.3.60"
-wasm-bindgen = "0.2.83"
-web-sys = { version = "0.3.60", features = ["Window"] }
+js-sys = "0.3"
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["Window"] }
 
 # logging
-wasm-logger = "0.2.0"
-log = "0.4.17"
+wasm-logger = "0.2"
+log = "0.4"
 
 # utils
-hex = "0.4.3"
-gloo-timers = "0.2.4"
-serde = { version = "1.0.162", features = ["derive"] }
-serde_qs = "0.12.0"
-serde_json = "1.0.89"
-base64 = "0.13.1"
-time = { version = "0.3.20", features = ["local-offset", "wasm-bindgen"] }
+hex = "0.4"
+gloo-timers = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_qs = "0.12"
+serde_json = "1.0"
+base64 = "0.22"
+time = { version = "0.3", features = ["local-offset", "wasm-bindgen"] }
 
 # crypto
 picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", rev = "604a246" }
-picky = { version = "7.0.0-rc.3", default-features = false, features = ["ec"] }
-md5 = "0.7.0"
-sha1 = "0.10.5"
-hmac-sha256 = "1.1.5"
-hmac-sha512 = { version = "1.1.2", features = ["sha384"] }
-rsa = "0.7.2"
-bcrypt = "0.14.0"
-flate2 = { version = "1.0.26", features = ["zlib"] }
-rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
-rand_chacha = "0.3.1"
+picky = { version = "7.0.0-rc.8", default-features = false }
+md5 = "0.7"
+sha1 = "0.11.0-pre.3"
+hmac-sha256 = "1.1"
+hmac-sha512 = { version = "1.1", features = ["sha384"] }
+rsa = "0.9"
+bcrypt = "0.15"
+flate2 = { version = "1.0", features = ["zlib"] }
+rand = { version = "0.9.0-alpha.0", default-features = false, features = ["small_rng"] }
+rand_chacha = "0.9.0-alpha.0"
 
 # asn1
 asn1-parser = { path = "./crates/asn1-parser", features = ["std"] }
-oid = { version = "0.2.1", default-features = false }
-paste = "1.0.14"
+oid = { version = "0.2", default-features = false }
+paste = "1.0"
 
 # diff
-similar = "2.4.0"
+similar = "2.4"

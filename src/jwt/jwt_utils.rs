@@ -1,3 +1,6 @@
+use base64::engine::general_purpose::STANDARD;
+use base64::engine::GeneralPurpose;
+use base64::Engine;
 use picky::hash::HashAlgorithm;
 use picky::key::{PrivateKey, PublicKey};
 use picky::signature::SignatureAlgorithm;
@@ -112,8 +115,8 @@ fn get_input_component(
 fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {
     let data_to_sign = format!(
         "{}.{}",
-        base64::encode(jwt.parsed_header.as_bytes()),
-        base64::encode(jwt.parsed_payload.as_bytes())
+        STANDARD.encode(jwt.parsed_header.as_bytes()),
+        STANDARD.encode(jwt.parsed_payload.as_bytes())
     );
 
     match &jwt.signature_algorithm {
@@ -264,8 +267,8 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
 fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<bool> {
     let data_to_sign = format!(
         "{}.{}",
-        base64::encode(jwt.parsed_header.as_bytes()),
-        base64::encode(jwt.parsed_payload.as_bytes())
+        STANDARD.encode(jwt.parsed_header.as_bytes()),
+        STANDARD.encode(jwt.parsed_payload.as_bytes())
     );
 
     let calculated_signature = match &jwt.signature_algorithm {
@@ -430,9 +433,11 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
 pub fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {
     let signature = calculate_signature(jwt, spawn_notification)?;
 
-    let header = base64::encode_config(jwt.parsed_header.as_bytes(), base64::URL_SAFE_NO_PAD);
-    let payload = base64::encode_config(jwt.parsed_payload.as_bytes(), base64::URL_SAFE_NO_PAD);
-    let signature = base64::encode_config(signature, base64::URL_SAFE_NO_PAD);
+    let engine = GeneralPurpose::new(&base64::alphabet::STANDARD, base64::engine::general_purpose::NO_PAD);
+
+    let header = engine.encode(jwt.parsed_header.as_bytes());
+    let payload = engine.encode(jwt.parsed_payload.as_bytes());
+    let signature = engine.encode(signature);
 
     let jwt = format!("{}.{}.{}", header, payload, signature);
 

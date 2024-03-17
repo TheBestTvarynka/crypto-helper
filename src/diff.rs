@@ -8,8 +8,8 @@ use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::html::onchange::Event;
 use yew::platform::spawn_local;
 use yew::virtual_dom::VNode;
-use yew::{classes, function_component, html, use_effect_with_deps, use_state, Callback, Html, TargetCast};
 use yew_agent::oneshot::{use_oneshot_runner, OneshotProvider};
+use yew::{classes, function_component, html, use_effect_with, use_state, Callback, Html, TargetCast};
 use yew_hooks::{use_async, use_local_storage};
 
 use self::diff_algo::DiffAlgo;
@@ -57,7 +57,7 @@ fn render_algorithm_options(current_algorithm: DiffAlgo) -> Vec<VNode> {
         .iter()
         .map(|algo| {
             html! {
-                <option selected={current_algorithm == *algo} value={algo.to_string()}>{algo}</option>
+                <option selected={current_algorithm == *algo} value={algo.to_string()}>{algo.as_ref()}</option>
             }
         })
         .collect()
@@ -121,55 +121,43 @@ pub fn diff_page() -> Html {
     let algorithm_local_storage = use_local_storage::<String>(LOCAL_STORAGE_ALGORITHM.to_owned());
     let algorithm_setter = algorithm.setter();
     let diffs_setter = diffs.setter();
-    use_effect_with_deps(
-        move |_: &[(); 0]| {
-            let mut flag = false;
+    use_effect_with([], move |_: &[(); 0]| {
+        let mut flag = false;
 
-            if let Some(original) = (*original_local_storage).as_ref() {
-                original_setter.set(original.to_string());
+        if let Some(original) = (*original_local_storage).as_ref() {
+            original_setter.set(original.to_string());
+            flag = true;
+        }
+        if let Some(changed) = (*changed_local_storage).as_ref() {
+            changed_setter.set(changed.to_string());
+            flag = true;
+        }
+        if let Some(raw_algorithm) = (*algorithm_local_storage).as_ref() {
+            if let Ok(algorithm) = raw_algorithm.as_str().try_into() {
+                algorithm_setter.set(algorithm);
                 flag = true;
             }
-            if let Some(changed) = (*changed_local_storage).as_ref() {
-                changed_setter.set(changed.to_string());
-                flag = true;
-            }
-            if let Some(raw_algorithm) = (*algorithm_local_storage).as_ref() {
-                if let Ok(algorithm) = raw_algorithm.as_str().try_into() {
-                    algorithm_setter.set(algorithm);
-                    flag = true;
-                }
-            }
+        }
 
-            if flag {
-                diffs_setter.set(DiffData::empty());
-            }
-        },
-        [],
-    );
+        if flag {
+            diffs_setter.set(DiffData::empty());
+        }
+    });
 
     let local_storage = use_local_storage::<String>(LOCAL_STORAGE_ORIGINAL.to_owned());
-    use_effect_with_deps(
-        move |[original]| {
-            local_storage.set((*original).to_string());
-        },
-        [original.clone()],
-    );
+    use_effect_with(original.clone(), move |original| {
+        local_storage.set((*original).to_string());
+    });
 
     let local_storage = use_local_storage::<String>(LOCAL_STORAGE_CHANGED.to_owned());
-    use_effect_with_deps(
-        move |[changed]| {
-            local_storage.set((*changed).to_string());
-        },
-        [changed.clone()],
-    );
+    use_effect_with(changed.clone(), move |changed| {
+        local_storage.set((*changed).to_string());
+    });
 
     let local_storage = use_local_storage::<String>(LOCAL_STORAGE_ALGORITHM.to_owned());
-    use_effect_with_deps(
-        move |[algorithm]| {
-            local_storage.set((*algorithm).to_string());
-        },
-        [algorithm.clone()],
-    );
+    use_effect_with(algorithm.clone(), move |algorithm| {
+        local_storage.set((*algorithm).to_string());
+    });
 
     let original_setter = original.setter();
     let on_original_input = Callback::from(move |event: html::oninput::Event| {
