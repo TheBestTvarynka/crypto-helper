@@ -12,6 +12,10 @@
     //padding: 0.5em;
 }
 
+.diff-unchanged {
+    white-space: pre-wrap;
+}
+
 .diff-insert {
     white-space: pre-wrap;
     background-color: #97e0bd;

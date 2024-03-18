@@ -48,7 +48,7 @@ fn render_changes(diff: &DiffData) -> Vec<VNode> {
                 old_index,
                 len,
                 new_index: _,
-            } => text_spans(&old[*old_index..*old_index + *len], "", &mut line_number),
+            } => text_spans(&old[*old_index..*old_index + *len], "diff-unchanged", &mut line_number),
             DiffOp::Delete {
                 old_index,
                 old_len,
