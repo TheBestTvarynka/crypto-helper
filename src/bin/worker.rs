@@ -1,8 +1,8 @@
-use crypto_helper::diff::DiffTask;
-use yew_agent::{Bincode, Registrable};
+use crypto_helper::diff::{DiffTask, JsonCodec};
+use yew_agent::Registrable;
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
 
-    DiffTask::registrar().encoding::<Bincode>().register();
+    DiffTask::registrar().encoding::<JsonCodec>().register();
 }
