@@ -1,6 +1,7 @@
 mod byte_input;
 mod bytes_viewer;
 mod checkbox;
+mod loader;
 mod rc_slice;
 mod simple_output;
 mod switch;
@@ -9,6 +10,7 @@ mod table;
 use base64::Engine;
 pub use byte_input::{build_byte_input, ByteInput};
 pub use checkbox::Checkbox;
+pub use loader::Loader;
 pub use rc_slice::RcSlice;
 pub use simple_output::build_simple_output;
 pub use switch::Switch;

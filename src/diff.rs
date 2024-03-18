@@ -15,6 +15,7 @@ use yew_hooks::use_local_storage;
 use self::diff_algo::DiffAlgo;
 use self::diff_viewer::DiffViewer;
 pub use self::task::{DiffTask, DiffTaskParams, JsonCodec};
+use crate::common::Loader;
 
 const DEFAULT_ORIGINAL: &str = "TheBestTvarynka
 TheBestTvarynka
@@ -224,7 +225,7 @@ pub fn diff_page() -> Html {
             </div>
             {match (*diffs).clone() {
                 DiffsState::None => html! {},
-                DiffsState::Loading => html! { <span>{"Loading"}</span> },
+                DiffsState::Loading => html! { <Loader /> },
                 DiffsState::Diffs(diff) => html! { <DiffViewer {diff} /> },
             }}
         </div>
