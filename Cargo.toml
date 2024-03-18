@@ -1,5 +1,5 @@
 [package]
-name = "web-app"
+name = "crypto-helper"
 version = "0.10.0"
 description = "The crypto-helper is an online app that helps to work with the diferent crypto algorithms."
 edition = "2021"
@@ -14,11 +14,20 @@ members = [
     "crates/prop-strategies"
 ]
 
+[[bin]]
+name = "crypto-helper-app"
+path = "src/bin/main.rs"
+
+[[bin]]
+name = "worker"
+path = "src/bin/worker.rs"
+
 [dependencies]
 yew = { version = "0.21", features = ["csr"] }
 yew-router = "0.18"
 yew-notifications = { git = "https://github.com/TheBestTvarynka/yew-notifications.git", features = ["standard-notification"] }
 yew-hooks = "0.3"
+yew-agent = "0.3"
 
 # wasm
 js-sys = "0.3"
@@ -57,4 +66,4 @@ oid = { version = "0.2", default-features = false }
 paste = "1.0"
 
 # diff
-similar = "2.4"
+similar = { version = "2.4", features = ["serde"] }

@@ -1,15 +1,21 @@
 mod diff_algo;
 mod diff_viewer;
+mod task;
 
-use similar::{capture_diff_slices, Algorithm, DiffOp, TextDiff};
+use serde::{Deserialize, Serialize};
+use similar::{Algorithm, DiffOp, TextDiff};
 use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::html::onchange::Event;
+use yew::platform::spawn_local;
 use yew::virtual_dom::VNode;
-use yew::{classes, function_component, html, use_effect_with, use_state, Callback, Html, TargetCast};
+use yew::{function_component, html, use_effect_with, use_state_eq, Callback, Html, TargetCast};
+use yew_agent::oneshot::use_oneshot_runner;
 use yew_hooks::use_local_storage;
 
 use self::diff_algo::DiffAlgo;
 use self::diff_viewer::DiffViewer;
+pub use self::task::{DiffTask, DiffTaskParams, JsonCodec};
+use crate::common::Loader;
 
 const DEFAULT_ORIGINAL: &str = "TheBestTvarynka
 TheBestTvarynka
@@ -30,8 +36,8 @@ const ALL_ALGORITHMS: &[DiffAlgo] = &[
     DiffAlgo(Algorithm::Patience),
 ];
 
-#[derive(Debug, Clone, PartialEq)]
-struct DiffData {
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DiffData {
     pub original: Vec<char>,
     pub changed: Vec<char>,
     pub changes: Vec<DiffOp>,
@@ -47,6 +53,13 @@ impl DiffData {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum DiffsState {
+    None,
+    Loading,
+    Diffs(DiffData),
+}
+
 fn render_algorithm_options(current_algorithm: DiffAlgo) -> Vec<VNode> {
     ALL_ALGORITHMS
         .iter()
@@ -60,10 +73,10 @@ fn render_algorithm_options(current_algorithm: DiffAlgo) -> Vec<VNode> {
 
 #[function_component(DiffPage)]
 pub fn diff_page() -> Html {
-    let original = use_state(|| DEFAULT_ORIGINAL.to_owned());
-    let changed = use_state(|| DEFAULT_CHANGED.to_owned());
-    let algorithm = use_state(|| DEFAULT_ALGORITHM);
-    let diffs = use_state(|| {
+    let original = use_state_eq(|| DEFAULT_ORIGINAL.to_owned());
+    let changed = use_state_eq(|| DEFAULT_CHANGED.to_owned());
+    let algorithm = use_state_eq(|| DEFAULT_ALGORITHM);
+    let diffs = use_state_eq(|| {
         let original = DEFAULT_ORIGINAL.chars().collect::<Vec<_>>();
         let changed = DEFAULT_CHANGED.chars().collect::<Vec<_>>();
         let changes = TextDiff::configure()
@@ -71,26 +84,34 @@ pub fn diff_page() -> Html {
             .newline_terminated(true)
             .diff_chars(DEFAULT_ORIGINAL, DEFAULT_CHANGED);
 
-        DiffData {
+        DiffsState::Diffs(DiffData {
             original,
             changed,
             changes: changes.ops().to_owned(),
-        }
+        })
     });
 
-    let original_data = original.chars().collect::<Vec<_>>();
-    let changed_data = changed.chars().collect::<Vec<_>>();
+    let diff_task_params = DiffTaskParams {
+        original: original.chars().collect::<Vec<_>>(),
+        changed: changed.chars().collect::<Vec<_>>(),
+        algo: *algorithm,
+    };
     let diffs_setter = diffs.setter();
-    let algo = *algorithm;
-    let compute_diff = Callback::from(move |_: ()| {
-        let changes = capture_diff_slices(algo.into(), &original_data, &changed_data);
+    let diff_task = use_oneshot_runner::<DiffTask>();
+    let diffs_worker = {
+        Callback::from(move |_| {
+            diffs_setter.set(DiffsState::Loading);
 
-        diffs_setter.set(DiffData {
-            original: original_data.clone(),
-            changed: changed_data.clone(),
-            changes,
-        });
-    });
+            let diff_agent = diff_task.clone();
+            let diff_task_params = diff_task_params.clone();
+            let diffs_setter = diffs_setter.clone();
+
+            spawn_local(async move {
+                let diff_data = diff_agent.run(diff_task_params).await;
+                diffs_setter.set(DiffsState::Diffs(diff_data));
+            });
+        })
+    };
 
     let original_local_storage = use_local_storage::<String>(LOCAL_STORAGE_ORIGINAL.to_owned());
     let original_setter = original.setter();
@@ -118,7 +139,7 @@ pub fn diff_page() -> Html {
         }
 
         if flag {
-            diffs_setter.set(DiffData::empty());
+            diffs_setter.set(DiffsState::None);
         }
     });
 
@@ -149,10 +170,12 @@ pub fn diff_page() -> Html {
         changed_setter.set(input.value());
     });
 
-    let diff = compute_diff.clone();
-    let onclick = Callback::from(move |_| {
-        diff.emit(());
-    });
+    let onclick = {
+        let diffs_worker = diffs_worker.clone();
+        Callback::from(move |_| {
+            diffs_worker.emit(());
+        })
+    };
 
     let algorithm_setter = algorithm.setter();
     let on_algorithm_change = Callback::from(move |event: Event| {
@@ -164,12 +187,12 @@ pub fn diff_page() -> Html {
 
     let onkeydown = Callback::from(move |event: KeyboardEvent| {
         if event.ctrl_key() && event.code() == "Enter" {
-            compute_diff.emit(());
+            diffs_worker.emit(());
         }
     });
 
     html! {
-        <div class={classes!("vertical", "asn1-page")} {onkeydown}>
+        <div class={"vertical asn1-page"} {onkeydown}>
             <div class="horizontal">
                 <span>{"Diff algorithm:"}</span>
                 <div>
@@ -200,7 +223,11 @@ pub fn diff_page() -> Html {
                 <button class="action-button" onclick={onclick}>{"Diff"}</button>
                 <span class="total">{"(ctrl+enter)"}</span>
             </div>
-            <DiffViewer diff={(*diffs).clone()} />
+            {match (*diffs).clone() {
+                DiffsState::None => html! {},
+                DiffsState::Loading => html! { <Loader /> },
+                DiffsState::Diffs(diff) => html! { <DiffViewer {diff} /> },
+            }}
         </div>
     }
 }

@@ -1,13 +1,15 @@
 use std::fmt::{Display, Formatter};
 use std::ops::Deref;
 
+use serde::de::{Error, Visitor};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use similar::Algorithm;
 
 const MYERS: &str = "Myers";
 const PATIENCE: &str = "Patience";
 const LCS: &str = "Lcs";
 
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub struct DiffAlgo(pub Algorithm);
 
 impl From<DiffAlgo> for Algorithm {
@@ -56,5 +58,40 @@ impl TryFrom<&str> for DiffAlgo {
             LCS => Algorithm::Lcs.into(),
             _ => return Err(format!("Unsupported diff algorithm: {}.", value)),
         })
+    }
+}
+
+impl<'de> Deserialize<'de> for DiffAlgo {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct DiffAlgoVisitor;
+
+        impl Visitor<'_> for DiffAlgoVisitor {
+            type Value = DiffAlgo;
+
+            fn expecting(&self, formatter: &mut Formatter) -> std::fmt::Result {
+                formatter.write_str("valid DiffAlgo")
+            }
+
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: Error,
+            {
+                DiffAlgo::try_from(v).map_err(|err| E::custom(format!("Can not deserialize DiffAlgo: {:?}", err)))
+            }
+        }
+
+        deserializer.deserialize_str(DiffAlgoVisitor)
+    }
+}
+
+impl Serialize for DiffAlgo {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(self.as_ref())
     }
 }
