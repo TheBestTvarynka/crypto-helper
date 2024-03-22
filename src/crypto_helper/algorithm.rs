@@ -395,12 +395,30 @@ pub enum Argon2Action {
     Hash(Argon2HashAction),
     Verify(#[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")] Vec<u8>),
 }
+
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
 pub struct Argon2Input {
     pub action: Argon2Action,
     #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub data: Vec<u8>,
 }
+
+#[non_exhaustive]
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub enum Argon2Error<'a> {
+    InvalidVersion(&'a str),
+    InvalidVariant(&'a str),
+}
+
+impl<'a> std::fmt::Display for Argon2Error<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidVersion(version) => write!(f, "InvalidVersion({version})"),
+            Self::InvalidVariant(variant) => write!(f, "InvalidVariant({variant})"),
+        }
+    }
+}
+impl<'a> std::error::Error for Argon2Error<'a> {}
 
 impl Argon2Input {
     pub fn set_variant(&self, variant: Argon2Variant) -> Self {
@@ -419,13 +437,13 @@ impl Argon2Input {
     }
 }
 impl<'a> TryFrom<&'a str> for Argon2Version {
-    type Error = (); // todo: proper error type
+    type Error = Argon2Error<'a>;
 
     fn try_from(value: &'a str) -> Result<Self, Self::Error> {
         match value {
             "Argon13" => Ok(Self::Version13),
             "Argon10" => Ok(Self::Version10),
-            _ => Err(()),
+            invalid => Err(Argon2Error::InvalidVersion(invalid)),
         }
     }
 }
@@ -438,14 +456,14 @@ impl From<Argon2Variant> for argon2::Algorithm {
         }
     }
 }
-impl TryFrom<&str> for Argon2Variant {
-    type Error = ();
+impl<'a> TryFrom<&'a str> for Argon2Variant {
+    type Error = Argon2Error<'a>;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "Argon2i" => Ok(Self::Argon2i),
             "Argon2d" => Ok(Self::Argon2d),
             "Argon2id" => Ok(Self::Argon2id),
-            _ => Err(()),
+            invalid => Err(Argon2Error::InvalidVariant(invalid)),
         }
     }
 }
