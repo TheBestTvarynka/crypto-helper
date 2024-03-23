@@ -56,7 +56,7 @@ pub fn argon2_input(props: &Argon2InputProps) -> Html {
 
     let set_version = move |event: yew::html::onchange::Event| {
         let html_element: HtmlInputElement = event.target_unchecked_into();
-        let input = input.set_version(html_element.value().as_str().try_into().unwrap());
+        let input = input.with_version(html_element.value().as_str().try_into().unwrap());
         input_setter.emit(input.clone());
     };
 
@@ -65,7 +65,7 @@ pub fn argon2_input(props: &Argon2InputProps) -> Html {
 
     let set_variant = move |event: yew::html::onchange::Event| {
         let html_element: HtmlInputElement = event.target_unchecked_into();
-        let input = input.set_variant(html_element.value().as_str().try_into().unwrap());
+        let input = input.with_variant(html_element.value().as_str().try_into().unwrap());
         input_setter.emit(input.clone());
     };
 
@@ -77,7 +77,7 @@ pub fn argon2_input(props: &Argon2InputProps) -> Html {
                 <Switch id={"switch".to_string()} setter={on_hash_verify_switch} state={hash_verify_switch_state}/>
                 <span class="total">{"verify"}</span>
             </div>
-            {build_byte_input(data, setter, Some(BytesFormat::Ascii), Some("argon2".into()))}
+            {build_byte_input(data, setter, Some(BytesFormat::Ascii), Some("password".into()))}
             {if let Argon2Action::Hash(hash_action) = &props.input.action {html! {
                 <>
                     {build_byte_input(hash_action.salt.clone(), salt_setter, Some(BytesFormat::Ascii), Some("salt".into()))}
