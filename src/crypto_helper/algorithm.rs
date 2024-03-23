@@ -363,6 +363,7 @@ pub struct ZlibInput {
     #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
     pub data: Vec<u8>,
 }
+
 #[derive(Eq, Clone, Copy, PartialEq, Debug, Serialize, Deserialize, Default)]
 pub enum Argon2Variant {
     Argon2i,
@@ -370,12 +371,14 @@ pub enum Argon2Variant {
     #[default]
     Argon2id,
 }
+
 #[derive(Eq, Clone, Copy, PartialEq, Debug, Serialize, Deserialize, Default)]
 pub enum Argon2Version {
     Version10,
     #[default]
     Version13,
 }
+
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct Argon2HashAction {
     pub memory: u32,
@@ -421,14 +424,15 @@ impl<'a> std::fmt::Display for Argon2Error<'a> {
 impl<'a> std::error::Error for Argon2Error<'a> {}
 
 impl Argon2Input {
-    pub fn set_variant(&self, variant: Argon2Variant) -> Self {
+    pub fn with_variant(&self, variant: Argon2Variant) -> Self {
         let mut input = self.clone();
         if let Argon2Action::Hash(ref mut action) = input.action {
             action.variant = variant;
         }
         input
     }
-    pub fn set_version(&self, version: Argon2Version) -> Self {
+
+    pub fn with_version(&self, version: Argon2Version) -> Self {
         let mut input = self.clone();
         if let Argon2Action::Hash(ref mut action) = input.action {
             action.version = version;
@@ -458,7 +462,7 @@ impl From<Argon2Variant> for argon2::Algorithm {
 }
 impl<'a> TryFrom<&'a str> for Argon2Variant {
     type Error = Argon2Error<'a>;
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
+    fn try_from(value: &'a str) -> Result<Self, Self::Error> {
         match value {
             "Argon2i" => Ok(Self::Argon2i),
             "Argon2d" => Ok(Self::Argon2d),
@@ -484,7 +488,7 @@ impl From<&Argon2HashAction> for argon2::Params {
             .p_cost(value.paralelism)
             .t_cost(value.iters)
             .build()
-            .unwrap()
+            .expect("argon2::ParamsBuilder should never fail")
     }
 }
 
