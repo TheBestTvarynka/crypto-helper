@@ -1815,7 +1815,7 @@ name = "web-app"
 version = "0.10.0"
 dependencies = [
  "argon2",
- "base64 0.21.7",
+ "base64 0.13.1",
  "bcrypt",
  "flate2",
  "gloo-timers",
@@ -1825,6 +1825,7 @@ dependencies = [
  "js-sys",
  "log",
  "md5",
+ "password-hash 0.5.0",
  "picky",
  "picky-krb",
  "rand",
