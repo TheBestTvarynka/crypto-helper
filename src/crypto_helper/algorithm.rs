@@ -338,7 +338,6 @@ pub enum ZlibMode {
     Compress,
     Decompress,
 }
-
 impl From<ZlibMode> for bool {
     fn from(mode: ZlibMode) -> Self {
         match mode {
