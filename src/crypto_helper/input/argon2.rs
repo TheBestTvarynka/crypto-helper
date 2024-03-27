@@ -13,8 +13,6 @@ pub struct Argon2InputProps {
 
 #[function_component(Argon2Input)]
 pub fn argon2_input(props: &Argon2InputProps) -> Html {
-    let data: Vec<u8> = props.input.data.clone();
-
     let input_setter = props.argon2_input_setter.clone();
     let action: Argon2Action = props.input.action.clone();
     let setter = Callback::from(move |data| {
@@ -90,18 +88,20 @@ pub fn argon2_input(props: &Argon2InputProps) -> Html {
             {build_byte_input(data, setter, Some(BytesFormat::Ascii), Some("password".into()))}
             {match &props.input.action {
                 Argon2Action::Hash(hash_action) => html! {
-                    <>
+                    <div class="vertical">
                         {build_byte_input(hash_action.salt.clone(), salt_setter, Some(BytesFormat::Ascii), Some("salt".into()))}
-                        <select onchange={set_version} class="base-input">
-                            <option value="Argon10">{"Argon10"}</option>
-                            <option value="Argon13">{"Argon13"}</option>
-                        </select>
-                        <select onchange={set_variant} class="base-input">
-                            <option value="Argon2i">{"Argon2i"}</option>
-                            <option value="Argon2d">{"Argon2d"}</option>
-                            <option value="Argon2id">{"Argon2id"}</option>
-                        </select>
-                    </>
+                        <div class="horizontal">
+                            <select onchange={set_version} class="base-input">
+                                <option value="Argon10">{"Argon10"}</option>
+                                <option value="Argon13">{"Argon13"}</option>
+                            </select>
+                            <select onchange={set_variant} class="base-input">
+                                <option value="Argon2i">{"Argon2i"}</option>
+                                <option value="Argon2d">{"Argon2d"}</option>
+                                <option value="Argon2id">{"Argon2id"}</option>
+                            </select>
+                        </div>
+                    </div>
                 },
                 Argon2Action::Verify(hash) => html! {
                     <>

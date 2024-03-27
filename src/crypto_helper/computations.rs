@@ -105,10 +105,12 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
             );
 
             let salt = if hash_action.salt.is_empty() {
-                password_hash::SaltString::generate(OsRng::default())
+                password_hash::SaltString::generate(OsRng)
             } else {
-                password_hash::SaltString::from_b64(&base64::engine::general_purpose::STANDARD_NO_PAD.encode(&hash_action.salt))
-                    .map_err(|e| e.to_string())?
+                password_hash::SaltString::from_b64(
+                    &base64::engine::general_purpose::STANDARD_NO_PAD.encode(&hash_action.salt),
+                )
+                .map_err(|e| e.to_string())?
             };
 
             let hash = argon2ctx
