@@ -1,6 +1,8 @@
 use std::convert::TryInto;
 use std::io::Write;
 
+use argon2::{PasswordHasher, PasswordVerifier};
+use base64::Engine;
 use bcrypt::Version;
 use flate2::write::{ZlibDecoder, ZlibEncoder};
 use flate2::Compression;
@@ -10,7 +12,8 @@ use rsa::rand_core::OsRng;
 use rsa::Pkcs1v15Encrypt;
 
 use super::algorithm::{
-    BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput, ZlibInput, ZlibMode,
+    Argon2Action, Argon2Input, BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput,
+    ZlibInput, ZlibMode,
 };
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
@@ -88,6 +91,44 @@ pub fn process_zlib(input: &ZlibInput) -> Result<Vec<u8>, String> {
             decompressor
                 .finish()
                 .map_err(|err| format!("Can not finish decompression: {:?}", err))
+        }
+    }
+}
+
+pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
+    match &input.action {
+        Argon2Action::Hash(hash_action) => {
+            let argon2ctx = argon2::Argon2::new(
+                hash_action.variant.into(),
+                hash_action.version.into(),
+                hash_action.into(),
+            );
+
+            let salt = if hash_action.salt.is_empty() {
+                password_hash::SaltString::generate(OsRng)
+            } else {
+                password_hash::SaltString::from_b64(
+                    &base64::engine::general_purpose::STANDARD_NO_PAD.encode(&hash_action.salt),
+                )
+                .map_err(|e| e.to_string())?
+            };
+
+            let hash = argon2ctx
+                .hash_password(&input.data, salt.as_salt())
+                .map_err(|err| err.to_string())?
+                .to_string();
+
+            Ok(hash.into_bytes())
+        }
+        Argon2Action::Verify(data) => {
+            let str = String::from_utf8(data.clone()).map_err(|e| e.to_string())?;
+            let hash = argon2::PasswordHash::new(&str).map_err(|e| e.to_string())?;
+
+            if argon2::Argon2::default().verify_password(&input.data, &hash).is_ok() {
+                Ok(vec![1])
+            } else {
+                Ok(vec![0])
+            }
         }
     }
 }

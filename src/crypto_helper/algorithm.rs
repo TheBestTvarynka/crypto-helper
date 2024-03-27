@@ -18,8 +18,9 @@ pub const RSA: &str = "RSA";
 pub const SHA384: &str = "SHA384";
 pub const BCRYPT: &str = "BCRYPT";
 pub const ZLIB: &str = "ZLIB";
+pub const ARGON2: &str = "ARGON2";
 
-pub const SUPPORTED_ALGORITHMS: [&str; 12] = [
+pub const SUPPORTED_ALGORITHMS: [&str; 13] = [
     MD5,
     SHA1,
     SHA256,
@@ -32,9 +33,10 @@ pub const SUPPORTED_ALGORITHMS: [&str; 12] = [
     SHA384,
     BCRYPT,
     ZLIB,
+    ARGON2,
 ];
 
-pub const HASHING_ALGOS: [&str; 6] = [MD5, SHA1, SHA256, SHA384, SHA512, BCRYPT];
+pub const HASHING_ALGOS: [&str; 7] = [MD5, SHA1, SHA256, SHA384, SHA512, BCRYPT, ARGON2];
 
 pub const ENCRYPTION_ALGOS: [&str; 3] = [AES128_CTS_HMAC_SHA1_96, AES256_CTS_HMAC_SHA1_96, RSA];
 
@@ -336,7 +338,6 @@ pub enum ZlibMode {
     Compress,
     Decompress,
 }
-
 impl From<ZlibMode> for bool {
     fn from(mode: ZlibMode) -> Self {
         match mode {
@@ -362,6 +363,174 @@ pub struct ZlibInput {
     pub data: Vec<u8>,
 }
 
+#[derive(Eq, Clone, Copy, PartialEq, Debug, Serialize, Deserialize, Default)]
+pub enum Argon2Variant {
+    Argon2i,
+    Argon2d,
+    #[default]
+    Argon2id,
+}
+
+#[derive(Eq, Clone, Copy, PartialEq, Debug, Serialize, Deserialize, Default)]
+pub enum Argon2Version {
+    Version10,
+    #[default]
+    Version13,
+}
+
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct Argon2HashAction {
+    pub memory: u32,
+    pub iters: u32,
+    pub paralelism: u32,
+    pub output_len: usize,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub salt: Vec<u8>,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub secret: Vec<u8>,
+    pub variant: Argon2Variant,
+    pub version: Argon2Version,
+}
+
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub enum Argon2Action {
+    Hash(Argon2HashAction),
+    Verify(#[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")] Vec<u8>),
+}
+
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
+pub struct Argon2Input {
+    pub action: Argon2Action,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub data: Vec<u8>,
+}
+
+#[non_exhaustive]
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub enum Argon2Error<'a> {
+    InvalidVersion(&'a str),
+    InvalidVariant(&'a str),
+}
+
+impl<'a> std::fmt::Display for Argon2Error<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidVersion(version) => write!(f, "InvalidVersion({version})"),
+            Self::InvalidVariant(variant) => write!(f, "InvalidVariant({variant})"),
+        }
+    }
+}
+impl<'a> std::error::Error for Argon2Error<'a> {}
+
+impl Argon2Input {
+    pub fn with_variant(&self, variant: Argon2Variant) -> Self {
+        let mut input = self.clone();
+        if let Argon2Action::Hash(ref mut action) = input.action {
+            action.variant = variant;
+        }
+        input
+    }
+
+    pub fn with_version(&self, version: Argon2Version) -> Self {
+        let mut input = self.clone();
+        if let Argon2Action::Hash(ref mut action) = input.action {
+            action.version = version;
+        }
+        input
+    }
+}
+impl<'a> TryFrom<&'a str> for Argon2Version {
+    type Error = Argon2Error<'a>;
+
+    fn try_from(value: &'a str) -> Result<Self, Self::Error> {
+        match value {
+            "Argon13" => Ok(Self::Version13),
+            "Argon10" => Ok(Self::Version10),
+            invalid => Err(Argon2Error::InvalidVersion(invalid)),
+        }
+    }
+}
+impl From<Argon2Variant> for argon2::Algorithm {
+    fn from(value: Argon2Variant) -> Self {
+        match value {
+            Argon2Variant::Argon2d => argon2::Algorithm::Argon2d,
+            Argon2Variant::Argon2i => argon2::Algorithm::Argon2i,
+            Argon2Variant::Argon2id => argon2::Algorithm::Argon2id,
+        }
+    }
+}
+impl<'a> TryFrom<&'a str> for Argon2Variant {
+    type Error = Argon2Error<'a>;
+    fn try_from(value: &'a str) -> Result<Self, Self::Error> {
+        match value {
+            "Argon2i" => Ok(Self::Argon2i),
+            "Argon2d" => Ok(Self::Argon2d),
+            "Argon2id" => Ok(Self::Argon2id),
+            invalid => Err(Argon2Error::InvalidVariant(invalid)),
+        }
+    }
+}
+
+impl From<Argon2Version> for argon2::Version {
+    fn from(value: Argon2Version) -> Self {
+        match value {
+            Argon2Version::Version10 => argon2::Version::V0x10,
+            Argon2Version::Version13 => argon2::Version::V0x13,
+        }
+    }
+}
+
+impl From<&Argon2HashAction> for argon2::Params {
+    fn from(value: &Argon2HashAction) -> Self {
+        argon2::ParamsBuilder::new()
+            .m_cost(value.memory)
+            .p_cost(value.paralelism)
+            .t_cost(value.iters)
+            .build()
+            .expect("argon2::ParamsBuilder should never fail")
+    }
+}
+
+impl Default for Argon2HashAction {
+    fn default() -> Self {
+        use argon2::Params;
+        Self {
+            memory: Params::DEFAULT_M_COST,
+            iters: Params::DEFAULT_T_COST,
+            paralelism: Params::DEFAULT_P_COST,
+            output_len: Params::DEFAULT_OUTPUT_LEN,
+            salt: Default::default(),
+            secret: Default::default(),
+            variant: Default::default(),
+            version: Default::default(),
+        }
+    }
+}
+
+impl Default for Argon2Action {
+    fn default() -> Self {
+        Self::Hash(Argon2HashAction::default())
+    }
+}
+
+impl From<bool> for Argon2Action {
+    fn from(value: bool) -> Self {
+        match value {
+            true => Argon2Action::Verify(Default::default()),
+            false => Argon2Action::Hash(Default::default()),
+        }
+    }
+}
+
+impl From<&Argon2Action> for bool {
+    fn from(value: &Argon2Action) -> Self {
+        match value {
+            Argon2Action::Verify(_) => true,
+            Argon2Action::Hash(_) => false,
+        }
+    }
+}
+
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Algorithm {
@@ -382,6 +551,7 @@ pub enum Algorithm {
     Rsa(RsaInput),
     Bcrypt(BcryptInput),
     Zlib(ZlibInput),
+    Argon2(Argon2Input),
 }
 
 impl TryFrom<&str> for Algorithm {
@@ -412,6 +582,8 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::Bcrypt(Default::default()));
         } else if value == ZLIB {
             return Ok(Algorithm::Zlib(Default::default()));
+        } else if value == ARGON2 {
+            return Ok(Algorithm::Argon2(Default::default()));
         }
 
         Err(format!(
@@ -436,6 +608,7 @@ impl From<&Algorithm> for &str {
             Algorithm::Rsa(_) => RSA,
             Algorithm::Bcrypt(_) => BCRYPT,
             Algorithm::Zlib(_) => ZLIB,
+            Algorithm::Argon2(_) => ARGON2,
         }
     }
 }
