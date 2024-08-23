@@ -38,6 +38,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 ---
 
 - [X] [Integer](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/integer.html)
+- [X] [Enumerated](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/enumerated.html)
 - [X] [Boolean](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/boolean.html)
 - [X] [Null](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/null.html)
 - [X] [ObjectIdentifier](https://learn.microsoft.com/en-us/windows/win32/seccertenroll/about-object-identifier)

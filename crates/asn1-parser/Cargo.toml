@@ -13,7 +13,7 @@ default-fearures = []
 std = []
 
 [dev-dependencies]
-env_logger = "0.11.3"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "fmt", "ansi"] }
 prop-strategies = { path = "../prop-strategies" }
 proptest = "1.2.0"
 

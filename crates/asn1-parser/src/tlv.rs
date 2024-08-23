@@ -1,4 +1,5 @@
 use alloc::borrow::Cow;
+use alloc::fmt::Debug;
 
 use crate::length::read_len;
 use crate::reader::{read_data, Reader};
@@ -56,11 +57,12 @@ impl<A: Taggable> Asn1Entity for Tlv<'_, A> {
     }
 }
 
-impl<'data, A: Asn1ValueDecoder<'data>> Asn1Decoder<'data> for Tlv<'data, A> {
+impl<'data, A: Asn1ValueDecoder<'data> + Debug> Asn1Decoder<'data> for Tlv<'data, A> {
     fn compare_tags(tag: Tag) -> bool {
         A::compare_tags(tag)
     }
 
+    #[instrument(level = "debug", ret)]
     fn decode(reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let tag_position = reader.full_offset();
         let data_start = reader.position();
@@ -70,6 +72,8 @@ impl<'data, A: Asn1ValueDecoder<'data>> Asn1Decoder<'data> for Tlv<'data, A> {
         let (len, len_range) = read_len(reader)?;
 
         let (data, data_range) = read_data(reader, len)?;
+
+        trace!(?tag, ?len, ?data);
 
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
