@@ -4,9 +4,10 @@ use core::ops::Range;
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
-    ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Error, ExplicitTag,
-    GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, MetaInfo, Null, NumericString, ObjectIdentifier,
-    OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String, VisibleString,
+    ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Enumerated, Error,
+    ExplicitTag, GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, MetaInfo, Null, NumericString,
+    ObjectIdentifier, OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String,
+    VisibleString,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -30,6 +31,7 @@ pub enum Asn1Type<'data> {
     Bool(Bool),
     Null(Null),
     Integer(Integer<'data>),
+    Enumerated(Enumerated<'data>),
     ObjectIdentifier(ObjectIdentifier),
 
     ExplicitTag(ExplicitTag<'data>),
@@ -58,6 +60,7 @@ impl Asn1Type<'_> {
             Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
             Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
             Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
+            Asn1Type::Enumerated(e) => Asn1Type::Enumerated(e.to_owned()),
             Asn1Type::ObjectIdentifier(o) => Asn1Type::ObjectIdentifier(o.clone()),
             Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
             Asn1Type::ImplicitTag(i) => Asn1Type::ImplicitTag(i.to_owned()),
@@ -86,6 +89,7 @@ impl Taggable for Asn1Type<'_> {
             Asn1Type::Bool(b) => b.tag(),
             Asn1Type::Null(n) => n.tag(),
             Asn1Type::Integer(i) => i.tag(),
+            Asn1Type::Enumerated(e) => e.tag(),
             Asn1Type::ObjectIdentifier(o) => o.tag(),
             Asn1Type::ExplicitTag(e) => e.tag(),
             Asn1Type::ImplicitTag(i) => i.tag(),
@@ -97,7 +101,10 @@ impl Taggable for Asn1Type<'_> {
 }
 
 impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
+    #[instrument(level = "debug", ret)]
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
+        debug!(?tag);
+
         decode_asn1!(
             OctetString,
             Utf8String,
@@ -112,6 +119,7 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
             VisibleString,
             Bool,
             Integer,
+            Enumerated,
             ObjectIdentifier,
             ExplicitTag,
             ImplicitTag,
@@ -122,7 +130,7 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
             in tag, reader
         );
 
-        Err(Error::from("Invalid asn1 data"))
+        Err(Error::from("Invalid or unsupported asn1 tag"))
     }
 
     fn compare_tags(_tag: Tag) -> bool {
@@ -146,6 +154,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::VisibleString(g) => g.needed_buf_size(),
             Asn1Type::Bool(boolean) => boolean.needed_buf_size(),
             Asn1Type::Integer(integer) => integer.needed_buf_size(),
+            Asn1Type::Enumerated(enumerated) => enumerated.needed_buf_size(),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.needed_buf_size(),
             Asn1Type::ExplicitTag(e) => e.needed_buf_size(),
             Asn1Type::ImplicitTag(i) => i.needed_buf_size(),
@@ -171,6 +180,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::VisibleString(numeric) => numeric.encode(writer),
             Asn1Type::Bool(boolean) => boolean.encode(writer),
             Asn1Type::Integer(integer) => integer.encode(writer),
+            Asn1Type::Enumerated(enumerated) => enumerated.encode(writer),
             Asn1Type::ObjectIdentifier(object_identifier) => object_identifier.encode(writer),
             Asn1Type::ExplicitTag(e) => e.encode(writer),
             Asn1Type::ImplicitTag(i) => i.encode(writer),
@@ -198,6 +208,7 @@ impl MetaInfo for Asn1Type<'_> {
             Asn1Type::VisibleString(_) => {}
             Asn1Type::Bool(_) => {}
             Asn1Type::Integer(_) => {}
+            Asn1Type::Enumerated(_) => {}
             Asn1Type::ObjectIdentifier(_) => {}
             Asn1Type::ExplicitTag(explicit_tag) => explicit_tag.clear_meta(),
             Asn1Type::ImplicitTag(implicit_tag) => implicit_tag.clear_meta(),

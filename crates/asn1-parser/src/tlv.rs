@@ -73,6 +73,8 @@ impl<'data, A: Asn1ValueDecoder<'data> + Debug> Asn1Decoder<'data> for Tlv<'data
 
         let (data, data_range) = read_data(reader, len)?;
 
+        trace!(?tag, ?len, ?data);
+
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
         inner_reader.set_offset(reader.full_offset() - data.len());
