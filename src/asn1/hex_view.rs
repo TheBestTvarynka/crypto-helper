@@ -243,6 +243,9 @@ fn build_data_bytes(
         Asn1Type::Bool(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all),
         Asn1Type::Null(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all),
         Asn1Type::Integer(_) => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all),
+        Asn1Type::Enumerated(_) => {
+            default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all)
+        }
         Asn1Type::ObjectIdentifier(_) => {
             default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all)
         }

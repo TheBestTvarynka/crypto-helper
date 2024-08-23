@@ -12,7 +12,7 @@ use yew::virtual_dom::VNode;
 use yew::{classes, function_component, html, Callback, Children, Classes, Html, Properties};
 
 use self::oid::ObjectIdentifierNode;
-use self::primitive::{BoolNode, IntegerNode, NullNode};
+use self::primitive::{BoolNode, EnumeratedNode, IntegerNode, NullNode};
 use self::sequence::SequenceNode;
 use self::strings::{
     BitStringNode, BmpStringNode, GeneralStringNode, IA5StringNode, NumericStringNode, OctetStringNode,
@@ -130,6 +130,11 @@ pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &C
         Asn1Type::Integer(integer) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
                 <IntegerNode node={integer.to_owned()} meta={asn1.meta().to_owned()} />
+            </Asn1Node>
+        },
+        Asn1Type::Enumerated(enumerated) => html! {
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
+                <EnumeratedNode node={enumerated.to_owned()} meta={asn1.meta().to_owned()} />
             </Asn1Node>
         },
         Asn1Type::ObjectIdentifier(object_identifier) => html! {
