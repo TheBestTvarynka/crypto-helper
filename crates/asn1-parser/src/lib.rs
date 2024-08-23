@@ -7,7 +7,7 @@ mod macros;
 
 #[allow(unused_imports)]
 #[macro_use]
-extern crate log;
+extern crate tracing;
 
 mod asn1;
 mod constructors;

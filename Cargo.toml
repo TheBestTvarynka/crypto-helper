@@ -35,8 +35,9 @@ wasm-bindgen = "0.2"
 web-sys = { version = "0.3", features = ["Window"] }
 
 # logging
-wasm-logger = "0.2"
-log = "0.4"
+tracing-web = "0.1"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "fmt", "time", "ansi", "env-filter"] }
+tracing = "0.1"
 
 # utils
 hex = "0.4"
