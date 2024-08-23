@@ -14,7 +14,6 @@ std = []
 
 [dev-dependencies]
 tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "fmt", "ansi"] }
-env_logger = "0.11.3"
 prop-strategies = { path = "../prop-strategies" }
 proptest = "1.2.0"
 
