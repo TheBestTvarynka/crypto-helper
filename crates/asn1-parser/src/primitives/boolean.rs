@@ -37,11 +37,15 @@ impl<'data> Asn1ValueDecoder<'data> for Bool {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let data = reader.remaining();
 
-        if data.len() != 1 {
+        if data.is_empty() {
+            warn!("Bool data length is 0. Processing with the default value: `true`");
+
+            Ok(Bool::from_byte(1))
+        } else if data.len() == 1 {
+            Ok(Bool::from_byte(data[0]))
+        } else {
             return Err(Error::from("Bool data len should be equal to 1"));
         }
-
-        Ok(Bool::from_byte(data[0]))
     }
 
     fn compare_tags(tag: Tag) -> bool {
