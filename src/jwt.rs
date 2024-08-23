@@ -99,7 +99,7 @@ pub fn jwt() -> Html {
                         jwte_setter.set(Some(Jwte::Jwt(jwt)));
                     }
                     Err(err) => {
-                        error!("Can not load JWT from local storage: {:?}", err);
+                        error!(?err, "Can not load JWT from local storage.");
                     }
                 }
             }
