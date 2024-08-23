@@ -120,7 +120,7 @@ pub fn asn1_parser_page() -> Html {
                             asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
                         }
                         Err(err) => {
-                            error!("Can not decode asn1: {:?}", err);
+                            error!(?err, "Can not decode asn1.");
                         }
                     }
                     raw_asn1_setter.set(bytes);
