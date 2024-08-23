@@ -36,7 +36,7 @@ web-sys = { version = "0.3", features = ["Window"] }
 
 # logging
 tracing-web = "0.1"
-tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "fmt", "time", "ansi", "env-filter"] }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "fmt", "ansi", "env-filter"] }
 tracing = "0.1"
 
 # utils
