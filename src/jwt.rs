@@ -10,7 +10,7 @@ use std::str::FromStr;
 
 use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::{function_component, html, use_effect_with, use_state, Callback, Html, TargetCast};
-use yew_hooks::{use_local_storage, use_location};
+use yew_hooks::{use_clipboard, use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
 use crate::common::Checkbox;
@@ -162,6 +162,18 @@ pub fn jwt() -> Html {
         }
     });
 
+    let jwt_to_copy = (*raw_jwt).clone();
+    let notifications = use_notification::<Notification>();
+    let clipboard = use_clipboard();
+    let share_by_link = Callback::from(move |_| {
+        clipboard.write_text(jwt_to_copy.clone());
+
+        notifications.spawn(Notification::from_description_and_type(
+            NotificationType::Info,
+            "link to jwt copied",
+        ));
+    });
+
     html! {
         <article class="vertical">
             <textarea
@@ -175,6 +187,9 @@ pub fn jwt() -> Html {
             <div class="horizontal">
                 <button class="action-button" {onclick}>{"Process"}</button>
                 <Checkbox id={"auto-decode".to_owned()} name={"auto-decode".to_owned()} checked={*auto_decode} {set_checked} />
+                <button class="button-with-icon" onclick={share_by_link}>
+                    <img src="/public/img/icons/share_by_link.png" />
+                </button>
             </div>
             {if let Some(jwte) = &(*jwte) {
                 match jwte {
