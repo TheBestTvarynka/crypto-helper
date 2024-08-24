@@ -1,6 +1,6 @@
 [package]
 name = "crypto-helper"
-version = "0.10.0"
+version = "0.15.0"
 description = "The crypto-helper is an online app that helps to work with the diferent crypto algorithms."
 edition = "2021"
 authors = ["Pavlo Myroniuk <the.best.tvarynka@gmail.com>"]
