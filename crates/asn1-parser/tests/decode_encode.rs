@@ -293,3 +293,15 @@ fn test_1() {
     let asn1 = Asn1::decode_buff(raw).unwrap();
     println!("{:?}", asn1);
 }
+
+#[test]
+fn test_2() {
+    init_logging();
+
+    let raw = &[
+        4, 24, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0,
+    ];
+
+    let asn1 = Asn1::decode_buff(raw).unwrap();
+    println!("{:?}", asn1);
+}

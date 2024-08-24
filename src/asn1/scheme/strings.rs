@@ -39,7 +39,13 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
         },
         None => {
             let encoded_octets = match std::str::from_utf8(octets) {
-                Ok(s) => s.to_owned(),
+                Ok(s) => {
+                    if s.chars().any(|c| (c as u8) < 32) {
+                        hex::encode(octets)
+                    } else {
+                        s.to_owned()
+                    }
+                }
                 Err(_) => hex::encode(octets),
             };
             html! {
