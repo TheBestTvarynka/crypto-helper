@@ -14,13 +14,14 @@ Table of content:
   - [Meta](#meta)
   - [Contributing](#contributing)
 
-![](/public/img/example.png)
-![](/public/img/sha.png)
+![](/public/img/crypto-helper.png)
 ![](/public/img/jwt.png)
+![](/public/img/asn1.png)
+![](/public/img/diff.png)
 
-The crypto-helper is a web app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data.
+The crypto-helper is a web app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data, debug JWT tokens, parse ASN1 structures, compute diffs, and more.
 
-All computations are performed on the client side. This tool never sends the data to any server.
+All computations are performed on the client side. _This tool never sends the data to any server._
 
 ### Features
 
@@ -44,6 +45,10 @@ All computations are performed on the client side. This tool never sends the dat
   * `ES256`
   * `ES384`
   * `ES512`
+* ASN1 Debugger
+* Diff checker
+
+Read more about features and motivation here: https://tbt.qkation.com/projects/crypto-helper.
 
 ### Development
 
