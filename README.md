@@ -17,6 +17,8 @@ Table of content:
 ![](/public/img/example.png)
 ![](/public/img/sha.png)
 ![](/public/img/jwt.png)
+![](/public/img/asn1.png)
+![](/public/img/diff.png)
 
 The crypto-helper is a web app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data, debug JWT tokens, parse ASN1 structures, compute diffs, and more.
 
