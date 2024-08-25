@@ -14,7 +14,7 @@ Table of content:
   - [Meta](#meta)
   - [Contributing](#contributing)
 
-![](/public/img/example.png)
+![](/public/img/crypto-helper.png)
 ![](/public/img/jwt.png)
 ![](/public/img/asn1.png)
 ![](/public/img/diff.png)
