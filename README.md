@@ -15,7 +15,6 @@ Table of content:
   - [Contributing](#contributing)
 
 ![](/public/img/example.png)
-![](/public/img/sha.png)
 ![](/public/img/jwt.png)
 ![](/public/img/asn1.png)
 ![](/public/img/diff.png)

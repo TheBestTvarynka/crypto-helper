@@ -182,7 +182,7 @@ pub fn asn1_parser_page() -> Html {
         <div class={classes!("vertical", "asn1-page")} {onkeydown}>
             <span>
                 <a href="https://github.com/TheBestTvarynka/crypto-helper/tree/main/crates/asn1-parser#supported-asn1-types" class="a-link">
-                    {"list of supported asn1 types"}
+                    {"List of supported asn1 types"}
                 </a>
                 {". Report a bug/feature "}<a href="https://github.com/TheBestTvarynka/crypto-helper/issues/new" class="a-link">{"here"}</a>{"."}
             </span>
