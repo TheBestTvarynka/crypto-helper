@@ -11,7 +11,7 @@ Yes!
 
 > **Why?**
 
-This `asn1` parser is aimed to parse input bytes and return an AST as the result. It's not considered an ultimate `asn1` parsing library. You can use it, for example, for asn1 structures visualization (like I do it).
+This `asn1` parser is aimed to parse input bytes and return an AST as the result. It's not considered an ultimate `asn1` parsing library. You can use it, for example, for ASN1 structures visualization (like I do).
 
 ## Supported `asn1` types
 
@@ -47,7 +47,7 @@ This `asn1` parser is aimed to parse input bytes and return an AST as the result
 ---
 
 - [X] [Sequence](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequence.html)
-- [X] ~~[SequenceOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequenceof.html).~~ _Note. This library doesn't have a separate type for the_ `SequenceOf` _ASN1 data type. Just use the regular_ `Suquence` _for it. Their tags are the same, so no problem should occur._
+- [X] ~~[SequenceOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/sequenceof.html).~~ _Note. This library doesn't have a separate type for the_ `SequenceOf` _ASN1 data type. Just use the regular_ `Sequence` _for it. Their tags are the same, so no problem should occur._
 - [X] [Set](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/set.html)
 - [X] ~~[SetOf](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/setof.html).~~ _Note. This library doesn't have a separate type for the_ `SetOf` _ASN1 data type. Just use the regular_ `Set` _for it. Their tags are the same, so no problem should occur._
 - [X] ~~[Choice](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/choice.html).~~ _Note. We don't need a separate type for the ASN1_ `Choice` _type because it will still be parsed into some ASN1 object._
