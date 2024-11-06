@@ -223,6 +223,13 @@ fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {
         "1.3.6.1.4.1.311.21.7" => ("szOID_CERTIFICATE_TEMPLATE", "http://www.oid-info.com/get/1.3.6.1.4.1.311.21.7"),
         "1.3.6.1.4.1.311.20.2.2" => ("Smartcard logon (Microsoft enhanced key usage)", "http://www.oid-info.com/get/1.3.6.1.4.1.311.20.2.2"),
         "1.3.6.1.4.1.311.21.10" => ("szOID_APPLICATION_CERT_POLICIES", "http://www.oid-info.com/get/1.3.6.1.4.1.311.21.10"),
+        "1.2.840.113549.1.7.3" => ("id-envelopedData", "http://oid-info.com/get/1.2.840.113549.1.7.3"),
+        "1.3.6.1.4.1.311.74.1" => ("ProtectionDescriptorType", "https://github.com/jborean93/dpapi-ng/blob/57143c31897e647d97f5a8b505188dc447025997/src/dpapi_ng/_blob.py#L128"),
+        "1.3.6.1.4.1.311.74.1.1" => ("SID Protection Descriptor", "https://github.com/jborean93/dpapi-ng/blob/57143c31897e647d97f5a8b505188dc447025997/src/dpapi_ng/_blob.py#L129"),
+        "1.3.6.1.4.1.311.74.1.2" => ("Key File Protection Descriptor", "https://github.com/jborean93/dpapi-ng/blob/57143c31897e647d97f5a8b505188dc447025997/src/dpapi_ng/_blob.py#L130"),
+        "1.3.6.1.4.1.311.74.1.5" => ("SSDL Protection Descriptor", "https://github.com/jborean93/dpapi-ng/blob/57143c31897e647d97f5a8b505188dc447025997/src/dpapi_ng/_blob.py#L131"),
+        "1.3.6.1.4.1.311.74.1.8" => ("LOCAL Protection Descriptor", "https://github.com/jborean93/dpapi-ng/blob/57143c31897e647d97f5a8b505188dc447025997/src/dpapi_ng/_blob.py#L132"),
+        "1.3.6.1.4.1.311.21.1" => ("Certificate services CA version", "http://oid-info.com/get/1.3.6.1.4.1.311.21.1"),
         _ => ("-", "https://github.com/TheBestTvarynka/crypto-helper/issues/new"),
     }
 }
