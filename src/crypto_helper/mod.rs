@@ -1,8 +1,10 @@
+#[macro_use]
+pub mod macros;
+
 mod algorithm;
 mod computations;
 mod info;
 mod input;
-mod macros;
 mod output;
 
 pub use algorithm::Algorithm;
