@@ -13,7 +13,6 @@ use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
 use crate::common::{build_byte_input, build_simple_output, BytesFormat};
 use crate::url_query_params::generate_jwt_link;
-use crate::{check_asymmetric_key, check_symmetric_key, generate_placeholder, sign, verify};
 
 const DEFAULT_TEXT_FOR_RSA_PLACEHOLDER: &str = "RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)";
 const DEFAULT_TEXT_FOR_EC_PLACEHOLDER: &str = "EC private/public key in PEM (-----BEGIN EC PRIVATE/PUBLIC KEY-----)";
@@ -129,7 +128,11 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+            Some(sign_hmac!(
+                hash_alg: sha2::Sha256,
+                key: key,
+                msg: data_to_sign.as_bytes(),
+            ))
         }
         JwtSignatureAlgorithm::Hs384(key) => {
             check_symmetric_key!(
@@ -139,7 +142,11 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+            Some(sign_hmac!(
+                hash_alg: sha2::Sha384,
+                key: key,
+                msg: data_to_sign.as_bytes(),
+            ))
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             check_symmetric_key!(
@@ -149,7 +156,11 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+            Some(sign_hmac!(
+                hash_alg: sha2::Sha512,
+                key: key,
+                msg: data_to_sign.as_bytes(),
+            ))
         }
         JwtSignatureAlgorithm::Rs256(key) => {
             let private_key = check_asymmetric_key!(
@@ -271,8 +282,8 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
         STANDARD.encode(jwt.parsed_payload.as_bytes())
     );
 
-    let calculated_signature = match &jwt.signature_algorithm {
-        JwtSignatureAlgorithm::None => Vec::new(),
+    Some(match &jwt.signature_algorithm {
+        JwtSignatureAlgorithm::None => Vec::<u8>::new() == jwt.signature,
         JwtSignatureAlgorithm::Hs256(key) => {
             check_symmetric_key!(
                 key: key,
@@ -281,7 +292,12 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+            verify_hmac!(
+                hash_alg: sha2::Sha384,
+                key: key,
+                msg: data_to_sign.as_bytes(),
+                digest: jwt.signature.as_slice(),
+            )
         }
         JwtSignatureAlgorithm::Hs384(key) => {
             check_symmetric_key!(
@@ -291,7 +307,12 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+            verify_hmac!(
+                hash_alg: sha2::Sha384,
+                key: key,
+                msg: data_to_sign.as_bytes(),
+                digest: jwt.signature.as_slice(),
+            )
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             check_symmetric_key!(
@@ -301,7 +322,12 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+            verify_hmac!(
+                hash_alg: sha2::Sha512,
+                key: key,
+                msg: data_to_sign.as_bytes(),
+                digest: jwt.signature.as_slice(),
+            )
         }
         JwtSignatureAlgorithm::Rs256(key) => {
             let public_key = check_asymmetric_key!(
@@ -311,16 +337,14 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            let is_ok = verify!(
+            verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_256,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,
                 notificator: spawn_notification
-            );
-
-            return Some(is_ok);
+            )
         }
         JwtSignatureAlgorithm::Rs384(key) => {
             let public_key = check_asymmetric_key!(
@@ -330,16 +354,14 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            let is_ok = verify!(
+            verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_384,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,
                 notificator: spawn_notification
-            );
-
-            return Some(is_ok);
+            )
         }
         JwtSignatureAlgorithm::Rs512(key) => {
             let public_key = check_asymmetric_key!(
@@ -349,16 +371,14 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            let is_ok = verify!(
+            verify!(
                 signature_algo: SignatureAlgorithm::RsaPkcs1v15,
                 hash_algo: HashAlgorithm::SHA2_512,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,
                 notificator: spawn_notification
-            );
-
-            return Some(is_ok);
+            )
         }
         JwtSignatureAlgorithm::Es256(key) => {
             let public_key = check_asymmetric_key!(
@@ -368,16 +388,14 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            let is_ok = verify!(
+            verify!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
                 hash_algo: HashAlgorithm::SHA2_256,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,
                 notificator: spawn_notification
-            );
-
-            return Some(is_ok);
+            )
         }
         JwtSignatureAlgorithm::Es384(key) => {
             let public_key = check_asymmetric_key!(
@@ -387,16 +405,14 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            let is_ok = verify!(
+            verify!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
                 hash_algo: HashAlgorithm::SHA2_384,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,
                 notificator: spawn_notification
-            );
-
-            return Some(is_ok);
+            )
         }
         JwtSignatureAlgorithm::Es512(key) => {
             let public_key = check_asymmetric_key!(
@@ -406,16 +422,14 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 key_kind: PublicKey,
             );
 
-            let is_ok = verify!(
+            verify!(
                 signature_algo: SignatureAlgorithm::Ecdsa,
                 hash_algo: HashAlgorithm::SHA2_512,
                 public_key: &public_key,
                 data_to_sign: data_to_sign.as_bytes(),
                 jwt_signature: &jwt.signature,
                 notificator: spawn_notification
-            );
-
-            return Some(is_ok);
+            )
         }
         JwtSignatureAlgorithm::Unsupported(algo_name) => {
             spawn_notification.emit(Notification::from_description_and_type(
@@ -425,9 +439,7 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
 
             return None;
         }
-    };
-
-    Some(jwt.signature == calculated_signature)
+    })
 }
 
 pub fn generate_jwt(jwt: &Jwt, spawn_notification: Callback<Notification>) -> Option<Vec<u8>> {

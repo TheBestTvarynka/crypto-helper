@@ -9,7 +9,7 @@ pub fn validate_general(_: &str) -> bool {
 }
 
 pub fn validate_printable(data: &str) -> bool {
-    const ALLOWED_SPECIAL: &[u8] = &[b' ', b'\'', b'(', b')', b'+', b',', b'-', b'.', b'/', b':', b'=', b'?'];
+    const ALLOWED_SPECIAL: &[u8] = b" '()+,-./:=?";
 
     for c in data.as_bytes() {
         if !(c.is_ascii_lowercase() || c.is_ascii_uppercase() || c.is_ascii_digit() || ALLOWED_SPECIAL.contains(c)) {

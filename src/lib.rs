@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate tracing;
 
+#[macro_use]
+pub mod macros;
+
 mod about;
 mod asn1;
 mod common;

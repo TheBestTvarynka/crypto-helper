@@ -15,12 +15,12 @@ std = []
 [dev-dependencies]
 tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "fmt", "ansi"] }
 prop-strategies = { path = "../prop-strategies" }
-proptest = "1.2.0"
+proptest = "1.2"
 
 [dependencies]
 tracing = "0.1"
-num-bigint-dig = { version = "0.8.4", default-features = false }
-num-traits = { version = "0.2.17", default-features = false }
-oid = { version = "0.2.1", default-features = false }
-paste = "1.0.14"
-env_logger = "0.11.3"
+num-bigint-dig = { version = "0.8", default-features = false }
+num-traits = { version = "0.2", default-features = false }
+oid = { version = "0.2", default-features = false }
+paste = "1.0"
+env_logger = "0.11"

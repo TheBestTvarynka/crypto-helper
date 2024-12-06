@@ -18,7 +18,7 @@ where
 {
     struct Visitor;
 
-    impl<'de> de::Visitor<'de> for Visitor {
+    impl de::Visitor<'_> for Visitor {
         type Value = Vec<u8>;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -50,7 +50,7 @@ where
 {
     struct Visitor;
 
-    impl<'de> de::Visitor<'de> for Visitor {
+    impl de::Visitor<'_> for Visitor {
         type Value = PrivateKey;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -82,7 +82,7 @@ where
 {
     struct Visitor;
 
-    impl<'de> de::Visitor<'de> for Visitor {
+    impl de::Visitor<'_> for Visitor {
         type Value = PublicKey;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -114,7 +114,7 @@ where
 {
     struct Visitor;
 
-    impl<'de> de::Visitor<'de> for Visitor {
+    impl de::Visitor<'_> for Visitor {
         type Value = RsaPrivateKey;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -146,7 +146,7 @@ where
 {
     struct Visitor;
 
-    impl<'de> de::Visitor<'de> for Visitor {
+    impl de::Visitor<'_> for Visitor {
         type Value = RsaPublicKey;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {

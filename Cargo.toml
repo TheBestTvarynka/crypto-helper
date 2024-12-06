@@ -43,7 +43,7 @@ tracing = "0.1"
 hex = "0.4"
 gloo-timers = "0.3"
 serde = { version = "1.0", features = ["derive"] }
-serde_qs = "0.12"
+serde_qs = "0.13"
 serde_json = "1.0"
 base64 = "0.22"
 time = { version = "0.3", features = ["local-offset", "wasm-bindgen"] }
@@ -52,11 +52,11 @@ time = { version = "0.3", features = ["local-offset", "wasm-bindgen"] }
 picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", rev = "604a246" }
 picky = { version = "7.0.0-rc.8", default-features = false }
 md5 = "0.7"
-sha1 = "0.11.0-pre.3"
-hmac-sha256 = "1.1"
-hmac-sha512 = { version = "1.1", features = ["sha384"] }
+sha1 = "0.10"
+sha2 = "0.10.8"
+hmac = "0.12.1"
 rsa = "0.9"
-bcrypt = "0.15"
+bcrypt = "0.16"
 flate2 = { version = "1.0", features = ["zlib"] }
 rand = { version = "0.9.0-alpha.0", features = ["small_rng"] }
 rand_chacha = "0.9.0-alpha.0"
@@ -69,4 +69,4 @@ oid = { version = "0.2", default-features = false }
 paste = "1.0"
 
 # diff
-similar = { version = "2.4", features = ["serde"] }
+similar = { version = "2.6", features = ["serde"] }

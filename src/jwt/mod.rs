@@ -1,10 +1,11 @@
+#[macro_use]
+pub mod macros;
+
 #[allow(clippy::module_inception)]
 mod jwt;
 pub mod jwt_utils;
 mod jwte;
 pub mod signature;
-#[macro_use]
-mod macros;
 
 use std::str::FromStr;
 

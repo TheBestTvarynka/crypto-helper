@@ -1,8 +1,10 @@
+#[macro_use]
+pub mod macros;
+
 mod algorithm;
 mod computations;
 mod info;
 mod input;
-mod macros;
 mod output;
 
 pub use algorithm::Algorithm;
@@ -30,9 +32,27 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
             sha1.update(input);
             Ok(sha1.finalize().to_vec())
         }
-        Algorithm::Sha256(input) => Ok(hmac_sha256::Hash::hash(input).to_vec()),
-        Algorithm::Sha384(input) => Ok(hmac_sha512::sha384::Hash::hash(input).to_vec()),
-        Algorithm::Sha512(input) => Ok(hmac_sha512::Hash::hash(input).to_vec()),
+        Algorithm::Sha256(input) => Ok({
+            use sha2::Digest;
+
+            let mut hasher = sha2::Sha256::new();
+            hasher.update(input);
+            hasher.finalize().to_vec()
+        }),
+        Algorithm::Sha384(input) => Ok({
+            use sha2::Digest;
+
+            let mut hasher = sha2::Sha384::new();
+            hasher.update(input);
+            hasher.finalize().to_vec()
+        }),
+        Algorithm::Sha512(input) => Ok({
+            use sha2::Digest;
+
+            let mut hasher = sha2::Sha512::new();
+            hasher.update(input);
+            hasher.finalize().to_vec()
+        }),
         Algorithm::Aes128CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes128CtsHmacSha196.cipher(), input),
         Algorithm::Aes256CtsHmacSha196(input) => process_krb_cipher(CipherSuite::Aes256CtsHmacSha196.cipher(), input),
         Algorithm::HmacSha196Aes128(input) => process_krb_hmac(ChecksumSuite::HmacSha196Aes128.hasher(), input),

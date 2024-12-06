@@ -1,4 +1,3 @@
-#[macro_export]
 macro_rules! generate_algo_list_for_yew {
     (algo_list: $algo_list:expr, props: $props:expr) => {{
         let mut sorted_algo_list = $algo_list.to_vec();

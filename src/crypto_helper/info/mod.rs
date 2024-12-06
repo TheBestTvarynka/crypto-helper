@@ -7,7 +7,6 @@ use yew::{function_component, html, use_state, Callback, Html, Properties, Targe
 use super::algorithm::Algorithm;
 use crate::crypto_helper::algorithm::{COMPRESSION_ALGOS, ENCRYPTION_ALGOS, HASHING_ALGOS, HMAC_ALGOS};
 use crate::crypto_helper::info::algo_search::AlgoSearch;
-use crate::generate_algo_list_for_yew;
 
 #[derive(PartialEq, Properties)]
 pub struct InfoProps {
