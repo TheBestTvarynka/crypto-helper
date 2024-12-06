@@ -12,8 +12,8 @@ use rsa::rand_core::OsRng;
 use rsa::Pkcs1v15Encrypt;
 
 use super::algorithm::{
-    Argon2Action, Argon2Input, BcryptAction, BcryptInput, KrbInput, KrbInputData, KrbMode, RsaAction, RsaInput,
-    ZlibInput, ZlibMode,
+    Argon2Action, Argon2Input, BcryptAction, BcryptInput, HmacShaAction, HmacShaAlgorithm, HmacShaInput, KrbInput,
+    KrbInputData, KrbMode, RsaAction, RsaInput, ZlibInput, ZlibMode,
 };
 
 pub fn process_rsa(input: &RsaInput) -> Result<Vec<u8>, String> {
@@ -130,5 +130,126 @@ pub fn process_argon2(input: &Argon2Input) -> Result<Vec<u8>, String> {
                 Ok(vec![0])
             }
         }
+    }
+}
+
+pub fn process_hmac_sha(input: &HmacShaInput) -> Result<Vec<u8>, String> {
+    let HmacShaInput {
+        hash_alg,
+        key,
+        msg,
+        action,
+    } = input;
+
+    match &action {
+        HmacShaAction::Sign => match hash_alg {
+            HmacShaAlgorithm::Sha256 => {
+                if key.len() < 32 {
+                    return Err(format!(
+                        "hmac: invalid key length: expected at least 32 bytes but got {}",
+                        key.len()
+                    ));
+                }
+
+                Ok(sign_hmac!(
+                    hash_alg: sha2::Sha256,
+                    key: key,
+                    msg: msg,
+                ))
+            }
+            HmacShaAlgorithm::Sha384 => {
+                if key.len() < 48 {
+                    return Err(format!(
+                        "hmac: invalid key length: expected at least 48 bytes but got {}",
+                        key.len()
+                    ));
+                }
+
+                Ok(sign_hmac!(
+                    hash_alg: sha2::Sha384,
+                    key: key,
+                    msg: msg,
+                ))
+            }
+            HmacShaAlgorithm::Sha512 => {
+                if key.len() < 64 {
+                    return Err(format!(
+                        "hmac: invalid key length: expected at least 64 bytes but got {}",
+                        key.len()
+                    ));
+                }
+
+                Ok(sign_hmac!(
+                    hash_alg: sha2::Sha512,
+                    key: key,
+                    msg: msg,
+                ))
+            }
+        },
+        HmacShaAction::Verify(digest) => match hash_alg {
+            HmacShaAlgorithm::Sha256 => {
+                if key.len() < 32 {
+                    return Err(format!(
+                        "hmac: invalid key length: expected at least 32 bytes but got {}",
+                        key.len()
+                    ));
+                }
+
+                Ok(
+                    if verify_hmac!(
+                        hash_alg: sha2::Sha256,
+                        key: key,
+                        msg: msg,
+                        digest: digest.as_slice(),
+                    ) {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    },
+                )
+            }
+            HmacShaAlgorithm::Sha384 => {
+                if key.len() < 48 {
+                    return Err(format!(
+                        "hmac: invalid key length: expected at least 48 bytes but got {}",
+                        key.len()
+                    ));
+                }
+
+                Ok(
+                    if verify_hmac!(
+                        hash_alg: sha2::Sha384,
+                        key: key,
+                        msg: msg,
+                        digest: digest.as_slice(),
+                    ) {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    },
+                )
+            }
+            HmacShaAlgorithm::Sha512 => {
+                if key.len() < 64 {
+                    return Err(format!(
+                        "hmac: invalid key length: expected at least 64 bytes but got {}",
+                        key.len()
+                    ));
+                }
+
+                Ok(
+                    if verify_hmac!(
+                        hash_alg: sha2::Sha512,
+                        key: key,
+                        msg: msg,
+                        digest: digest.as_slice(),
+                    ) {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    },
+                )
+            }
+        },
     }
 }

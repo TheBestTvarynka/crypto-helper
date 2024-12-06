@@ -1,5 +1,6 @@
 mod argon2;
 mod bcrypt;
+mod hmac_sha;
 mod krb;
 mod rsa;
 mod zlib;
@@ -9,6 +10,7 @@ use yew::{function_component, html, Callback, Html, Properties, UseStateSetter};
 
 use self::argon2::build_argon2_input;
 use self::bcrypt::build_bcrypt_input;
+use self::hmac_sha::build_hmac_sha_input;
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
 use self::zlib::build_zlib_input;
@@ -98,6 +100,10 @@ fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm
         Algorithm::Argon2(input) => build_argon2_input(
             input.clone(),
             Callback::from(move |input| setter.set(Algorithm::Argon2(input))),
+        ),
+        Algorithm::HmacSha(input) => build_hmac_sha_input(
+            input.clone(),
+            Callback::from(move |input| setter.set(Algorithm::HmacSha(input))),
         ),
     }
 }

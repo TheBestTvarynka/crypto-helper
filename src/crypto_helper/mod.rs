@@ -18,14 +18,16 @@ use yew::{function_component, html, use_effect_with, use_state, Callback, Html};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
 
-use self::computations::{process_argon2, process_krb_cipher, process_krb_hmac, process_rsa, process_zlib};
+use self::computations::{
+    process_argon2, process_hmac_sha, process_krb_cipher, process_krb_hmac, process_rsa, process_zlib,
+};
 use crate::crypto_helper::computations::process_bcrypt;
 use crate::url_query_params::generate_crypto_helper_link;
 
 const CRYPTO_HELPER_LOCAL_STORAGE_KEY: &str = "CRYPTO_HELPER_DATA";
 
-fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
-    match algrithm {
+fn convert(algorithm: &Algorithm) -> Result<Vec<u8>, String> {
+    match algorithm {
         Algorithm::Md5(input) => Ok(md5::compute(input).to_vec()),
         Algorithm::Sha1(input) => {
             let mut sha1 = Sha1::new();
@@ -61,6 +63,7 @@ fn convert(algrithm: &Algorithm) -> Result<Vec<u8>, String> {
         Algorithm::Bcrypt(input) => process_bcrypt(input),
         Algorithm::Zlib(input) => process_zlib(input),
         Algorithm::Argon2(input) => process_argon2(input),
+        Algorithm::HmacSha(input) => process_hmac_sha(input),
     }
 }
 
