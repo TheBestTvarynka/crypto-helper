@@ -1,4 +1,3 @@
-#[macro_export]
 macro_rules! check_symmetric_key {
     (key: $key:expr, len_hint: $len_hint:expr, name: $name:expr, notificator: $notificator:expr) => {{
         if $key.is_empty() {
@@ -25,7 +24,6 @@ macro_rules! check_symmetric_key {
     }};
 }
 
-#[macro_export]
 macro_rules! check_asymmetric_key {
     (
         key: $key:expr,
@@ -51,7 +49,6 @@ macro_rules! check_asymmetric_key {
     }};
 }
 
-#[macro_export]
 macro_rules! verify {
     (
         signature_algo: $signature_algo:expr,
@@ -75,7 +72,6 @@ macro_rules! verify {
     }};
 }
 
-#[macro_export]
 macro_rules! sign {
     (
         signature_algo: $signature_algo:expr,
@@ -101,7 +97,6 @@ macro_rules! sign {
     }};
 }
 
-#[macro_export]
 macro_rules! generate_placeholder {
     (
         signature: $signature:expr,
