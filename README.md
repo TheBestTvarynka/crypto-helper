@@ -14,10 +14,9 @@ Table of content:
   - [Meta](#meta)
   - [Contributing](#contributing)
 
-![](/public/img/crypto-helper.png)
-![](/public/img/jwt.png)
-![](/public/img/asn1.png)
-![](/public/img/diff.png)
+| ![](/public/img/crypto-helper.png) | ![](/public/img/jwt.png) |
+|-|-|
+| ![](/public/img/asn1.png) | ![](/public/img/diff.png) |
 
 The crypto-helper is a web app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data, debug JWT tokens, parse ASN1 structures, compute diffs, and more.
 
@@ -30,6 +29,7 @@ All computations are performed on the client side. _This tool never sends the da
 * `Argon2`
 * `BCRYPT`
 * `SHA1`/`SHA256`/`SHA384`/`SHA512`
+* `HMAC-SHA256`/`HMAC-SHA384`/`HMAC-SHA512`
 * Kerberos ciphers: `AES128-CTS-HMAC-SHA1-96`/`AES256-CTS-HMAC-SHA1-96`
 * Kerberos HMAC: `HMAC-SHA1-96-AES128`/`HMAC-SHA1-96-AES256`
 * `RSA`
