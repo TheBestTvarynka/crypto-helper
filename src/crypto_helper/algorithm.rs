@@ -19,8 +19,9 @@ pub const SHA384: &str = "SHA384";
 pub const BCRYPT: &str = "BCRYPT";
 pub const ZLIB: &str = "ZLIB";
 pub const ARGON2: &str = "ARGON2";
+pub const HMAC_SHA: &str = "HMAC-SHA";
 
-pub const SUPPORTED_ALGORITHMS: [&str; 13] = [
+pub const SUPPORTED_ALGORITHMS: [&str; 14] = [
     MD5,
     SHA1,
     SHA256,
@@ -34,13 +35,16 @@ pub const SUPPORTED_ALGORITHMS: [&str; 13] = [
     BCRYPT,
     ZLIB,
     ARGON2,
+    HMAC_SHA,
 ];
 
 pub const HASHING_ALGOS: [&str; 7] = [MD5, SHA1, SHA256, SHA384, SHA512, BCRYPT, ARGON2];
 
 pub const ENCRYPTION_ALGOS: [&str; 3] = [AES128_CTS_HMAC_SHA1_96, AES256_CTS_HMAC_SHA1_96, RSA];
 
-pub const HMAC_ALGOS: [&str; 2] = [HMAC_SHA1_96_AES128, HMAC_SHA1_96_AES256];
+pub const HMAC_ALGOS: [&str; 3] = [HMAC_SHA1_96_AES128, HMAC_SHA1_96_AES256, HMAC_SHA];
+
+pub const HMAC_HASH_ALGOS: [&str; 3] = [SHA256, SHA384, SHA512];
 
 pub const COMPRESSION_ALGOS: [&str; 1] = [ZLIB];
 
@@ -87,10 +91,7 @@ pub enum KrbMode {
 
 impl From<KrbMode> for bool {
     fn from(mode: KrbMode) -> Self {
-        match mode {
-            KrbMode::Encrypt => false,
-            KrbMode::Decrypt => true,
-        }
+        matches!(mode, KrbMode::Decrypt)
     }
 }
 
@@ -531,6 +532,87 @@ impl From<&Argon2Action> for bool {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Default)]
+pub enum HmacShaAction {
+    #[default]
+    Sign,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    Verify(Vec<u8>),
+}
+
+impl From<bool> for HmacShaAction {
+    fn from(value: bool) -> Self {
+        if value {
+            Self::Verify(Vec::new())
+        } else {
+            Self::Sign
+        }
+    }
+}
+
+impl From<&HmacShaAction> for bool {
+    fn from(value: &HmacShaAction) -> Self {
+        matches!(value, HmacShaAction::Verify(_))
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub enum HmacShaAlgorithm {
+    Sha256,
+    Sha384,
+    Sha512,
+}
+
+impl TryFrom<&str> for HmacShaAlgorithm {
+    type Error = String;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        Ok(match value {
+            SHA256 => Self::Sha256,
+            SHA384 => Self::Sha384,
+            SHA512 => Self::Sha512,
+            _ => return Err(format!("hmac: unsupported hash algorithm: {}", value)),
+        })
+    }
+}
+
+impl AsRef<str> for HmacShaAlgorithm {
+    fn as_ref(&self) -> &str {
+        match self {
+            HmacShaAlgorithm::Sha256 => SHA256,
+            HmacShaAlgorithm::Sha384 => SHA384,
+            HmacShaAlgorithm::Sha512 => SHA512,
+        }
+    }
+}
+
+impl PartialEq<&str> for HmacShaAlgorithm {
+    fn eq(&self, other: &&str) -> bool {
+        self.as_ref() == *other
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct HmacShaInput {
+    pub hash_alg: HmacShaAlgorithm,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub key: Vec<u8>,
+    #[serde(serialize_with = "serialize_bytes", deserialize_with = "deserialize_bytes")]
+    pub msg: Vec<u8>,
+    pub action: HmacShaAction,
+}
+
+impl Default for HmacShaInput {
+    fn default() -> Self {
+        Self {
+            hash_alg: HmacShaAlgorithm::Sha256,
+            key: Default::default(),
+            msg: Default::default(),
+            action: Default::default(),
+        }
+    }
+}
+
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Algorithm {
@@ -552,6 +634,7 @@ pub enum Algorithm {
     Bcrypt(BcryptInput),
     Zlib(ZlibInput),
     Argon2(Argon2Input),
+    HmacSha(HmacShaInput),
 }
 
 impl TryFrom<&str> for Algorithm {
@@ -584,6 +667,8 @@ impl TryFrom<&str> for Algorithm {
             return Ok(Algorithm::Zlib(Default::default()));
         } else if value == ARGON2 {
             return Ok(Algorithm::Argon2(Default::default()));
+        } else if value == HMAC_SHA {
+            return Ok(Algorithm::HmacSha(Default::default()));
         }
 
         Err(format!(
@@ -609,6 +694,7 @@ impl From<&Algorithm> for &str {
             Algorithm::Bcrypt(_) => BCRYPT,
             Algorithm::Zlib(_) => ZLIB,
             Algorithm::Argon2(_) => ARGON2,
+            Algorithm::HmacSha(_) => HMAC_SHA,
         }
     }
 }
@@ -623,6 +709,6 @@ impl PartialEq<&str> for &Algorithm {
 
 impl Default for Algorithm {
     fn default() -> Self {
-        Algorithm::Zlib(Default::default())
+        Algorithm::HmacSha(Default::default())
     }
 }

@@ -29,6 +29,7 @@ fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification:
         ),
         Algorithm::Zlib(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
         Algorithm::Argon2(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
+        Algorithm::HmacSha(_) => build_simple_output(output.into(), BytesFormat::Hex, add_notification),
     }
 }
 
