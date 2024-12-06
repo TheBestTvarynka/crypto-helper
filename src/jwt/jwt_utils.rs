@@ -1,6 +1,7 @@
 use base64::engine::general_purpose::STANDARD;
 use base64::engine::GeneralPurpose;
 use base64::Engine;
+use hmac::{Hmac, Mac};
 use picky::hash::HashAlgorithm;
 use picky::key::{PrivateKey, PublicKey};
 use picky::signature::SignatureAlgorithm;
@@ -129,7 +130,10 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+            let mut mac = Hmac::<sha2::Sha256>::new_from_slice(key).expect("hmac-sha256 key should be checked");
+            mac.update(data_to_sign.as_bytes());
+
+            Some(mac.finalize().into_bytes().to_vec())
         }
         JwtSignatureAlgorithm::Hs384(key) => {
             check_symmetric_key!(
@@ -139,7 +143,10 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+            let mut mac = Hmac::<sha2::Sha384>::new_from_slice(key).expect("hmac-sha384 key should be checked");
+            mac.update(data_to_sign.as_bytes());
+
+            Some(mac.finalize().into_bytes().to_vec())
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             check_symmetric_key!(
@@ -149,7 +156,10 @@ fn calculate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) ->
                 notificator: spawn_notification
             );
 
-            Some(hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec())
+            let mut mac = Hmac::<sha2::Sha512>::new_from_slice(key).expect("hmac-sha512 key should be checked");
+            mac.update(data_to_sign.as_bytes());
+
+            Some(mac.finalize().into_bytes().to_vec())
         }
         JwtSignatureAlgorithm::Rs256(key) => {
             let private_key = check_asymmetric_key!(
@@ -281,7 +291,10 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha256::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+            let mut mac = Hmac::<sha2::Sha256>::new_from_slice(key).expect("hmac-sha256 key should be checked");
+            mac.update(data_to_sign.as_bytes());
+
+            mac.finalize().into_bytes().to_vec()
         }
         JwtSignatureAlgorithm::Hs384(key) => {
             check_symmetric_key!(
@@ -291,7 +304,10 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha512::sha384::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+            let mut mac = Hmac::<sha2::Sha384>::new_from_slice(key).expect("hmac-sha384 key should be checked");
+            mac.update(data_to_sign.as_bytes());
+
+            mac.finalize().into_bytes().to_vec()
         }
         JwtSignatureAlgorithm::Hs512(key) => {
             check_symmetric_key!(
@@ -301,7 +317,10 @@ fn validate_signature(jwt: &Jwt, spawn_notification: Callback<Notification>) -> 
                 notificator: spawn_notification
             );
 
-            hmac_sha512::HMAC::mac(data_to_sign.as_bytes(), key).to_vec()
+            let mut mac = Hmac::<sha2::Sha384>::new_from_slice(key).expect("hmac-sha512 key should be checked");
+            mac.update(data_to_sign.as_bytes());
+
+            mac.finalize().into_bytes().to_vec()
         }
         JwtSignatureAlgorithm::Rs256(key) => {
             let public_key = check_asymmetric_key!(

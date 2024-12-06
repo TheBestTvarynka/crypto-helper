@@ -53,8 +53,6 @@ picky-krb = { git = "https://github.com/TheBestTravynka/picky-rs.git", rev = "60
 picky = { version = "7.0.0-rc.8", default-features = false }
 md5 = "0.7"
 sha1 = "0.11.0-pre.3"
-hmac-sha256 = "1.1"
-hmac-sha512 = { version = "1.1", features = ["sha384"] }
 rsa = "0.9"
 bcrypt = "0.15"
 flate2 = { version = "1.0", features = ["zlib"] }
@@ -70,3 +68,5 @@ paste = "1.0"
 
 # diff
 similar = { version = "2.4", features = ["serde"] }
+sha2 = "0.10.8"
+hmac = "0.12.1"
