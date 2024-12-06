@@ -412,7 +412,7 @@ pub enum Argon2Error<'a> {
     InvalidVariant(&'a str),
 }
 
-impl<'a> std::fmt::Display for Argon2Error<'a> {
+impl std::fmt::Display for Argon2Error<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::InvalidVersion(version) => write!(f, "InvalidVersion({version})"),
@@ -420,7 +420,7 @@ impl<'a> std::fmt::Display for Argon2Error<'a> {
         }
     }
 }
-impl<'a> std::error::Error for Argon2Error<'a> {}
+impl std::error::Error for Argon2Error<'_> {}
 
 impl Argon2Input {
     pub fn with_variant(&self, variant: Argon2Variant) -> Self {
