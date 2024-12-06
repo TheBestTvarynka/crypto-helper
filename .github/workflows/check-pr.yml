@@ -28,3 +28,9 @@ jobs:
 
     - name: 'Tests'
       run: 'cargo test'
+
+    - name: 'Add WASM target'
+      run: 'rustup target add wasm32-unknown-unknown'
+
+    - name: 'Build WASM'
+      run: 'cargo build --target wasm32-unknown-unknown'
