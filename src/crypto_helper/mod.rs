@@ -11,7 +11,6 @@ use self::computations::{
     process_argon2, process_hmac_sha, process_krb_cipher, process_krb_hmac, process_rsa, process_zlib,
 };
 use crate::url_query_params::generate_crypto_helper_link;
-use crate::Route;
 use crate::{crypto_helper::computations::process_bcrypt, url_query_params::Asn1};
 pub use algorithm::Algorithm;
 use info::Info;
@@ -23,7 +22,6 @@ use web_sys::KeyboardEvent;
 use yew::{function_component, html, use_effect_with, use_state, Callback, Html};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
 use yew_notifications::{use_notification, Notification, NotificationType};
-use yew_router::prelude::use_navigator;
 
 const CRYPTO_HELPER_LOCAL_STORAGE_KEY: &str = "CRYPTO_HELPER_DATA";
 
@@ -74,7 +72,6 @@ pub fn crypto_helper() -> Html {
 
     let algorithm = use_state(Algorithm::default);
     let output = use_state(Vec::new);
-    let navigator = use_navigator().expect("Navigator not available");
 
     let output_setter = output.setter();
     let algorithm_data = (*algorithm).clone();
@@ -102,6 +99,9 @@ pub fn crypto_helper() -> Html {
     let notification_manager_clone = notifications.clone();
     use_effect_with([], move |_: &[(); 0]| {
         let query = &location.search;
+
+        // First, we try to load data from the url.
+        // question mark + one any other char
         if query.len() >= 2 {
             match serde_qs::from_str(&query[1..]) {
                 Ok(algorithm) => {
@@ -167,9 +167,12 @@ pub fn crypto_helper() -> Html {
             let query = Asn1 {
                 asn1: output_data.clone(),
             };
-            navigator
-                .push_with_query(&Route::Asn1Parser, &query)
-                .expect("Failed to navigate");
+            let query_string = serde_qs::to_string(&query).expect("Failed to serialize query");
+            let url = format!("/asn1?{}", query_string);
+            web_sys::window()
+                .expect("no global `window` exists")
+                .open_with_url(&url)
+                .expect("Failed to open new tab");
         }
     });
 

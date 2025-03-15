@@ -124,9 +124,8 @@ article {
 }
 
 .button-with-icon {
-    font-size: 0.7em;
+    font-size: 0.8em;
 
-    min-width: 3em;
     height: 2em;
     padding: 0.1em;
     display: flex;
@@ -139,8 +138,6 @@ article {
     border-radius: 0.2em;
     border: 1px solid transparent;
     transition: 0.3s;
-
-    font-size: 0.8em;
 }
 
 .button-with-icon > img {
