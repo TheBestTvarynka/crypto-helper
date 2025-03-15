@@ -1,3 +1,5 @@
+use std::fmt::Write;
+
 use asn1_parser::{
     OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedNumericString, OwnedOctetString,
     OwnedPrintableString, OwnedRawAsn1EntityData, OwnedUtf8String, OwnedVisibleString,
@@ -68,15 +70,20 @@ pub struct BitStringNodeProps {
 
 #[function_component(BitStringNode)]
 pub fn bit_string(props: &BitStringNodeProps) -> Html {
-    let bits = props.node.raw_bits()[1..]
-        .iter()
-        .map(|byte| format!("{:08b}", byte))
-        .fold(String::new(), |mut ac, new| {
-            ac.push_str(&new);
-            ac
-        });
+    let raw_bits = props.node.raw_bits();
     let bits_amount = props.node.bits_amount();
-    let bits = &bits[0..bits_amount];
+
+    let bits = if raw_bits.len() > 1 {
+        let mut bits = String::with_capacity((raw_bits.len() - 1) * 8);
+        for byte in &raw_bits[1..] {
+            write!(bits, "{:08b}", byte).unwrap();
+        }
+        bits
+    } else {
+        String::new()
+    };
+
+    let display_bits = &bits[0..bits_amount.min(bits.len())];
 
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
@@ -99,7 +106,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
                 <div class="terminal-asn1-node">
                     <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BitString")} />
                     <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
-                    <span class="asn-simple-value">{bits}</span>
+                    <span class="asn-simple-value">{display_bits}</span>
                 </div>
             }
         }
