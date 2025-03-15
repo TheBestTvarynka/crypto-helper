@@ -124,13 +124,12 @@ article {
 }
 
 .button-with-icon {
-    font-size: 0.7em;
+    font-size: 0.8em;
 
-    width: 3em;
     height: 2em;
     padding: 0.1em;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
 
@@ -141,8 +140,9 @@ article {
     transition: 0.3s;
 }
 
-.button-with-icon>img {
-    width: 90%;
+.button-with-icon > img {
+    width: 2em;
+    height: 2em;
 }
 
 .button-with-icon:hover {

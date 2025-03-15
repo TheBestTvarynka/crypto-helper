@@ -22,7 +22,7 @@ use self::computations::{
     process_argon2, process_hmac_sha, process_krb_cipher, process_krb_hmac, process_rsa, process_zlib,
 };
 use crate::crypto_helper::computations::process_bcrypt;
-use crate::url_query_params::generate_crypto_helper_link;
+use crate::url_query_params::{generate_crypto_helper_link, Asn1};
 
 const CRYPTO_HELPER_LOCAL_STORAGE_KEY: &str = "CRYPTO_HELPER_DATA";
 
@@ -97,6 +97,7 @@ pub fn crypto_helper() -> Html {
     let location = use_location();
     let notifications = notification_manager.clone();
     let local_storage = use_local_storage::<String>(CRYPTO_HELPER_LOCAL_STORAGE_KEY.to_owned());
+    let notification_manager_clone = notifications.clone();
     use_effect_with([], move |_: &[(); 0]| {
         let query = &location.search;
 
@@ -107,7 +108,7 @@ pub fn crypto_helper() -> Html {
                 Ok(algorithm) => {
                     algorithm_setter.set(algorithm);
                 }
-                Err(err) => notifications.spawn(Notification::new(
+                Err(err) => notification_manager_clone.spawn(Notification::new(
                     NotificationType::Error,
                     "Can not load data from url",
                     err.to_string(),
@@ -115,7 +116,6 @@ pub fn crypto_helper() -> Html {
                 )),
             }
         } else {
-            // Otherwise, we try to find a data in the local storage.
             let raw_data = if let Some(raw_data) = (*local_storage).as_ref() {
                 raw_data.as_str()
             } else {
@@ -125,7 +125,7 @@ pub fn crypto_helper() -> Html {
                 Ok(algorithm) => {
                     algorithm_setter.set(algorithm);
                 }
-                Err(err) => notifications.spawn(Notification::new(
+                Err(err) => notification_manager_clone.spawn(Notification::new(
                     NotificationType::Error,
                     "Can not load data from the local storage",
                     err.to_string(),
@@ -144,13 +144,37 @@ pub fn crypto_helper() -> Html {
 
     let algorithm_data = (*algorithm).clone();
     let clipboard = use_clipboard();
+
+    let notification_manager_clone = notifications.clone();
     let share_by_link = Callback::from(move |_| {
         clipboard.write_text(generate_crypto_helper_link(&algorithm_data));
-
-        notification_manager.spawn(Notification::from_description_and_type(
+        notification_manager_clone.spawn(Notification::from_description_and_type(
             NotificationType::Info,
             "link copied",
         ));
+    });
+
+    let output_data = (*output).clone();
+    let notification_manager_clone = notifications.clone();
+    let decode_as_asn1 = Callback::from(move |_| {
+        if output_data.is_empty() {
+            notification_manager_clone.spawn(Notification::new(
+                NotificationType::Warn,
+                "No output to decode",
+                "Please perform a computation first.",
+                Notification::NOTIFICATION_LIFETIME,
+            ));
+        } else {
+            let query = Asn1 {
+                asn1: output_data.clone(),
+            };
+            let query_string = serde_qs::to_string(&query).expect("Failed to serialize query");
+            let url = format!("/asn1?{}", query_string);
+            web_sys::window()
+                .expect("no global `window` exists")
+                .open_with_url(&url)
+                .expect("Failed to open new tab");
+        }
     });
 
     let onkeydown = Callback::from(move |event: KeyboardEvent| {
@@ -171,6 +195,10 @@ pub fn crypto_helper() -> Html {
             <div class="horizontal">
                 <button class="button-with-icon" onclick={share_by_link}>
                     <img src="/public/img/icons/share_by_link.png" />
+                </button>
+                <button class="button-with-icon" onclick={decode_as_asn1}>
+                    <img src="/public/img/icons/linking.png" />
+                    {"ans1"}
                 </button>
             </div>
         </article>
