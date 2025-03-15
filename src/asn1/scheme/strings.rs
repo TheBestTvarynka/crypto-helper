@@ -1,13 +1,15 @@
-use crate::asn1::node_options::NodeOptions;
-use crate::asn1::scheme::build_asn1_schema;
-use crate::asn1::HighlightAction;
-use crate::common::RcSlice;
+use std::fmt::Write;
+
 use asn1_parser::{
     OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedNumericString, OwnedOctetString,
     OwnedPrintableString, OwnedRawAsn1EntityData, OwnedUtf8String, OwnedVisibleString,
 };
-use std::fmt::Write;
 use yew::{function_component, html, Callback, Html, Properties};
+
+use crate::asn1::node_options::NodeOptions;
+use crate::asn1::scheme::build_asn1_schema;
+use crate::asn1::HighlightAction;
+use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct OctetStringNodeProps {
@@ -81,11 +83,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
         String::new()
     };
 
-    let display_bits = if bits.len() >= bits_amount {
-        &bits[0..bits_amount]
-    } else {
-        &bits[..]
-    };
+    let display_bits = &bits[0..bits_amount.min(bits.len())];
 
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
