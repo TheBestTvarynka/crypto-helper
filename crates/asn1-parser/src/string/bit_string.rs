@@ -32,10 +32,6 @@ impl BitString<'_> {
     }
 
     pub fn bits_amount(&self) -> usize {
-        if self.octets.is_empty() {
-            return 0;
-        }
-
         let data_len = self.octets.len() - 1;
         let padding = usize::from(self.octets[0]);
 
