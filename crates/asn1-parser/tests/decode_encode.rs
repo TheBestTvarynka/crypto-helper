@@ -1,6 +1,6 @@
 use std::sync::Once;
 
-use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Type, MetaInfo, ObjectIdentifier, Taggable};
+use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Type, BitString, MetaInfo, ObjectIdentifier, Tag, Taggable};
 use prop_strategies::any_asn1_type;
 use proptest::proptest;
 
@@ -304,4 +304,53 @@ fn test_2() {
 
     let asn1 = Asn1::decode_buff(raw).unwrap();
     println!("{:?}", asn1);
+}
+
+#[test]
+fn empty_bitstring() {
+    init_logging();
+
+    let raw = [0x03, 0x01, 0x00];
+    let asn1 = Asn1::decode_buff(&raw).expect("Failed to decode empty BitString");
+
+    assert_eq!(asn1.inner_asn1().tag(), Tag::from(3), "Tag should be 0x03");
+
+    if let Asn1Type::BitString(bitstring) = asn1.inner_asn1() {
+        assert_eq!(bitstring.raw_bits(), &[0], "Raw bits should be [0]");
+        assert_eq!(bitstring.bits_amount(), 0, "Bits amount should be 0");
+        assert!(bitstring.inner().is_none(), "Inner should be None");
+    } else {
+        panic!("Expected BitString type");
+    }
+
+    // Test encoding back
+    let mut encoded = vec![0; asn1.needed_buf_size()];
+    asn1.encode_buff(&mut encoded)
+        .expect("Failed to encode empty BitString");
+    assert_eq!(encoded, raw, "Encoded bytes should match original");
+
+    // Test creating an empty BitString directly
+    let empty_bits = BitString::from_raw_vec(0, vec![]).expect("Failed to create empty BitString");
+    assert_eq!(empty_bits.raw_bits(), &[0], "Created raw bits should be [0]");
+    assert_eq!(empty_bits.bits_amount(), 0, "Created bits amount should be 0");
+    assert!(empty_bits.inner().is_none(), "Created inner should be None");
+
+    // Test invalid decoding: BitString with length 0 (invalid in DER)
+    let invalid_raw = [0x03, 0x00];
+    assert!(
+        Asn1::decode_buff(&invalid_raw).is_err(),
+        "Decoding length 0 should fail"
+    );
+
+    // Test invalid creation: too many bits
+    assert!(
+        BitString::from_raw_vec(1, vec![]).is_err(),
+        "Creating with too many bits should fail"
+    );
+
+    // Test invalid creation: too many unused bits
+    assert!(
+        BitString::from_raw_vec(0, vec![0]).is_err(),
+        "Creating with excess unused bits should fail"
+    );
 }

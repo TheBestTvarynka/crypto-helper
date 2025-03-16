@@ -32,7 +32,10 @@ impl BitString<'_> {
     }
 
     pub fn bits_amount(&self) -> usize {
-        (self.octets.as_ref().len() - 1) * 8 - usize::from(self.octets.as_ref()[0])
+        let data_len = self.octets.len() - 1;
+        let padding = usize::from(self.octets[0]);
+
+        (data_len * 8).saturating_sub(padding)
     }
 
     /// Creates a new [BitString] from amount of bits and actual bits buffer
@@ -100,7 +103,12 @@ impl<'data> Asn1ValueDecoder<'data> for BitString<'data> {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let data = reader.read_remaining();
 
-        let inner = if !data.is_empty() {
+        if data.is_empty() {
+            return Err(Error::from("BitString must have at least one byte (unused bits)"));
+        }
+
+        let inner = if data.len() > 1 {
+            // Check len > 1 since first byte is unused bits
             let mut inner_reader = Reader::new(&data[1..]);
             inner_reader.set_next_id(reader.next_id());
             inner_reader.set_offset(reader.full_offset() - data.len());
