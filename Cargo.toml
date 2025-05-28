@@ -66,7 +66,6 @@ password-hash = "0.5"
 # asn1
 asn1-parser = { path = "./crates/asn1-parser", features = ["std"] }
 oid = { version = "0.2", default-features = false }
-oid-registry = { version = "0.8", features = [ "crypto" ] }
 paste = "1.0"
 
 # diff
