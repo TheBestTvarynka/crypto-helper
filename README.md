@@ -6,7 +6,15 @@
 
 Visit this tool at [crypto.qkation.com](https://crypto.qkation.com).
 
-Table of content:
+### Project status
+
+#### Is it actively developed? No.
+I have implemented most of the features I needed. I still have a few improvements in mind, but I do not have the time/energy to implement them.
+
+#### Is it maintained? Yes.
+All dependencies are regularly updated. Discovered bugs will be fixed. External PRs will be accepted.
+
+### Table of content:
 
 - [crypto-helper](#crypto-helper)
   - [Features](#features)
