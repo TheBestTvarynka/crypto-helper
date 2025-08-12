@@ -102,7 +102,7 @@ dependencies = [
  "base64ct",
  "blake2",
  "cpufeatures",
- "password-hash 0.5.0",
+ "password-hash",
 ]
 
 [[package]]
@@ -149,12 +149,6 @@ checksum = "4c7f02d4ea65f2c1853089ffd8d2787bdbc63de2f0d29dedbcf8ccdfa0ccd4cf"
 
 [[package]]
 name = "base64"
-version = "0.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
-
-[[package]]
-name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
@@ -167,13 +161,13 @@ checksum = "55248b47b0caf0546f7988906588779981c43bb1bc9d0c44087278f80cdb44ba"
 
 [[package]]
 name = "bcrypt"
-version = "0.15.1"
+version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e65938ed058ef47d92cf8b346cc76ef48984572ade631927e9937b5ffc7662c7"
+checksum = "92758ad6077e4c76a6cadbce5005f666df70d4f13b19976b1a8062eef880040f"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "blowfish",
- "getrandom 0.2.16",
+ "getrandom 0.3.3",
  "subtle",
  "zeroize",
 ]
@@ -360,9 +354,9 @@ dependencies = [
 
 [[package]]
 name = "crypto"
-version = "0.4.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17d88231face754cdb045c1b65912a0f4ff78ca24bf371e30a4a8cfa993b3897"
+checksum = "bf1e6e5492f8f0830c37f301f6349e0dac8b2466e4fe89eef90e9eef906cd046"
 dependencies = [
  "crypto-common 0.1.6",
 ]
@@ -404,16 +398,18 @@ version = "0.15.0"
 dependencies = [
  "argon2",
  "asn1-parser",
- "base64 0.22.1",
+ "base64",
  "bcrypt",
  "flate2",
+ "getrandom 0.2.16",
+ "getrandom 0.3.3",
  "gloo-timers 0.3.0",
  "hex",
  "hmac",
  "js-sys",
  "md5",
  "oid",
- "password-hash 0.5.0",
+ "password-hash",
  "paste",
  "picky",
  "picky-krb",
@@ -785,9 +781,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "26145e563e54f2cadc477553f1ec5ee650b00862f0a58bcd12cbdc5f0ea2d2f4"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "r-efi",
  "wasi 0.14.2+wasi-0.2.4",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1443,9 +1441,9 @@ dependencies = [
 
 [[package]]
 name = "md5"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "490cc448043f947bae3cbee9c203358d62dbee0db12107a74be5c30ccfd09771"
+checksum = "ae960838283323069879657ca3de837e9f7bbb4c7bf6ea7f1b290d5e9476d2e0"
 
 [[package]]
 name = "memchr"
@@ -1632,17 +1630,6 @@ dependencies = [
 
 [[package]]
 name = "password-hash"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7676374caaee8a325c9e7a2ae557f216c5563a171d6997b0ef8a65af35147700"
-dependencies = [
- "base64ct",
- "rand_core 0.6.4",
- "subtle",
-]
-
-[[package]]
-name = "password-hash"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "346f04948ba92c43e8469c1ee6736c7563d71012b17d40745260fe106aac2166"
@@ -1660,15 +1647,13 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pbkdf2"
-version = "0.11.0"
+version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83a0692ec44e4cf1ef28ca317f14f8f07da2d95ec3fa01f86e4467b725e60917"
+checksum = "f8ed6a7761f76e3b9f92dfb0a60a6a6477c61024b775147ff0973a02653abaf2"
 dependencies = [
  "digest 0.10.7",
  "hmac",
- "password-hash 0.4.2",
- "sha-1",
- "sha2",
+ "sha1 0.10.6",
 ]
 
 [[package]]
@@ -1692,7 +1677,7 @@ version = "7.0.0-rc.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ed0f61c4ac11274678ad0da95386c6216d6ff898ef98e54aac23d4a853c324c"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "digest 0.10.7",
  "ed25519-dalek",
  "hex",
@@ -1701,9 +1686,9 @@ dependencies = [
  "p256",
  "p384",
  "p521",
- "picky-asn1 0.10.1",
- "picky-asn1-der 0.5.2",
- "picky-asn1-x509 0.14.5",
+ "picky-asn1",
+ "picky-asn1-der",
+ "picky-asn1-x509",
  "rand 0.8.5",
  "rand_core 0.6.4",
  "rsa",
@@ -1714,16 +1699,6 @@ dependencies = [
  "thiserror",
  "x25519-dalek",
  "zeroize",
-]
-
-[[package]]
-name = "picky-asn1"
-version = "0.7.0"
-source = "git+https://github.com/TheBestTravynka/picky-rs.git?rev=604a246#604a2461571ae5c3371a4b34691fa0c4fea091b4"
-dependencies = [
- "oid",
- "serde",
- "serde_bytes",
 ]
 
 [[package]]
@@ -1740,35 +1715,13 @@ dependencies = [
 
 [[package]]
 name = "picky-asn1-der"
-version = "0.4.0"
-source = "git+https://github.com/TheBestTravynka/picky-rs.git?rev=604a246#604a2461571ae5c3371a4b34691fa0c4fea091b4"
-dependencies = [
- "picky-asn1 0.7.0",
- "serde",
- "serde_bytes",
-]
-
-[[package]]
-name = "picky-asn1-der"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9dccb53c26f70c082e008818f524bd45d057069517b047bd0c0ee062d6d7d7f2"
 dependencies = [
- "picky-asn1 0.10.1",
+ "picky-asn1",
  "serde",
  "serde_bytes",
-]
-
-[[package]]
-name = "picky-asn1-x509"
-version = "0.9.0"
-source = "git+https://github.com/TheBestTravynka/picky-rs.git?rev=604a246#604a2461571ae5c3371a4b34691fa0c4fea091b4"
-dependencies = [
- "base64 0.13.1",
- "oid",
- "picky-asn1 0.7.0",
- "picky-asn1-der 0.4.0",
- "serde",
 ]
 
 [[package]]
@@ -1777,19 +1730,20 @@ version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5444990fc9e53de47353c95e6521a5f669676da986a10482ff3708bdaa1a2a4b"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "num-bigint-dig",
  "oid",
- "picky-asn1 0.10.1",
- "picky-asn1-der 0.5.2",
+ "picky-asn1",
+ "picky-asn1-der",
  "serde",
  "zeroize",
 ]
 
 [[package]]
 name = "picky-krb"
-version = "0.5.0"
-source = "git+https://github.com/TheBestTravynka/picky-rs.git?rev=604a246#604a2461571ae5c3371a4b34691fa0c4fea091b4"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b45ffe5f2122cdda5e9059ab837a65ba1b77729db43fc1500f2fce6b27070eab"
 dependencies = [
  "aes",
  "byteorder",
@@ -1800,9 +1754,9 @@ dependencies = [
  "num-bigint-dig",
  "oid",
  "pbkdf2",
- "picky-asn1 0.7.0",
- "picky-asn1-der 0.4.0",
- "picky-asn1-x509 0.9.0",
+ "picky-asn1",
+ "picky-asn1-der",
+ "picky-asn1-x509",
  "rand 0.8.5",
  "serde",
  "sha1 0.10.6",
@@ -2343,17 +2297,6 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "sha-1"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5058ada175748e33390e40e872bd0fe59a19f265d0158daa551c5a88a76009c"
-dependencies = [
- "cfg-if",
- "cpufeatures",
- "digest 0.10.7",
 ]
 
 [[package]]
