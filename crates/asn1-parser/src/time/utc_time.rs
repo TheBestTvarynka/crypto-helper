@@ -1,6 +1,6 @@
 use alloc::format;
 
-use super::{read_number, Day, Hour, Minute, Month, Second, Year};
+use super::{Day, Hour, Minute, Month, Second, Year, read_number};
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
@@ -31,7 +31,7 @@ impl UtcTime {
     }
 
     fn calc_data_len(&self) -> usize {
-        2 /* year */ + 2 /* month */ + 2 /* day */ + 2 /* hour */ + 2 /* minute */ + self.second.is_some().then_some(2).unwrap_or_default() + 1
+        2 /* year */ + 2 /* month */ + 2 /* day */ + 2 /* hour */ + 2 /* minute */ + self.second.as_ref().map(|_| 2).unwrap_or_default() + 1
         /* 'Z' */
     }
 }

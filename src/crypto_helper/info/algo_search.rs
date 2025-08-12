@@ -1,7 +1,7 @@
 use web_sys::{Event, FocusEvent, HtmlInputElement, InputEvent, KeyboardEvent, MouseEvent};
 use yew::{
-    classes, function_component, html, use_effect_with, use_state, Callback, Html, Properties, TargetCast,
-    UseStateSetter,
+    Callback, Html, Properties, TargetCast, UseStateSetter, classes, function_component, html, use_effect_with,
+    use_state,
 };
 
 use crate::crypto_helper::algorithm::{Algorithm, SUPPORTED_ALGORITHMS};
@@ -78,11 +78,11 @@ pub fn algo_search(props: &AlgoSearchProps) -> Html {
     let algo_setter = props.set_algorithm.clone();
     let algos_setter = algos.setter();
     let onkeydown = Callback::from(move |event: KeyboardEvent| {
-        if event.key() == "Enter" {
-            if let Some(algo) = algos_value.first() {
-                algo_setter.set((*algo).try_into().unwrap_or_default());
-                algos_setter.set(Vec::new());
-            }
+        if event.key() == "Enter"
+            && let Some(algo) = algos_value.first()
+        {
+            algo_setter.set((*algo).try_into().unwrap_or_default());
+            algos_setter.set(Vec::new());
         }
     });
 

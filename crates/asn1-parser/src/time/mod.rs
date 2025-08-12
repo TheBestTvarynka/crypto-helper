@@ -4,8 +4,8 @@ mod utc_time;
 pub use generalized_time::GeneralizedTime;
 pub use utc_time::UtcTime;
 
-use crate::reader::Reader;
 use crate::Asn1Result;
+use crate::reader::Reader;
 
 macro_rules! define_nt {
     ($name:ident) => {

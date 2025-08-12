@@ -4,12 +4,12 @@ use std::io::Write;
 use argon2::{PasswordHasher, PasswordVerifier};
 use base64::Engine;
 use bcrypt::Version;
-use flate2::write::{ZlibDecoder, ZlibEncoder};
 use flate2::Compression;
+use flate2::write::{ZlibDecoder, ZlibEncoder};
 use picky::signature::SignatureAlgorithm;
 use picky_krb::crypto::{Checksum, Cipher};
-use rsa::rand_core::OsRng;
 use rsa::Pkcs1v15Encrypt;
+use rsa::rand_core::OsRng;
 
 use super::algorithm::{
     Argon2Action, Argon2Input, BcryptAction, BcryptInput, HmacShaAction, HmacShaAlgorithm, HmacShaInput, KrbInput,

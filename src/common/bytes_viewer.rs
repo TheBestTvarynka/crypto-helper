@@ -1,4 +1,4 @@
-use yew::{classes, function_component, html, Html, Properties};
+use yew::{Html, Properties, classes, function_component, html};
 
 use crate::common::hex_format_byte;
 
@@ -7,6 +7,7 @@ pub struct BytesViewerProps {
     pub bytes: Vec<u8>,
 }
 
+#[allow(dead_code)]
 fn byte_color_class(byte: u8) -> &'static str {
     if byte == 0 {
         "byte-null"
@@ -21,6 +22,7 @@ fn byte_color_class(byte: u8) -> &'static str {
     }
 }
 
+#[allow(dead_code)]
 fn byte_component(byte: u8) -> Html {
     html! {
         <span class={classes!(byte_color_class(byte))}>{hex_format_byte(byte)}</span>

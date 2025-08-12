@@ -2,7 +2,7 @@ use alloc::borrow::Cow;
 use alloc::fmt::Debug;
 
 use crate::length::read_len;
-use crate::reader::{read_data, Reader};
+use crate::reader::{Reader, read_data};
 use crate::writer::Writer;
 use crate::{
     Asn1Decoder, Asn1Encoder, Asn1Entity, Asn1Result, Asn1ValueDecoder, MetaInfo, RawAsn1EntityData, Tag, Taggable,
@@ -22,7 +22,7 @@ impl<A> Tlv<'_, A> {
         Tlv { id, meta: raw, asn1 }
     }
 
-    pub fn meta(&self) -> &RawAsn1EntityData {
+    pub fn meta(&self) -> &RawAsn1EntityData<'_> {
         &self.meta
     }
 

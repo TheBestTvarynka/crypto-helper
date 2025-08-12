@@ -542,11 +542,7 @@ pub enum HmacShaAction {
 
 impl From<bool> for HmacShaAction {
     fn from(value: bool) -> Self {
-        if value {
-            Self::Verify(Vec::new())
-        } else {
-            Self::Sign
-        }
+        if value { Self::Verify(Vec::new()) } else { Self::Sign }
     }
 }
 

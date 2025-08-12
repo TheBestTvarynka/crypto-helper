@@ -1,6 +1,6 @@
-use yew::{function_component, html, use_state, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html, use_state};
 use yew_hooks::use_clipboard;
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
 use crate::common::RcSlice;
 

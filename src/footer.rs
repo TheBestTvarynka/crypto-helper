@@ -1,4 +1,4 @@
-use yew::{html, Html};
+use yew::{Html, html};
 
 pub fn footer() -> Html {
     html! {

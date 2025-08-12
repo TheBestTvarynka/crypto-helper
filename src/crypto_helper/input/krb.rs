@@ -1,12 +1,12 @@
 use picky_krb::crypto::CipherSuite;
 use web_sys::{HtmlInputElement, InputEvent, MouseEvent};
 use yew::{
-    classes, function_component, html, use_effect_with, use_state, Callback, Html, Properties, TargetCast,
-    UseStateSetter,
+    Callback, Html, Properties, TargetCast, UseStateSetter, classes, function_component, html, use_effect_with,
+    use_state,
 };
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
-use crate::common::{build_byte_input, Switch};
+use crate::common::{Switch, build_byte_input};
 use crate::crypto_helper::algorithm::{KrbInput as KerberosInput, KrbMode};
 
 fn get_usage_number_name(usage_number: i32) -> &'static str {

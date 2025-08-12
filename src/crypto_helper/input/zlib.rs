@@ -1,6 +1,6 @@
-use yew::{function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html};
 
-use crate::common::{build_byte_input, Switch};
+use crate::common::{Switch, build_byte_input};
 use crate::crypto_helper::algorithm::ZlibInput as ZlibInputData;
 
 #[derive(PartialEq, Properties, Clone)]

@@ -1,11 +1,11 @@
 use asn1_parser::{Asn1, Asn1Entity, Asn1Type, OwnedAsn1, RawAsn1EntityData};
 use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
-use yew::{function_component, html, Callback, Classes, Html, Properties};
+use yew::{Callback, Classes, Html, Properties, function_component, html};
 
 use crate::asn1::node_options::NodeOptions;
-use crate::asn1::{compare_ids, HighlightAction};
-use crate::common::{hex_format_byte, RcSlice};
+use crate::asn1::{HighlightAction, compare_ids};
+use crate::common::{RcSlice, hex_format_byte};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct HexViewerProps {

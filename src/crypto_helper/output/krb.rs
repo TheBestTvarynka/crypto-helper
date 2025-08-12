@@ -1,4 +1,4 @@
-use yew::{function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html};
 use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType};
 

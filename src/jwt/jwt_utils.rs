@@ -1,17 +1,17 @@
-use base64::engine::general_purpose::STANDARD;
-use base64::engine::GeneralPurpose;
 use base64::Engine;
+use base64::engine::GeneralPurpose;
+use base64::engine::general_purpose::STANDARD;
 use picky::hash::HashAlgorithm;
 use picky::key::{PrivateKey, PublicKey};
 use picky::signature::SignatureAlgorithm;
 use web_sys::{HtmlInputElement, MouseEvent};
-use yew::{function_component, html, use_state, Callback, Html, Properties, TargetCast};
+use yew::{Callback, Html, Properties, TargetCast, function_component, html, use_state};
 use yew_hooks::use_clipboard;
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
 use super::jwt::Jwt;
 use super::signature::JwtSignatureAlgorithm;
-use crate::common::{build_byte_input, build_simple_output, BytesFormat};
+use crate::common::{BytesFormat, build_byte_input, build_simple_output};
 use crate::url_query_params::generate_jwt_link;
 
 const DEFAULT_TEXT_FOR_RSA_PLACEHOLDER: &str = "RSA private/public key in PEM (-----BEGIN RSA PRIVATE/PUBLIC KEY-----)";

@@ -10,9 +10,9 @@ pub mod signature;
 use std::str::FromStr;
 
 use web_sys::{HtmlInputElement, KeyboardEvent};
-use yew::{function_component, html, use_effect_with, use_state, Callback, Html, TargetCast};
+use yew::{Callback, Html, TargetCast, function_component, html, use_effect_with, use_state};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
 use crate::common::Checkbox;
 use crate::jwt::jwt::editor::JwtEditor;

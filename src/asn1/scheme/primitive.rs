@@ -1,5 +1,5 @@
 use asn1_parser::{Bool, OwnedEnumerated, OwnedInteger, OwnedRawAsn1EntityData};
-use yew::{function_component, html, Html, Properties};
+use yew::{Html, Properties, function_component, html};
 
 use crate::asn1::node_options::NodeOptions;
 use crate::common::RcSlice;

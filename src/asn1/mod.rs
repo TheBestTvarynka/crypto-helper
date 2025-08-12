@@ -10,13 +10,13 @@ use std::rc::Rc;
 
 use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder};
 use web_sys::KeyboardEvent;
-use yew::{classes, function_component, html, use_effect_with, use_reducer, use_state, Callback, Html, Reducible};
+use yew::{Callback, Html, Reducible, classes, function_component, html, use_effect_with, use_reducer, use_state};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
 use crate::asn1::asn1_viewer::Asn1Viewer;
 use crate::asn1::hex_view::HexViewer;
-use crate::common::{encode_bytes, ByteInput, BytesFormat};
+use crate::common::{ByteInput, BytesFormat, encode_bytes};
 use crate::url_query_params;
 use crate::url_query_params::generate_asn1_link;
 
@@ -113,18 +113,18 @@ pub fn asn1_parser_page() -> Html {
 
         if query.len() < 2 {
             // URL query params is empty. We try to load ASN1 from local storage.
-            if let Some(raw_asn1) = (*local_storage).as_ref() {
-                if let Ok(bytes) = hex::decode(raw_asn1) {
-                    match Asn1::decode_buff(&bytes) {
-                        Ok(asn1) => {
-                            asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
-                        }
-                        Err(err) => {
-                            error!(?err, "Can not decode asn1.");
-                        }
+            if let Some(raw_asn1) = (*local_storage).as_ref()
+                && let Ok(bytes) = hex::decode(raw_asn1)
+            {
+                match Asn1::decode_buff(&bytes) {
+                    Ok(asn1) => {
+                        asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
                     }
-                    raw_asn1_setter.set(bytes);
+                    Err(err) => {
+                        error!(?err, "Can not decode asn1.");
+                    }
                 }
+                raw_asn1_setter.set(bytes);
             }
             return;
         }

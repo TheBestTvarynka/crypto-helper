@@ -5,7 +5,7 @@ use core::str::from_utf8;
 #[cfg(not(feature = "std"))]
 use num_traits::float::FloatCore;
 
-use super::{read_number, Day, Hour, Minute, Month};
+use super::{Day, Hour, Minute, Month, read_number};
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;

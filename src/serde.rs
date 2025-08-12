@@ -3,7 +3,7 @@ use std::fmt;
 use picky::key::{PrivateKey, PublicKey};
 use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey, EncodeRsaPrivateKey, EncodeRsaPublicKey};
 use rsa::{RsaPrivateKey, RsaPublicKey};
-use serde::{de, Deserializer, Serializer};
+use serde::{Deserializer, Serializer, de};
 
 pub fn serialize_bytes<S>(bytes: &[u8], s: S) -> Result<S::Ok, S::Error>
 where

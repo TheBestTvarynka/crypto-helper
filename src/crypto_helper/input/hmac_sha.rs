@@ -1,8 +1,8 @@
 use web_sys::{Event, HtmlInputElement};
-use yew::{function_component, html, Callback, Html, Properties, TargetCast};
+use yew::{Callback, Html, Properties, TargetCast, function_component, html};
 
-use crate::common::{build_byte_input, Switch};
-use crate::crypto_helper::algorithm::{HmacShaAction, HmacShaInput as HmacShaInputData, HMAC_HASH_ALGOS};
+use crate::common::{Switch, build_byte_input};
+use crate::crypto_helper::algorithm::{HMAC_HASH_ALGOS, HmacShaAction, HmacShaInput as HmacShaInputData};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct HmacShaInputProps {

@@ -44,7 +44,7 @@ impl<'data> Asn1ValueDecoder<'data> for Bool {
         } else if data.len() == 1 {
             Ok(Bool::from_byte(data[0]))
         } else {
-            return Err(Error::from("Bool data len should be equal to 1"));
+            Err(Error::from("Bool data len should be equal to 1"))
         }
     }
 

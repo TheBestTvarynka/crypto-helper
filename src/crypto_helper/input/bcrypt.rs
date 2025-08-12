@@ -1,8 +1,8 @@
 use web_sys::HtmlInputElement;
-use yew::{classes, function_component, html, Callback, Html, Properties, TargetCast};
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew::{Callback, Html, Properties, TargetCast, classes, function_component, html};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
-use crate::common::{build_byte_input, BytesFormat, Switch};
+use crate::common::{BytesFormat, Switch, build_byte_input};
 use crate::crypto_helper::algorithm::{BcryptAction, BcryptHashAction, BcryptInput as BcryptInputData};
 
 #[derive(PartialEq, Properties, Clone)]
