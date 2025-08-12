@@ -9,7 +9,7 @@ mod time;
 use asn1_parser::{Asn1, Asn1Entity, Asn1Type};
 use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
-use yew::{classes, function_component, html, Callback, Children, Classes, Html, Properties};
+use yew::{Callback, Children, Classes, Html, Properties, classes, function_component, html};
 
 use self::oid::ObjectIdentifierNode;
 use self::primitive::{BoolNode, EnumeratedNode, IntegerNode, NullNode};
@@ -20,8 +20,8 @@ use self::strings::{
 };
 use self::tag::{ApplicationTagNode, ExplicitTagNode, ImplicitTagNode};
 use self::time::{GeneralizedTimeNode, UtcTimeNode};
-use crate::asn1::scheme::set::SetNode;
 use crate::asn1::HighlightAction;
+use crate::asn1::scheme::set::SetNode;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Asn1NodeProps {

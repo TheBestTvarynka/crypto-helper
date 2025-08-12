@@ -4,11 +4,11 @@ use asn1_parser::{
     OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedNumericString, OwnedOctetString,
     OwnedPrintableString, OwnedRawAsn1EntityData, OwnedUtf8String, OwnedVisibleString,
 };
-use yew::{function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html};
 
+use crate::asn1::HighlightAction;
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::scheme::build_asn1_schema;
-use crate::asn1::HighlightAction;
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]

@@ -2,7 +2,7 @@
 name = "crypto-helper"
 version = "0.15.0"
 description = "The crypto-helper is an online app that helps to work with the diferent crypto algorithms."
-edition = "2021"
+edition = "2024"
 authors = ["Pavlo Myroniuk <the.best.tvarynka@gmail.com>"]
 readme = "README.md"
 license-file = "LICENSE"

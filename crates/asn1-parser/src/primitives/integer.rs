@@ -22,11 +22,7 @@ impl Integer<'_> {
 
     pub fn as_big_uint(&self) -> BigUint {
         BigUint::from_bytes_be(if self.0.len() > 1 {
-            if self.0[0] == 0x00 {
-                &self.0[1..]
-            } else {
-                &self.0
-            }
+            if self.0[0] == 0x00 { &self.0[1..] } else { &self.0 }
         } else if self.0.is_empty() {
             &[0]
         } else {

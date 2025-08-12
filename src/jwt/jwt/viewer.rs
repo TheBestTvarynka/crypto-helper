@@ -1,6 +1,6 @@
-use yew::{function_component, html, Html, Properties};
+use yew::{Html, Properties, function_component, html};
 use yew_hooks::use_clipboard;
-use yew_notifications::{use_notification, Notification};
+use yew_notifications::{Notification, use_notification};
 
 use super::Jwt;
 use crate::utils::copy_to_clipboard_with_notification;

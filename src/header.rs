@@ -1,4 +1,4 @@
-use yew::{function_component, html, Html};
+use yew::{Html, function_component, html};
 use yew_router::prelude::Link;
 
 use crate::Route;

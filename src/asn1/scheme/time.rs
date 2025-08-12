@@ -1,5 +1,5 @@
 use asn1_parser::{GeneralizedTime, OwnedRawAsn1EntityData, UtcTime};
-use yew::{function_component, html, Html, Properties};
+use yew::{Html, Properties, function_component, html};
 
 use crate::asn1::node_options::NodeOptions;
 use crate::common::RcSlice;

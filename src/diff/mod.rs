@@ -8,7 +8,7 @@ use web_sys::{HtmlInputElement, KeyboardEvent};
 use yew::html::onchange::Event;
 use yew::platform::spawn_local;
 use yew::virtual_dom::VNode;
-use yew::{function_component, html, use_effect_with, use_state_eq, Callback, Html, TargetCast};
+use yew::{Callback, Html, TargetCast, function_component, html, use_effect_with, use_state_eq};
 use yew_agent::oneshot::use_oneshot_runner;
 use yew_hooks::use_local_storage;
 
@@ -131,11 +131,11 @@ pub fn diff_page() -> Html {
             changed_setter.set(changed.to_string());
             flag = true;
         }
-        if let Some(raw_algorithm) = (*algorithm_local_storage).as_ref() {
-            if let Ok(algorithm) = raw_algorithm.as_str().try_into() {
-                algorithm_setter.set(algorithm);
-                flag = true;
-            }
+        if let Some(raw_algorithm) = (*algorithm_local_storage).as_ref()
+            && let Ok(algorithm) = raw_algorithm.as_str().try_into()
+        {
+            algorithm_setter.set(algorithm);
+            flag = true;
         }
 
         if flag {

@@ -1,13 +1,13 @@
 use std::fmt::Debug;
 
-use serde_json::{to_string_pretty, Value};
+use serde_json::{Value, to_string_pretty};
 use web_sys::{HtmlInputElement, MouseEvent};
-use yew::{function_component, html, use_state, Callback, Html, Properties, TargetCast};
+use yew::{Callback, Html, Properties, TargetCast, function_component, html, use_state};
 use yew_hooks::use_clipboard;
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
 use super::Jwt;
-use crate::common::{build_simple_output, BytesFormat, Switch, TableView};
+use crate::common::{BytesFormat, Switch, TableView, build_simple_output};
 use crate::utils::copy_to_clipboard_with_notification;
 
 #[derive(PartialEq, Properties)]
@@ -64,11 +64,7 @@ enum JsonView {
 
 impl From<bool> for JsonView {
     fn from(value: bool) -> Self {
-        if value {
-            JsonView::Table
-        } else {
-            JsonView::Raw
-        }
+        if value { JsonView::Table } else { JsonView::Raw }
     }
 }
 

@@ -2,7 +2,7 @@
 name = "asn1-parser"
 description = "This `asn1` parser is aimed to parse input bytes and return an AST as the result."
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 authors = ["Pavlo Myroniuk <the.best.tvarynka@gmail.com>"]
 readme = "README.md"
 license-file = "../../LICENSE"

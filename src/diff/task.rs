@@ -2,11 +2,11 @@ use js_sys::Uint8Array;
 use serde::{Deserialize, Serialize};
 use similar::capture_diff_slices;
 use wasm_bindgen::{JsCast, JsValue};
-use yew_agent::oneshot::oneshot;
 use yew_agent::Codec;
+use yew_agent::oneshot::oneshot;
 
-use crate::diff::diff_algo::DiffAlgo;
 use crate::diff::DiffData;
+use crate::diff::diff_algo::DiffAlgo;
 
 /// Codes for messages encoding/decoding between main thread and worker.
 ///

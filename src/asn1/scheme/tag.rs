@@ -1,11 +1,11 @@
 use std::str::from_utf8;
 
 use asn1_parser::{OwnedApplicationTag, OwnedExplicitTag, OwnedImplicitTag, OwnedRawAsn1EntityData};
-use yew::{function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html};
 
+use crate::asn1::HighlightAction;
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::scheme::build_asn1_schema;
-use crate::asn1::HighlightAction;
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]

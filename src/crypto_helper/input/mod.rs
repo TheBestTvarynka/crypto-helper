@@ -6,7 +6,7 @@ mod rsa;
 mod zlib;
 
 use picky_krb::crypto::CipherSuite;
-use yew::{function_component, html, Callback, Html, Properties, UseStateSetter};
+use yew::{Callback, Html, Properties, UseStateSetter, function_component, html};
 
 use self::argon2::build_argon2_input;
 use self::bcrypt::build_bcrypt_input;
@@ -14,8 +14,8 @@ use self::hmac_sha::build_hmac_sha_input;
 use self::krb::build_krb_input;
 use self::rsa::build_rsa_input;
 use self::zlib::build_zlib_input;
-use super::algorithm::{KrbInput, KrbMode};
 use super::Algorithm;
+use super::algorithm::{KrbInput, KrbMode};
 use crate::common::build_byte_input;
 
 fn get_input_components(algorithm: &Algorithm, setter: &UseStateSetter<Algorithm>) -> Html {

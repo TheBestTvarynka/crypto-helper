@@ -1,8 +1,8 @@
 use asn1_parser::OwnedAsn1;
-use yew::{function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html};
 
-use crate::asn1::scheme::build_asn1_schema;
 use crate::asn1::HighlightAction;
+use crate::asn1::scheme::build_asn1_schema;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Asn1ViewerProps {

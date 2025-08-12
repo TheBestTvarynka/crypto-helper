@@ -1,8 +1,8 @@
 use web_sys::HtmlInputElement;
 use yew::html::TargetCast;
-use yew::{classes, function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, classes, function_component, html};
 
-use crate::common::{build_byte_input, BytesFormat, Switch};
+use crate::common::{BytesFormat, Switch, build_byte_input};
 use crate::crypto_helper::algorithm::{Argon2Action, Argon2HashAction, Argon2Input as Argon2InputData};
 
 #[derive(PartialEq, Properties, Clone)]

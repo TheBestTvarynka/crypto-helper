@@ -1,4 +1,4 @@
-use yew::{function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct CheckboxProps {

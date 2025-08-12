@@ -1,11 +1,11 @@
 mod krb;
 
-use yew::{function_component, html, Callback, Html, Properties};
-use yew_notifications::{use_notification, Notification};
+use yew::{Callback, Html, Properties, function_component, html};
+use yew_notifications::{Notification, use_notification};
 
 use self::krb::build_krb_output;
 use super::Algorithm;
-use crate::common::{build_simple_output, BytesFormat};
+use crate::common::{BytesFormat, build_simple_output};
 
 fn get_output_components(algorithm: &Algorithm, output: &[u8], add_notification: Callback<Notification>) -> Html {
     match algorithm {

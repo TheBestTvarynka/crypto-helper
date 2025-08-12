@@ -1,8 +1,8 @@
 use serde_json::Value;
 use yew::virtual_dom::VNode;
-use yew::{function_component, html, Callback, Html, Properties};
+use yew::{Callback, Html, Properties, function_component, html};
 use yew_hooks::use_clipboard;
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
 #[derive(Properties, PartialEq, Debug, Clone)]
 pub struct TableViewProps {

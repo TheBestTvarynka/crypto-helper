@@ -8,7 +8,7 @@ mod switch;
 mod table;
 
 use base64::Engine;
-pub use byte_input::{build_byte_input, ByteInput};
+pub use byte_input::{ByteInput, build_byte_input};
 pub use checkbox::Checkbox;
 pub use loader::Loader;
 pub use rc_slice::RcSlice;

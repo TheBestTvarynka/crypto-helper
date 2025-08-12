@@ -2,7 +2,7 @@ mod algo_search;
 
 use web_sys::HtmlInputElement;
 use yew::html::onchange::Event;
-use yew::{function_component, html, use_state, Callback, Html, Properties, TargetCast, UseStateSetter};
+use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
 
 use super::algorithm::Algorithm;
 use crate::crypto_helper::algorithm::{COMPRESSION_ALGOS, ENCRYPTION_ALGOS, HASHING_ALGOS, HMAC_ALGOS};

@@ -2,12 +2,12 @@ use picky::key::{PrivateKey, PublicKey};
 use rsa::pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey, EncodeRsaPrivateKey, EncodeRsaPublicKey};
 use rsa::{RsaPrivateKey, RsaPublicKey};
 use web_sys::{Event, HtmlInputElement};
-use yew::{classes, function_component, html, Callback, Classes, Html, Properties, TargetCast};
-use yew_notifications::{use_notification, Notification, NotificationType};
+use yew::{Callback, Classes, Html, Properties, TargetCast, classes, function_component, html};
+use yew_notifications::{Notification, NotificationType, use_notification};
 
 use crate::common::build_byte_input;
 use crate::crypto_helper::algorithm::{
-    RsaAction, RsaHashAlgorithm, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput, RSA_HASH_ALGOS,
+    RSA_HASH_ALGOS, RsaAction, RsaHashAlgorithm, RsaInput as RsaInputData, RsaSignInput, RsaVerifyInput,
 };
 
 #[derive(Debug, PartialEq, Properties)]

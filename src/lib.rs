@@ -25,7 +25,7 @@ use footer::footer;
 use header::Header;
 use jwt::Jwt;
 use not_found::not_found;
-use yew::{function_component, html, Html};
+use yew::{Html, function_component, html};
 use yew_agent::oneshot::OneshotProvider;
 use yew_notifications::{Notification, NotificationFactory, NotificationsProvider};
 use yew_router::{BrowserRouter, Routable, Switch};

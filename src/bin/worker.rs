@@ -1,8 +1,8 @@
 use crypto_helper::diff::{DiffTask, JsonCodec};
+use tracing_subscriber::EnvFilter;
 use tracing_subscriber::fmt::format::Pretty;
 use tracing_subscriber::prelude::*;
-use tracing_subscriber::EnvFilter;
-use tracing_web::{performance_layer, MakeWebConsoleWriter};
+use tracing_web::{MakeWebConsoleWriter, performance_layer};
 use yew_agent::Registrable;
 
 fn main() {
