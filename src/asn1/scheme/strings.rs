@@ -40,16 +40,20 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
             </div>
         },
         None => {
-            let encoded_octets = match std::str::from_utf8(octets) {
-                Ok(s) => {
-                    if s.chars().any(|c| (c as u8) < 32) {
-                        hex::encode(octets)
-                    } else {
-                        s.to_owned()
-                    }
-                }
-                Err(_) => hex::encode(octets),
+            let encoded_octets = if octets.len() % 2 == 0
+                && let Ok(s) = String::from_utf16(&{
+                    octets
+                        .chunks(2)
+                        .map(|bytes| u16::from_le_bytes(bytes.try_into().unwrap()))
+                        .collect::<Vec<_>>()
+                }) {
+                s.to_owned()
+            } else if let Ok(s) = std::str::from_utf8(octets) {
+                s.to_owned()
+            } else {
+                hex::encode(octets)
             };
+
             html! {
                 <div class="terminal-asn1-node">
                     <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("OctetString")} />

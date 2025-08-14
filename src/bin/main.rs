@@ -10,10 +10,15 @@ fn main() {
         .without_time()
         .with_writer(MakeWebConsoleWriter::new());
     let perf_layer = performance_layer().with_details_from_fields(Pretty::default());
+
+    let logging_filter: EnvFilter = EnvFilter::builder()
+        .with_default_directive("info".parse().expect("Default log level constant is bad."))
+        .from_env_lossy();
+
     tracing_subscriber::registry()
         .with(fmt_layer)
         .with(perf_layer)
-        .with(EnvFilter::from_default_env())
+        .with(logging_filter)
         .init();
 
     yew::Renderer::<App>::new().render();
