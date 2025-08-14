@@ -425,6 +425,30 @@ fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {
             "Certificate services CA version",
             "http://oid-info.com/get/1.3.6.1.4.1.311.21.1",
         ),
+        "1.3.6.1.4.1.41482.3.3" => (
+            "YubiKey firmware version",
+            "https://developers.yubico.com/PIV/Introduction/PIV_attestation.html",
+        ),
+        "1.3.6.1.4.1.41482.3.7" => (
+            "YubiKey serial number",
+            "https://developers.yubico.com/PIV/Introduction/PIV_attestation.html",
+        ),
+        "1.3.6.1.4.1.41482.3.8" => (
+            "YubiKey pin policy + touch policy",
+            "https://developers.yubico.com/PIV/Introduction/PIV_attestation.html",
+        ),
+        "1.3.6.1.4.1.41482.3.9" => (
+            "YubiKey formfactor",
+            "https://developers.yubico.com/PIV/Introduction/PIV_attestation.html",
+        ),
+        "1.3.6.1.4.1.41482.3.10" => (
+            "FIPS Certified YubiKey",
+            "https://developers.yubico.com/PIV/Introduction/PIV_attestation.html",
+        ),
+        "1.3.6.1.4.1.41482.3.11" => (
+            "CSPN Certified YubiKey",
+            "https://developers.yubico.com/PIV/Introduction/PIV_attestation.html",
+        ),
         _ => ("-", "https://github.com/TheBestTvarynka/crypto-helper/issues/new"),
     }
 }
