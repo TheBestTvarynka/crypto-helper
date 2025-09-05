@@ -1,4 +1,3 @@
-use alloc::borrow::Cow;
 use alloc::vec::Vec;
 
 use num_bigint_dig::BigUint;
@@ -6,14 +5,12 @@ use num_bigint_dig::BigUint;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, IntoMutable, Mutable, Tag, Taggable};
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Enumerated<'data>(Cow<'data, [u8]>);
+pub struct Enumerated(Vec<u8>);
 
-pub type OwnedEnumerated = Enumerated<'static>;
-
-impl Enumerated<'_> {
+impl Enumerated {
     pub const TAG: Tag = Tag(10);
 
     pub fn raw_data(&self) -> &[u8] {
@@ -29,36 +26,23 @@ impl Enumerated<'_> {
             &self.0
         })
     }
-
-    pub fn to_owned(&self) -> OwnedEnumerated {
-        Enumerated(Cow::Owned(self.0.as_ref().to_vec()))
-    }
 }
 
-impl From<Vec<u8>> for OwnedEnumerated {
+impl From<Vec<u8>> for Enumerated {
     fn from(bytes: Vec<u8>) -> Self {
-        Self(Cow::Owned(bytes))
+        Self(bytes)
     }
 }
 
-impl IntoMutable<OwnedEnumerated> for Enumerated<'_> {
-    fn into_mutable(self) -> Mutable<OwnedEnumerated> {
-        Mutable::new(Enumerated(match self.0 {
-            Cow::Owned(data) => Cow::Owned(data),
-            Cow::Borrowed(data) => Cow::Owned(data.to_vec()),
-        }))
-    }
-}
-
-impl Taggable for Enumerated<'_> {
+impl Taggable for Enumerated {
     fn tag(&self) -> Tag {
         Self::TAG
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for Enumerated<'data> {
+impl<'data> Asn1ValueDecoder<'data> for Enumerated {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
-        Ok(Self(Cow::Borrowed(reader.remaining())))
+        Ok(Self(reader.remaining().to_vec()))
     }
 
     fn compare_tags(tag: Tag) -> bool {
@@ -66,7 +50,7 @@ impl<'data> Asn1ValueDecoder<'data> for Enumerated<'data> {
     }
 }
 
-impl Asn1Encoder for Enumerated<'_> {
+impl Asn1Encoder for Enumerated {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.0.len();
 

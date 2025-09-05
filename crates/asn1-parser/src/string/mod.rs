@@ -3,13 +3,12 @@ mod bmp_string;
 mod octet_string;
 mod validators;
 
-use alloc::borrow::Cow;
 use alloc::string::String;
 use core::str::from_utf8;
 
-pub use bit_string::{BitString, OwnedBitString};
-pub use bmp_string::{BmpString, OwnedBmpString};
-pub use octet_string::{OctetString, OwnedOctetString};
+pub use bit_string::BitString;
+pub use bmp_string::BmpString;
+pub use octet_string::OctetString;
 use validators::{validate_general, validate_ia5, validate_printable, validate_utf8};
 
 use crate::length::{len_size, write_len};
@@ -19,11 +18,9 @@ use crate::writer::Writer;
 use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct Utf8Value<'data, const TAG: u8>(Cow<'data, str>);
+struct Utf8Value<const TAG: u8>(String);
 
-type OwnedUtf8Value<const TAG: u8> = Utf8Value<'static, TAG>;
-
-impl<const TAG: u8> Utf8Value<'_, TAG> {
+impl<const TAG: u8> Utf8Value<TAG> {
     pub fn as_str(&self) -> &str {
         self.0.as_ref()
     }
@@ -33,21 +30,21 @@ impl<const TAG: u8> Utf8Value<'_, TAG> {
     }
 }
 
-impl<const TAG: u8> From<String> for OwnedUtf8Value<TAG> {
+impl<const TAG: u8> From<String> for Utf8Value<TAG> {
     fn from(value: String) -> Self {
-        Self(Cow::Owned(value))
+        Self(value)
     }
 }
 
-impl<'data, const TAG: u8> From<&'data str> for Utf8Value<'data, TAG> {
-    fn from(value: &'data str) -> Self {
-        Self(Cow::Borrowed(value))
+impl<const TAG: u8> From<&str> for Utf8Value<TAG> {
+    fn from(value: &str) -> Self {
+        Self(value.to_owned())
     }
 }
 
-impl<'data, const TAG: u8> Asn1ValueDecoder<'data> for Utf8Value<'data, TAG> {
+impl<'data, const TAG: u8> Asn1ValueDecoder<'data> for Utf8Value<TAG> {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
-        Ok(Self(Cow::Borrowed(from_utf8(reader.remaining())?)))
+        Ok(Self(from_utf8(reader.remaining())?.to_owned()))
     }
 
     fn compare_tags(tag: Tag) -> bool {
@@ -55,7 +52,7 @@ impl<'data, const TAG: u8> Asn1ValueDecoder<'data> for Utf8Value<'data, TAG> {
     }
 }
 
-impl<const TAG: u8> Asn1Encoder for Utf8Value<'_, TAG> {
+impl<const TAG: u8> Asn1Encoder for Utf8Value<TAG> {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.0.len();
         1 /* tag */ + len_size(data_len) + data_len

@@ -1,15 +1,10 @@
-use core::cell::RefCell;
 use alloc::rc::Rc;
-use core::cell::Ref;
-use core::cell::RefMut;
+use core::cell::{Ref, RefCell, RefMut};
 
 use crate::writer::Writer;
-use crate::Asn1Encoder;
-use crate::Asn1Result;
-use crate::MetaInfo;
-use crate::Tag;
-use crate::Taggable;
+use crate::{Asn1Encoder, Asn1Result, MetaInfo, Tag, Taggable};
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct Mutable<T>(Rc<RefCell<T>>);
 
 impl<T> Mutable<T> {
@@ -34,23 +29,23 @@ impl<T> Clone for Mutable<T> {
 
 impl<T: Taggable> Taggable for Mutable<T> {
     fn tag(&self) -> Tag {
-        self.0.tag()
+        self.0.borrow().tag()
     }
 }
 
 impl<T: Asn1Encoder> Asn1Encoder for Mutable<T> {
     fn needed_buf_size(&self) -> usize {
-        self.0.needed_buf_size()
+        self.0.borrow().needed_buf_size()
     }
 
     fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
-        self.0.encode(writer)
+        self.0.borrow().encode(writer)
     }
 }
 
 impl<T: MetaInfo> MetaInfo for Mutable<T> {
     fn clear_meta(&mut self) {
-        self.0.clear_meta()
+        self.0.borrow_mut().clear_meta()
     }
 }
 

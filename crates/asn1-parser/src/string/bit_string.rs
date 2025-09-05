@@ -1,25 +1,22 @@
-use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, IntoMutable, MetaInfo, Mutable, Tag, Taggable};
+use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, MetaInfo, Tag, Taggable};
 
 /// [BitString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bitstring.html)
 ///
 /// ASN.1 BIT STRING type values are arbitrary length strings of bits.
 /// A BIT STRING value doesn't need to be an even multiple of eight bits.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct BitString<'data> {
-    octets: Cow<'data, [u8]>,
-    inner: Option<Box<Asn1<'data>>>,
+pub struct BitString {
+    octets: Vec<u8>,
+    inner: Option<Box<Asn1>>,
 }
 
-pub type OwnedBitString = BitString<'static>;
-
-impl BitString<'_> {
+impl BitString {
     pub const TAG: Tag = Tag(3);
 
     /// Returns inner bits
@@ -27,7 +24,7 @@ impl BitString<'_> {
         self.octets.as_ref()
     }
 
-    pub fn inner(&self) -> Option<&Asn1<'_>> {
+    pub fn inner(&self) -> Option<&Asn1> {
         self.inner.as_ref().map(|i| i.as_ref())
     }
 
@@ -39,7 +36,7 @@ impl BitString<'_> {
     }
 
     /// Creates a new [BitString] from amount of bits and actual bits buffer
-    pub fn from_raw_vec(bits_amount: usize, mut bits: Vec<u8>) -> Asn1Result<OwnedBitString> {
+    pub fn from_raw_vec(bits_amount: usize, mut bits: Vec<u8>) -> Asn1Result<BitString> {
         let all_bits_amount = bits.len() * 8;
 
         if bits_amount > all_bits_amount {
@@ -62,57 +59,27 @@ impl BitString<'_> {
             None
         };
 
-        Ok(BitString {
-            octets: Cow::Owned(bits),
-            inner,
-        })
-    }
-
-    /// Returns owned version of the [BitString]
-    pub fn to_owned(&self) -> OwnedBitString {
-        BitString {
-            octets: self.octets.to_vec().into(),
-            inner: self
-                .inner
-                .as_ref()
-                .map(|inner| Box::new(inner.to_owned_with_asn1(inner.inner_asn1().to_owned()))),
-        }
+        Ok(BitString { octets: bits, inner })
     }
 }
 
 // we assume here that firs vector byte contains amount of unused bytes
-impl From<Vec<u8>> for BitString<'_> {
+impl From<Vec<u8>> for BitString {
     fn from(data: Vec<u8>) -> Self {
         let inner = Asn1::decode_buff(&data)
             .ok()
             .map(|asn1| Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
-        Self {
-            octets: Cow::Owned(data),
-            inner,
-        }
+        Self { octets: data, inner }
     }
 }
 
-impl IntoMutable<OwnedBitString> for BitString<'_> {
-    fn into_mutable(self) -> Mutable<OwnedBitString> {
-        let BitString { octets, inner: _ } = self;
-        Mutable::new(OwnedBitString {
-            octets: match octets {
-                Cow::Owned(v) => Cow::Owned(v),
-                Cow::Borrowed(v) => Cow::Owned(v.to_vec()),
-            },
-            inner: None,
-        })
-    }
-}
-
-impl Taggable for BitString<'_> {
+impl Taggable for BitString {
     fn tag(&self) -> Tag {
         Self::TAG
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for BitString<'data> {
+impl<'data> Asn1ValueDecoder<'data> for BitString {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let data = reader.read_remaining();
 
@@ -139,7 +106,7 @@ impl<'data> Asn1ValueDecoder<'data> for BitString<'data> {
         };
 
         Ok(Self {
-            octets: Cow::Borrowed(data),
+            octets: data.to_vec(),
             inner,
         })
     }
@@ -149,7 +116,7 @@ impl<'data> Asn1ValueDecoder<'data> for BitString<'data> {
     }
 }
 
-impl Asn1Encoder for BitString<'_> {
+impl Asn1Encoder for BitString {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.octets.len();
         1 /* tag */ + len_size(data_len) + data_len

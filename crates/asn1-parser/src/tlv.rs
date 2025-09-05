@@ -1,4 +1,3 @@
-use alloc::borrow::Cow;
 use alloc::fmt::Debug;
 
 use crate::length::read_len;
@@ -9,20 +8,18 @@ use crate::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Tlv<'data, A> {
+pub struct Tlv<A> {
     id: u64,
-    meta: RawAsn1EntityData<'data>,
+    meta: RawAsn1EntityData,
     asn1: A,
 }
 
-pub type OwnedTlv<A> = Tlv<'static, A>;
-
-impl<A> Tlv<'_, A> {
+impl<A> Tlv<A> {
     pub fn new(id: u64, raw: RawAsn1EntityData, asn1: A) -> Tlv<A> {
         Tlv { id, meta: raw, asn1 }
     }
 
-    pub fn meta(&self) -> &RawAsn1EntityData<'_> {
+    pub fn meta(&self) -> &RawAsn1EntityData {
         &self.meta
     }
 
@@ -30,16 +27,16 @@ impl<A> Tlv<'_, A> {
         &self.asn1
     }
 
-    pub fn to_owned_with_asn1<B>(&self, asn1: B) -> OwnedTlv<B> {
-        OwnedTlv {
+    pub fn to_owned_with_asn1<B>(&self, asn1: B) -> Tlv<B> {
+        Tlv {
             id: self.id,
-            meta: self.meta.to_owned(),
+            meta: self.meta.clone(),
             asn1,
         }
     }
 }
 
-impl<A: MetaInfo> MetaInfo for Tlv<'_, A> {
+impl<A: MetaInfo> MetaInfo for Tlv<A> {
     fn clear_meta(&mut self) {
         self.id = Default::default();
         self.meta = Default::default();
@@ -47,7 +44,7 @@ impl<A: MetaInfo> MetaInfo for Tlv<'_, A> {
     }
 }
 
-impl<A: Taggable> Asn1Entity for Tlv<'_, A> {
+impl<A: Taggable> Asn1Entity for Tlv<A> {
     fn tag(&self) -> Tag {
         self.asn1.tag()
     }
@@ -57,7 +54,7 @@ impl<A: Taggable> Asn1Entity for Tlv<'_, A> {
     }
 }
 
-impl<'data, A: Asn1ValueDecoder<'data> + Debug> Asn1Decoder<'data> for Tlv<'data, A> {
+impl<'data, A: Asn1ValueDecoder<'data> + Debug> Asn1Decoder<'data> for Tlv<A> {
     fn compare_tags(tag: Tag) -> bool {
         A::compare_tags(tag)
     }
@@ -82,7 +79,7 @@ impl<'data, A: Asn1ValueDecoder<'data> + Debug> Asn1Decoder<'data> for Tlv<'data
 
         reader.set_next_id(inner_reader.next_id());
 
-        let raw_data = Cow::Borrowed(reader.data_in_range(data_start..data_range.end)?);
+        let raw_data = reader.data_in_range(data_start..data_range.end)?.to_vec();
         let length = (len_range.start - data_start)..(len_range.end - data_start);
         let data = (data_range.start - data_start)..(data_range.end - data_start);
 
@@ -99,7 +96,7 @@ impl<'data, A: Asn1ValueDecoder<'data> + Debug> Asn1Decoder<'data> for Tlv<'data
     }
 }
 
-impl<A: Asn1Encoder> Asn1Encoder for Tlv<'_, A> {
+impl<A: Asn1Encoder> Asn1Encoder for Tlv<A> {
     fn needed_buf_size(&self) -> usize {
         self.asn1.needed_buf_size()
     }

@@ -1,13 +1,9 @@
 macro_rules! impl_utf8_asn1 {
     ($name:ident, $tag:expr, $validator_fn:ident) => {
         #[derive(Debug, Clone, PartialEq, Eq)]
-        pub struct $name<'data>(Utf8Value<'data, 19>);
+        pub struct $name(Utf8Value<19>);
 
-        paste::paste! {
-            pub type [<Owned $name>] = $name<'static>;
-        }
-
-        impl Asn1Encoder for $name<'_> {
+        impl Asn1Encoder for $name {
             fn needed_buf_size(&self) -> usize {
                 self.0.needed_buf_size()
             }
@@ -17,19 +13,19 @@ macro_rules! impl_utf8_asn1 {
             }
         }
 
-        impl From<String> for $name<'static> {
+        impl From<String> for $name {
             fn from(value: String) -> Self {
                 Self(value.into())
             }
         }
 
-        impl crate::Taggable for $name<'_> {
+        impl crate::Taggable for $name {
             fn tag(&self) -> Tag {
                 Self::TAG
             }
         }
 
-        impl<'data> Asn1ValueDecoder<'data> for $name<'data> {
+        impl<'data> Asn1ValueDecoder<'data> for $name {
             fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
                 let utf8_value = Utf8Value::decode(tag, reader)?;
 
@@ -45,7 +41,7 @@ macro_rules! impl_utf8_asn1 {
             }
         }
 
-        impl $name<'_> {
+        impl $name {
             pub const TAG: Tag = Tag($tag);
 
             pub fn raw_data(&self) -> &[u8] {
@@ -55,15 +51,10 @@ macro_rules! impl_utf8_asn1 {
             pub fn string(&self) -> &str {
                 self.0.as_str()
             }
-
-            pub fn to_owned(&self) -> $name<'static> {
-                use crate::alloc::string::ToString;
-                $name(self.0.as_str().to_string().into())
-            }
         }
 
-        impl<'data> From<&'data str> for $name<'data> {
-            fn from(data: &'data str) -> Self {
+        impl From<&str> for $name {
+            fn from(data: &str) -> Self {
                 Self(data.into())
             }
         }
@@ -75,7 +66,7 @@ macro_rules! decode_asn1 {
         {
             $(
                 if $name::compare_tags($tag) {
-                    return Ok(Asn1Type::$name($name::decode($tag, $reader)?));
+                    return Ok(Asn1Type::$name(crate::Mutable::new($name::decode($tag, $reader)?)));
                 }
             )*
         }

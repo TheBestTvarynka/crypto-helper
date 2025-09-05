@@ -12,11 +12,9 @@ use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Sequence, Tag, 
 /// in each value of a SEQUENCE type must appear in the order shown in the definition.
 /// The elements of a SET type value may appear in any order, regardless of how they are listed in the SET's definition
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct Set<'data>(Sequence<'data>);
+pub struct Set(Sequence);
 
-pub type OwnedSet = Set<'static>;
-
-impl Set<'_> {
+impl Set {
     /// Tag value of the [SET] type
     pub const TAG: Tag = Tag(0x31);
 
@@ -26,35 +24,24 @@ impl Set<'_> {
     }
 
     /// Returns [Set] fields
-    pub fn fields(&self) -> &[Asn1<'_>] {
+    pub fn fields(&self) -> &[Asn1] {
         self.0.fields()
-    }
-
-    /// Returns owned version of the [Set]
-    pub fn to_owned(&self) -> OwnedSet {
-        Set(Sequence::from(
-            self.0
-                .fields()
-                .iter()
-                .map(|f| f.to_owned_with_asn1(f.inner_asn1().to_owned()))
-                .collect::<Vec<_>>(),
-        ))
     }
 }
 
-impl<'data> From<Vec<Asn1<'data>>> for Set<'data> {
-    fn from(fields: Vec<Asn1<'data>>) -> Self {
+impl<'data> From<Vec<Asn1>> for Set {
+    fn from(fields: Vec<Asn1>) -> Self {
         Self(Sequence::from(fields))
     }
 }
 
-impl Taggable for Set<'_> {
+impl Taggable for Set {
     fn tag(&self) -> Tag {
         Self::TAG
     }
 }
 
-impl Asn1Encoder for Set<'_> {
+impl Asn1Encoder for Set {
     fn needed_buf_size(&self) -> usize {
         self.0.needed_buf_size()
     }
@@ -69,7 +56,7 @@ impl Asn1Encoder for Set<'_> {
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for Set<'data> {
+impl<'data> Asn1ValueDecoder<'data> for Set {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         Ok(Self(Sequence::decode(tag, reader)?))
     }
@@ -79,7 +66,7 @@ impl<'data> Asn1ValueDecoder<'data> for Set<'data> {
     }
 }
 
-impl MetaInfo for Set<'_> {
+impl MetaInfo for Set {
     fn clear_meta(&mut self) {
         self.0.clear_meta()
     }

@@ -1,5 +1,5 @@
 mod sequence;
 mod set;
 
-pub use sequence::{OwnedSequence, Sequence};
-pub use set::{OwnedSet, Set};
+pub use sequence::Sequence;
+pub use set::Set;

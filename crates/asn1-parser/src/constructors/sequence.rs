@@ -10,11 +10,9 @@ use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Ta
 ///
 /// In ASN.1, an ordered list of elements (or components) comprises a SEQUENCE.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct Sequence<'data>(Vec<Asn1<'data>>);
+pub struct Sequence(Vec<Asn1>);
 
-pub type OwnedSequence = Sequence<'static>;
-
-impl Sequence<'_> {
+impl Sequence {
     /// Tag value of the [SEQUENCE] type
     pub const TAG: Tag = Tag(0x30);
 
@@ -24,40 +22,24 @@ impl Sequence<'_> {
     }
 
     /// Returns [Sequence] fields
-    pub fn fields(&self) -> &[Asn1<'_>] {
+    pub fn fields(&self) -> &[Asn1] {
         &self.0
-    }
-
-    /// Returns owned version of the [Sequence]
-    pub fn to_owned(&self) -> OwnedSequence {
-        Sequence(
-            self.0
-                .iter()
-                .map(|f| f.to_owned_with_asn1(f.inner_asn1().to_owned()))
-                .collect(),
-        )
     }
 }
 
-impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {
-    fn from(fields: Vec<Asn1<'data>>) -> Self {
+impl From<Vec<Asn1>> for Sequence {
+    fn from(fields: Vec<Asn1>) -> Self {
         Self(fields)
     }
 }
 
-impl IntoMutable<OwnedSequence> for Sequence<'_> {
-    fn into_mutable(self) -> Mutable<OwnedSequence> {
-        Mutable::new(Sequence(self.0.into_iter().map(|asn1| asn1.into_mutable_asn1()).collect()))
-    }
-}
-
-impl Taggable for Sequence<'_> {
+impl Taggable for Sequence {
     fn tag(&self) -> Tag {
         Self::TAG
     }
 }
 
-impl Asn1Encoder for Sequence<'_> {
+impl Asn1Encoder for Sequence {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.0.iter().map(|f| f.needed_buf_size()).sum();
 
@@ -74,7 +56,7 @@ impl Asn1Encoder for Sequence<'_> {
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for Sequence<'data> {
+impl<'data> Asn1ValueDecoder<'data> for Sequence {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let mut fields = Vec::new();
 
@@ -90,7 +72,7 @@ impl<'data> Asn1ValueDecoder<'data> for Sequence<'data> {
     }
 }
 
-impl MetaInfo for Sequence<'_> {
+impl MetaInfo for Sequence {
     fn clear_meta(&mut self) {
         self.0.iter_mut().for_each(|f| f.clear_meta())
     }

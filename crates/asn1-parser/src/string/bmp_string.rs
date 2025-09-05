@@ -1,20 +1,17 @@
-use alloc::borrow::Cow;
 use alloc::vec::Vec;
 
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, IntoMutable, Mutable, Tag, Taggable};
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
 
 /// [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
 ///
 /// The ASN.1 BMPString type contains UNICODE characters. They are two-byte characters, and are not recommended for use unless properly subtyped.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct BmpString<'data>(Cow<'data, [u8]>);
+pub struct BmpString(Vec<u8>);
 
-pub type OwnedBmpString = BmpString<'static>;
-
-impl BmpString<'_> {
+impl BmpString {
     pub const TAG: Tag = Tag(30);
 
     /// Returns inner raw [BmpString] data
@@ -22,38 +19,24 @@ impl BmpString<'_> {
         &self.0
     }
 
-    /// Returns owned version of the [BmpString]
-    pub fn to_owned(&self) -> OwnedBmpString {
-        BmpString(self.0.to_vec().into())
-    }
-
-    pub fn new_owned(data: Vec<u8>) -> OwnedBmpString {
-        BmpString(Cow::Owned(data))
+    pub fn new(data: Vec<u8>) -> BmpString {
+        BmpString(data)
     }
 }
 
-impl From<&str> for OwnedBmpString {
+impl From<&str> for BmpString {
     fn from(value: &str) -> Self {
-        Self(Cow::Owned(value.encode_utf16().flat_map(|c| c.to_le_bytes()).collect()))
+        Self(value.encode_utf16().flat_map(|c| c.to_le_bytes()).collect())
     }
 }
 
-impl IntoMutable<OwnedBmpString> for BmpString<'_> {
-    fn into_mutable(self) -> Mutable<OwnedBmpString> {
-        Mutable::new(BmpString(match self.0 {
-            Cow::Owned(data) => Cow::Owned(data),
-            Cow::Borrowed(data) => Cow::Owned(data.to_vec()),
-        }))
-    }
-}
-
-impl Taggable for BmpString<'_> {
+impl Taggable for BmpString {
     fn tag(&self) -> Tag {
         Self::TAG
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for BmpString<'data> {
+impl<'data> Asn1ValueDecoder<'data> for BmpString {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let data = reader.remaining();
 
@@ -61,7 +44,7 @@ impl<'data> Asn1ValueDecoder<'data> for BmpString<'data> {
             return Err("Invalid BmpString".into());
         }
 
-        Ok(Self(Cow::Borrowed(data)))
+        Ok(Self(data.to_vec()))
     }
 
     fn compare_tags(tag: Tag) -> bool {
@@ -69,7 +52,7 @@ impl<'data> Asn1ValueDecoder<'data> for BmpString<'data> {
     }
 }
 
-impl Asn1Encoder for BmpString<'_> {
+impl Asn1Encoder for BmpString {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.0.len();
         1 /* tag */ + len_size(data_len) + data_len
