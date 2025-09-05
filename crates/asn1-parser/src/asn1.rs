@@ -4,10 +4,7 @@ use core::ops::Range;
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
-    ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Enumerated, Error,
-    ExplicitTag, GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, MetaInfo, Null, NumericString,
-    ObjectIdentifier, OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String,
-    VisibleString,
+    ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Enumerated, Error, ExplicitTag, GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, IntoMutable, MetaInfo, Mutable, Null, NumericString, ObjectIdentifier, OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String, VisibleString
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -37,6 +34,8 @@ pub enum Asn1Type<'data> {
     ExplicitTag(ExplicitTag<'data>),
     ImplicitTag(ImplicitTag<'data>),
     ApplicationTag(ApplicationTag<'data>),
+
+    Mutable(Mutable<OwnedAsn1Type>),
 }
 
 pub type Asn1<'data> = Tlv<'data, Asn1Type<'data>>;
@@ -68,7 +67,14 @@ impl Asn1Type<'_> {
             Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
             Asn1Type::UtcTime(u) => Asn1Type::UtcTime(u.clone()),
             Asn1Type::GeneralizedTime(u) => Asn1Type::GeneralizedTime(u.clone()),
+            Asn1Type::Mutable(m) => Asn1Type::Mutable(m.clone()),
         }
+    }
+}
+
+impl IntoMutable<OwnedAsn1Type> for Asn1Type<'_> {
+    fn into_mutable(self) -> Mutable<OwnedAsn1Type> {
+        //
     }
 }
 
@@ -96,6 +102,7 @@ impl Taggable for Asn1Type<'_> {
             Asn1Type::ApplicationTag(a) => a.tag(),
             Asn1Type::UtcTime(u) => u.tag(),
             Asn1Type::GeneralizedTime(u) => u.tag(),
+            Asn1Type::Mutable(m) => m.tag(),
         }
     }
 }
@@ -162,6 +169,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::Null(n) => n.needed_buf_size(),
             Asn1Type::UtcTime(u) => u.needed_buf_size(),
             Asn1Type::GeneralizedTime(u) => u.needed_buf_size(),
+            Asn1Type::Mutable(m) => m.needed_buf_size(),
         }
     }
 
@@ -188,6 +196,7 @@ impl Asn1Encoder for Asn1Type<'_> {
             Asn1Type::Null(n) => n.encode(writer),
             Asn1Type::UtcTime(utc_time) => utc_time.encode(writer),
             Asn1Type::GeneralizedTime(generalized_time) => generalized_time.encode(writer),
+            Asn1Type::Mutable(m) => m.encode(writer),
         }
     }
 }
@@ -216,6 +225,7 @@ impl MetaInfo for Asn1Type<'_> {
             Asn1Type::Null(_) => {}
             Asn1Type::UtcTime(_) => {}
             Asn1Type::GeneralizedTime(_) => {}
+            Asn1Type::Mutable(m) => m.clear_meta(),
         }
     }
 }

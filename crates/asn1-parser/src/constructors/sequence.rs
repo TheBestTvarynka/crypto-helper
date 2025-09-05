@@ -45,6 +45,12 @@ impl<'data> From<Vec<Asn1<'data>>> for Sequence<'data> {
     }
 }
 
+impl IntoMutable<OwnedSequence> for Sequence<'_> {
+    fn into_mutable(self) -> Mutable<OwnedSequence> {
+        Mutable::new(Sequence(self.0.into_iter().map(|asn1| asn1.into_mutable_asn1()).collect()))
+    }
+}
+
 impl Taggable for Sequence<'_> {
     fn tag(&self) -> Tag {
         Self::TAG
