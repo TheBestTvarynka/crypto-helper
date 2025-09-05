@@ -3,8 +3,8 @@ macro_rules! define_string_node {
         paste::paste! {
             #[derive(PartialEq, Properties, Clone)]
             pub struct [<$name NodeProps>] {
-                pub node: [<Owned $name>],
-                pub meta: OwnedRawAsn1EntityData,
+                pub node: Mutable<$name>,
+                pub meta: RawAsn1EntityData,
             }
 
             #[allow(non_snake_case)]
@@ -17,7 +17,7 @@ macro_rules! define_string_node {
                 html! {
                     <div class="terminal-asn1-node">
                         <NodeOptions node_bytes={crate::common::RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={stringify!($name)}/>
-                        <span class="asn-simple-value">{props.node.string().to_owned()}</span>
+                        <span class="asn-simple-value">{props.node.get().string().to_owned()}</span>
                     </div>
                 }
             }

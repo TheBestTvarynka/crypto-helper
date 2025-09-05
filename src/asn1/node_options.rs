@@ -1,8 +1,8 @@
-use yew::{Callback, Html, Properties, function_component, html, use_state};
+use yew::{Callback, Html, MouseEvent, Properties, function_component, html, use_state};
 use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType, use_notification};
 
-use crate::common::RcSlice;
+use crate::common::{RcSlice, build_byte_input};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct NodeOptionsProps {
@@ -16,16 +16,28 @@ pub struct NodeOptionsProps {
 #[function_component(NodeOptions)]
 pub fn node_options(props: &NodeOptionsProps) -> Html {
     let show_options = use_state(|| false);
+    let show_edit_panel = use_state(|| false);
 
-    let flag = *show_options;
+    let options_flag = *show_options;
+    let edit_panel_flag = *show_edit_panel;
     let show_options_setter = show_options.setter();
-    let onclick = Callback::from(move |_| {
-        show_options_setter.set(!flag);
+    let show_edit_panel_setter = show_edit_panel.setter();
+    let onclick = Callback::from(move |mouse_event: MouseEvent| {
+        if mouse_event.ctrl_key() {
+            show_edit_panel_setter.set(!edit_panel_flag);
+        } else {
+            show_options_setter.set(!options_flag);
+        }
     });
 
     let show_options_setter = show_options.setter();
-    let onmouseleave = Callback::from(move |_| {
+    let onmouseleave_options = Callback::from(move |_| {
         show_options_setter.set(false);
+    });
+
+    let show_edit_panel_setter = show_edit_panel.setter();
+    let hide_edit_panel = Callback::from(move |_| {
+        show_edit_panel_setter.set(false);
     });
 
     let clipboard = use_clipboard();
@@ -57,12 +69,23 @@ pub fn node_options(props: &NodeOptionsProps) -> Html {
         <div class="asn1-node-options-container">
             {if *show_options {html! {
                 <div style="position: relative">
-                    <div class="asn1-node-options" {onmouseleave}>
+                    <div class="asn1-node-options" onmouseleave={onmouseleave_options}>
                         <span>{format!("Offset: {}", props.offset)}</span>
                         <span>{format!("Length: {}+{}", props.length_len, props.data_len)}</span>
                         <div class="horizontal">
                             <button class="jwt-util-button" onclick={copy_value}>{"Value hex"}</button>
                             <button class="jwt-util-button" onclick={copy_node}>{"Node hex"}</button>
+                        </div>
+                    </div>
+                </div>
+            }} else {html! {}}}
+            {if *show_edit_panel {html! {
+                <div style="position: relative">
+                    <div class="asn1-node-options">
+                        {build_byte_input(b"TheBestTvarynka".to_vec(), Callback::from(|_| {}), None, None)}
+                        <div class="horizontal">
+                            <button class="jwt-util-button-secondary" onclick={hide_edit_panel}>{"Cancel"}</button>
+                            <button class="jwt-util-button">{"Apply"}</button>
                         </div>
                     </div>
                 </div>

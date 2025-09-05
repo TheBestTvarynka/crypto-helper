@@ -60,111 +60,111 @@ pub fn asn1_node(props: &Asn1NodeProps) -> Html {
     }
 }
 
-pub fn build_asn1_schema(asn1: &Asn1<'_>, cur_id: &Option<u64>, set_cur_node: &Callback<HighlightAction>) -> VNode {
+pub fn build_asn1_schema(asn1: &Asn1, cur_id: &Option<u64>, set_cur_node: &Callback<HighlightAction>) -> VNode {
     match asn1.inner_asn1() {
         Asn1Type::OctetString(octet) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <OctetStringNode node={octet.to_owned()} meta={asn1.meta().to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
+                <OctetStringNode node={octet.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
             </Asn1Node>
         },
         Asn1Type::Utf8String(utf8) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <Utf8StringNode node={utf8.to_owned()} meta={asn1.meta().to_owned()} />
+                <Utf8StringNode node={utf8.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::IA5String(ia5) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <IA5StringNode node={ia5.to_owned()} meta={asn1.meta().to_owned()} />
+                <IA5StringNode node={ia5.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::PrintableString(printable) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <PrintableStringNode node={printable.to_owned()} meta={asn1.meta().to_owned()} />
+                <PrintableStringNode node={printable.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::GeneralString(general) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <GeneralStringNode node={general.to_owned()} meta={asn1.meta().to_owned()} />
+                <GeneralStringNode node={general.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::NumericString(numeric) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <NumericStringNode node={numeric.to_owned()} meta={asn1.meta().to_owned()} />
+                <NumericStringNode node={numeric.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::VisibleString(visible) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <VisibleStringNode node={visible.to_owned()} meta={asn1.meta().to_owned()} />
+                <VisibleStringNode node={visible.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::Sequence(sequence) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <SequenceNode node={sequence.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().to_owned()} />
+                <SequenceNode node={sequence.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::Set(set) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <SetNode node={set.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().to_owned()} />
+                <SetNode node={set.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::BitString(bit) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BitStringNode node={bit.to_owned()} meta={asn1.meta().to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
+                <BitStringNode node={bit.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
             </Asn1Node>
         },
         Asn1Type::Bool(boolean) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BoolNode node={boolean.to_owned()} meta={asn1.meta().to_owned()} />
+                <BoolNode node={boolean.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::BmpString(bmp) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BmpStringNode node={bmp.to_owned()} meta={asn1.meta().to_owned()} />
+                <BmpStringNode node={bmp.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::Null(_) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <NullNode meta={asn1.meta().to_owned()} />
+                <NullNode meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::Integer(integer) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <IntegerNode node={integer.to_owned()} meta={asn1.meta().to_owned()} />
+                <IntegerNode node={integer.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::Enumerated(enumerated) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <EnumeratedNode node={enumerated.to_owned()} meta={asn1.meta().to_owned()} />
+                <EnumeratedNode node={enumerated.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::ObjectIdentifier(object_identifier) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ObjectIdentifierNode node={object_identifier.clone()} meta={asn1.meta().to_owned()} />
+                <ObjectIdentifierNode node={object_identifier.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::ExplicitTag(explicit) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ExplicitTagNode node={explicit.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().to_owned()} />
+                <ExplicitTagNode node={explicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::ImplicitTag(implicit) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ImplicitTagNode node={implicit.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().to_owned()} />
+                <ImplicitTagNode node={implicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::ApplicationTag(application) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ApplicationTagNode node={application.to_owned()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().to_owned()} />
+                <ApplicationTagNode node={application.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::UtcTime(utc_time) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <UtcTimeNode node={utc_time.to_owned()} meta={asn1.meta().to_owned()} />
+                <UtcTimeNode node={utc_time.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::GeneralizedTime(generalized_time) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <GeneralizedTimeNode node={generalized_time.to_owned()} meta={asn1.meta().to_owned()} />
+                <GeneralizedTimeNode node={generalized_time.clone()} meta={asn1.meta().clone()} />
             </Asn1Node>
         },
     }

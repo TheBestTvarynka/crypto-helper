@@ -1,4 +1,4 @@
-use asn1_parser::{ObjectIdentifier, OwnedRawAsn1EntityData};
+use asn1_parser::{Mutable, ObjectIdentifier, RawAsn1EntityData};
 use yew::{Html, Properties, function_component, html};
 
 use crate::asn1::node_options::NodeOptions;
@@ -6,8 +6,8 @@ use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct ObjectIdentifierProps {
-    pub node: ObjectIdentifier,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<ObjectIdentifier>,
+    pub meta: RawAsn1EntityData,
 }
 
 #[function_component(ObjectIdentifierNode)]
@@ -16,7 +16,7 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
-    let formatted = props.node.format();
+    let formatted = props.node.get().format();
 
     html! {
         <div class="terminal-asn1-node">

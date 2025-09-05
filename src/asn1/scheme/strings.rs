@@ -1,8 +1,8 @@
 use std::fmt::Write;
 
 use asn1_parser::{
-    OwnedBitString, OwnedBmpString, OwnedGeneralString, OwnedIA5String, OwnedNumericString, OwnedOctetString,
-    OwnedPrintableString, OwnedRawAsn1EntityData, OwnedUtf8String, OwnedVisibleString,
+    BitString, BmpString, GeneralString, IA5String, Mutable, NumericString, OctetString, PrintableString,
+    RawAsn1EntityData, Utf8String, VisibleString,
 };
 use yew::{Callback, Html, Properties, function_component, html};
 
@@ -13,21 +13,22 @@ use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct OctetStringNodeProps {
-    pub node: OwnedOctetString,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<OctetString>,
+    pub meta: RawAsn1EntityData,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
 }
 
 #[function_component(OctetStringNode)]
 pub fn octet_string(props: &OctetStringNodeProps) -> Html {
-    let octets = props.node.octets();
+    let node = props.node.get();
+    let octets = node.octets();
 
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
-    match props.node.inner() {
+    match node.inner() {
         Some(asn1) => html! {
             <div style="cursor: crosshair; width: 100%;">
                 <div class="asn1-constructor-header">
@@ -66,16 +67,17 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
 }
 #[derive(PartialEq, Properties, Clone)]
 pub struct BitStringNodeProps {
-    pub node: OwnedBitString,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<BitString>,
+    pub meta: RawAsn1EntityData,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
 }
 
 #[function_component(BitStringNode)]
 pub fn bit_string(props: &BitStringNodeProps) -> Html {
-    let raw_bits = props.node.raw_bits();
-    let bits_amount = props.node.bits_amount();
+    let node = props.node.get();
+    let raw_bits = node.raw_bits();
+    let bits_amount = node.bits_amount();
 
     let bits = if raw_bits.len() > 1 {
         let mut bits = String::with_capacity((raw_bits.len() - 1) * 8);
@@ -93,7 +95,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
-    match props.node.inner() {
+    match node.inner() {
         Some(asn1) => html! {
             <div style="cursor: crosshair; width: 100%;">
                 <div class="asn1-constructor-header">
@@ -118,8 +120,8 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
 }
 #[derive(PartialEq, Properties, Clone)]
 pub struct BmpStringNodeProps {
-    pub node: OwnedBmpString,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<BmpString>,
+    pub meta: RawAsn1EntityData,
 }
 
 #[function_component(BmpStringNode)]
@@ -127,6 +129,7 @@ pub fn bmp_string(props: &BmpStringNodeProps) -> Html {
     let s = String::from_utf16_lossy(
         &props
             .node
+            .get()
             .raw_data()
             .chunks(2)
             .map(|bytes| u16::from_be_bytes(bytes.try_into().unwrap()))

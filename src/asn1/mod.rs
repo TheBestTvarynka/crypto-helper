@@ -8,7 +8,7 @@ mod scheme;
 
 use std::rc::Rc;
 
-use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder};
+use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, Mutable};
 use web_sys::KeyboardEvent;
 use yew::{Callback, Html, Reducible, classes, function_component, html, use_effect_with, use_reducer, use_state};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
@@ -77,13 +77,13 @@ pub fn asn1_parser_page() -> Html {
     let notification_manager = use_notification::<Notification>();
 
     let raw_asn1 = use_state(|| TEST_ASN1.to_vec());
-    let parsed_asn1 = use_state(|| Asn1::decode_buff(TEST_ASN1).unwrap());
+    let parsed_asn1 = use_state(|| Mutable::new(Asn1::decode_buff(TEST_ASN1).unwrap()));
 
     let notifications = use_notification::<Notification>();
     let asn1_setter = parsed_asn1.setter();
     let raw_data = (*raw_asn1).clone();
     let parse_asn1 = Callback::from(move |_| match Asn1::decode_buff(&raw_data) {
-        Ok(asn1) => asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())),
+        Ok(asn1) => asn1_setter.set(Mutable::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))),
         Err(error) => notifications.spawn(Notification::new(
             NotificationType::Error,
             "Invalid asn1 data",
@@ -118,7 +118,7 @@ pub fn asn1_parser_page() -> Html {
             {
                 match Asn1::decode_buff(&bytes) {
                     Ok(asn1) => {
-                        asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
+                        asn1_setter.set(Mutable::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
                     }
                     Err(err) => {
                         error!(?err, "Can not decode asn1.");
@@ -134,7 +134,7 @@ pub fn asn1_parser_page() -> Html {
                 let url_query_params::Asn1 { asn1: asn1_data } = asn1;
                 match Asn1::decode_buff(&asn1_data) {
                     Ok(asn1) => {
-                        asn1_setter.set(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()));
+                        asn1_setter.set(Mutable::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
                     }
                     Err(error) => notifications.spawn(Notification::new(
                         NotificationType::Error,

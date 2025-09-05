@@ -1,4 +1,4 @@
-use asn1_parser::{Bool, OwnedEnumerated, OwnedInteger, OwnedRawAsn1EntityData};
+use asn1_parser::{Bool, Enumerated, Integer, Mutable, RawAsn1EntityData};
 use yew::{Html, Properties, function_component, html};
 
 use crate::asn1::node_options::NodeOptions;
@@ -6,8 +6,8 @@ use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct BoolNodeProps {
-    pub node: Bool,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<Bool>,
+    pub meta: RawAsn1EntityData,
 }
 
 #[function_component(BoolNode)]
@@ -19,7 +19,7 @@ pub fn bool(props: &BoolNodeProps) -> Html {
     html! {
         <div class="terminal-asn1-node">
             <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Bool")}/>
-            {if props.node.value() {html! {
+            {if props.node.get().value() {html! {
                 <span class="asn-bool-true">{"true"}</span>
             }} else {html! {
                 <span class="asn-bool-false">{"false"}</span>
@@ -30,7 +30,7 @@ pub fn bool(props: &BoolNodeProps) -> Html {
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct NullNodeProps {
-    pub meta: OwnedRawAsn1EntityData,
+    pub meta: RawAsn1EntityData,
 }
 
 #[function_component(NullNode)]
@@ -48,8 +48,8 @@ pub fn null(props: &NullNodeProps) -> Html {
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct IntegerNodeProps {
-    pub node: OwnedInteger,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<Integer>,
+    pub meta: RawAsn1EntityData,
 }
 
 #[function_component(IntegerNode)]
@@ -61,15 +61,15 @@ pub fn integer(props: &IntegerNodeProps) -> Html {
     html! {
         <div class="terminal-asn1-node">
             <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Integer")}/>
-            <span class="asn-simple-value">{format!("{}", props.node.as_big_uint())}</span>
+            <span class="asn-simple-value">{format!("{}", props.node.get().as_big_uint())}</span>
         </div>
     }
 }
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct EnumeratedNodeProps {
-    pub node: OwnedEnumerated,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<Enumerated>,
+    pub meta: RawAsn1EntityData,
 }
 
 #[function_component(EnumeratedNode)]
@@ -81,7 +81,7 @@ pub fn enumerated(props: &EnumeratedNodeProps) -> Html {
     html! {
         <div class="terminal-asn1-node">
             <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Enumerated")}/>
-            <span class="asn-simple-value">{format!("{}", props.node.as_big_uint())}</span>
+            <span class="asn-simple-value">{format!("{}", props.node.get().as_big_uint())}</span>
         </div>
     }
 }

@@ -11,7 +11,8 @@ repository = "https://github.com/TheBestTvarynka/crypto-helper"
 [workspace]
 members = [
     "crates/asn1-parser",
-    "crates/prop-strategies"
+    # TODO: fix prop strategies.
+    # "crates/prop-strategies"
 ]
 
 [[bin]]

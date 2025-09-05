@@ -1,4 +1,4 @@
-use asn1_parser::{OwnedRawAsn1EntityData, OwnedSet};
+use asn1_parser::{Mutable, RawAsn1EntityData, Set};
 use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
@@ -8,15 +8,16 @@ use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct SetNodeProps {
-    pub node: OwnedSet,
+    pub node: Mutable<Set>,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
-    pub meta: OwnedRawAsn1EntityData,
+    pub meta: RawAsn1EntityData,
 }
 
 #[function_component(SetNode)]
 pub fn set(props: &SetNodeProps) -> Html {
-    let fields = props.node.fields();
+    let fields = props.node.get();
+    let fields = fields.fields();
 
     let set_cur_node = &props.set_cur_node;
     let fields_components = fields
