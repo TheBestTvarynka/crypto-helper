@@ -4,7 +4,7 @@ use alloc::vec::Vec;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, IntoMutable, Mutable, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ObjectIdentifier(oid::ObjectIdentifier);
@@ -24,6 +24,12 @@ impl ObjectIdentifier {
 impl From<oid::ObjectIdentifier> for ObjectIdentifier {
     fn from(value: oid::ObjectIdentifier) -> Self {
         Self(value)
+    }
+}
+
+impl IntoMutable<ObjectIdentifier> for ObjectIdentifier {
+    fn into_mutable(self) -> Mutable<ObjectIdentifier> {
+        Mutable::new(self)
     }
 }
 

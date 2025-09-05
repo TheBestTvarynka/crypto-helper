@@ -5,7 +5,7 @@ use alloc::vec::Vec;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, MetaInfo, Tag, Taggable};
+use crate::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, IntoMutable, MetaInfo, Mutable, Tag, Taggable};
 
 /// [BitString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bitstring.html)
 ///
@@ -90,6 +90,19 @@ impl From<Vec<u8>> for BitString<'_> {
             octets: Cow::Owned(data),
             inner,
         }
+    }
+}
+
+impl IntoMutable<OwnedBitString> for BitString<'_> {
+    fn into_mutable(self) -> Mutable<OwnedBitString> {
+        let BitString { octets, inner: _ } = self;
+        Mutable::new(OwnedBitString {
+            octets: match octets {
+                Cow::Owned(v) => Cow::Owned(v),
+                Cow::Borrowed(v) => Cow::Owned(v.to_vec()),
+            },
+            inner: None,
+        })
     }
 }
 

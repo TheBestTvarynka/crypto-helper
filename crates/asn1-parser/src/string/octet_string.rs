@@ -6,7 +6,7 @@ use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
+use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, IntoMutable, MetaInfo, Mutable, Tag, Taggable};
 
 /// [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
 ///
@@ -91,6 +91,19 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString<'data> {
 
     fn compare_tags(tag: Tag) -> bool {
         Self::TAG == tag
+    }
+}
+
+impl IntoMutable<OwnedOctetString> for OctetString<'_> {
+    fn into_mutable(self) -> Mutable<OwnedOctetString> {
+        let OctetString { octets, inner: _ } = self;
+        Mutable::new(OctetString {
+            octets: match octets {
+                Cow::Owned(v) => Cow::Owned(v),
+                Cow::Borrowed(v) => Cow::Owned(v.to_vec()),
+            },
+            inner: None,
+        })
     }
 }
 

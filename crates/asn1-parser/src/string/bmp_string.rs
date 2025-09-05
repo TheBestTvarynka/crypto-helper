@@ -4,7 +4,7 @@ use alloc::vec::Vec;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, IntoMutable, Mutable, Tag, Taggable};
 
 /// [BmpString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/bmpstring.html)
 ///
@@ -35,6 +35,15 @@ impl BmpString<'_> {
 impl From<&str> for OwnedBmpString {
     fn from(value: &str) -> Self {
         Self(Cow::Owned(value.encode_utf16().flat_map(|c| c.to_le_bytes()).collect()))
+    }
+}
+
+impl IntoMutable<OwnedBmpString> for BmpString<'_> {
+    fn into_mutable(self) -> Mutable<OwnedBmpString> {
+        Mutable::new(BmpString(match self.0 {
+            Cow::Owned(data) => Cow::Owned(data),
+            Cow::Borrowed(data) => Cow::Owned(data.to_vec()),
+        }))
     }
 }
 

@@ -6,7 +6,7 @@ use num_bigint_dig::BigUint;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, IntoMutable, Mutable, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Integer<'data>(Cow<'data, [u8]>);
@@ -38,6 +38,15 @@ impl Integer<'_> {
 impl From<Vec<u8>> for OwnedInteger {
     fn from(bytes: Vec<u8>) -> Self {
         Self(Cow::Owned(bytes))
+    }
+}
+
+impl IntoMutable<OwnedInteger> for Integer<'_> {
+    fn into_mutable(self) -> Mutable<OwnedInteger> {
+        Mutable::new(Integer(match self.0 {
+            Cow::Owned(data) => Cow::Owned(data),
+            Cow::Borrowed(data) => Cow::Owned(data.to_vec()),
+        }))
     }
 }
 

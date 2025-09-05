@@ -9,7 +9,7 @@ license-file = "../../LICENSE"
 repository = "https://github.com/TheBestTvarynka/crypto-helper"
 
 [features]
-default-fearures = []
+default = ["std"]
 std = []
 
 [dev-dependencies]

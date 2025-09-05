@@ -1,7 +1,7 @@
 use crate::length::write_len;
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, Tag, Taggable};
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, IntoMutable, Mutable, Tag, Taggable};
 
 /// [Boolen](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/boolean.html)
 ///
@@ -24,6 +24,12 @@ impl Bool {
 impl From<bool> for Bool {
     fn from(flag: bool) -> Self {
         Self(flag)
+    }
+}
+
+impl IntoMutable<Bool> for Bool {
+    fn into_mutable(self) -> Mutable<Bool> {
+        Mutable::new(self)
     }
 }
 

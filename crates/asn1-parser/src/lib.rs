@@ -14,6 +14,7 @@ mod constructors;
 mod error;
 mod length;
 mod primitives;
+mod mutable;
 mod reader;
 mod string;
 mod tag;
@@ -32,6 +33,7 @@ pub use tag::Tag;
 pub use tags::*;
 pub use time::*;
 pub use tlv::Tlv;
+pub use mutable::{Mutable, IntoMutable};
 use writer::Writer;
 
 pub type Asn1Result<T> = Result<T, Error>;

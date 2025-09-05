@@ -1,7 +1,7 @@
 use crate::length::write_len;
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, Tag, Taggable};
+use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, IntoMutable, Mutable, Tag, Taggable};
 
 /// [Null](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/null.html)
 ///
@@ -18,6 +18,12 @@ impl Null {
 impl Taggable for Null {
     fn tag(&self) -> Tag {
         Self::TAG
+    }
+}
+
+impl IntoMutable<Null> for Null {
+    fn into_mutable(self) -> Mutable<Null> {
+        Mutable::new(self)
     }
 }
 
