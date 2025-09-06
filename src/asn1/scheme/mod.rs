@@ -119,7 +119,7 @@ pub fn build_asn1_schema(
         },
         Asn1Type::Bool(boolean) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BoolNode node={boolean.clone()} meta={asn1.meta().clone()} />
+                <BoolNode node={boolean.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::BmpString(bmp) => html! {
@@ -134,17 +134,17 @@ pub fn build_asn1_schema(
         },
         Asn1Type::Integer(integer) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <IntegerNode node={integer.clone()} meta={asn1.meta().clone()} />
+                <IntegerNode node={integer.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Enumerated(enumerated) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <EnumeratedNode node={enumerated.clone()} meta={asn1.meta().clone()} />
+                <EnumeratedNode node={enumerated.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ObjectIdentifier(object_identifier) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ObjectIdentifierNode node={object_identifier.clone()} meta={asn1.meta().clone()} />
+                <ObjectIdentifierNode node={object_identifier.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ExplicitTag(explicit) => html! {

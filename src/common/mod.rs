@@ -20,10 +20,10 @@ use yew::{Callback, UseStateSetter};
 
 use crate::utils::{decode_base64, decode_binary, decode_decimal};
 
-const HEX: &str = "hex";
-const BASE64: &str = "base64";
+pub const HEX: &str = "hex";
+pub const BASE64: &str = "base64";
 const ASCII: &str = "ascii";
-const DECIMAL: &str = "decimal";
+pub const DECIMAL: &str = "decimal";
 const BINARY: &str = "binary";
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
@@ -121,7 +121,7 @@ fn parse_bytes(raw: &str, format: BytesFormat) -> Result<Vec<u8>, String> {
     }
 }
 
-fn get_format_button_class(selected: bool) -> &'static str {
+pub fn get_format_button_class(selected: bool) -> &'static str {
     if selected {
         "format-button format-button-selected"
     } else {
@@ -129,7 +129,7 @@ fn get_format_button_class(selected: bool) -> &'static str {
     }
 }
 
-fn get_set_format_callback(format: BytesFormat, set_format: UseStateSetter<BytesFormat>) -> Callback<MouseEvent> {
+pub fn get_set_format_callback(format: BytesFormat, set_format: UseStateSetter<BytesFormat>) -> Callback<MouseEvent> {
     Callback::from(move |_event| {
         set_format.set(format);
     })

@@ -63,6 +63,7 @@ rand = { version = "0.9", default-features = false, features = ["small_rng"] }
 rand_chacha = { version = "0.9", default-features = false }
 argon2 = "0.5"
 password-hash = "0.5"
+num-bigint-dig = { version = "0.8", default-features = false }
 
 # asn1
 asn1-parser = { path = "./crates/asn1-parser", features = ["std"] }

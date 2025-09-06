@@ -20,7 +20,7 @@ macro_rules! define_string_node {
                 let node = props.node.clone();
                 let re_encode = props.re_encode.clone();
                 let setter = Callback::from(move |value: String| {
-                    node.get_mut().set_string(value.clone());
+                    node.get_mut().set_string(value);
                     re_encode.emit(());
                 });
 

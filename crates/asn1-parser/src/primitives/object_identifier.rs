@@ -19,6 +19,10 @@ impl ObjectIdentifier {
     pub fn format(&self) -> String {
         { &self.0 }.into()
     }
+
+    pub fn set_oid(&mut self, oid: oid::ObjectIdentifier) {
+        self.0 = oid;
+    }
 }
 
 impl From<oid::ObjectIdentifier> for ObjectIdentifier {

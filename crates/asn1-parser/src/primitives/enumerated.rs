@@ -26,6 +26,10 @@ impl Enumerated {
             &self.0
         })
     }
+
+    pub fn set(&mut self, bytes: Vec<u8>) {
+        self.0 = bytes;
+    }
 }
 
 impl From<Vec<u8>> for Enumerated {

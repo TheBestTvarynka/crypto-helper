@@ -16,6 +16,10 @@ impl Bool {
         self.0
     }
 
+    pub fn set(&mut self, value: bool) {
+        self.0 = value;
+    }
+
     pub fn from_byte(byte: u8) -> Self {
         Bool(byte != 0)
     }
