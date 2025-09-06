@@ -53,7 +53,7 @@ impl BitString {
         let inner = if !bits.is_empty() {
             Asn1::decode_buff(&bits[1..]).ok().map(|mut asn1| {
                 asn1.clear_meta();
-                Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))
+                Box::new(asn1)
             })
         } else {
             None
@@ -66,9 +66,7 @@ impl BitString {
 // we assume here that firs vector byte contains amount of unused bytes
 impl From<Vec<u8>> for BitString {
     fn from(data: Vec<u8>) -> Self {
-        let inner = Asn1::decode_buff(&data)
-            .ok()
-            .map(|asn1| Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
+        let inner = Asn1::decode_buff(&data).ok().map(|asn1| Box::new(asn1));
         Self { octets: data, inner }
     }
 }

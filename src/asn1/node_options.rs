@@ -2,12 +2,15 @@ use yew::{Callback, Html, MouseEvent, Properties, function_component, html, use_
 use yew_hooks::use_clipboard;
 use yew_notifications::{Notification, NotificationType, use_notification};
 
-use crate::common::{RcSlice, build_byte_input};
+use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct NodeOptionsProps {
     pub name: String,
     pub node_bytes: RcSlice,
+    #[prop_or_default]
+    pub editor: Option<Html>,
+
     pub offset: usize,
     pub length_len: usize,
     pub data_len: usize,
@@ -82,10 +85,9 @@ pub fn node_options(props: &NodeOptionsProps) -> Html {
             {if *show_edit_panel {html! {
                 <div style="position: relative">
                     <div class="asn1-node-options">
-                        {build_byte_input(b"TheBestTvarynka".to_vec(), Callback::from(|_| {}), None, None)}
+                        {props.editor.clone()}
                         <div class="horizontal">
                             <button class="jwt-util-button-secondary" onclick={hide_edit_panel}>{"Cancel"}</button>
-                            <button class="jwt-util-button">{"Apply"}</button>
                         </div>
                     </div>
                 </div>

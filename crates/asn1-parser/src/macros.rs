@@ -51,6 +51,10 @@ macro_rules! impl_utf8_asn1 {
             pub fn string(&self) -> &str {
                 self.0.as_str()
             }
+
+            pub fn set_string(&mut self, value: String) {
+                self.0 = value.into();
+            }
         }
 
         impl From<&str> for $name {

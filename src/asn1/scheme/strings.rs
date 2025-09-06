@@ -17,6 +17,7 @@ pub struct OctetStringNodeProps {
     pub meta: RawAsn1EntityData,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(OctetStringNode)]
@@ -36,7 +37,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
                     <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                 </div>
                 <div class="asn1-constructor-body">
-                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node)}
+                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, props.re_encode.clone())}
                 </div>
             </div>
         },
@@ -71,6 +72,7 @@ pub struct BitStringNodeProps {
     pub meta: RawAsn1EntityData,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(BitStringNode)]
@@ -103,7 +105,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
                     <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
                 </div>
                 <div class="asn1-constructor-body">
-                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node)}
+                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, props.re_encode.clone())}
                 </div>
             </div>
         },

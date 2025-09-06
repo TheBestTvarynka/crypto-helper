@@ -26,14 +26,6 @@ impl<A> Tlv<A> {
     pub fn inner_asn1(&self) -> &A {
         &self.asn1
     }
-
-    pub fn to_owned_with_asn1<B>(&self, asn1: B) -> Tlv<B> {
-        Tlv {
-            id: self.id,
-            meta: self.meta.clone(),
-            asn1,
-        }
-    }
 }
 
 impl<A: MetaInfo> MetaInfo for Tlv<A> {

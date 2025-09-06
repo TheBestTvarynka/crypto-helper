@@ -2,6 +2,7 @@
 mod macros;
 
 mod asn1_viewer;
+mod editor;
 mod hex_view;
 mod node_options;
 mod scheme;
@@ -83,7 +84,7 @@ pub fn asn1_parser_page() -> Html {
     let asn1_setter = parsed_asn1.setter();
     let raw_data = (*raw_asn1).clone();
     let parse_asn1 = Callback::from(move |_| match Asn1::decode_buff(&raw_data) {
-        Ok(asn1) => asn1_setter.set(Mutable::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))),
+        Ok(asn1) => asn1_setter.set(Mutable::new(asn1)),
         Err(error) => notifications.spawn(Notification::new(
             NotificationType::Error,
             "Invalid asn1 data",
@@ -118,7 +119,7 @@ pub fn asn1_parser_page() -> Html {
             {
                 match Asn1::decode_buff(&bytes) {
                     Ok(asn1) => {
-                        asn1_setter.set(Mutable::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
+                        asn1_setter.set(Mutable::new(asn1));
                     }
                     Err(err) => {
                         error!(?err, "Can not decode asn1.");
@@ -134,7 +135,7 @@ pub fn asn1_parser_page() -> Html {
                 let url_query_params::Asn1 { asn1: asn1_data } = asn1;
                 match Asn1::decode_buff(&asn1_data) {
                     Ok(asn1) => {
-                        asn1_setter.set(Mutable::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned())));
+                        asn1_setter.set(Mutable::new(asn1));
                     }
                     Err(error) => notifications.spawn(Notification::new(
                         NotificationType::Error,
@@ -178,6 +179,29 @@ pub fn asn1_parser_page() -> Html {
     let asn1_dispatcher = ctx.dispatcher();
     let hex_dispatcher = ctx.dispatcher();
 
+    // let raw_asn1_setter = raw_asn1.setter();
+    let asn1_setter = parsed_asn1.setter();
+    let asn1_data = (*parsed_asn1).clone();
+    let re_encode_fn: Callback<()> = Callback::from(move |_| {
+        let mut encoded = vec![0; asn1_data.needed_buf_size()];
+        match asn1_data.encode_buff(&mut encoded) {
+            Ok(_) => {
+                // raw_asn1_setter.set(encoded.clone());
+                match Asn1::decode_buff(&encoded) {
+                    Ok(asn1) => {
+                        asn1_setter.set(Mutable::new(asn1));
+                    }
+                    Err(err) => {
+                        error!(?err, "Can not decode asn1 after re-encoding.");
+                    }
+                }
+            }
+            Err(err) => {
+                error!(?err, "Can not re-encode asn1.");
+            }
+        };
+    });
+
     html! {
         <div class={classes!("vertical", "asn1-page")} {onkeydown}>
             <span>
@@ -199,6 +223,7 @@ pub fn asn1_parser_page() -> Html {
                     structure={(*parsed_asn1).clone()}
                     cur_node={(*ctx).current()}
                     set_cur_node={move |action| asn1_dispatcher.dispatch(action)}
+                    re_encode={re_encode_fn.clone()}
                 />
                 <HexViewer
                     structure={(*parsed_asn1).clone()}

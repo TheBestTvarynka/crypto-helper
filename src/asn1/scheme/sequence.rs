@@ -12,6 +12,7 @@ pub struct SequenceNodeProps {
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
     pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(SequenceNode)]
@@ -22,7 +23,7 @@ pub fn sequence(props: &SequenceNodeProps) -> Html {
     let set_cur_node = &props.set_cur_node;
     let fields_components = fields
         .iter()
-        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
+        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone()))
         .collect::<Vec<_>>();
 
     let offset = props.meta.tag_position();

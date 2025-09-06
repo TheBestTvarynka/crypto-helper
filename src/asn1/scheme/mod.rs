@@ -60,56 +60,61 @@ pub fn asn1_node(props: &Asn1NodeProps) -> Html {
     }
 }
 
-pub fn build_asn1_schema(asn1: &Asn1, cur_id: &Option<u64>, set_cur_node: &Callback<HighlightAction>) -> VNode {
+pub fn build_asn1_schema(
+    asn1: &Asn1,
+    cur_id: &Option<u64>,
+    set_cur_node: &Callback<HighlightAction>,
+    re_encode: Callback<()>,
+) -> VNode {
     match asn1.inner_asn1() {
         Asn1Type::OctetString(octet) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <OctetStringNode node={octet.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
+                <OctetStringNode node={octet.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Utf8String(utf8) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <Utf8StringNode node={utf8.clone()} meta={asn1.meta().clone()} />
+                <Utf8StringNode node={utf8.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::IA5String(ia5) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <IA5StringNode node={ia5.clone()} meta={asn1.meta().clone()} />
+                <IA5StringNode node={ia5.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::PrintableString(printable) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <PrintableStringNode node={printable.clone()} meta={asn1.meta().clone()} />
+                <PrintableStringNode node={printable.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::GeneralString(general) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <GeneralStringNode node={general.clone()} meta={asn1.meta().clone()} />
+                <GeneralStringNode node={general.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::NumericString(numeric) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <NumericStringNode node={numeric.clone()} meta={asn1.meta().clone()} />
+                <NumericStringNode node={numeric.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::VisibleString(visible) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <VisibleStringNode node={visible.clone()} meta={asn1.meta().clone()} />
+                <VisibleStringNode node={visible.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Sequence(sequence) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <SequenceNode node={sequence.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
+                <SequenceNode node={sequence.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Set(set) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <SetNode node={set.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
+                <SetNode node={set.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::BitString(bit) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <BitStringNode node={bit.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} />
+                <BitStringNode node={bit.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Bool(boolean) => html! {
@@ -144,17 +149,17 @@ pub fn build_asn1_schema(asn1: &Asn1, cur_id: &Option<u64>, set_cur_node: &Callb
         },
         Asn1Type::ExplicitTag(explicit) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ExplicitTagNode node={explicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
+                <ExplicitTagNode node={explicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ImplicitTag(implicit) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ImplicitTagNode node={implicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
+                <ImplicitTagNode node={implicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ApplicationTag(application) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()}>
-                <ApplicationTagNode node={application.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} />
+                <ApplicationTagNode node={application.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::UtcTime(utc_time) => html! {

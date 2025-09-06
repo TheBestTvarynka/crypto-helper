@@ -14,6 +14,7 @@ pub struct ExplicitTagProps {
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
     pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(ExplicitTagNode)]
@@ -24,7 +25,7 @@ pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
         .get()
         .inner()
         .iter()
-        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
+        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone()))
         .collect::<Vec<_>>();
 
     let offset = props.meta.tag_position();
@@ -49,6 +50,7 @@ pub struct ApplicationTagProps {
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
     pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(ApplicationTagNode)]
@@ -59,7 +61,7 @@ pub fn application_tag(props: &ApplicationTagProps) -> Html {
         .get()
         .inner()
         .iter()
-        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
+        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone()))
         .collect::<Vec<_>>();
 
     let offset = props.meta.tag_position();
@@ -83,6 +85,7 @@ pub struct ImplicitTagProps {
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
     pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(ImplicitTagNode)]
@@ -100,7 +103,7 @@ pub fn implicit_tag(props: &ImplicitTagProps) -> Html {
                     <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{}] Implicit", node.tag_number())}/>
                 </div>
                 <div class="asn1-constructor-body">
-                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node)}
+                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, props.re_encode.clone())}
                 </div>
             </div>
         },

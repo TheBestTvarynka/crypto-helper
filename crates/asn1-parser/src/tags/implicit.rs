@@ -18,7 +18,7 @@ impl ImplicitTag {
     pub fn new(tag: u8, octets: Vec<u8>) -> Self {
         let inner = Asn1::decode_buff(&octets).ok().map(|mut asn1| {
             asn1.clear_meta();
-            Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))
+            Box::new(asn1)
         });
 
         Self { tag, octets, inner }
