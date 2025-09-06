@@ -29,7 +29,7 @@ impl Set {
     }
 }
 
-impl<'data> From<Vec<Asn1>> for Set {
+impl From<Vec<Asn1>> for Set {
     fn from(fields: Vec<Asn1>) -> Self {
         Self(Sequence::from(fields))
     }

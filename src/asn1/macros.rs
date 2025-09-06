@@ -11,22 +11,16 @@ macro_rules! define_string_node {
             #[allow(non_snake_case)]
             #[function_component([<$name Node >])]
             pub fn [<__fn_ $name>](props: &[<$name NodeProps>]) -> Html {
-                use yew::use_state;
-
                 use crate::asn1::editor::StringEditor;
-
-                let string = use_state(|| props.node.get().string().to_owned());
 
                 let offset = props.meta.tag_position();
                 let length_len = props.meta.length_range().len();
                 let data_len = props.meta.data_range().len();
 
                 let node = props.node.clone();
-                let string_setter = string.setter();
                 let re_encode = props.re_encode.clone();
                 let setter = Callback::from(move |value: String| {
                     node.get_mut().set_string(value.clone());
-                    string_setter.set(value);
                     re_encode.emit(());
                 });
 
@@ -45,7 +39,7 @@ macro_rules! define_string_node {
                                 />
                             })}
                         />
-                        <span class="asn-simple-value">{(*string).clone()}</span>
+                        <span class="asn-simple-value">{props.node.get().string().to_owned()}</span>
                     </div>
                 }
             }

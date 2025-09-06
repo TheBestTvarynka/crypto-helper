@@ -39,7 +39,7 @@ pub fn node_options(props: &NodeOptionsProps) -> Html {
     });
 
     let show_edit_panel_setter = show_edit_panel.setter();
-    let hide_edit_panel = Callback::from(move |_| {
+    let onmouseleave_edit_panel = Callback::from(move |_| {
         show_edit_panel_setter.set(false);
     });
 
@@ -84,11 +84,8 @@ pub fn node_options(props: &NodeOptionsProps) -> Html {
             }} else {html! {}}}
             {if *show_edit_panel {html! {
                 <div style="position: relative">
-                    <div class="asn1-node-options">
+                    <div class="asn1-node-options" onmouseleave={onmouseleave_edit_panel} >
                         {props.editor.clone()}
-                        <div class="horizontal">
-                            <button class="jwt-util-button-secondary" onclick={hide_edit_panel}>{"Cancel"}</button>
-                        </div>
                     </div>
                 </div>
             }} else {html! {}}}

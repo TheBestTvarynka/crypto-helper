@@ -12,6 +12,23 @@
     transition: all 0.2s;
 }
 
+.modal-input {
+    font-family: 'JetBrains Mono', monospace;
+    background: #dbcfbf;
+    padding: 0.2em;
+    border-radius: 3px;
+    margin: 0;
+    color: #50437f;
+    border: 3px solid #dbcfbf;
+    font-size: 0.9em;
+    transition: all 0.2s;
+}
+
+.modal-input:focus {
+    border-bottom: 3px solid #7d5541;
+    outline: none;
+}
+
 .input-error {
     color: #3714ba;
     border-color: #f07b6e;

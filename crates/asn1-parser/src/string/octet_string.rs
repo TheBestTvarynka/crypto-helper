@@ -41,7 +41,7 @@ impl OctetString {
 
 impl From<Vec<u8>> for OctetString {
     fn from(data: Vec<u8>) -> Self {
-        let inner = Asn1::decode_buff(&data).ok().map(|asn1| Box::new(asn1));
+        let inner = Asn1::decode_buff(&data).ok().map(Box::new);
         Self { octets: data, inner }
     }
 }
