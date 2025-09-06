@@ -117,3 +117,43 @@
     cursor: pointer;
     white-space: nowrap;
 }
+
+.asn1-node-edit-options {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(-90%, 50%);
+    z-index: 10;
+}
+
+.asn1-button-add-node {
+    font-size: 0.8em;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    border: 0px;
+    transition: 0.15s;
+    background: transparent;
+
+    opacity: 0;
+}
+
+.asn1-button-add-node img {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.asn1-button-add-node:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.asn1-button-add-separator {
+    border: 1px solid #403735;
+    width: 1.5em;
+    height: 0;
+    content: " ";
+}

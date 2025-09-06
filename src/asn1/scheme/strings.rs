@@ -66,6 +66,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
         }
     }
 }
+
 #[derive(PartialEq, Properties, Clone)]
 pub struct BitStringNodeProps {
     pub node: Mutable<BitString>,

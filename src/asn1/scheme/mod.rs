@@ -23,6 +23,23 @@ use self::time::{GeneralizedTimeNode, UtcTimeNode};
 use crate::asn1::HighlightAction;
 use crate::asn1::scheme::set::SetNode;
 
+#[function_component(Asn1NodeOptions)]
+pub fn node_options() -> Html {
+    html! {
+        <div class="asn1-node-edit-options">
+            <button class="asn1-button-add-node">
+                <img src="/public/img/icons/add.png" />
+                <div style="position: relative;">
+                    <span
+                        class="asn1-button-add-separator"
+                        style="position: absolute; bottom: 0; right: 0; transform: translate(100%, 50%);"
+                    />
+                </div>
+            </button>
+        </div>
+    }
+}
+
 #[derive(PartialEq, Properties, Clone)]
 pub struct Asn1NodeProps {
     pub id: u64,
@@ -54,8 +71,9 @@ pub fn asn1_node(props: &Asn1NodeProps) -> Html {
     });
 
     html! {
-        <div class={get_node_class(props.id, &props.cur_id)} {onmouseenter} {onmouseleave}>
+        <div class={get_node_class(props.id, &props.cur_id)} {onmouseenter} {onmouseleave} style="position: relative;">
             {props.children.clone()}
+            <Asn1NodeOptions />
         </div>
     }
 }

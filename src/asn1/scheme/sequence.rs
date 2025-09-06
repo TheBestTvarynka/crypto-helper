@@ -3,7 +3,7 @@ use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
 use crate::asn1::node_options::NodeOptions;
-use crate::asn1::scheme::build_asn1_schema;
+use crate::asn1::scheme::{Asn1NodeOptions, build_asn1_schema};
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
@@ -21,10 +21,18 @@ pub fn sequence(props: &SequenceNodeProps) -> Html {
     let fields = fields.fields();
 
     let set_cur_node = &props.set_cur_node;
+    let fields_components = vec![html! {
+        <div style="position: relative;">
+            <Asn1NodeOptions />
+        </div>
+    }];
     let fields_components = fields
         .iter()
         .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone()))
-        .collect::<Vec<_>>();
+        .fold(fields_components, |mut fields_components, component| {
+            fields_components.push(component);
+            fields_components
+        });
 
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
