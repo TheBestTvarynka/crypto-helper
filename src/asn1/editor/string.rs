@@ -5,6 +5,8 @@ use yew::{Callback, Html, Properties, TargetCast, function_component, html};
 pub struct StringEditorProps {
     pub value: String,
     pub setter: Callback<String>,
+    #[prop_or_default]
+    pub rows: Option<usize>,
 }
 
 #[function_component(StringEditor)]
@@ -25,6 +27,7 @@ pub fn string_editor(props: &StringEditorProps) -> Html {
             cols={cols.to_string()}
             value={props.value.clone()}
             {oninput}
+            rows={props.rows.unwrap_or(props.value.lines().count()).to_string()}
         />
     }
 }

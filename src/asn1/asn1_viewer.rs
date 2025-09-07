@@ -15,9 +15,13 @@ pub struct Asn1ViewerProps {
 
 #[function_component(Asn1Viewer)]
 pub fn asn1_viewer(props: &Asn1ViewerProps) -> Html {
+    let add_node = Callback::from(|_asn1_type| {
+        // TODO
+    });
+
     html! {
         <div>
-            {build_asn1_schema(&props.structure.get(), &props.cur_node, &props.set_cur_node, props.re_encode.clone())}
+            {build_asn1_schema(&props.structure.get(), &props.cur_node, &props.set_cur_node, props.re_encode.clone(), add_node)}
         </div>
     }
 }

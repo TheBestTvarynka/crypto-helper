@@ -61,6 +61,11 @@ impl BitString {
 
         Ok(BitString { octets: bits, inner })
     }
+
+    pub fn set_bits(&mut self, octets: Vec<u8>) {
+        self.octets = octets;
+        self.inner = Asn1::decode_buff(&self.octets).ok().map(Box::new);
+    }
 }
 
 // we assume here that firs vector byte contains amount of unused bytes

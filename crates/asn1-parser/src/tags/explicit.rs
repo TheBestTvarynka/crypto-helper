@@ -27,6 +27,10 @@ impl ExplicitTag {
     pub fn inner(&self) -> &[Asn1] {
         &self.inner
     }
+
+    pub fn fields_mut_vec(&mut self) -> &mut Vec<Asn1> {
+        &mut self.inner
+    }
 }
 
 impl Taggable for ExplicitTag {

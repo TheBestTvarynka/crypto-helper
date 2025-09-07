@@ -35,6 +35,11 @@ impl ImplicitTag {
     pub fn octets(&self) -> &[u8] {
         self.octets.as_ref()
     }
+
+    pub fn set_octets(&mut self, octets: Vec<u8>) {
+        self.octets = octets;
+        self.inner = Asn1::decode_buff(&self.octets).ok().map(Box::new);
+    }
 }
 
 impl Taggable for ImplicitTag {

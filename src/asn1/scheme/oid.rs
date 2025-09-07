@@ -41,6 +41,7 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
                     <StringEditor
                         value={formatted.clone()}
                         {setter}
+                        rows={1}
                     />
                 })}
             />

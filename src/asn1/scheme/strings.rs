@@ -1,7 +1,7 @@
 use std::fmt::Write;
 
 use asn1_parser::{
-    BitString, BmpString, GeneralString, IA5String, Mutable, NumericString, OctetString, PrintableString,
+    Asn1Encoder, BitString, BmpString, GeneralString, IA5String, Mutable, NumericString, OctetString, PrintableString,
     RawAsn1EntityData, Utf8String, VisibleString,
 };
 use yew::{Callback, Html, Properties, function_component, html};
@@ -30,17 +30,35 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
     let data_len = props.meta.data_range().len();
 
     match node.inner() {
-        Some(asn1) => html! {
-            <div style="cursor: crosshair; width: 100%;">
-                <div class="asn1-constructor-header">
-                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("OctetString")}/>
-                    <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
+        Some(asn1) => {
+            let asn1_type = asn1.inner_asn1().clone();
+            let global_re_encode = props.re_encode.clone();
+            let node = props.node.clone();
+            let re_encode = Callback::from(move |_| {
+                let mut buf = vec![0; asn1_type.needed_buf_size()];
+                asn1_type.encode_buff(&mut buf).expect("Node encoding should not fail");
+
+                node.get_mut().set_octets(buf);
+                global_re_encode.emit(());
+            });
+            let add_node = Callback::from(move |_asn1_type| {
+                // props.node.get_mut().set_inner(Some(Asn1::from_asn1_type(asn1_type)));
+                // re_encode.emit(());
+                // TODO
+            });
+
+            html! {
+                <div style="cursor: crosshair; width: 100%;">
+                    <div class="asn1-constructor-header">
+                        <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("OctetString")}/>
+                        <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
+                    </div>
+                    <div class="asn1-constructor-body">
+                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node)}
+                    </div>
                 </div>
-                <div class="asn1-constructor-body">
-                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, props.re_encode.clone())}
-                </div>
-            </div>
-        },
+            }
+        }
         None => {
             let encoded_octets = if octets.len() % 2 == 0
                 && let Ok(s) = String::from_utf16(&{
@@ -99,17 +117,33 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
     let data_len = props.meta.data_range().len();
 
     match node.inner() {
-        Some(asn1) => html! {
-            <div style="cursor: crosshair; width: 100%;">
-                <div class="asn1-constructor-header">
-                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BitString")} />
-                    <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
+        Some(asn1) => {
+            let asn1_type = asn1.inner_asn1().clone();
+            let global_re_encode = props.re_encode.clone();
+            let node = props.node.clone();
+            let re_encode = Callback::from(move |_| {
+                let mut buf = vec![0; asn1_type.needed_buf_size()];
+                asn1_type.encode_buff(&mut buf).expect("Node encoding should not fail");
+
+                node.get_mut().set_bits(buf);
+                global_re_encode.emit(());
+            });
+            let add_node = Callback::from(move |_asn1_type| {
+                // TODO
+            });
+
+            html! {
+                <div style="cursor: crosshair; width: 100%;">
+                    <div class="asn1-constructor-header">
+                        <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BitString")} />
+                        <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
+                    </div>
+                    <div class="asn1-constructor-body">
+                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node)}
+                    </div>
                 </div>
-                <div class="asn1-constructor-body">
-                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, props.re_encode.clone())}
-                </div>
-            </div>
-        },
+            }
+        }
         None => {
             html! {
                 <div class="terminal-asn1-node">

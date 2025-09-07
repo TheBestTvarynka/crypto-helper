@@ -1,9 +1,9 @@
-use asn1_parser::{Mutable, RawAsn1EntityData, Set};
+use asn1_parser::{Asn1, Asn1Type, Mutable, RawAsn1EntityData, Set};
 use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
 use crate::asn1::node_options::NodeOptions;
-use crate::asn1::scheme::build_asn1_schema;
+use crate::asn1::scheme::{Asn1NodeOptions, build_asn1_schema};
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
@@ -21,10 +21,36 @@ pub fn set(props: &SetNodeProps) -> Html {
     let fields = fields.fields();
 
     let set_cur_node = &props.set_cur_node;
+    let set_node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let fields_components = vec![html! {
+        <div style="position: relative;">
+            <Asn1NodeOptions add_node={Callback::from(move |asn1_type: Asn1Type| {
+                set_node.get_mut().fields_mut_vec().insert(0, Asn1::from_asn1_type(asn1_type));
+                re_encode.emit(());
+            })} />
+        </div>
+    }];
     let fields_components = fields
         .iter()
-        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone()))
-        .collect::<Vec<_>>();
+        .enumerate()
+        .map(|(i, f)| {
+            let re_encode = props.re_encode.clone();
+            let set_node = props.node.clone();
+            let add_node = Callback::from(move |asn1_type: Asn1Type| {
+                set_node
+                    .get_mut()
+                    .fields_mut_vec()
+                    .insert(i + 1, Asn1::from_asn1_type(asn1_type));
+                re_encode.emit(());
+            });
+
+            build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone(), add_node)
+        })
+        .fold(fields_components, |mut fields_components, component| {
+            fields_components.push(component);
+            fields_components
+        });
 
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();

@@ -25,6 +25,10 @@ impl Sequence {
     pub fn fields(&self) -> &[Asn1] {
         &self.0
     }
+
+    pub fn fields_mut_vec(&mut self) -> &mut Vec<Asn1> {
+        &mut self.0
+    }
 }
 
 impl From<Vec<Asn1>> for Sequence {

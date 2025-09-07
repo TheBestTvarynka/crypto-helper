@@ -19,6 +19,14 @@ impl<A> Tlv<A> {
         Tlv { id, meta: raw, asn1 }
     }
 
+    pub fn from_asn1_type(asn1: A) -> Tlv<A> {
+        Tlv {
+            id: 0,
+            meta: RawAsn1EntityData::default(),
+            asn1,
+        }
+    }
+
     pub fn meta(&self) -> &RawAsn1EntityData {
         &self.meta
     }

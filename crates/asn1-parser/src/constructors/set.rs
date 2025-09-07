@@ -27,6 +27,10 @@ impl Set {
     pub fn fields(&self) -> &[Asn1] {
         self.0.fields()
     }
+
+    pub fn fields_mut_vec(&mut self) -> &mut Vec<Asn1> {
+        self.0.fields_mut_vec()
+    }
 }
 
 impl From<Vec<Asn1>> for Set {

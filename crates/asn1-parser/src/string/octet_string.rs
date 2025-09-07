@@ -37,6 +37,11 @@ impl OctetString {
 
         OctetString { octets, inner }
     }
+
+    pub fn set_octets(&mut self, octets: Vec<u8>) {
+        self.octets = octets;
+        self.inner = Asn1::decode_buff(&self.octets).ok().map(Box::new);
+    }
 }
 
 impl From<Vec<u8>> for OctetString {
