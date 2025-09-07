@@ -38,6 +38,12 @@ pub fn node_options(props: &Asn1NodeOptionsProps) -> Html {
             show_panel.set(!*show_panel);
         })
     };
+    let hide_panel = Callback::from({
+        let show_panel = show_panel.clone();
+        move |_: MouseEvent| {
+            show_panel.set(false);
+        }
+    });
 
     let show_panel_setter = show_panel.setter();
     let add_node = props.add_node.clone();
@@ -59,10 +65,13 @@ pub fn node_options(props: &Asn1NodeOptionsProps) -> Html {
             </button>
             {if *show_panel {html! {
                 <div style="position: relative">
-                    <div class="asn1-node-options" /* onmouseleave={onmouseleave_edit_panel} */ >
+                    <div class="asn1-node-options">
                         <div class="horizontal">
                             <span>{ "Add node functionality is not implemented yet." }</span>
                             <button class="jwt-util-button" onclick={add_node}>{"Add node"}</button>
+                            <button class="asn1-button-with-icon" onclick={hide_panel} title="Cancel">
+                                <img src="/public/img/icons/close.png" />
+                            </button>
                         </div>
                     </div>
                 </div>
