@@ -6,7 +6,7 @@ mod strings;
 mod tag;
 mod time;
 
-use asn1_parser::{Asn1, Asn1Entity, Asn1Type, Mutable, Utf8String};
+use asn1_parser::{Asn1, Asn1Entity, Asn1Type};
 use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
 use yew::{Callback, Children, Classes, Html, Properties, classes, function_component, html, use_state};
@@ -21,6 +21,7 @@ use self::strings::{
 use self::tag::{ApplicationTagNode, ExplicitTagNode, ImplicitTagNode};
 use self::time::{GeneralizedTimeNode, UtcTimeNode};
 use crate::asn1::HighlightAction;
+use crate::asn1::editor::Asn1NodeValueEditor;
 use crate::asn1::scheme::set::SetNode;
 
 #[derive(PartialEq, Properties, Clone)]
@@ -40,16 +41,16 @@ pub fn node_options(props: &Asn1NodeOptionsProps) -> Html {
     };
     let hide_panel = Callback::from({
         let show_panel = show_panel.clone();
-        move |_: MouseEvent| {
+        move |_| {
             show_panel.set(false);
         }
     });
 
     let show_panel_setter = show_panel.setter();
     let add_node = props.add_node.clone();
-    let add_node = Callback::from(move |_: MouseEvent| {
+    let add_node = Callback::from(move |asn1: Asn1Type| {
         show_panel_setter.set(false);
-        add_node.emit(Asn1Type::Utf8String(Mutable::new(Utf8String::from("TheBestTvarynka"))));
+        add_node.emit(asn1);
     });
 
     html! {
@@ -66,13 +67,7 @@ pub fn node_options(props: &Asn1NodeOptionsProps) -> Html {
             {if *show_panel {html! {
                 <div style="position: relative">
                     <div class="asn1-node-options">
-                        <div class="horizontal">
-                            <span>{ "Add node functionality is not implemented yet." }</span>
-                            <button class="jwt-util-button" onclick={add_node}>{"Add node"}</button>
-                            <button class="asn1-button-with-icon" onclick={hide_panel} title="Cancel">
-                                <img src="/public/img/icons/close.png" />
-                            </button>
-                        </div>
+                        <Asn1NodeValueEditor {add_node} cancel={hide_panel} />
                     </div>
                 </div>
             }} else {html! {}}}

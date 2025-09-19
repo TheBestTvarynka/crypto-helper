@@ -55,6 +55,10 @@ macro_rules! impl_utf8_asn1 {
             pub fn set_string(&mut self, value: String) {
                 self.0 = value.into();
             }
+
+            pub fn new(data: String) -> Self {
+                Self(Utf8Value::from(data))
+            }
         }
 
         impl From<&str> for $name {
