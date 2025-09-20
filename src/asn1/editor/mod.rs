@@ -5,7 +5,10 @@ mod time;
 
 use std::fmt;
 
-use asn1_parser::{Asn1Type, ExplicitTag, Integer, Mutable, OctetString, PrintableString, Sequence};
+use asn1_parser::{
+    Asn1Type, Day, ExplicitTag, GeneralizedTime, GtSecond, GtYear, Hour, Integer, Minute, Month, Mutable, OctetString,
+    PrintableString, Sequence,
+};
 pub use integer::IntegerEditor;
 pub use number::NumberEditor;
 pub use string::StringEditor;
@@ -18,8 +21,16 @@ const PRINTABLE_STRING: &str = "printable string";
 const INTEGER: &str = "integer";
 const SEQUENCE: &str = "sequence";
 const EXPLICIT_TAG: &str = "explicit tag";
+const GENERALIZED_TIME: &str = "generalized time";
 
-const TYPES: &[&str] = &[OCTET_STRING, PRINTABLE_STRING, INTEGER, SEQUENCE, EXPLICIT_TAG];
+const TYPES: &[&str] = &[
+    OCTET_STRING,
+    PRINTABLE_STRING,
+    INTEGER,
+    SEQUENCE,
+    EXPLICIT_TAG,
+    GENERALIZED_TIME,
+];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1NodeValue {
@@ -28,6 +39,7 @@ pub enum Asn1NodeValue {
     Integer(Vec<u8>),
     Sequence,
     ExplicitTag(u8),
+    GeneralizedTime(GeneralizedTime),
 }
 
 impl TryFrom<&str> for Asn1NodeValue {
@@ -40,6 +52,15 @@ impl TryFrom<&str> for Asn1NodeValue {
             INTEGER => Self::Integer(vec![5]),
             SEQUENCE => Self::Sequence,
             EXPLICIT_TAG => Self::ExplicitTag(1),
+            GENERALIZED_TIME => Self::GeneralizedTime(GeneralizedTime::new(
+                GtYear::new(2025),
+                Month::try_from(9).expect("valid month"),
+                Day::try_from(20).expect("valid day"),
+                Hour::try_from(18).expect("valid hour"),
+                Minute::try_from(35).expect("valid minute"),
+                GtSecond::try_from(3.56).expect("valid second"),
+                None,
+            )),
             _ => return Err(()),
         })
     }
@@ -53,6 +74,7 @@ impl From<&Asn1NodeValue> for &str {
             Asn1NodeValue::Integer(_) => INTEGER,
             Asn1NodeValue::Sequence => SEQUENCE,
             Asn1NodeValue::ExplicitTag(_) => EXPLICIT_TAG,
+            Asn1NodeValue::GeneralizedTime(_) => GENERALIZED_TIME,
         }
     }
 }
@@ -72,6 +94,7 @@ impl From<Asn1NodeValue> for Asn1Type {
             Asn1NodeValue::Integer(data) => Asn1Type::Integer(Mutable::new(Integer::from(data))),
             Asn1NodeValue::Sequence => Asn1Type::Sequence(Mutable::new(Sequence::new(Vec::new()))),
             Asn1NodeValue::ExplicitTag(tag) => Asn1Type::ExplicitTag(Mutable::new(ExplicitTag::new(tag, Vec::new()))),
+            Asn1NodeValue::GeneralizedTime(data) => Asn1Type::GeneralizedTime(Mutable::new(data)),
         }
     }
 }
@@ -97,6 +120,12 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
                 setter={Callback::from(move |number| asn1_node_setter.set(Asn1NodeValue::ExplicitTag(number as u8)))}
                 min={1}
                 max={30}
+            />
+        },
+        Asn1NodeValue::GeneralizedTime(value) => html! {
+            <GeneralizedTimeEditor
+                value={value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::GeneralizedTime(data)))}
             />
         },
     }
