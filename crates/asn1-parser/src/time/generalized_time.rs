@@ -1,5 +1,6 @@
 use alloc::format;
 use alloc::string::String;
+use core::fmt;
 use core::str::from_utf8;
 
 #[cfg(not(feature = "std"))]
@@ -11,7 +12,7 @@ use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Error, Tag, Taggable};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Year(u16);
 
 impl Year {
@@ -30,18 +31,30 @@ impl Year {
     }
 }
 
+impl fmt::Display for Year {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:04}", self.0)
+    }
+}
+
 impl AsRef<u16> for Year {
     fn as_ref(&self) -> &u16 {
         &self.0
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Second(f32);
 
 impl PartialEq for Second {
     fn eq(&self, other: &Self) -> bool {
         (self.0 - other.0).abs() <= f32::EPSILON
+    }
+}
+
+impl fmt::Display for Second {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 
@@ -83,8 +96,9 @@ impl TryFrom<f32> for Second {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LocalTimeDirection {
+    #[default]
     Plus,
     Minus,
 }
@@ -119,7 +133,7 @@ impl TryFrom<u8> for LocalTimeDirection {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct LocalTimeDiffFactor {
     pub time_direction: LocalTimeDirection,
     pub hour: Hour,
@@ -180,6 +194,14 @@ impl GeneralizedTime {
         }
     }
 
+    pub fn set_local_time(&mut self, local_time: LocalTimeDiffFactor) {
+        self.local_time = if local_time == LocalTimeDiffFactor::default() {
+            None
+        } else {
+            Some(local_time)
+        };
+    }
+
     fn calc_data_len(&self) -> usize {
         let second_len = if self.second.as_ref().fract() > f32::EPSILON {
             2 /* int part */ + 1 /* dot */ + 3 /* fract part */
@@ -187,7 +209,7 @@ impl GeneralizedTime {
             2
         };
 
-        2 /* year */ + 2 /* month */ + 2 /* day */ + 2 /* hour */ + 2 /* minute */ + second_len + LocalTimeDiffFactor::ENCODED_LEN
+        4 /* year */ + 2 /* month */ + 2 /* day */ + 2 /* hour */ + 2 /* minute */ + second_len + LocalTimeDiffFactor::ENCODED_LEN
     }
 }
 

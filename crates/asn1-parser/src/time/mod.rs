@@ -1,7 +1,9 @@
 mod generalized_time;
 mod utc_time;
 
-pub use generalized_time::GeneralizedTime;
+pub use generalized_time::{
+    GeneralizedTime, LocalTimeDiffFactor, LocalTimeDirection, Second as GtSecond, Year as GtYear,
+};
 pub use utc_time::UtcTime;
 
 use crate::Asn1Result;
@@ -9,7 +11,7 @@ use crate::reader::Reader;
 
 macro_rules! define_nt {
     ($name:ident) => {
-        #[derive(Debug, Clone, PartialEq, Eq)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
         pub struct $name(u8);
 
         impl From<$name> for u8 {
@@ -21,6 +23,12 @@ macro_rules! define_nt {
         impl AsRef<u8> for $name {
             fn as_ref(&self) -> &u8 {
                 &self.0
+            }
+        }
+
+        impl core::fmt::Display for $name {
+            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                write!(f, "{:02}", self.0)
             }
         }
 

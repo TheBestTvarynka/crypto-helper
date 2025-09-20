@@ -20,6 +20,10 @@ impl ExplicitTag {
         }
     }
 
+    pub fn set_tag_number(&mut self, tag: u8) {
+        self.tag = tag & 0x1f | 0xa0;
+    }
+
     pub fn tag_number(&self) -> u8 {
         self.tag & 0x1f
     }

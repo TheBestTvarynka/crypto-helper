@@ -1,6 +1,7 @@
 mod integer;
 mod number;
 mod string;
+mod time;
 
 use std::fmt;
 
@@ -8,6 +9,7 @@ use asn1_parser::{Asn1Type, ExplicitTag, Integer, Mutable, OctetString, Printabl
 pub use integer::IntegerEditor;
 pub use number::NumberEditor;
 pub use string::StringEditor;
+pub use time::GeneralizedTimeEditor;
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
 

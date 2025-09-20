@@ -224,7 +224,7 @@ pub fn build_asn1_schema(
         },
         Asn1Type::GeneralizedTime(generalized_time) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
-                <GeneralizedTimeNode node={generalized_time.clone()} meta={asn1.meta().clone()} />
+                <GeneralizedTimeNode node={generalized_time.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
     }

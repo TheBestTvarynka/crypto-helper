@@ -4,6 +4,7 @@ use asn1_parser::{ApplicationTag, Asn1, Asn1Encoder, ExplicitTag, ImplicitTag, M
 use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
+use crate::asn1::editor::NumberEditor;
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::scheme::{Asn1NodeOptions, build_asn1_schema};
 use crate::common::RcSlice;
@@ -58,10 +59,31 @@ pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |number| {
+        node.get_mut().set_tag_number(number as u8);
+        re_encode.emit(());
+    });
+
     html! {
         <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
-                <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{}]", props.node.get().tag_number())}/>
+                <NodeOptions
+                    node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                    {offset}
+                    {length_len}
+                    {data_len}
+                    name={format!("[{}]", props.node.get().tag_number())}
+                    editor={Some(html! {
+                        <NumberEditor
+                            value={isize::from(props.node.get().tag_number())}
+                            {setter}
+                            min={1}
+                            max={30}
+                        />
+                    })}
+                />
             </div>
             <div class="asn1-constructor-body">
                 {inner_components}
@@ -120,10 +142,31 @@ pub fn application_tag(props: &ApplicationTagProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |number| {
+        node.get_mut().set_tag_number(number as u8);
+        re_encode.emit(());
+    });
+
     html! {
         <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
-                <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("Application {}", props.node.get().tag_number())}/>
+                <NodeOptions
+                    node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                    {offset}
+                    {length_len}
+                    {data_len}
+                    name={format!("Application {}", props.node.get().tag_number())}
+                    editor={Some(html! {
+                        <NumberEditor
+                            value={isize::from(props.node.get().tag_number())}
+                            {setter}
+                            min={1}
+                            max={30}
+                        />
+                    })}
+                />
             </div>
             <div class="asn1-constructor-body">
                 {inner_components}
