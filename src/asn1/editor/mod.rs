@@ -5,16 +5,18 @@ mod time;
 
 use std::fmt;
 
+use ::time::OffsetDateTime;
 use asn1_parser::{
     Asn1Type, Day, ExplicitTag, GeneralizedTime, GtSecond, GtYear, Hour, Integer, Minute, Month, Mutable, OctetString,
-    PrintableString, Sequence,
+    PrintableString, Second, Sequence, UtcTime, Year,
 };
-pub use integer::IntegerEditor;
-pub use number::NumberEditor;
-pub use string::StringEditor;
-pub use time::GeneralizedTimeEditor;
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
+
+pub use self::integer::IntegerEditor;
+pub use self::number::NumberEditor;
+pub use self::string::StringEditor;
+pub use self::time::{GeneralizedTimeEditor, UtcTimeEditor};
 
 const OCTET_STRING: &str = "octet string";
 const PRINTABLE_STRING: &str = "printable string";
@@ -22,6 +24,7 @@ const INTEGER: &str = "integer";
 const SEQUENCE: &str = "sequence";
 const EXPLICIT_TAG: &str = "explicit tag";
 const GENERALIZED_TIME: &str = "generalized time";
+const UTC_TIME: &str = "utc time";
 
 const TYPES: &[&str] = &[
     OCTET_STRING,
@@ -30,6 +33,7 @@ const TYPES: &[&str] = &[
     SEQUENCE,
     EXPLICIT_TAG,
     GENERALIZED_TIME,
+    UTC_TIME,
 ];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -40,6 +44,7 @@ pub enum Asn1NodeValue {
     Sequence,
     ExplicitTag(u8),
     GeneralizedTime(GeneralizedTime),
+    UtcTime(UtcTime),
 }
 
 impl TryFrom<&str> for Asn1NodeValue {
@@ -61,6 +66,17 @@ impl TryFrom<&str> for Asn1NodeValue {
                 GtSecond::try_from(3.56).expect("valid second"),
                 None,
             )),
+            UTC_TIME => {
+                let now = OffsetDateTime::now_utc();
+                Self::UtcTime(UtcTime {
+                    year: Year::try_from((now.year() % 100) as u8).expect("valid year"),
+                    month: Month::try_from(now.month() as u8).expect("valid month"),
+                    day: Day::try_from(now.day()).expect("valid day"),
+                    hour: Hour::try_from(now.hour()).expect("valid hour"),
+                    minute: Minute::try_from(now.minute()).expect("valid minute"),
+                    second: Some(Second::try_from(now.second()).expect("valid second")),
+                })
+            }
             _ => return Err(()),
         })
     }
@@ -75,6 +91,7 @@ impl From<&Asn1NodeValue> for &str {
             Asn1NodeValue::Sequence => SEQUENCE,
             Asn1NodeValue::ExplicitTag(_) => EXPLICIT_TAG,
             Asn1NodeValue::GeneralizedTime(_) => GENERALIZED_TIME,
+            Asn1NodeValue::UtcTime(_) => UTC_TIME,
         }
     }
 }
@@ -95,6 +112,7 @@ impl From<Asn1NodeValue> for Asn1Type {
             Asn1NodeValue::Sequence => Asn1Type::Sequence(Mutable::new(Sequence::new(Vec::new()))),
             Asn1NodeValue::ExplicitTag(tag) => Asn1Type::ExplicitTag(Mutable::new(ExplicitTag::new(tag, Vec::new()))),
             Asn1NodeValue::GeneralizedTime(data) => Asn1Type::GeneralizedTime(Mutable::new(data)),
+            Asn1NodeValue::UtcTime(data) => Asn1Type::UtcTime(Mutable::new(data)),
         }
     }
 }
@@ -126,6 +144,12 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
             <GeneralizedTimeEditor
                 value={value}
                 setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::GeneralizedTime(data)))}
+            />
+        },
+        Asn1NodeValue::UtcTime(value) => html! {
+            <UtcTimeEditor
+                value={value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::UtcTime(data)))}
             />
         },
     }

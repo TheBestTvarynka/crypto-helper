@@ -1,7 +1,7 @@
 use asn1_parser::{GeneralizedTime, Mutable, RawAsn1EntityData, UtcTime};
 use yew::{Callback, Html, Properties, function_component, html};
 
-use crate::asn1::editor::GeneralizedTimeEditor;
+use crate::asn1::editor::{GeneralizedTimeEditor, UtcTimeEditor};
 use crate::asn1::node_options::NodeOptions;
 use crate::common::RcSlice;
 
@@ -9,6 +9,7 @@ use crate::common::RcSlice;
 pub struct UtcTimeNodeProps {
     pub node: Mutable<UtcTime>,
     pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(UtcTimeNode)]
@@ -17,9 +18,28 @@ pub fn utc_time_string(props: &UtcTimeNodeProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |utc_time| {
+        *node.get_mut() = utc_time;
+        re_encode.emit(());
+    });
+
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("UtcTime")}/>
+            <NodeOptions
+                node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                {offset}
+                {length_len}
+                {data_len}
+                name={String::from("UtcTime")}
+                editor={Some(html! {
+                    <UtcTimeEditor
+                        value={props.node.get().clone()}
+                        {setter}
+                    />
+                })}
+            />
             <span class="asn-simple-value">{format_utc_time(&props.node.get())}</span>
         </div>
     }
