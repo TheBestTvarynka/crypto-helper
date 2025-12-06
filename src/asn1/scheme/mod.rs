@@ -7,6 +7,7 @@ mod tag;
 mod time;
 
 use asn1_parser::{Asn1, Asn1Entity, Asn1Type};
+pub use oid::validate_oid;
 use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
 use yew::{Callback, Children, Classes, Html, Properties, classes, function_component, html, use_state};

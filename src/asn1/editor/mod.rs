@@ -8,7 +8,9 @@ use std::fmt;
 
 use ::time::OffsetDateTime;
 use asn1_parser::{
-    Asn1Type, BitString, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour, IA5String, Integer, Minute, Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, Set, UtcTime, Utf8String, VisibleString, Year
+    Asn1Type, BitString, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour,
+    IA5String, Integer, Minute, Month, Mutable, NumericString, ObjectIdentifier, OctetString, PrintableString, Second,
+    Sequence, Set, UtcTime, Utf8String, VisibleString, Year,
 };
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
@@ -18,6 +20,7 @@ pub use self::null::NullEditor;
 pub use self::number::NumberEditor;
 pub use self::string::StringEditor;
 pub use self::time::{GeneralizedTimeEditor, UtcTimeEditor};
+use crate::asn1::scheme::validate_oid;
 
 const OCTET_STRING: &str = "octet string";
 const PRINTABLE_STRING: &str = "printable string";
@@ -34,6 +37,7 @@ const VISIBLE_STRING: &str = "visible string";
 const NUMERIC_STRING: &str = "numeric string";
 const BMP_STRING: &str = "bmp string";
 const BIT_STRING: &str = "bit string";
+const OBJECT_IDENTIFIER: &str = "object identifier";
 
 const TYPES: &[&str] = &[
     OCTET_STRING,
@@ -51,6 +55,7 @@ const TYPES: &[&str] = &[
     UTC_TIME,
     BMP_STRING,
     BIT_STRING,
+    OBJECT_IDENTIFIER,
 ];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -70,6 +75,7 @@ pub enum Asn1NodeValue {
     GeneralizedTime(GeneralizedTime),
     UtcTime(UtcTime),
     BmpString(String),
+    ObjectIdentifier(String),
 }
 
 impl TryFrom<&str> for Asn1NodeValue {
@@ -110,6 +116,7 @@ impl TryFrom<&str> for Asn1NodeValue {
             VISIBLE_STRING => Self::VisibleString(String::from("tbt")),
             NUMERIC_STRING => Self::NumericString(String::from("12345")),
             BMP_STRING => Self::BmpString(String::from("tbt")),
+            OBJECT_IDENTIFIER => Self::ObjectIdentifier(String::from("2.5.4.6")),
             _ => return Err(()),
         })
     }
@@ -133,6 +140,7 @@ impl From<&Asn1NodeValue> for &str {
             Asn1NodeValue::VisibleString(_) => VISIBLE_STRING,
             Asn1NodeValue::NumericString(_) => NUMERIC_STRING,
             Asn1NodeValue::BmpString(_) => BMP_STRING,
+            Asn1NodeValue::ObjectIdentifier(_) => OBJECT_IDENTIFIER,
         }
     }
 }
@@ -164,6 +172,9 @@ impl From<Asn1NodeValue> for Asn1Type {
             Asn1NodeValue::BmpString(data) => Asn1Type::BmpString(Mutable::new(BmpString::new(
                 data.encode_utf16().flat_map(|c| c.to_be_bytes()).collect(),
             ))),
+            Asn1NodeValue::ObjectIdentifier(data) => {
+                Asn1Type::ObjectIdentifier(Mutable::new(ObjectIdentifier::new_unchecked(&data)))
+            }
         }
     }
 }
@@ -175,6 +186,13 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
         },
         Asn1NodeValue::BitString(value) => html! {
             <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::BitString(data)))} formats={BYTES_FORMATS} />
+        },
+        Asn1NodeValue::ObjectIdentifier(value) => html! {
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::ObjectIdentifier(data)))}
+                validator={Callback::from(move |s: String| validate_oid(&s))}
+            />
         },
         Asn1NodeValue::BmpString(value) => html! {
             <StringEditor

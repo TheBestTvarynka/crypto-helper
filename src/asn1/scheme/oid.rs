@@ -57,7 +57,7 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
     }
 }
 
-fn validate_oid(oid: &str) -> bool {
+pub fn validate_oid(oid: &str) -> bool {
     oid::ObjectIdentifier::try_from(oid).is_ok()
 }
 

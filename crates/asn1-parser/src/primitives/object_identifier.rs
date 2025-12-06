@@ -23,6 +23,10 @@ impl ObjectIdentifier {
     pub fn set_oid(&mut self, oid: oid::ObjectIdentifier) {
         self.0 = oid;
     }
+
+    pub fn new_unchecked(oid: &str) -> Self {
+        Self(oid::ObjectIdentifier::try_from(oid).expect("a valid ObjectIdentifier"))
+    }
 }
 
 impl From<oid::ObjectIdentifier> for ObjectIdentifier {
