@@ -55,15 +55,17 @@ pub fn add_node_button(props: &AddNodeButtonProps) -> Html {
 
     html! {
         <div class="asn1-node-edit-options">
-            <button class="asn1-button-add-node" {onclick}>
-                <img src="/public/img/icons/add.png" />
-                <div style="position: relative;">
-                    <span
-                        class="asn1-button-add-separator"
-                        style="position: absolute; bottom: 0; right: 0; transform: translate(100%, 50%);"
-                    />
-                </div>
-            </button>
+            <div class="asn1-button-add-node-container">
+                <button class="asn1-button-add-node" {onclick}>
+                    <img src="/public/img/icons/add.png" />
+                    <div style="position: relative;">
+                        <span
+                            class="asn1-button-add-separator"
+                            style="position: absolute; bottom: 0; right: 0; transform: translate(100%, 50%);"
+                        />
+                    </div>
+                </button>
+            </div>
             {if *show_panel {html! {
                 <div style="position: relative">
                     <div class="asn1-node-options">
@@ -105,9 +107,11 @@ pub fn remove_node_button(props: &RemoveNodeButtonProps) -> Html {
 
     html! {
         <div class="asn1-remove-node-button-container">
-            <button class="asn1-button-add-node" {onclick}>
-                <img src="/public/img/icons/remove.png" />
-            </button>
+            <div class="asn1-button-add-node-container">
+                <button class="asn1-button-add-node" {onclick}>
+                    <img src="/public/img/icons/remove.png" />
+                </button>
+            </div>
             {if *show_panel {html! {
                 <div style="position: relative" {onmouseleave}>
                     <div class="asn1-node-options">

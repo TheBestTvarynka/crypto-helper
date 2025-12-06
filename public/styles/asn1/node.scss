@@ -145,6 +145,11 @@
     background: transparent;
 
     opacity: 0;
+    pointer-events: none;
+}
+
+.asn1-button-add-node-container {
+
 }
 
 .asn1-button-add-node img {
@@ -156,7 +161,7 @@
 
 .asn1-remove-node-button-container {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     transform: translate(-20%, 0%);
     z-index: 10;
@@ -166,7 +171,8 @@
     /* only for ctrl button press indication */
 }
 
-body.ctrl-down .asn1-button-add-node:hover {
+body.ctrl-down .asn1-button-add-node-container:hover .asn1-button-add-node {
+    pointer-events: auto;
     opacity: 1;
     cursor: pointer;
 }
