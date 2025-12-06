@@ -7,6 +7,7 @@ use asn1_parser::{
 use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
+use crate::asn1::editor::StringEditor;
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::scheme::build_asn1_schema;
 use crate::common::RcSlice;
@@ -159,6 +160,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
 pub struct BmpStringNodeProps {
     pub node: Mutable<BmpString>,
     pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(BmpStringNode)]
@@ -177,9 +179,29 @@ pub fn bmp_string(props: &BmpStringNodeProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |value: String| {
+        node.get_mut().set_string(&value);
+        re_encode.emit(());
+    });
+
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BmpString")} />
+            <NodeOptions
+                node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                {offset}
+                {length_len}
+                {data_len}
+                name={String::from("BmpString")}
+                editor={Some(html! {
+                    <StringEditor
+                        value={s.clone()}
+                        {setter}
+                        validator={Callback::from(move |_| true)}
+                    />
+                })}
+            />
             <span class="asn-simple-value">{s}</span>
         </div>
     }

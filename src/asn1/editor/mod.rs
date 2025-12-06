@@ -8,9 +8,9 @@ use std::fmt;
 
 use ::time::OffsetDateTime;
 use asn1_parser::{
-    Asn1Type, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour, IA5String, Integer, Minute,
-    Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, UtcTime, Utf8String, VisibleString,
-    Year,
+    Asn1Type, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour, IA5String, Integer,
+    Minute, Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, UtcTime, Utf8String,
+    VisibleString, Year,
 };
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
@@ -20,10 +20,6 @@ pub use self::null::NullEditor;
 pub use self::number::NumberEditor;
 pub use self::string::StringEditor;
 pub use self::time::{GeneralizedTimeEditor, UtcTimeEditor};
-
-/*
-define_string_node!(NumericString);
-*/
 
 const OCTET_STRING: &str = "octet string";
 const PRINTABLE_STRING: &str = "printable string";
@@ -37,6 +33,7 @@ const GENERAL_STRING: &str = "general string";
 const IA5_STRING: &str = "ia5 string";
 const VISIBLE_STRING: &str = "visible string";
 const NUMERIC_STRING: &str = "numeric string";
+const BMP_STRING: &str = "bmp string";
 
 const TYPES: &[&str] = &[
     OCTET_STRING,
@@ -51,6 +48,7 @@ const TYPES: &[&str] = &[
     EXPLICIT_TAG,
     GENERALIZED_TIME,
     UTC_TIME,
+    BMP_STRING,
 ];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -67,6 +65,7 @@ pub enum Asn1NodeValue {
     ExplicitTag(u8),
     GeneralizedTime(GeneralizedTime),
     UtcTime(UtcTime),
+    BmpString(String),
 }
 
 impl TryFrom<&str> for Asn1NodeValue {
@@ -104,6 +103,7 @@ impl TryFrom<&str> for Asn1NodeValue {
             IA5_STRING => Self::Ia5String(String::from("tbt")),
             VISIBLE_STRING => Self::VisibleString(String::from("tbt")),
             NUMERIC_STRING => Self::NumericString(String::from("12345")),
+            BMP_STRING => Self::BmpString(String::from("tbt")),
             _ => return Err(()),
         })
     }
@@ -124,6 +124,7 @@ impl From<&Asn1NodeValue> for &str {
             Asn1NodeValue::Ia5String(_) => IA5_STRING,
             Asn1NodeValue::VisibleString(_) => VISIBLE_STRING,
             Asn1NodeValue::NumericString(_) => NUMERIC_STRING,
+            Asn1NodeValue::BmpString(_) => BMP_STRING,
         }
     }
 }
@@ -150,6 +151,9 @@ impl From<Asn1NodeValue> for Asn1Type {
             Asn1NodeValue::Ia5String(data) => Asn1Type::IA5String(Mutable::new(IA5String::new(data))),
             Asn1NodeValue::VisibleString(data) => Asn1Type::VisibleString(Mutable::new(VisibleString::new(data))),
             Asn1NodeValue::NumericString(data) => Asn1Type::NumericString(Mutable::new(NumericString::new(data))),
+            Asn1NodeValue::BmpString(data) => Asn1Type::BmpString(Mutable::new(BmpString::new(
+                data.encode_utf16().flat_map(|c| c.to_be_bytes()).collect(),
+            ))),
         }
     }
 }
@@ -160,6 +164,13 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
             // TODO: octetstring editor.
             html! {}
         }
+        Asn1NodeValue::BmpString(value) => html! {
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::PrintableString(data)))}
+                validator={Callback::from(move |_| true)}
+            />
+        },
         Asn1NodeValue::PrintableString(value) => html! {
             <StringEditor
                 {value}

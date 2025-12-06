@@ -22,6 +22,10 @@ impl BmpString {
     pub fn new(data: Vec<u8>) -> BmpString {
         BmpString(data)
     }
+
+    pub fn set_string(&mut self, data: &str) {
+        self.0 = data.encode_utf16().flat_map(|c| c.to_be_bytes()).collect();
+    }
 }
 
 impl From<&str> for BmpString {

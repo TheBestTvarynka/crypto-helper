@@ -179,7 +179,7 @@ pub fn build_asn1_schema(
         },
         Asn1Type::BmpString(bmp) => html! {
             <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
-                <BmpStringNode node={bmp.clone()} meta={asn1.meta().clone()} />
+                <BmpStringNode node={bmp.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Null(_) => html! {
