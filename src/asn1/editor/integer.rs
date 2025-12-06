@@ -13,7 +13,7 @@ const DECIMAL_BYTES: &str = "decimal bytes";
 const DECIMAL_INTEGER: &str = "decimal value";
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-enum IntegerFormat {
+pub enum IntegerFormat {
     Hex,
     Base64,
     DecimalBytes,
@@ -42,17 +42,20 @@ impl From<IntegerFormat> for &str {
     }
 }
 
-const INTEGER_FORMATS: [IntegerFormat; 4] = [
+pub const INTEGER_FORMATS: &'static [IntegerFormat] = &[
     IntegerFormat::Hex,
     IntegerFormat::Base64,
     IntegerFormat::DecimalBytes,
     IntegerFormat::DecimalInteger,
 ];
 
+pub const BYTES_FORMATS: &'static [IntegerFormat] = &[IntegerFormat::Hex, IntegerFormat::Base64];
+
 #[derive(PartialEq, Properties, Clone)]
 pub struct IntegerEditorProps {
     pub value: Vec<u8>,
     pub setter: Callback<Vec<u8>>,
+    pub formats: &'static [IntegerFormat],
 }
 
 #[function_component(IntegerEditor)]
@@ -91,7 +94,7 @@ pub fn integer_editor(props: &IntegerEditorProps) -> Html {
     html! {
         <div class="vertical">
             <div class="formats-container">{
-                INTEGER_FORMATS.iter().map(|format| {
+                props.formats.iter().map(|format| {
                     html! {
                         <button
                             class={get_format_button_class(*integer_format == *format)}

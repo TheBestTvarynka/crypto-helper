@@ -7,7 +7,7 @@ use asn1_parser::{
 use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
-use crate::asn1::editor::StringEditor;
+use crate::asn1::editor::{BYTES_FORMATS, IntegerEditor, StringEditor};
 use crate::asn1::node_options::NodeOptions;
 use crate::asn1::scheme::build_asn1_schema;
 use crate::common::RcSlice;
@@ -30,6 +30,13 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let octets_node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |value: Vec<u8>| {
+        octets_node.get_mut().set_octets(value);
+        re_encode.emit(());
+    });
+
     match node.inner() {
         Some(asn1) => {
             let asn1_type = asn1.inner_asn1().clone();
@@ -51,7 +58,15 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
             html! {
                 <div style="cursor: crosshair; width: 100%;">
                     <div class="asn1-constructor-header">
-                        <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("OctetString")}/>
+                        <NodeOptions
+                            node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                            {offset}
+                            {length_len}
+                            {data_len} name={String::from("OctetString")}
+                            editor={Some(html! {
+                                <IntegerEditor value={props.node.get().octets().to_vec()} {setter} formats={BYTES_FORMATS} />
+                            })}
+                        />
                         <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                     </div>
                     <div class="asn1-constructor-body">
@@ -77,7 +92,16 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
 
             html! {
                 <div class="terminal-asn1-node">
-                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("OctetString")} />
+                    <NodeOptions
+                        node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                        {offset}
+                        {length_len}
+                        {data_len}
+                        name={String::from("OctetString")}
+                        editor={Some(html! {
+                            <IntegerEditor value={props.node.get().octets().to_vec()} {setter} formats={BYTES_FORMATS} />
+                        })}
+                    />
                     <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                     <span class="asn-simple-value">{encoded_octets}</span>
                 </div>
@@ -117,6 +141,13 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let bits_node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |value: Vec<u8>| {
+        bits_node.get_mut().set_bits(value);
+        re_encode.emit(());
+    });
+
     match node.inner() {
         Some(asn1) => {
             let asn1_type = asn1.inner_asn1().clone();
@@ -136,7 +167,16 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
             html! {
                 <div style="cursor: crosshair; width: 100%;">
                     <div class="asn1-constructor-header">
-                        <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BitString")} />
+                        <NodeOptions
+                            node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                            {offset}
+                            {length_len}
+                            {data_len}
+                            name={String::from("BitString")}
+                            editor={Some(html! {
+                                <IntegerEditor value={props.node.get().raw_bits().to_vec()} {setter} formats={BYTES_FORMATS} />
+                            })}
+                        />
                         <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
                     </div>
                     <div class="asn1-constructor-body">
@@ -148,7 +188,16 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
         None => {
             html! {
                 <div class="terminal-asn1-node">
-                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("BitString")} />
+                    <NodeOptions
+                        node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                        {offset}
+                        {length_len}
+                        {data_len}
+                        name={String::from("BitString")}
+                        editor={Some(html! {
+                            <IntegerEditor value={props.node.get().raw_bits().to_vec()} {setter} formats={BYTES_FORMATS} />
+                        })}
+                    />
                     <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
                     <span class="asn-simple-value">{display_bits}</span>
                 </div>

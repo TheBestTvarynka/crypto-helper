@@ -8,14 +8,14 @@ use std::fmt;
 
 use ::time::OffsetDateTime;
 use asn1_parser::{
-    Asn1Type, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour, IA5String, Integer,
-    Minute, Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, UtcTime, Utf8String,
-    VisibleString, Year,
+    Asn1Type, BitString, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour,
+    IA5String, Integer, Minute, Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, UtcTime,
+    Utf8String, VisibleString, Year,
 };
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
 
-pub use self::integer::IntegerEditor;
+pub use self::integer::{BYTES_FORMATS, INTEGER_FORMATS, IntegerEditor};
 pub use self::null::NullEditor;
 pub use self::number::NumberEditor;
 pub use self::string::StringEditor;
@@ -34,6 +34,7 @@ const IA5_STRING: &str = "ia5 string";
 const VISIBLE_STRING: &str = "visible string";
 const NUMERIC_STRING: &str = "numeric string";
 const BMP_STRING: &str = "bmp string";
+const BIT_STRING: &str = "bit string";
 
 const TYPES: &[&str] = &[
     OCTET_STRING,
@@ -49,11 +50,13 @@ const TYPES: &[&str] = &[
     GENERALIZED_TIME,
     UTC_TIME,
     BMP_STRING,
+    BIT_STRING,
 ];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1NodeValue {
     OctetString(Vec<u8>),
+    BitString(Vec<u8>),
     PrintableString(String),
     Utf8String(String),
     GeneralString(String),
@@ -74,6 +77,7 @@ impl TryFrom<&str> for Asn1NodeValue {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         Ok(match value {
             OCTET_STRING => Self::OctetString(b"tbt".to_vec()),
+            BIT_STRING => Self::BitString(b"tbt".to_vec()),
             PRINTABLE_STRING => Self::PrintableString(String::from("tbt")),
             INTEGER => Self::Integer(vec![5]),
             SEQUENCE => Self::Sequence,
@@ -113,6 +117,7 @@ impl From<&Asn1NodeValue> for &str {
     fn from(value: &Asn1NodeValue) -> Self {
         match value {
             Asn1NodeValue::OctetString(_) => OCTET_STRING,
+            Asn1NodeValue::BitString(_) => BIT_STRING,
             Asn1NodeValue::PrintableString(_) => PRINTABLE_STRING,
             Asn1NodeValue::Integer(_) => INTEGER,
             Asn1NodeValue::Sequence => SEQUENCE,
@@ -140,6 +145,7 @@ impl From<Asn1NodeValue> for Asn1Type {
     fn from(value: Asn1NodeValue) -> Self {
         match value {
             Asn1NodeValue::OctetString(data) => Asn1Type::OctetString(Mutable::new(OctetString::new(data))),
+            Asn1NodeValue::BitString(data) => Asn1Type::BitString(Mutable::new(BitString::from(data))),
             Asn1NodeValue::PrintableString(data) => Asn1Type::PrintableString(Mutable::new(PrintableString::new(data))),
             Asn1NodeValue::Integer(data) => Asn1Type::Integer(Mutable::new(Integer::from(data))),
             Asn1NodeValue::Sequence => Asn1Type::Sequence(Mutable::new(Sequence::new(Vec::new()))),
@@ -160,10 +166,12 @@ impl From<Asn1NodeValue> for Asn1Type {
 
 fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeValue>) -> Html {
     match asn1_node {
-        Asn1NodeValue::OctetString(_data) => {
-            // TODO: octetstring editor.
-            html! {}
-        }
+        Asn1NodeValue::OctetString(value) => html! {
+            <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::OctetString(data)))} formats={BYTES_FORMATS} />
+        },
+        Asn1NodeValue::BitString(value) => html! {
+            <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::BitString(data)))} formats={BYTES_FORMATS} />
+        },
         Asn1NodeValue::BmpString(value) => html! {
             <StringEditor
                 {value}
@@ -214,7 +222,7 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
             />
         },
         Asn1NodeValue::Integer(value) => html! {
-            <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Integer(data)))} />
+            <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Integer(data)))} formats={INTEGER_FORMATS} />
         },
         Asn1NodeValue::Sequence => html! {
             <span>{"No editor available for SEQUENCE"}</span>

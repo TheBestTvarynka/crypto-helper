@@ -1,7 +1,7 @@
 use asn1_parser::{Bool, Enumerated, Integer, Mutable, RawAsn1EntityData};
 use yew::{Callback, Html, Properties, function_component, html};
 
-use crate::asn1::editor::{IntegerEditor, NullEditor};
+use crate::asn1::editor::{INTEGER_FORMATS, IntegerEditor, NullEditor};
 use crate::asn1::node_options::NodeOptions;
 use crate::common::{RcSlice, Switch};
 
@@ -100,7 +100,7 @@ pub fn integer(props: &IntegerNodeProps) -> Html {
                 {data_len}
                 name={String::from("Integer")}
                 editor={Some(html! {
-                    <IntegerEditor value={props.node.get().raw_data().to_vec()} {setter} />
+                    <IntegerEditor value={props.node.get().raw_data().to_vec()} {setter} formats={INTEGER_FORMATS} />
                 })}
             />
             <span class="asn-simple-value">{format!("{}", props.node.get().as_big_uint())}</span>
@@ -137,7 +137,7 @@ pub fn enumerated(props: &EnumeratedNodeProps) -> Html {
                 {data_len}
                 name={String::from("Enumerated")}
                 editor={Some(html! {
-                    <IntegerEditor value={props.node.get().raw_data().to_vec()} {setter} />
+                    <IntegerEditor value={props.node.get().raw_data().to_vec()} {setter} formats={INTEGER_FORMATS} />
                 })}
             />
             <span class="asn-simple-value">{format!("{}", props.node.get().as_big_uint())}</span>
