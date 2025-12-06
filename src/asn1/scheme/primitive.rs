@@ -1,7 +1,7 @@
 use asn1_parser::{Bool, Enumerated, Integer, Mutable, RawAsn1EntityData};
 use yew::{Callback, Html, Properties, function_component, html};
 
-use crate::asn1::editor::IntegerEditor;
+use crate::asn1::editor::{IntegerEditor, NullEditor};
 use crate::asn1::node_options::NodeOptions;
 use crate::common::{RcSlice, Switch};
 
@@ -59,7 +59,14 @@ pub fn null(props: &NullNodeProps) -> Html {
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Null")}/>
+            <NodeOptions
+                node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                {offset}
+                {length_len}
+                {data_len}
+                name={String::from("Null")}
+                editor={Some(html! { <NullEditor /> })}
+            />
         </div>
     }
 }

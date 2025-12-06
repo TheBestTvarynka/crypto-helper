@@ -1,4 +1,5 @@
 mod integer;
+mod null;
 mod number;
 mod string;
 mod time;
@@ -14,6 +15,7 @@ use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
 
 pub use self::integer::IntegerEditor;
+pub use self::null::NullEditor;
 pub use self::number::NumberEditor;
 pub use self::string::StringEditor;
 pub use self::time::{GeneralizedTimeEditor, UtcTimeEditor};
