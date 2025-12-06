@@ -1,15 +1,15 @@
 use std::fmt::Write;
 
 use asn1_parser::{
-    Asn1Encoder, BitString, BmpString, GeneralString, IA5String, Mutable, NumericString, OctetString, PrintableString,
-    RawAsn1EntityData, Utf8String, VisibleString,
+    Asn1, Asn1Encoder, Asn1Type, BitString, BmpString, GeneralString, IA5String, Mutable, NumericString, OctetString,
+    PrintableString, RawAsn1EntityData, Utf8String, VisibleString,
 };
 use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
 use crate::asn1::editor::{BYTES_FORMATS, IntegerEditor, StringEditor};
 use crate::asn1::node_options::NodeOptions;
-use crate::asn1::scheme::build_asn1_schema;
+use crate::asn1::scheme::{AddNodeButton, build_asn1_schema};
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
@@ -39,24 +39,64 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
 
     match node.inner() {
         Some(asn1) => {
-            let asn1_type = asn1.inner_asn1().clone();
+            let asn1_type = asn1.clone();
             let global_re_encode = props.re_encode.clone();
             let node = props.node.clone();
             let re_encode = Callback::from(move |_| {
-                let mut buf = vec![0; asn1_type.needed_buf_size()];
-                asn1_type.encode_buff(&mut buf).expect("Node encoding should not fail");
+                let mut buf = vec![0; asn1_type.get().as_slice().needed_buf_size()];
+                asn1_type
+                    .get()
+                    .as_slice()
+                    .encode_buff(&mut buf)
+                    .expect("Node encoding should not fail");
 
                 node.get_mut().set_octets(buf);
                 global_re_encode.emit(());
             });
-            let add_node = Callback::from(move |_asn1_type| {
-                // props.node.get_mut().set_inner(Some(Asn1::from_asn1_type(asn1_type)));
-                // re_encode.emit(());
-                // TODO
-            });
-            let remove_node = Callback::from(move |_| {
-                // TODO
-            });
+
+            let structures = asn1.clone();
+            let first_re_encode = re_encode.clone();
+            let trees = vec![html! {
+                <div style="position: relative;">
+                    <AddNodeButton add_node={Callback::from(move |asn1_type: Asn1Type| {
+                        structures.get_mut().insert(0, Asn1::from_asn1_type(asn1_type));
+                        first_re_encode.emit(());
+                    })} />
+                </div>
+            }];
+
+            let trees = asn1
+                .get()
+                .iter()
+                .enumerate()
+                .map(|(i, structure)| {
+                    let re_encode_on_add = re_encode.clone();
+                    let structures = asn1.clone();
+                    let add_node = Callback::from(move |asn1_type: Asn1Type| {
+                        structures.get_mut().insert(i + 1, Asn1::from_asn1_type(asn1_type));
+                        re_encode_on_add.emit(());
+                    });
+
+                    let re_encode_on_remove = re_encode.clone();
+                    let structures = asn1.clone();
+                    let remove_node = Callback::from(move |_: ()| {
+                        structures.get_mut().remove(i);
+                        re_encode_on_remove.emit(());
+                    });
+
+                    build_asn1_schema(
+                        structure,
+                        &props.cur_node,
+                        &props.set_cur_node,
+                        re_encode.clone(),
+                        add_node,
+                        remove_node,
+                    )
+                })
+                .fold(trees, |mut trees, component| {
+                    trees.push(component);
+                    trees
+                });
 
             html! {
                 <div style="cursor: crosshair; width: 100%;">
@@ -73,7 +113,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
                         <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                     </div>
                     <div class="asn1-constructor-body">
-                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node, remove_node)}
+                        {trees}
                     </div>
                 </div>
             }

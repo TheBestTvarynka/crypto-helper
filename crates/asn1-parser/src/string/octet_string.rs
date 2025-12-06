@@ -1,11 +1,12 @@
-use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::asn1::Asn1;
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
 use crate::writer::Writer;
-use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
+use crate::{
+    Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Mutable, Tag, Taggable, decode_buff_vec, decode_reader_vec,
+};
 
 /// [OctetString](https://www.oss.com/asn1/resources/asn1-made-simple/asn1-quick-reference/octetstring.html)
 ///
@@ -14,7 +15,7 @@ use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Ta
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OctetString {
     octets: Vec<u8>,
-    inner: Option<Box<Asn1>>,
+    inner: Option<Mutable<Vec<Asn1>>>,
 }
 
 impl OctetString {
@@ -25,14 +26,14 @@ impl OctetString {
         &self.octets
     }
 
-    pub fn inner(&self) -> Option<&Asn1> {
-        self.inner.as_ref().map(|i| i.as_ref())
+    pub fn inner(&self) -> Option<Mutable<Vec<Asn1>>> {
+        self.inner.clone()
     }
 
     pub fn new(octets: Vec<u8>) -> OctetString {
-        let inner = Asn1::decode_buff(&octets).ok().map(|mut asn1| {
-            asn1.clear_meta();
-            Box::new(asn1)
+        let inner = decode_buff_vec(&octets).ok().map(|mut asn1| {
+            asn1.iter_mut().for_each(|tree| tree.clear_meta());
+            Mutable::new(asn1)
         });
 
         OctetString { octets, inner }
@@ -40,13 +41,13 @@ impl OctetString {
 
     pub fn set_octets(&mut self, octets: Vec<u8>) {
         self.octets = octets;
-        self.inner = Asn1::decode_buff(&self.octets).ok().map(Box::new);
+        self.inner = decode_buff_vec(&self.octets).ok().map(|i| Mutable::new(i));
     }
 }
 
 impl From<Vec<u8>> for OctetString {
     fn from(data: Vec<u8>) -> Self {
-        let inner = Asn1::decode_buff(&data).ok().map(Box::new);
+        let inner = decode_buff_vec(&data).map(|i| Mutable::new(i)).ok();
         Self { octets: data, inner }
     }
 }
@@ -58,7 +59,7 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString {
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
         inner_reader.set_offset(reader.full_offset() - data.len());
-        let mut inner = Asn1::decode(&mut inner_reader).ok().map(Box::new);
+        let mut inner = decode_reader_vec(&mut inner_reader).ok().map(|i| Mutable::new(i));
 
         if !inner_reader.empty() && inner.is_some() {
             inner = None;

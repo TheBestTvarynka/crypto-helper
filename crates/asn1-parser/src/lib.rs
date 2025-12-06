@@ -65,6 +65,17 @@ pub fn decode_buff_vec(buff: &[u8]) -> Asn1Result<Vec<Asn1>> {
     Ok(trees)
 }
 
+/// Decodes the provided reader into the vector of asn1 trees.
+pub fn decode_reader_vec(reader: &mut Reader<'_>) -> Asn1Result<Vec<Asn1>> {
+    let mut trees = Vec::new();
+
+    while !reader.empty() {
+        trees.push(Asn1::decode(reader)?);
+    }
+
+    Ok(trees)
+}
+
 pub trait Asn1ValueDecoder<'data>: Sized {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self>;
 
