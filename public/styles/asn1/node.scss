@@ -154,7 +154,11 @@
     border-radius: 50%;
 }
 
-.asn1-button-add-node:hover {
+.ctrl-down {
+    /* only for ctrl button press indication */
+}
+
+body.ctrl-down .asn1-button-add-node:hover {
     opacity: 1;
     cursor: pointer;
 }

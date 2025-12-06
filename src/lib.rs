@@ -25,7 +25,10 @@ use footer::footer;
 use header::Header;
 use jwt::Jwt;
 use not_found::not_found;
-use yew::{Html, function_component, html};
+use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::Closure;
+use web_sys::window;
+use yew::{Html, KeyboardEvent, function_component, html, use_effect, use_mut_ref};
 use yew_agent::oneshot::OneshotProvider;
 use yew_notifications::{Notification, NotificationFactory, NotificationsProvider};
 use yew_router::{BrowserRouter, Routable, Switch};
@@ -71,6 +74,69 @@ fn switch(routes: Route) -> Html {
 #[function_component(App)]
 pub fn app() -> Html {
     let component_creator = NotificationFactory;
+
+    let keydown_closure = use_mut_ref(|| None::<Closure<dyn FnMut(KeyboardEvent)>>);
+    let keyup_closure = use_mut_ref(|| None::<Closure<dyn FnMut(KeyboardEvent)>>);
+
+    use_effect({
+        let keydown_closure = keydown_closure.clone();
+        let keyup_closure = keyup_closure.clone();
+
+        move || {
+            info!("Set ctrl-handler.");
+
+            let document = window()
+                .map(|w| w.document())
+                .flatten()
+                .expect("Can not get document from window.");
+
+            let keydown = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
+                let Some(document) = window().map(|w| w.document()).flatten() else {
+                    warn!("Can not get document from window.");
+                    return;
+                };
+
+                if e.ctrl_key() && (e.code() == "ControlLeft" || e.key() == "Control") {
+                    if let Some(body) = document.body() {
+                        if let Err(err) = body.class_list().add_1("ctrl-down") {
+                            error!(?err, "Can not add ctrl-down class to body.");
+                        }
+                    }
+                }
+            });
+
+            document
+                .add_event_listener_with_callback("keydown", keydown.as_ref().unchecked_ref())
+                .expect("failed to add keydown event listener");
+
+            let keyup = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
+                let Some(document) = window().map(|w| w.document()).flatten() else {
+                    warn!("Can not get document from window.");
+                    return;
+                };
+
+                if let Some(body) = document.body() {
+                    if !e.ctrl_key() {
+                        if let Err(err) = body.class_list().remove_1("ctrl-down") {
+                            error!(?err, "Can not remove ctrl-down class from body.");
+                        }
+                    }
+                }
+            });
+
+            document
+                .add_event_listener_with_callback("keyup", keyup.as_ref().unchecked_ref())
+                .expect("failed to add keyup event listener");
+
+            *keydown_closure.borrow_mut() = Some(keydown);
+            *keyup_closure.borrow_mut() = Some(keyup);
+
+            move || {
+                *keydown_closure.borrow_mut() = None;
+                *keyup_closure.borrow_mut() = None;
+            }
+        }
+    });
 
     html! {
         <BrowserRouter>
