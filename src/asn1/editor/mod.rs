@@ -8,8 +8,9 @@ use std::fmt;
 
 use ::time::OffsetDateTime;
 use asn1_parser::{
-    Asn1Type, Day, ExplicitTag, GeneralizedTime, GtSecond, GtYear, Hour, Integer, Minute, Month, Mutable, OctetString,
-    PrintableString, Second, Sequence, UtcTime, Year,
+    Asn1Type, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour, IA5String, Integer, Minute,
+    Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, UtcTime, Utf8String, VisibleString,
+    Year,
 };
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
@@ -20,6 +21,10 @@ pub use self::number::NumberEditor;
 pub use self::string::StringEditor;
 pub use self::time::{GeneralizedTimeEditor, UtcTimeEditor};
 
+/*
+define_string_node!(NumericString);
+*/
+
 const OCTET_STRING: &str = "octet string";
 const PRINTABLE_STRING: &str = "printable string";
 const INTEGER: &str = "integer";
@@ -27,10 +32,20 @@ const SEQUENCE: &str = "sequence";
 const EXPLICIT_TAG: &str = "explicit tag";
 const GENERALIZED_TIME: &str = "generalized time";
 const UTC_TIME: &str = "utc time";
+const UTF8_STRING: &str = "utf8 string";
+const GENERAL_STRING: &str = "general string";
+const IA5_STRING: &str = "ia5 string";
+const VISIBLE_STRING: &str = "visible string";
+const NUMERIC_STRING: &str = "numeric string";
 
 const TYPES: &[&str] = &[
     OCTET_STRING,
     PRINTABLE_STRING,
+    UTF8_STRING,
+    GENERAL_STRING,
+    IA5_STRING,
+    VISIBLE_STRING,
+    NUMERIC_STRING,
     INTEGER,
     SEQUENCE,
     EXPLICIT_TAG,
@@ -42,6 +57,11 @@ const TYPES: &[&str] = &[
 pub enum Asn1NodeValue {
     OctetString(Vec<u8>),
     PrintableString(String),
+    Utf8String(String),
+    GeneralString(String),
+    Ia5String(String),
+    VisibleString(String),
+    NumericString(String),
     Integer(Vec<u8>),
     Sequence,
     ExplicitTag(u8),
@@ -79,6 +99,11 @@ impl TryFrom<&str> for Asn1NodeValue {
                     second: Some(Second::try_from(now.second()).expect("valid second")),
                 })
             }
+            UTF8_STRING => Self::Utf8String(String::from("tbt")),
+            GENERAL_STRING => Self::GeneralString(String::from("tbt")),
+            IA5_STRING => Self::Ia5String(String::from("tbt")),
+            VISIBLE_STRING => Self::VisibleString(String::from("tbt")),
+            NUMERIC_STRING => Self::NumericString(String::from("12345")),
             _ => return Err(()),
         })
     }
@@ -94,6 +119,11 @@ impl From<&Asn1NodeValue> for &str {
             Asn1NodeValue::ExplicitTag(_) => EXPLICIT_TAG,
             Asn1NodeValue::GeneralizedTime(_) => GENERALIZED_TIME,
             Asn1NodeValue::UtcTime(_) => UTC_TIME,
+            Asn1NodeValue::Utf8String(_) => UTF8_STRING,
+            Asn1NodeValue::GeneralString(_) => GENERAL_STRING,
+            Asn1NodeValue::Ia5String(_) => IA5_STRING,
+            Asn1NodeValue::VisibleString(_) => VISIBLE_STRING,
+            Asn1NodeValue::NumericString(_) => NUMERIC_STRING,
         }
     }
 }
@@ -115,6 +145,11 @@ impl From<Asn1NodeValue> for Asn1Type {
             Asn1NodeValue::ExplicitTag(tag) => Asn1Type::ExplicitTag(Mutable::new(ExplicitTag::new(tag, Vec::new()))),
             Asn1NodeValue::GeneralizedTime(data) => Asn1Type::GeneralizedTime(Mutable::new(data)),
             Asn1NodeValue::UtcTime(data) => Asn1Type::UtcTime(Mutable::new(data)),
+            Asn1NodeValue::Utf8String(data) => Asn1Type::Utf8String(Mutable::new(Utf8String::new(data))),
+            Asn1NodeValue::GeneralString(data) => Asn1Type::GeneralString(Mutable::new(GeneralString::new(data))),
+            Asn1NodeValue::Ia5String(data) => Asn1Type::IA5String(Mutable::new(IA5String::new(data))),
+            Asn1NodeValue::VisibleString(data) => Asn1Type::VisibleString(Mutable::new(VisibleString::new(data))),
+            Asn1NodeValue::NumericString(data) => Asn1Type::NumericString(Mutable::new(NumericString::new(data))),
         }
     }
 }
@@ -122,11 +157,26 @@ impl From<Asn1NodeValue> for Asn1Type {
 fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeValue>) -> Html {
     match asn1_node {
         Asn1NodeValue::OctetString(_data) => {
-            // TODO
+            // TODO: octetstring editor.
             html! {}
         }
         Asn1NodeValue::PrintableString(value) => html! {
             <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::PrintableString(data)))} />
+        },
+        Asn1NodeValue::Utf8String(value) => html! {
+            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Utf8String(data)))} />
+        },
+        Asn1NodeValue::GeneralString(value) => html! {
+            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::GeneralString(data)))} />
+        },
+        Asn1NodeValue::Ia5String(value) => html! {
+            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Ia5String(data)))} />
+        },
+        Asn1NodeValue::VisibleString(value) => html! {
+            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::VisibleString(data)))} />
+        },
+        Asn1NodeValue::NumericString(value) => html! {
+            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::NumericString(data)))} />
         },
         Asn1NodeValue::Integer(value) => html! {
             <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Integer(data)))} />
