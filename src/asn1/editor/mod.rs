@@ -8,7 +8,7 @@ use std::fmt;
 
 use ::time::OffsetDateTime;
 use asn1_parser::{
-    Asn1Type, BitString, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour,
+    Asn1Type, BitString, BmpString, Bool, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour,
     IA5String, Integer, Minute, Month, Mutable, NumericString, ObjectIdentifier, OctetString, PrintableString, Second,
     Sequence, Set, UtcTime, Utf8String, VisibleString, Year,
 };
@@ -21,6 +21,7 @@ pub use self::number::NumberEditor;
 pub use self::string::StringEditor;
 pub use self::time::{GeneralizedTimeEditor, UtcTimeEditor};
 use crate::asn1::scheme::validate_oid;
+use crate::common::Switch;
 
 const OCTET_STRING: &str = "octet string";
 const PRINTABLE_STRING: &str = "printable string";
@@ -38,6 +39,7 @@ const NUMERIC_STRING: &str = "numeric string";
 const BMP_STRING: &str = "bmp string";
 const BIT_STRING: &str = "bit string";
 const OBJECT_IDENTIFIER: &str = "object identifier";
+const BOOL: &str = "bool";
 
 const TYPES: &[&str] = &[
     OCTET_STRING,
@@ -56,6 +58,7 @@ const TYPES: &[&str] = &[
     BMP_STRING,
     BIT_STRING,
     OBJECT_IDENTIFIER,
+    BOOL,
 ];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -76,6 +79,7 @@ pub enum Asn1NodeValue {
     UtcTime(UtcTime),
     BmpString(String),
     ObjectIdentifier(String),
+    Bool(bool),
 }
 
 impl TryFrom<&str> for Asn1NodeValue {
@@ -117,6 +121,7 @@ impl TryFrom<&str> for Asn1NodeValue {
             NUMERIC_STRING => Self::NumericString(String::from("12345")),
             BMP_STRING => Self::BmpString(String::from("tbt")),
             OBJECT_IDENTIFIER => Self::ObjectIdentifier(String::from("2.5.4.6")),
+            BOOL => Self::Bool(false),
             _ => return Err(()),
         })
     }
@@ -141,6 +146,7 @@ impl From<&Asn1NodeValue> for &str {
             Asn1NodeValue::NumericString(_) => NUMERIC_STRING,
             Asn1NodeValue::BmpString(_) => BMP_STRING,
             Asn1NodeValue::ObjectIdentifier(_) => OBJECT_IDENTIFIER,
+            Asn1NodeValue::Bool(_) => BOOL,
         }
     }
 }
@@ -175,12 +181,16 @@ impl From<Asn1NodeValue> for Asn1Type {
             Asn1NodeValue::ObjectIdentifier(data) => {
                 Asn1Type::ObjectIdentifier(Mutable::new(ObjectIdentifier::new_unchecked(&data)))
             }
+            Asn1NodeValue::Bool(data) => Asn1Type::Bool(Mutable::new(Bool::from(data))),
         }
     }
 }
 
 fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeValue>) -> Html {
     match asn1_node {
+        Asn1NodeValue::Bool(value) => html! {
+            <Switch id={"bool_node_creation"} state={value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Bool(data)))} />
+        },
         Asn1NodeValue::OctetString(value) => html! {
             <IntegerEditor
                 {value}
