@@ -168,18 +168,6 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
     let raw_bits = node.raw_bits();
     let bits_amount = node.bits_amount();
 
-    let bits = if raw_bits.len() > 1 {
-        let mut bits = String::with_capacity((raw_bits.len() - 1) * 8);
-        for byte in &raw_bits[1..] {
-            write!(bits, "{:08b}", byte).unwrap();
-        }
-        bits
-    } else {
-        String::new()
-    };
-
-    let display_bits = &bits[0..bits_amount.min(bits.len())];
-
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
@@ -193,22 +181,64 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
 
     match node.inner() {
         Some(asn1) => {
-            let asn1_type = asn1.inner_asn1().clone();
+            let asn1_type = asn1.clone();
             let global_re_encode = props.re_encode.clone();
             let node = props.node.clone();
             let re_encode = Callback::from(move |_| {
-                let mut buf = vec![0; asn1_type.needed_buf_size()];
-                asn1_type.encode_buff(&mut buf).expect("Node encoding should not fail");
+                let mut buf = vec![0; asn1_type.get().as_slice().needed_buf_size()];
+                asn1_type
+                    .get()
+                    .as_slice()
+                    .encode_buff(&mut buf)
+                    .expect("Node encoding should not fail");
 
                 node.get_mut().set_bits(buf);
                 global_re_encode.emit(());
             });
-            let add_node = Callback::from(move |_asn1_type| {
-                // TODO
-            });
-            let remove_node = Callback::from(move |_| {
-                // TODO
-            });
+
+            let structures = asn1.clone();
+            let first_re_encode = re_encode.clone();
+            let trees = vec![html! {
+                <div style="position: relative;">
+                    <AddNodeButton add_node={Callback::from(move |asn1_type: Asn1Type| {
+                        structures.get_mut().insert(0, Asn1::from_asn1_type(asn1_type));
+                        first_re_encode.emit(());
+                    })} />
+                </div>
+            }];
+
+            let trees = asn1
+                .get()
+                .iter()
+                .enumerate()
+                .map(|(i, structure)| {
+                    let re_encode_on_add = re_encode.clone();
+                    let structures = asn1.clone();
+                    let add_node = Callback::from(move |asn1_type: Asn1Type| {
+                        structures.get_mut().insert(i + 1, Asn1::from_asn1_type(asn1_type));
+                        re_encode_on_add.emit(());
+                    });
+
+                    let re_encode_on_remove = re_encode.clone();
+                    let structures = asn1.clone();
+                    let remove_node = Callback::from(move |_: ()| {
+                        structures.get_mut().remove(i);
+                        re_encode_on_remove.emit(());
+                    });
+
+                    build_asn1_schema(
+                        structure,
+                        &props.cur_node,
+                        &props.set_cur_node,
+                        re_encode.clone(),
+                        add_node,
+                        remove_node,
+                    )
+                })
+                .fold(trees, |mut trees, component| {
+                    trees.push(component);
+                    trees
+                });
 
             html! {
                 <div style="cursor: crosshair; width: 100%;">
@@ -226,12 +256,24 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
                         <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
                     </div>
                     <div class="asn1-constructor-body">
-                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node, remove_node)}
+                        {trees}
                     </div>
                 </div>
             }
         }
         None => {
+            let bits = if raw_bits.len() > 1 {
+                let mut bits = String::with_capacity((raw_bits.len() - 1) * 8);
+                for byte in &raw_bits[1..] {
+                    write!(bits, "{:08b}", byte).unwrap();
+                }
+                bits
+            } else {
+                String::new()
+            };
+
+            let display_bits = &bits[0..bits_amount.min(bits.len())];
+
             html! {
                 <div class="terminal-asn1-node">
                     <NodeOptions
