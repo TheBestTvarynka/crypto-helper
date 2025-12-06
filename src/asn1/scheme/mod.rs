@@ -21,16 +21,16 @@ use self::strings::{
 use self::tag::{ApplicationTagNode, ExplicitTagNode, ImplicitTagNode};
 use self::time::{GeneralizedTimeNode, UtcTimeNode};
 use crate::asn1::HighlightAction;
-use crate::asn1::editor::Asn1NodeValueEditor;
+use crate::asn1::editor::{NodeValueEditor, RemoveNodeConfirmation};
 use crate::asn1::scheme::set::SetNode;
 
 #[derive(PartialEq, Properties, Clone)]
-pub struct Asn1NodeOptionsProps {
+pub struct AddNodeButtonProps {
     pub add_node: Callback<Asn1Type>,
 }
 
-#[function_component(Asn1NodeOptions)]
-pub fn node_options(props: &Asn1NodeOptionsProps) -> Html {
+#[function_component(AddNodeButton)]
+pub fn add_node_button(props: &AddNodeButtonProps) -> Html {
     let show_panel = use_state(|| false);
 
     let onclick = {
@@ -67,7 +67,51 @@ pub fn node_options(props: &Asn1NodeOptionsProps) -> Html {
             {if *show_panel {html! {
                 <div style="position: relative">
                     <div class="asn1-node-options">
-                        <Asn1NodeValueEditor {add_node} cancel={hide_panel} />
+                        <NodeValueEditor {add_node} cancel={hide_panel} />
+                    </div>
+                </div>
+            }} else {html! {}}}
+        </div>
+    }
+}
+
+#[derive(PartialEq, Properties, Clone)]
+pub struct RemoveNodeButtonProps {
+    pub remove_node: Callback<()>,
+}
+
+#[function_component(RemoveNodeButton)]
+pub fn remove_node_button(props: &RemoveNodeButtonProps) -> Html {
+    let show_panel = use_state(|| false);
+
+    let onclick = {
+        let show_panel = show_panel.clone();
+        Callback::from(move |_: MouseEvent| {
+            show_panel.set(true);
+        })
+    };
+
+    let show_panel_setter = show_panel.setter();
+    let remove_node = props.remove_node.clone();
+    let remove_node = Callback::from(move |_: ()| {
+        show_panel_setter.set(false);
+        remove_node.emit(());
+    });
+
+    let show_panel_setter = show_panel.setter();
+    let onmouseleave = Callback::from(move |_| {
+        show_panel_setter.set(false);
+    });
+
+    html! {
+        <div class="asn1-remove-node-button-container">
+            <button class="asn1-button-add-node" {onclick}>
+                <img src="/public/img/icons/remove.png" />
+            </button>
+            {if *show_panel {html! {
+                <div style="position: relative" {onmouseleave}>
+                    <div class="asn1-node-options">
+                        <RemoveNodeConfirmation {remove_node} />
                     </div>
                 </div>
             }} else {html! {}}}
@@ -81,6 +125,7 @@ pub struct Asn1NodeProps {
     pub cur_id: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
     pub add_node: Callback<Asn1Type>,
+    pub remove_node: Callback<()>,
 
     pub children: Children,
 }
@@ -109,7 +154,8 @@ pub fn asn1_node(props: &Asn1NodeProps) -> Html {
     html! {
         <div class={get_node_class(props.id, &props.cur_id)} {onmouseenter} {onmouseleave} style="position: relative;">
             {props.children.clone()}
-            <Asn1NodeOptions add_node={props.add_node.clone()} />
+            <AddNodeButton add_node={props.add_node.clone()} />
+            <RemoveNodeButton remove_node={props.remove_node.clone()} />
         </div>
     }
 }
@@ -120,110 +166,111 @@ pub fn build_asn1_schema(
     set_cur_node: &Callback<HighlightAction>,
     re_encode: Callback<()>,
     add_node: Callback<Asn1Type>,
+    remove_node: Callback<()>,
 ) -> VNode {
     match asn1.inner_asn1() {
         Asn1Type::OctetString(octet) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <OctetStringNode node={octet.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Utf8String(utf8) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <Utf8StringNode node={utf8.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::IA5String(ia5) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <IA5StringNode node={ia5.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::PrintableString(printable) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <PrintableStringNode node={printable.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::GeneralString(general) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <GeneralStringNode node={general.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::NumericString(numeric) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <NumericStringNode node={numeric.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::VisibleString(visible) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <VisibleStringNode node={visible.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Sequence(sequence) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <SequenceNode node={sequence.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Set(set) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <SetNode node={set.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::BitString(bit) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <BitStringNode node={bit.clone()} meta={asn1.meta().clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Bool(boolean) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <BoolNode node={boolean.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::BmpString(bmp) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <BmpStringNode node={bmp.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Null(_) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <NullNode meta={asn1.meta().clone()} />
             </Asn1Node>
         },
         Asn1Type::Integer(integer) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <IntegerNode node={integer.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::Enumerated(enumerated) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <EnumeratedNode node={enumerated.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ObjectIdentifier(object_identifier) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <ObjectIdentifierNode node={object_identifier.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ExplicitTag(explicit) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <ExplicitTagNode node={explicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ImplicitTag(implicit) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <ImplicitTagNode node={implicit.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::ApplicationTag(application) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <ApplicationTagNode node={application.clone()} cur_node={cur_id} set_cur_node={set_cur_node.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::UtcTime(utc_time) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <UtcTimeNode node={utc_time.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },
         Asn1Type::GeneralizedTime(generalized_time) => html! {
-            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node}>
+            <Asn1Node id={asn1.id()} {cur_id} set_cur_node={set_cur_node.clone()} {add_node} {remove_node}>
                 <GeneralizedTimeNode node={generalized_time.clone()} meta={asn1.meta().clone()} re_encode={re_encode.clone()} />
             </Asn1Node>
         },

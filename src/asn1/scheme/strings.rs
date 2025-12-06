@@ -54,6 +54,9 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
                 // re_encode.emit(());
                 // TODO
             });
+            let remove_node = Callback::from(move |_| {
+                // TODO
+            });
 
             html! {
                 <div style="cursor: crosshair; width: 100%;">
@@ -70,7 +73,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
                         <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                     </div>
                     <div class="asn1-constructor-body">
-                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node)}
+                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node, remove_node)}
                     </div>
                 </div>
             }
@@ -163,6 +166,9 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
             let add_node = Callback::from(move |_asn1_type| {
                 // TODO
             });
+            let remove_node = Callback::from(move |_| {
+                // TODO
+            });
 
             html! {
                 <div style="cursor: crosshair; width: 100%;">
@@ -180,7 +186,7 @@ pub fn bit_string(props: &BitStringNodeProps) -> Html {
                         <span class="asn1-node-info-label">{format!("({} bits)", bits_amount)}</span>
                     </div>
                     <div class="asn1-constructor-body">
-                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node)}
+                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node, remove_node)}
                     </div>
                 </div>
             }

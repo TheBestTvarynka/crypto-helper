@@ -251,13 +251,13 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
 }
 
 #[derive(PartialEq, Properties, Clone, Debug)]
-pub struct Asn1NodeValueOptions {
+pub struct NodeValueOptions {
     pub add_node: Callback<Asn1Type>,
     pub cancel: Callback<()>,
 }
 
-#[function_component(Asn1NodeValueEditor)]
-pub fn asn1_node_value_editor(props: &Asn1NodeValueOptions) -> Html {
+#[function_component(NodeValueEditor)]
+pub fn node_value_editor(props: &NodeValueOptions) -> Html {
     let asn1_node = use_state(|| Asn1NodeValue::PrintableString(String::from("tbt")));
 
     let asn1_node_setter = asn1_node.setter();
@@ -302,6 +302,23 @@ pub fn asn1_node_value_editor(props: &Asn1NodeValueOptions) -> Html {
                     <img src="/public/img/icons/close.png" />
                 </button>
             </div>
+        </div>
+    }
+}
+
+#[derive(PartialEq, Properties, Clone, Debug)]
+pub struct RemoveNodeConfirmationProps {
+    pub remove_node: Callback<()>,
+}
+
+#[function_component(RemoveNodeConfirmation)]
+pub fn remove_node_confirmation(props: &RemoveNodeConfirmationProps) -> Html {
+    let remove_node = props.remove_node.clone();
+    let onclick = move |_| remove_node.emit(());
+
+    html! {
+        <div class="horizontal">
+            <button class="jwt-util-button" {onclick}>{"Yes, I am sure"}</button>
         </div>
     }
 }

@@ -6,7 +6,7 @@ use yew::{Callback, Html, Properties, function_component, html};
 use crate::asn1::HighlightAction;
 use crate::asn1::editor::NumberEditor;
 use crate::asn1::node_options::NodeOptions;
-use crate::asn1::scheme::{Asn1NodeOptions, build_asn1_schema};
+use crate::asn1::scheme::{AddNodeButton, build_asn1_schema};
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
@@ -28,7 +28,7 @@ pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
     let re_encode = props.re_encode.clone();
     let inner_components = vec![html! {
         <div style="position: relative;">
-            <Asn1NodeOptions add_node={Callback::from(move |asn1_type| {
+            <AddNodeButton add_node={Callback::from(move |asn1_type| {
                 tag_node.get_mut().fields_mut_vec().insert(0, Asn1::from_asn1_type(asn1_type));
                 re_encode.emit(());
             })} />
@@ -48,7 +48,21 @@ pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
                 re_encode.emit(());
             });
 
-            build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone(), add_node)
+            let re_encode = props.re_encode.clone();
+            let set_node = props.node.clone();
+            let remove_node = Callback::from(move |_: ()| {
+                set_node.get_mut().fields_mut_vec().remove(i);
+                re_encode.emit(());
+            });
+
+            build_asn1_schema(
+                f,
+                &props.cur_node,
+                set_cur_node,
+                props.re_encode.clone(),
+                add_node,
+                remove_node,
+            )
         })
         .fold(inner_components, |mut inner_components, component| {
             inner_components.push(component);
@@ -111,7 +125,7 @@ pub fn application_tag(props: &ApplicationTagProps) -> Html {
     let re_encode = props.re_encode.clone();
     let inner_components = vec![html! {
         <div style="position: relative;">
-            <Asn1NodeOptions add_node={Callback::from(move |asn1_type| {
+            <AddNodeButton add_node={Callback::from(move |asn1_type| {
                 tag_node.get_mut().fields_mut_vec().insert(0, Asn1::from_asn1_type(asn1_type));
                 re_encode.emit(());
             })} />
@@ -131,7 +145,21 @@ pub fn application_tag(props: &ApplicationTagProps) -> Html {
                 re_encode.emit(());
             });
 
-            build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone(), add_node)
+            let re_encode = props.re_encode.clone();
+            let set_node = props.node.clone();
+            let remove_node = Callback::from(move |_: ()| {
+                set_node.get_mut().fields_mut_vec().remove(i);
+                re_encode.emit(());
+            });
+
+            build_asn1_schema(
+                f,
+                &props.cur_node,
+                set_cur_node,
+                props.re_encode.clone(),
+                add_node,
+                remove_node,
+            )
         })
         .fold(inner_components, |mut inner_components, component| {
             inner_components.push(component);
@@ -207,6 +235,9 @@ pub fn implicit_tag(props: &ImplicitTagProps) -> Html {
             let add_node = Callback::from(move |_asn1_type| {
                 // TODO
             });
+            let remove_node = Callback::from(move |_| {
+                // TODO
+            });
 
             html! {
                 <div style="cursor: crosshair; width: 100%">
@@ -214,7 +245,7 @@ pub fn implicit_tag(props: &ImplicitTagProps) -> Html {
                         <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{tag_number}] Implicit")}/>
                     </div>
                     <div class="asn1-constructor-body">
-                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node)}
+                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node, remove_node)}
                     </div>
                 </div>
             }

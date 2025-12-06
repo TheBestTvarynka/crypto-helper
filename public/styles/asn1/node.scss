@@ -154,6 +154,14 @@
     border-radius: 50%;
 }
 
+.asn1-remove-node-button-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(-20%, 0%);
+    z-index: 10;
+}
+
 .ctrl-down {
     /* only for ctrl button press indication */
 }

@@ -3,7 +3,7 @@ use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
 use crate::asn1::node_options::NodeOptions;
-use crate::asn1::scheme::{Asn1NodeOptions, build_asn1_schema};
+use crate::asn1::scheme::{AddNodeButton, build_asn1_schema};
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
@@ -25,7 +25,7 @@ pub fn set(props: &SetNodeProps) -> Html {
     let re_encode = props.re_encode.clone();
     let fields_components = vec![html! {
         <div style="position: relative;">
-            <Asn1NodeOptions add_node={Callback::from(move |asn1_type: Asn1Type| {
+            <AddNodeButton add_node={Callback::from(move |asn1_type: Asn1Type| {
                 set_node.get_mut().fields_mut_vec().insert(0, Asn1::from_asn1_type(asn1_type));
                 re_encode.emit(());
             })} />
@@ -45,7 +45,21 @@ pub fn set(props: &SetNodeProps) -> Html {
                 re_encode.emit(());
             });
 
-            build_asn1_schema(f, &props.cur_node, set_cur_node, props.re_encode.clone(), add_node)
+            let re_encode = props.re_encode.clone();
+            let set_node = props.node.clone();
+            let remove_node = Callback::from(move |_: ()| {
+                set_node.get_mut().fields_mut_vec().remove(i);
+                re_encode.emit(());
+            });
+
+            build_asn1_schema(
+                f,
+                &props.cur_node,
+                set_cur_node,
+                props.re_encode.clone(),
+                add_node,
+                remove_node,
+            )
         })
         .fold(fields_components, |mut fields_components, component| {
             fields_components.push(component);

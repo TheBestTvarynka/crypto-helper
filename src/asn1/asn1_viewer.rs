@@ -18,10 +18,13 @@ pub fn asn1_viewer(props: &Asn1ViewerProps) -> Html {
     let add_node = Callback::from(|_asn1_type| {
         // TODO: many asn1 trees.
     });
+    let remove_node = Callback::from(move |_| {
+        // TODO:
+    });
 
     html! {
         <div>
-            {build_asn1_schema(&props.structure.get(), &props.cur_node, &props.set_cur_node, props.re_encode.clone(), add_node)}
+            {build_asn1_schema(&props.structure.get(), &props.cur_node, &props.set_cur_node, props.re_encode.clone(), add_node, remove_node)}
         </div>
     }
 }
