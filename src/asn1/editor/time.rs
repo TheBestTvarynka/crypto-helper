@@ -48,12 +48,12 @@ pub fn generalized_time_editor(props: &GeneralizedTimeEditorProps) -> Html {
     let on_input_month = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(month) = input.value().parse::<u8>() {
-            if let Ok(month) = Month::try_from(month) {
-                let mut new_time = gt.clone();
-                new_time.month = month;
-                setter.emit(new_time);
-            }
+        if let Ok(month) = input.value().parse::<u8>()
+            && let Ok(month) = Month::try_from(month)
+        {
+            let mut new_time = gt.clone();
+            new_time.month = month;
+            setter.emit(new_time);
         }
     });
 
@@ -62,12 +62,12 @@ pub fn generalized_time_editor(props: &GeneralizedTimeEditorProps) -> Html {
     let on_input_day = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(day) = input.value().parse::<u8>() {
-            if let Ok(day) = Day::try_from(day) {
-                let mut new_time = gt.clone();
-                new_time.day = day;
-                setter.emit(new_time);
-            }
+        if let Ok(day) = input.value().parse::<u8>()
+            && let Ok(day) = Day::try_from(day)
+        {
+            let mut new_time = gt.clone();
+            new_time.day = day;
+            setter.emit(new_time);
         }
     });
 
@@ -76,12 +76,12 @@ pub fn generalized_time_editor(props: &GeneralizedTimeEditorProps) -> Html {
     let on_input_hour = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(hour) = input.value().parse::<u8>() {
-            if let Ok(hour) = Hour::try_from(hour) {
-                let mut new_time = gt.clone();
-                new_time.hour = hour;
-                setter.emit(new_time);
-            }
+        if let Ok(hour) = input.value().parse::<u8>()
+            && let Ok(hour) = Hour::try_from(hour)
+        {
+            let mut new_time = gt.clone();
+            new_time.hour = hour;
+            setter.emit(new_time);
         }
     });
 
@@ -90,12 +90,12 @@ pub fn generalized_time_editor(props: &GeneralizedTimeEditorProps) -> Html {
     let on_input_minute = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(minute) = input.value().parse::<u8>() {
-            if let Ok(minute) = Minute::try_from(minute) {
-                let mut new_time = gt.clone();
-                new_time.minute = minute;
-                setter.emit(new_time);
-            }
+        if let Ok(minute) = input.value().parse::<u8>()
+            && let Ok(minute) = Minute::try_from(minute)
+        {
+            let mut new_time = gt.clone();
+            new_time.minute = minute;
+            setter.emit(new_time);
         }
     });
 
@@ -104,12 +104,12 @@ pub fn generalized_time_editor(props: &GeneralizedTimeEditorProps) -> Html {
     let on_input_second = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(second) = input.value().parse::<f32>() {
-            if let Ok(second) = GtSecond::try_from(second) {
-                let mut new_time = gt.clone();
-                new_time.second = second;
-                setter.emit(new_time);
-            }
+        if let Ok(second) = input.value().parse::<f32>()
+            && let Ok(second) = GtSecond::try_from(second)
+        {
+            let mut new_time = gt.clone();
+            new_time.second = second;
+            setter.emit(new_time);
         }
     });
 
@@ -134,16 +134,16 @@ pub fn generalized_time_editor(props: &GeneralizedTimeEditorProps) -> Html {
     let on_input_local_hour = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(hour) = input.value().parse::<u8>() {
-            if let Ok(hour) = Hour::try_from(hour) {
-                let mut new_time = gt.clone();
+        if let Ok(hour) = input.value().parse::<u8>()
+            && let Ok(hour) = Hour::try_from(hour)
+        {
+            let mut new_time = gt.clone();
 
-                let mut new_local_time = new_time.local_time.unwrap_or_default();
-                new_local_time.hour = hour;
-                new_time.set_local_time(new_local_time);
+            let mut new_local_time = new_time.local_time.unwrap_or_default();
+            new_local_time.hour = hour;
+            new_time.set_local_time(new_local_time);
 
-                setter.emit(new_time);
-            }
+            setter.emit(new_time);
         }
     });
 
@@ -152,16 +152,16 @@ pub fn generalized_time_editor(props: &GeneralizedTimeEditorProps) -> Html {
     let on_input_local_minute = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(minute) = input.value().parse::<u8>() {
-            if let Ok(minute) = Minute::try_from(minute) {
-                let mut new_time = gt.clone();
+        if let Ok(minute) = input.value().parse::<u8>()
+            && let Ok(minute) = Minute::try_from(minute)
+        {
+            let mut new_time = gt.clone();
 
-                let mut new_local_time = new_time.local_time.unwrap_or_default();
-                new_local_time.minute = minute;
-                new_time.set_local_time(new_local_time);
+            let mut new_local_time = new_time.local_time.unwrap_or_default();
+            new_local_time.minute = minute;
+            new_time.set_local_time(new_local_time);
 
-                setter.emit(new_time);
-            }
+            setter.emit(new_time);
         }
     });
 
@@ -302,12 +302,12 @@ pub fn utc_time_editor(props: &UtcTimeEditorProps) -> Html {
     let on_input_year = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(year) = input.value().parse::<u8>() {
-            if let Ok(year) = Year::try_from(year) {
-                let mut new_time = ut.clone();
-                new_time.year = year;
-                setter.emit(new_time);
-            }
+        if let Ok(year) = input.value().parse::<u8>()
+            && let Ok(year) = Year::try_from(year)
+        {
+            let mut new_time = ut.clone();
+            new_time.year = year;
+            setter.emit(new_time);
         }
     });
 
@@ -316,12 +316,12 @@ pub fn utc_time_editor(props: &UtcTimeEditorProps) -> Html {
     let on_input_month = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(month) = input.value().parse::<u8>() {
-            if let Ok(month) = Month::try_from(month) {
-                let mut new_time = ut.clone();
-                new_time.month = month;
-                setter.emit(new_time);
-            }
+        if let Ok(month) = input.value().parse::<u8>()
+            && let Ok(month) = Month::try_from(month)
+        {
+            let mut new_time = ut.clone();
+            new_time.month = month;
+            setter.emit(new_time);
         }
     });
 
@@ -330,12 +330,12 @@ pub fn utc_time_editor(props: &UtcTimeEditorProps) -> Html {
     let on_input_day = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(day) = input.value().parse::<u8>() {
-            if let Ok(day) = Day::try_from(day) {
-                let mut new_time = ut.clone();
-                new_time.day = day;
-                setter.emit(new_time);
-            }
+        if let Ok(day) = input.value().parse::<u8>()
+            && let Ok(day) = Day::try_from(day)
+        {
+            let mut new_time = ut.clone();
+            new_time.day = day;
+            setter.emit(new_time);
         }
     });
 
@@ -344,12 +344,12 @@ pub fn utc_time_editor(props: &UtcTimeEditorProps) -> Html {
     let on_input_hour = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(hour) = input.value().parse::<u8>() {
-            if let Ok(hour) = Hour::try_from(hour) {
-                let mut new_time = ut.clone();
-                new_time.hour = hour;
-                setter.emit(new_time);
-            }
+        if let Ok(hour) = input.value().parse::<u8>()
+            && let Ok(hour) = Hour::try_from(hour)
+        {
+            let mut new_time = ut.clone();
+            new_time.hour = hour;
+            setter.emit(new_time);
         }
     });
 
@@ -358,12 +358,12 @@ pub fn utc_time_editor(props: &UtcTimeEditorProps) -> Html {
     let on_input_minute = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(minute) = input.value().parse::<u8>() {
-            if let Ok(minute) = Minute::try_from(minute) {
-                let mut new_time = ut.clone();
-                new_time.minute = minute;
-                setter.emit(new_time);
-            }
+        if let Ok(minute) = input.value().parse::<u8>()
+            && let Ok(minute) = Minute::try_from(minute)
+        {
+            let mut new_time = ut.clone();
+            new_time.minute = minute;
+            setter.emit(new_time);
         }
     });
 
@@ -372,12 +372,12 @@ pub fn utc_time_editor(props: &UtcTimeEditorProps) -> Html {
     let on_input_second = Callback::from(move |event: html::oninput::Event| {
         let input: HtmlInputElement = event.target_unchecked_into();
 
-        if let Ok(second) = input.value().parse::<u8>() {
-            if let Ok(second) = Second::try_from(second) {
-                let mut new_time = ut.clone();
-                new_time.second = Some(second);
-                setter.emit(new_time);
-            }
+        if let Ok(second) = input.value().parse::<u8>()
+            && let Ok(second) = Second::try_from(second)
+        {
+            let mut new_time = ut.clone();
+            new_time.second = Some(second);
+            setter.emit(new_time);
         }
     });
 

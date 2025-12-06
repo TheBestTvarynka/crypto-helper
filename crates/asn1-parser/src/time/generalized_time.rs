@@ -24,7 +24,7 @@ impl Year {
         Ok(Self(from_utf8(reader.read(4)?)?.parse::<u16>()?))
     }
 
-    fn to_writer(&self, writer: &mut Writer) -> Asn1Result<()> {
+    fn encode_to_writer(&self, writer: &mut Writer) -> Asn1Result<()> {
         writer.write_slice(format!("{:04}", self.0).as_bytes())?;
 
         Ok(())
@@ -151,7 +151,7 @@ impl LocalTimeDiffFactor {
         })
     }
 
-    fn to_writer(&self, writer: &mut Writer) -> Asn1Result<()> {
+    fn encode_to_writer(&self, writer: &mut Writer) -> Asn1Result<()> {
         writer.write_byte(self.time_direction.into())?;
         writer.write_slice(format!("{:02}", self.hour.as_ref()).as_bytes())?;
         writer.write_slice(format!("{:02}", self.minute.as_ref()).as_bytes())?;
@@ -329,7 +329,7 @@ impl Asn1Encoder for GeneralizedTime {
         writer.write_byte(Self::TAG.into())?;
         write_len(self.calc_data_len(), writer)?;
 
-        self.year.to_writer(writer)?;
+        self.year.encode_to_writer(writer)?;
         writer.write_slice(format!("{:02}", self.month.as_ref()).as_bytes())?;
         writer.write_slice(format!("{:02}", self.day.as_ref()).as_bytes())?;
         writer.write_slice(format!("{:02}", self.hour.as_ref()).as_bytes())?;
@@ -342,7 +342,7 @@ impl Asn1Encoder for GeneralizedTime {
         }
 
         if let Some(local_time) = self.local_time.as_ref() {
-            local_time.to_writer(writer)
+            local_time.encode_to_writer(writer)
         } else {
             writer.write_byte(b'Z')
         }

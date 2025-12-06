@@ -86,22 +86,21 @@ pub fn app() -> Html {
             info!("Set ctrl-handler.");
 
             let document = window()
-                .map(|w| w.document())
-                .flatten()
+                .and_then(|w| w.document())
                 .expect("Can not get document from window.");
 
             let keydown = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
-                let Some(document) = window().map(|w| w.document()).flatten() else {
+                let Some(document) = window().and_then(|w| w.document()) else {
                     warn!("Can not get document from window.");
                     return;
                 };
 
-                if e.ctrl_key() && (e.code() == "ControlLeft" || e.key() == "Control") {
-                    if let Some(body) = document.body() {
-                        if let Err(err) = body.class_list().add_1("ctrl-down") {
-                            error!(?err, "Can not add ctrl-down class to body.");
-                        }
-                    }
+                if e.ctrl_key()
+                    && (e.code() == "ControlLeft" || e.key() == "Control")
+                    && let Some(body) = document.body()
+                    && let Err(err) = body.class_list().add_1("ctrl-down")
+                {
+                    error!(?err, "Can not add ctrl-down class to body.");
                 }
             });
 
@@ -110,17 +109,16 @@ pub fn app() -> Html {
                 .expect("failed to add keydown event listener");
 
             let keyup = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
-                let Some(document) = window().map(|w| w.document()).flatten() else {
+                let Some(document) = window().and_then(|w| w.document()) else {
                     warn!("Can not get document from window.");
                     return;
                 };
 
-                if let Some(body) = document.body() {
-                    if !e.ctrl_key() {
-                        if let Err(err) = body.class_list().remove_1("ctrl-down") {
-                            error!(?err, "Can not remove ctrl-down class from body.");
-                        }
-                    }
+                if let Some(body) = document.body()
+                    && !e.ctrl_key()
+                    && let Err(err) = body.class_list().remove_1("ctrl-down")
+                {
+                    error!(?err, "Can not remove ctrl-down class from body.");
                 }
             });
 

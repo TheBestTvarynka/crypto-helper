@@ -42,14 +42,14 @@ impl From<IntegerFormat> for &str {
     }
 }
 
-pub const INTEGER_FORMATS: &'static [IntegerFormat] = &[
+pub const INTEGER_FORMATS: &[IntegerFormat] = &[
     IntegerFormat::Hex,
     IntegerFormat::Base64,
     IntegerFormat::DecimalBytes,
     IntegerFormat::DecimalInteger,
 ];
 
-pub const BYTES_FORMATS: &'static [IntegerFormat] = &[IntegerFormat::Hex, IntegerFormat::Base64];
+pub const BYTES_FORMATS: &[IntegerFormat] = &[IntegerFormat::Hex, IntegerFormat::Base64];
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct IntegerEditorProps {

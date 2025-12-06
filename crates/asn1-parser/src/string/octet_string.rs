@@ -41,13 +41,13 @@ impl OctetString {
 
     pub fn set_octets(&mut self, octets: Vec<u8>) {
         self.octets = octets;
-        self.inner = decode_buff_vec(&self.octets).ok().map(|i| Mutable::new(i));
+        self.inner = decode_buff_vec(&self.octets).ok().map(Mutable::new);
     }
 }
 
 impl From<Vec<u8>> for OctetString {
     fn from(data: Vec<u8>) -> Self {
-        let inner = decode_buff_vec(&data).map(|i| Mutable::new(i)).ok();
+        let inner = decode_buff_vec(&data).map(Mutable::new).ok();
         Self { octets: data, inner }
     }
 }
@@ -59,7 +59,7 @@ impl<'data> Asn1ValueDecoder<'data> for OctetString {
         let mut inner_reader = Reader::new(data);
         inner_reader.set_next_id(reader.next_id());
         inner_reader.set_offset(reader.full_offset() - data.len());
-        let mut inner = decode_reader_vec(&mut inner_reader).ok().map(|i| Mutable::new(i));
+        let mut inner = decode_reader_vec(&mut inner_reader).ok().map(Mutable::new);
 
         if !inner_reader.empty() && inner.is_some() {
             inner = None;

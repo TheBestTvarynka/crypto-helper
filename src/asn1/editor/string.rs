@@ -27,23 +27,21 @@ pub fn string_editor(props: &StringEditorProps) -> Html {
         let is_valid = validator.emit(value.clone());
         is_valid_setter.set(is_valid);
 
-        if !is_valid {
-            if let Some(el) = input_node.cast::<web_sys::HtmlInputElement>() {
-                let class_list = el.class_list();
-                if class_list.contains("modal-input-blink") {
-                    if let Err(err) = el.class_list().remove_1("modal-input-blink") {
-                        warn!(?err, "Failed to remove class from modal input");
-                    }
-                }
-
-                let _ = el.offset_height();
-
-                if let Err(err) = class_list.add_1("modal-input-blink") {
-                    warn!(?err, "Failed to add class to modal input");
-                }
-
-                let _ = el.offset_height();
+        if !is_valid && let Some(el) = input_node.cast::<web_sys::HtmlInputElement>() {
+            let class_list = el.class_list();
+            if class_list.contains("modal-input-blink")
+                && let Err(err) = el.class_list().remove_1("modal-input-blink")
+            {
+                warn!(?err, "Failed to remove class from modal input");
             }
+
+            let _ = el.offset_height();
+
+            if let Err(err) = class_list.add_1("modal-input-blink") {
+                warn!(?err, "Failed to add class to modal input");
+            }
+
+            let _ = el.offset_height();
         }
 
         if is_valid {
