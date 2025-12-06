@@ -9,11 +9,12 @@ use core::str::from_utf8;
 pub use bit_string::BitString;
 pub use bmp_string::BmpString;
 pub use octet_string::OctetString;
-use validators::{validate_general, validate_ia5, validate_printable, validate_utf8};
+pub use validators::{
+    validate_general, validate_ia5, validate_numeric, validate_printable, validate_utf8, validate_visible,
+};
 
 use crate::length::{len_size, write_len};
 use crate::reader::Reader;
-use crate::string::validators::{validate_numeric, validate_visible};
 use crate::writer::Writer;
 use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag};
 

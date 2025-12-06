@@ -161,22 +161,46 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
             html! {}
         }
         Asn1NodeValue::PrintableString(value) => html! {
-            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::PrintableString(data)))} />
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::PrintableString(data)))}
+                validator={Callback::from(move |s: String| asn1_parser::validate_printable(&s))}
+            />
         },
         Asn1NodeValue::Utf8String(value) => html! {
-            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Utf8String(data)))} />
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Utf8String(data)))}
+                validator={Callback::from(move |s: String| asn1_parser::validate_utf8(&s))}
+            />
         },
         Asn1NodeValue::GeneralString(value) => html! {
-            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::GeneralString(data)))} />
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::GeneralString(data)))}
+                validator={Callback::from(move |s: String| asn1_parser::validate_general(&s))}
+            />
         },
         Asn1NodeValue::Ia5String(value) => html! {
-            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Ia5String(data)))} />
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Ia5String(data)))}
+                validator={Callback::from(move |s: String| asn1_parser::validate_ia5(&s))}
+            />
         },
         Asn1NodeValue::VisibleString(value) => html! {
-            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::VisibleString(data)))} />
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::VisibleString(data)))}
+                validator={Callback::from(move |s: String| asn1_parser::validate_visible(&s))}
+            />
         },
         Asn1NodeValue::NumericString(value) => html! {
-            <StringEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::NumericString(data)))} />
+            <StringEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::NumericString(data)))}
+                validator={Callback::from(move |s: String| asn1_parser::validate_numeric(&s))}
+            />
         },
         Asn1NodeValue::Integer(value) => html! {
             <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Integer(data)))} />

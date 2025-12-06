@@ -185,9 +185,9 @@ pub fn bmp_string(props: &BmpStringNodeProps) -> Html {
     }
 }
 
-define_string_node!(GeneralString);
-define_string_node!(IA5String);
-define_string_node!(PrintableString);
-define_string_node!(Utf8String);
-define_string_node!(NumericString);
-define_string_node!(VisibleString);
+define_string_node!(GeneralString, asn1_parser::validate_general);
+define_string_node!(IA5String, asn1_parser::validate_ia5);
+define_string_node!(PrintableString, asn1_parser::validate_printable);
+define_string_node!(Utf8String, asn1_parser::validate_utf8);
+define_string_node!(NumericString, asn1_parser::validate_numeric);
+define_string_node!(VisibleString, asn1_parser::validate_visible);

@@ -26,6 +26,7 @@ pub fn validate_ia5(data: &str) -> bool {
             return false;
         }
     }
+
     true
 }
 
@@ -35,6 +36,7 @@ pub fn validate_numeric(data: &str) -> bool {
             return false;
         }
     }
+
     true
 }
 
@@ -44,5 +46,6 @@ pub fn validate_visible(data: &str) -> bool {
             return false;
         }
     }
+
     true
 }

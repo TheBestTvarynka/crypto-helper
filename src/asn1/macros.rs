@@ -1,5 +1,5 @@
 macro_rules! define_string_node {
-    ($name:ident) => {
+    ($name:ident, $validator:ty) => {
         paste::paste! {
             #[derive(PartialEq, Properties, Clone)]
             pub struct [<$name NodeProps>] {
@@ -36,6 +36,7 @@ macro_rules! define_string_node {
                                 <StringEditor
                                     value={props.node.get().string().to_owned()}
                                     {setter}
+                                    validator={yew::Callback::from(move |s: String| $validator(&s))}
                                 />
                             })}
                         />

@@ -29,6 +29,21 @@
     outline: none;
 }
 
+@keyframes blink-border {
+    0%   {
+        border-color: #f07b6e;
+        background-color: #f07b6e;
+    }
+    100%  {
+        border-color: #dbcfbf;
+        background: #dbcfbf;
+    }
+}
+
+textarea.modal-input-blink {
+    animation: blink-border 0.3s linear;
+}
+
 .input-error {
     color: #3714ba;
     border-color: #f07b6e;

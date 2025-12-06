@@ -42,6 +42,7 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
                         value={formatted.clone()}
                         {setter}
                         rows={1}
+                        validator={Callback::from(move |s: String| validate_oid(&s))}
                     />
                 })}
             />
@@ -54,6 +55,10 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
             }}
         </div>
     }
+}
+
+fn validate_oid(oid: &str) -> bool {
+    oid::ObjectIdentifier::try_from(oid).is_ok()
 }
 
 fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {
