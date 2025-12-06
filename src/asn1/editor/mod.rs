@@ -8,9 +8,7 @@ use std::fmt;
 
 use ::time::OffsetDateTime;
 use asn1_parser::{
-    Asn1Type, BitString, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour,
-    IA5String, Integer, Minute, Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, UtcTime,
-    Utf8String, VisibleString, Year,
+    Asn1Type, BitString, BmpString, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour, IA5String, Integer, Minute, Month, Mutable, NumericString, OctetString, PrintableString, Second, Sequence, Set, UtcTime, Utf8String, VisibleString, Year
 };
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
@@ -25,6 +23,7 @@ const OCTET_STRING: &str = "octet string";
 const PRINTABLE_STRING: &str = "printable string";
 const INTEGER: &str = "integer";
 const SEQUENCE: &str = "sequence";
+const SET: &str = "set";
 const EXPLICIT_TAG: &str = "explicit tag";
 const GENERALIZED_TIME: &str = "generalized time";
 const UTC_TIME: &str = "utc time";
@@ -46,6 +45,7 @@ const TYPES: &[&str] = &[
     NUMERIC_STRING,
     INTEGER,
     SEQUENCE,
+    SET,
     EXPLICIT_TAG,
     GENERALIZED_TIME,
     UTC_TIME,
@@ -65,6 +65,7 @@ pub enum Asn1NodeValue {
     NumericString(String),
     Integer(Vec<u8>),
     Sequence,
+    Set,
     ExplicitTag(u8),
     GeneralizedTime(GeneralizedTime),
     UtcTime(UtcTime),
@@ -81,6 +82,7 @@ impl TryFrom<&str> for Asn1NodeValue {
             PRINTABLE_STRING => Self::PrintableString(String::from("tbt")),
             INTEGER => Self::Integer(vec![5]),
             SEQUENCE => Self::Sequence,
+            SET => Self::Set,
             EXPLICIT_TAG => Self::ExplicitTag(1),
             GENERALIZED_TIME => Self::GeneralizedTime(GeneralizedTime::new(
                 GtYear::new(2025),
@@ -121,6 +123,7 @@ impl From<&Asn1NodeValue> for &str {
             Asn1NodeValue::PrintableString(_) => PRINTABLE_STRING,
             Asn1NodeValue::Integer(_) => INTEGER,
             Asn1NodeValue::Sequence => SEQUENCE,
+            Asn1NodeValue::Set => SET,
             Asn1NodeValue::ExplicitTag(_) => EXPLICIT_TAG,
             Asn1NodeValue::GeneralizedTime(_) => GENERALIZED_TIME,
             Asn1NodeValue::UtcTime(_) => UTC_TIME,
@@ -149,6 +152,7 @@ impl From<Asn1NodeValue> for Asn1Type {
             Asn1NodeValue::PrintableString(data) => Asn1Type::PrintableString(Mutable::new(PrintableString::new(data))),
             Asn1NodeValue::Integer(data) => Asn1Type::Integer(Mutable::new(Integer::from(data))),
             Asn1NodeValue::Sequence => Asn1Type::Sequence(Mutable::new(Sequence::new(Vec::new()))),
+            Asn1NodeValue::Set => Asn1Type::Set(Mutable::new(Set::new(Vec::new()))),
             Asn1NodeValue::ExplicitTag(tag) => Asn1Type::ExplicitTag(Mutable::new(ExplicitTag::new(tag, Vec::new()))),
             Asn1NodeValue::GeneralizedTime(data) => Asn1Type::GeneralizedTime(Mutable::new(data)),
             Asn1NodeValue::UtcTime(data) => Asn1Type::UtcTime(Mutable::new(data)),
@@ -225,7 +229,10 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
             <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Integer(data)))} formats={INTEGER_FORMATS} />
         },
         Asn1NodeValue::Sequence => html! {
-            <span>{"No editor available for SEQUENCE"}</span>
+            <span />
+        },
+        Asn1NodeValue::Set => html! {
+            <span />
         },
         Asn1NodeValue::ExplicitTag(tag) => html! {
             <NumberEditor
