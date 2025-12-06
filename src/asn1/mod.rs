@@ -9,7 +9,7 @@ mod scheme;
 
 use std::rc::Rc;
 
-use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, Mutable};
+use asn1_parser::{Asn1Encoder, Mutable, decode_buff_vec};
 use web_sys::KeyboardEvent;
 use yew::{Callback, Html, Reducible, classes, function_component, html, use_effect_with, use_reducer, use_state};
 use yew_hooks::{use_clipboard, use_local_storage, use_location};
@@ -78,13 +78,13 @@ pub fn asn1_parser_page() -> Html {
     let notification_manager = use_notification::<Notification>();
 
     let raw_asn1 = use_state(|| TEST_ASN1.to_vec());
-    let parsed_asn1 = use_state(|| Mutable::new(Asn1::decode_buff(TEST_ASN1).unwrap()));
+    let parsed_asn1 = use_state(|| Mutable::new(decode_buff_vec(TEST_ASN1).unwrap()));
 
     let notifications = use_notification::<Notification>();
     let asn1_setter = parsed_asn1.setter();
     let raw_data = (*raw_asn1).clone();
-    let parse_asn1 = Callback::from(move |_| match Asn1::decode_buff(&raw_data) {
-        Ok(asn1) => asn1_setter.set(Mutable::new(asn1)),
+    let parse_asn1 = Callback::from(move |_| match decode_buff_vec(&raw_data) {
+        Ok(trees) => asn1_setter.set(Mutable::new(trees)),
         Err(error) => notifications.spawn(Notification::new(
             NotificationType::Error,
             "Invalid asn1 data",
@@ -117,9 +117,9 @@ pub fn asn1_parser_page() -> Html {
             if let Some(raw_asn1) = (*local_storage).as_ref()
                 && let Ok(bytes) = hex::decode(raw_asn1)
             {
-                match Asn1::decode_buff(&bytes) {
-                    Ok(asn1) => {
-                        asn1_setter.set(Mutable::new(asn1));
+                match decode_buff_vec(&bytes) {
+                    Ok(trees) => {
+                        asn1_setter.set(Mutable::new(trees));
                     }
                     Err(err) => {
                         error!(?err, "Can not decode asn1.");
@@ -133,9 +133,9 @@ pub fn asn1_parser_page() -> Html {
         match serde_qs::from_str(&query[1..]) {
             Ok(asn1) => {
                 let url_query_params::Asn1 { asn1: asn1_data } = asn1;
-                match Asn1::decode_buff(&asn1_data) {
-                    Ok(asn1) => {
-                        asn1_setter.set(Mutable::new(asn1));
+                match decode_buff_vec(&asn1_data) {
+                    Ok(trees) => {
+                        asn1_setter.set(Mutable::new(trees));
                     }
                     Err(error) => notifications.spawn(Notification::new(
                         NotificationType::Error,
@@ -157,8 +157,11 @@ pub fn asn1_parser_page() -> Html {
 
     let local_storage = use_local_storage::<String>(ASN1_LOCAL_STORAGE_KEY.to_owned());
     use_effect_with(parsed_asn1.clone(), move |asn1| {
-        let mut encoded = vec![0; asn1.needed_buf_size()];
-        asn1.encode_buff(&mut encoded).expect("ASN1 encoding should not fail");
+        let mut encoded = vec![0; asn1.get().as_slice().needed_buf_size()];
+        asn1.get()
+            .as_slice()
+            .encode_buff(&mut encoded)
+            .expect("ASN1 encoding should not fail");
         local_storage.set(encode_bytes(encoded, BytesFormat::Hex));
     });
 
@@ -183,13 +186,13 @@ pub fn asn1_parser_page() -> Html {
     let asn1_setter = parsed_asn1.setter();
     let asn1_data = (*parsed_asn1).clone();
     let re_encode_fn: Callback<()> = Callback::from(move |_| {
-        let mut encoded = vec![0; asn1_data.needed_buf_size()];
-        match asn1_data.encode_buff(&mut encoded) {
+        let mut encoded = vec![0; asn1_data.get().as_slice().needed_buf_size()];
+        match asn1_data.get().as_slice().encode_buff(&mut encoded) {
             Ok(_) => {
                 // raw_asn1_setter.set(encoded.clone());
-                match Asn1::decode_buff(&encoded) {
-                    Ok(asn1) => {
-                        asn1_setter.set(Mutable::new(asn1));
+                match decode_buff_vec(&encoded) {
+                    Ok(trees) => {
+                        asn1_setter.set(Mutable::new(trees));
                     }
                     Err(err) => {
                         error!(?err, "Can not decode asn1 after re-encoding.");
@@ -220,13 +223,13 @@ pub fn asn1_parser_page() -> Html {
             </div>
             <div class="asn1-viewers">
                 <Asn1Viewer
-                    structure={(*parsed_asn1).clone()}
+                    structures={(*parsed_asn1).clone()}
                     cur_node={(*ctx).current()}
                     set_cur_node={move |action| asn1_dispatcher.dispatch(action)}
                     re_encode={re_encode_fn.clone()}
                 />
                 <HexViewer
-                    structure={(*parsed_asn1).clone()}
+                    structures={(*parsed_asn1).clone()}
                     cur_node={(*ctx).current()}
                     set_cur_node={move |action| hex_dispatcher.dispatch(action)}
                 />

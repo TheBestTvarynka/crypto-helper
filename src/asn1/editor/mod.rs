@@ -182,10 +182,18 @@ impl From<Asn1NodeValue> for Asn1Type {
 fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeValue>) -> Html {
     match asn1_node {
         Asn1NodeValue::OctetString(value) => html! {
-            <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::OctetString(data)))} formats={BYTES_FORMATS} />
+            <IntegerEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::OctetString(data)))}
+                formats={BYTES_FORMATS}
+            />
         },
         Asn1NodeValue::BitString(value) => html! {
-            <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::BitString(data)))} formats={BYTES_FORMATS} />
+            <IntegerEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::BitString(data)))}
+                formats={BYTES_FORMATS}
+            />
         },
         Asn1NodeValue::ObjectIdentifier(value) => html! {
             <StringEditor
@@ -244,7 +252,11 @@ fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeVal
             />
         },
         Asn1NodeValue::Integer(value) => html! {
-            <IntegerEditor {value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Integer(data)))} formats={INTEGER_FORMATS} />
+            <IntegerEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Integer(data)))}
+                formats={INTEGER_FORMATS}
+            />
         },
         Asn1NodeValue::Sequence => html! {
             <span />

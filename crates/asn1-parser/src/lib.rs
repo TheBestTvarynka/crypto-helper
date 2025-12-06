@@ -52,6 +52,19 @@ pub trait Asn1Decoder<'data>: Sized {
     }
 }
 
+/// Decodes the provided data into the vector of asn1 trees.
+pub fn decode_buff_vec(buff: &[u8]) -> Asn1Result<Vec<Asn1>> {
+    let mut reader = Reader::new(buff);
+
+    let mut trees = Vec::new();
+
+    while !reader.empty() {
+        trees.push(Asn1::decode(&mut reader)?);
+    }
+
+    Ok(trees)
+}
+
 pub trait Asn1ValueDecoder<'data>: Sized {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self>;
 
@@ -70,6 +83,20 @@ pub trait Asn1Encoder {
 
     /// Encodes asn1 entity into provided writer
     fn encode(&self, writer: &mut Writer) -> Asn1Result<()>;
+}
+
+impl Asn1Encoder for &[Asn1] {
+    fn needed_buf_size(&self) -> usize {
+        self.iter().map(|tree| tree.needed_buf_size()).sum()
+    }
+
+    fn encode(&self, writer: &mut Writer) -> Asn1Result<()> {
+        for tree in self.iter() {
+            tree.encode(writer)?;
+        }
+
+        Ok(())
+    }
 }
 
 /// Every asn1 entity should implement this trait.

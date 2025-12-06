@@ -9,7 +9,7 @@ use crate::common::{RcSlice, hex_format_byte};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct HexViewerProps {
-    pub structure: Mutable<Asn1>,
+    pub structures: Mutable<Vec<Asn1>>,
 
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
@@ -17,18 +17,32 @@ pub struct HexViewerProps {
 
 #[function_component(HexViewer)]
 pub fn hex_viewer(props: &HexViewerProps) -> Html {
-    let structure = props.structure.get();
+    let structures = props.structures.get();
 
     html! {
         <div class="asn1-hex-viewer">
-            <div class="asn1-hex-node">
-                {{
-                    let set_cur_node = props.set_cur_node.clone();
-                    let mut bytes = Vec::with_capacity(structure.meta().raw_data.len());
-                    build_hex_bytes(&structure, &props.cur_node.clone(), set_cur_node, &mut bytes, false);
-                    bytes
-                }}
-            </div>
+        {{
+            structures.iter()
+                .map(|structure| {
+                    html! {
+                        <div class="asn1-hex-node">
+                        {{
+                            let mut bytes = Vec::with_capacity(structure.meta().raw_data.len());
+
+                            build_hex_bytes(
+                                structure,
+                                &props.cur_node.clone(),
+                                props.set_cur_node.clone(),
+                                &mut bytes, false
+                            );
+
+                            bytes
+                        }}
+                        </div>
+                    }
+                })
+                .collect::<Vec<_>>()
+        }}
         </div>
     }
 }
