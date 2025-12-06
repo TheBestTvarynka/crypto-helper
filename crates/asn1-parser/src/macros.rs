@@ -1,7 +1,7 @@
 macro_rules! impl_utf8_asn1 {
     ($name:ident, $tag:expr, $validator_fn:ident) => {
         #[derive(Debug, Clone, PartialEq, Eq)]
-        pub struct $name(Utf8Value<19>);
+        pub struct $name(Utf8Value<$tag>);
 
         impl Asn1Encoder for $name {
             fn needed_buf_size(&self) -> usize {
