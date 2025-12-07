@@ -19,7 +19,7 @@ proptest = "1.2"
 
 [dependencies]
 tracing = "0.1"
-num-bigint-dig = { version = "0.8", default-features = false }
+num-bigint-dig = { version = "0.9", default-features = false }
 num-traits = { version = "0.2", default-features = false }
 oid = { version = "0.2", default-features = false }
 paste = "1.0"
