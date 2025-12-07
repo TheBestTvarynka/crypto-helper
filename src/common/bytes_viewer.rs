@@ -2,6 +2,7 @@ use yew::{Html, Properties, classes, function_component, html};
 
 use crate::common::hex_format_byte;
 
+#[allow(dead_code)]
 #[derive(PartialEq, Eq, Properties)]
 pub struct BytesViewerProps {
     pub bytes: Vec<u8>,
