@@ -135,7 +135,7 @@
 .asn1-button-add-node {
     font-size: 0.8em;
 
-    display: flex;
+    display: none;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -143,13 +143,10 @@
     border: 0px;
     transition: 0.15s;
     background: transparent;
-
-    opacity: 0;
-    pointer-events: none;
 }
 
 .asn1-button-add-node-container {
-
+    /* */
 }
 
 .asn1-button-add-node img {
@@ -171,10 +168,14 @@
     /* only for ctrl button press indication */
 }
 
-body.ctrl-down .asn1-button-add-node-container:hover .asn1-button-add-node {
-    pointer-events: auto;
-    opacity: 1;
+body.ctrl-down .asn1-button-add-node {
+    display: flex;
+    opacity: 0;
     cursor: pointer;
+}
+
+body.ctrl-down .asn1-button-add-node-container:hover .asn1-button-add-node {
+    opacity: 1;
 }
 
 .asn1-button-add-separator {
