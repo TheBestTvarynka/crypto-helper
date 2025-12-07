@@ -119,7 +119,7 @@ pub fn octet_string(props: &OctetStringNodeProps) -> Html {
             }
         }
         None => {
-            let encoded_octets = if octets.len() % 2 == 0
+            let encoded_octets = if octets.len().is_multiple_of(2)
                 && let Ok(s) = String::from_utf16(&{
                     octets
                         .chunks(2)
