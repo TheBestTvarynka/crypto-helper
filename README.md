@@ -14,7 +14,7 @@ I have implemented most of the features I needed. I still have a few improvement
 #### Is it maintained? Yes.
 All dependencies are regularly updated. Discovered bugs will be fixed. External PRs will be accepted.
 
-### Table of content:
+### Table of contents:
 
 - [crypto-helper](#crypto-helper)
   - [Features](#features)
@@ -26,9 +26,9 @@ All dependencies are regularly updated. Discovered bugs will be fixed. External 
 |-|-|
 | ![](/public/img/asn1.png) | ![](/public/img/diff.png) |
 
-The crypto-helper is a web app that helps to work with the different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data, debug JWT tokens, parse ASN1 structures, compute diffs, and more.
+The crypto-helper is a web app that helps with different crypto algorithms. This app can hash/hmac, encrypt/decrypt, and sign/verify the data, debug JWT tokens, parse and **edit** ASN1 structures, compute diffs, and more.
 
-All computations are performed on the client side. _This tool never sends the data to any server._
+All computations are performed on the client side. _This tool **never** sends the data to any server._
 
 ### Features
 
@@ -53,8 +53,8 @@ All computations are performed on the client side. _This tool never sends the da
   * `ES256`
   * `ES384`
   * `ES512`
-* ASN1 Debugger
-* Diff checker
+* ASN1 Debugger: easily parse and edit ASN1 data structures.
+* Diff checker: the simplest and yet powerful diff checker.
 
 Read more about features and motivation here: https://tbt.qkation.com/projects/crypto-helper.
 
@@ -71,7 +71,7 @@ export APP_HOST=<url>
 # example:
 # export APP_HOST=https://crypto-helper.qkation.com
 ```
-This env variable is used for the url generation when you click the *share by url* button.
+This env variable is used for the URL generation when you click the *share by URL* button.
 
 3. Run `trunk serve` in your terminal.
 4. Go to http://127.0.0.1:8080 in your browser.
