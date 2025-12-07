@@ -1,78 +1,46 @@
-use alloc::borrow::Cow;
 use core::ops::Range;
 
 use crate::reader::Reader;
 use crate::writer::Writer;
 use crate::{
     ApplicationTag, Asn1Encoder, Asn1Result, Asn1ValueDecoder, BitString, BmpString, Bool, Enumerated, Error,
-    ExplicitTag, GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, MetaInfo, Null, NumericString,
-    ObjectIdentifier, OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime, Utf8String,
-    VisibleString,
+    ExplicitTag, GeneralString, GeneralizedTime, IA5String, ImplicitTag, Integer, MetaInfo, Mutable, Null,
+    NumericString, ObjectIdentifier, OctetString, PrintableString, Sequence, Set, Tag, Taggable, Tlv, UtcTime,
+    Utf8String, VisibleString,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Asn1Type<'data> {
-    Sequence(Sequence<'data>),
-    Set(Set<'data>),
+pub enum Asn1Type {
+    Sequence(Mutable<Sequence>),
+    Set(Mutable<Set>),
 
-    OctetString(OctetString<'data>),
-    Utf8String(Utf8String<'data>),
-    BitString(BitString<'data>),
-    BmpString(BmpString<'data>),
-    IA5String(IA5String<'data>),
-    PrintableString(PrintableString<'data>),
-    GeneralString(GeneralString<'data>),
-    NumericString(NumericString<'data>),
-    VisibleString(VisibleString<'data>),
+    OctetString(Mutable<OctetString>),
+    Utf8String(Mutable<Utf8String>),
+    BitString(Mutable<BitString>),
+    BmpString(Mutable<BmpString>),
+    IA5String(Mutable<IA5String>),
+    PrintableString(Mutable<PrintableString>),
+    GeneralString(Mutable<GeneralString>),
+    NumericString(Mutable<NumericString>),
+    VisibleString(Mutable<VisibleString>),
 
-    UtcTime(UtcTime),
-    GeneralizedTime(GeneralizedTime),
+    UtcTime(Mutable<UtcTime>),
+    GeneralizedTime(Mutable<GeneralizedTime>),
 
-    Bool(Bool),
-    Null(Null),
-    Integer(Integer<'data>),
-    Enumerated(Enumerated<'data>),
-    ObjectIdentifier(ObjectIdentifier),
+    Bool(Mutable<Bool>),
+    Null(Mutable<Null>),
+    Integer(Mutable<Integer>),
+    Enumerated(Mutable<Enumerated>),
+    ObjectIdentifier(Mutable<ObjectIdentifier>),
 
-    ExplicitTag(ExplicitTag<'data>),
-    ImplicitTag(ImplicitTag<'data>),
-    ApplicationTag(ApplicationTag<'data>),
+    ExplicitTag(Mutable<ExplicitTag>),
+    ImplicitTag(Mutable<ImplicitTag>),
+    ApplicationTag(Mutable<ApplicationTag>),
 }
 
-pub type Asn1<'data> = Tlv<'data, Asn1Type<'data>>;
-pub type OwnedAsn1 = Tlv<'static, Asn1Type<'static>>;
+pub type Asn1 = Tlv<Asn1Type>;
 
-pub type OwnedAsn1Type = Asn1Type<'static>;
-
-impl Asn1Type<'_> {
-    pub fn to_owned(&self) -> OwnedAsn1Type {
-        match self {
-            Asn1Type::Sequence(s) => Asn1Type::Sequence(s.to_owned()),
-            Asn1Type::Set(s) => Asn1Type::Set(s.to_owned()),
-            Asn1Type::OctetString(o) => Asn1Type::OctetString(o.to_owned()),
-            Asn1Type::Utf8String(u) => Asn1Type::Utf8String(u.to_owned()),
-            Asn1Type::BitString(b) => Asn1Type::BitString(b.to_owned()),
-            Asn1Type::IA5String(i) => Asn1Type::IA5String(i.to_owned()),
-            Asn1Type::PrintableString(p) => Asn1Type::PrintableString(p.to_owned()),
-            Asn1Type::GeneralString(g) => Asn1Type::GeneralString(g.to_owned()),
-            Asn1Type::NumericString(n) => Asn1Type::NumericString(n.to_owned()),
-            Asn1Type::VisibleString(n) => Asn1Type::VisibleString(n.to_owned()),
-            Asn1Type::Bool(b) => Asn1Type::Bool(b.clone()),
-            Asn1Type::Null(n) => Asn1Type::Null(n.clone()),
-            Asn1Type::Integer(i) => Asn1Type::Integer(i.to_owned()),
-            Asn1Type::Enumerated(e) => Asn1Type::Enumerated(e.to_owned()),
-            Asn1Type::ObjectIdentifier(o) => Asn1Type::ObjectIdentifier(o.clone()),
-            Asn1Type::ExplicitTag(e) => Asn1Type::ExplicitTag(e.to_owned()),
-            Asn1Type::ImplicitTag(i) => Asn1Type::ImplicitTag(i.to_owned()),
-            Asn1Type::ApplicationTag(a) => Asn1Type::ApplicationTag(a.to_owned()),
-            Asn1Type::BmpString(b) => Asn1Type::BmpString(b.to_owned()),
-            Asn1Type::UtcTime(u) => Asn1Type::UtcTime(u.clone()),
-            Asn1Type::GeneralizedTime(u) => Asn1Type::GeneralizedTime(u.clone()),
-        }
-    }
-}
-
-impl Taggable for Asn1Type<'_> {
+impl Taggable for Asn1Type {
     fn tag(&self) -> Tag {
         match self {
             Asn1Type::Sequence(s) => s.tag(),
@@ -100,9 +68,9 @@ impl Taggable for Asn1Type<'_> {
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
+impl Asn1ValueDecoder<'_> for Asn1Type {
     #[instrument(level = "debug", ret)]
-    fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
+    fn decode(tag: Tag, reader: &mut Reader<'_>) -> Asn1Result<Self> {
         debug!(?tag);
 
         decode_asn1!(
@@ -138,7 +106,7 @@ impl<'data> Asn1ValueDecoder<'data> for Asn1Type<'data> {
     }
 }
 
-impl Asn1Encoder for Asn1Type<'_> {
+impl Asn1Encoder for Asn1Type {
     fn needed_buf_size(&self) -> usize {
         match self {
             Asn1Type::OctetString(octet) => octet.needed_buf_size(),
@@ -192,7 +160,7 @@ impl Asn1Encoder for Asn1Type<'_> {
     }
 }
 
-impl MetaInfo for Asn1Type<'_> {
+impl MetaInfo for Asn1Type {
     fn clear_meta(&mut self) {
         match self {
             Asn1Type::OctetString(octet_string) => octet_string.clear_meta(),
@@ -222,9 +190,9 @@ impl MetaInfo for Asn1Type<'_> {
 
 /// Information about raw data of the asn1 entity
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct RawAsn1EntityData<'data> {
+pub struct RawAsn1EntityData {
     /// Raw input bytes for the *current* asn1 node
-    pub raw_data: Cow<'data, [u8]>,
+    pub raw_data: Vec<u8>,
 
     /// Position of the tag in the input data
     pub tag: usize,
@@ -236,9 +204,7 @@ pub struct RawAsn1EntityData<'data> {
     pub data: Range<usize>,
 }
 
-pub type OwnedRawAsn1EntityData = RawAsn1EntityData<'static>;
-
-impl RawAsn1EntityData<'_> {
+impl RawAsn1EntityData {
     pub fn tag_position(&self) -> usize {
         self.tag
     }
@@ -261,14 +227,5 @@ impl RawAsn1EntityData<'_> {
 
     pub fn data_bytes(&self) -> &[u8] {
         &self.raw_data[self.data.clone()]
-    }
-
-    pub fn to_owned(&self) -> OwnedRawAsn1EntityData {
-        RawAsn1EntityData {
-            raw_data: self.raw_data.to_vec().into(),
-            tag: self.tag,
-            length: self.length.clone(),
-            data: self.data.clone(),
-        }
     }
 }

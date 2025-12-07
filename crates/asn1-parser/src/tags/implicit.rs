@@ -1,4 +1,3 @@
-use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
@@ -9,33 +8,27 @@ use crate::writer::Writer;
 use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ImplicitTag<'data> {
+pub struct ImplicitTag {
     tag: u8,
-    octets: Cow<'data, [u8]>,
-    inner: Option<Box<Asn1<'data>>>,
+    octets: Vec<u8>,
+    inner: Option<Box<Asn1>>,
 }
 
-pub type OwnedImplicitTag = ImplicitTag<'static>;
-
-impl<'data> ImplicitTag<'data> {
-    pub fn new_owned(tag: u8, octets: Vec<u8>) -> Self {
+impl ImplicitTag {
+    pub fn new(tag: u8, octets: Vec<u8>) -> Self {
         let inner = Asn1::decode_buff(&octets).ok().map(|mut asn1| {
             asn1.clear_meta();
-            Box::new(asn1.to_owned_with_asn1(asn1.inner_asn1().to_owned()))
+            Box::new(asn1)
         });
 
-        Self {
-            tag,
-            octets: Cow::Owned(octets),
-            inner,
-        }
+        Self { tag, octets, inner }
     }
 
     pub fn tag_number(&self) -> u8 {
         self.tag & 0x1f
     }
 
-    pub fn inner_asn1(&self) -> Option<&Asn1<'data>> {
+    pub fn inner_asn1(&self) -> Option<&Asn1> {
         self.inner.as_ref().map(|asn1| asn1.as_ref())
     }
 
@@ -43,25 +36,19 @@ impl<'data> ImplicitTag<'data> {
         self.octets.as_ref()
     }
 
-    pub fn to_owned(&self) -> OwnedImplicitTag {
-        OwnedImplicitTag {
-            tag: self.tag,
-            octets: self.octets.to_vec().into(),
-            inner: self
-                .inner
-                .as_ref()
-                .map(|inner| Box::new(inner.to_owned_with_asn1(inner.inner_asn1().to_owned()))),
-        }
+    pub fn set_octets(&mut self, octets: Vec<u8>) {
+        self.octets = octets;
+        self.inner = Asn1::decode_buff(&self.octets).ok().map(Box::new);
     }
 }
 
-impl Taggable for ImplicitTag<'_> {
+impl Taggable for ImplicitTag {
     fn tag(&self) -> Tag {
         Tag(self.tag)
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for ImplicitTag<'data> {
+impl<'data> Asn1ValueDecoder<'data> for ImplicitTag {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let data = reader.read_remaining();
 
@@ -78,7 +65,7 @@ impl<'data> Asn1ValueDecoder<'data> for ImplicitTag<'data> {
 
         Ok(Self {
             tag: tag.0,
-            octets: Cow::Borrowed(data),
+            octets: data.to_vec(),
             inner,
         })
     }
@@ -88,7 +75,7 @@ impl<'data> Asn1ValueDecoder<'data> for ImplicitTag<'data> {
     }
 }
 
-impl Asn1Encoder for ImplicitTag<'_> {
+impl Asn1Encoder for ImplicitTag {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.octets.len();
 
@@ -102,7 +89,7 @@ impl Asn1Encoder for ImplicitTag<'_> {
     }
 }
 
-impl MetaInfo for ImplicitTag<'_> {
+impl MetaInfo for ImplicitTag {
     fn clear_meta(&mut self) {
         self.inner = None;
     }

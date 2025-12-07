@@ -1,15 +1,17 @@
 mod generalized_time;
 mod utc_time;
 
-pub use generalized_time::GeneralizedTime;
+pub use generalized_time::{
+    GeneralizedTime, LocalTimeDiffFactor, LocalTimeDirection, Second as GtSecond, Year as GtYear,
+};
 pub use utc_time::UtcTime;
 
 use crate::Asn1Result;
 use crate::reader::Reader;
 
 macro_rules! define_nt {
-    ($name:ident) => {
-        #[derive(Debug, Clone, PartialEq, Eq)]
+    ($name:ident, $max_value:expr) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
         pub struct $name(u8);
 
         impl From<$name> for u8 {
@@ -24,11 +26,17 @@ macro_rules! define_nt {
             }
         }
 
+        impl core::fmt::Display for $name {
+            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                write!(f, "{:02}", self.0)
+            }
+        }
+
         impl TryFrom<u8> for $name {
             type Error = crate::Error;
 
             fn try_from(value: u8) -> Result<Self, Self::Error> {
-                if value < 100 {
+                if value <= $max_value {
                     Ok($name(value))
                 } else {
                     Err("invalid value".into())
@@ -38,12 +46,12 @@ macro_rules! define_nt {
     };
 }
 
-define_nt!(Year);
-define_nt!(Month);
-define_nt!(Day);
-define_nt!(Hour);
-define_nt!(Minute);
-define_nt!(Second);
+define_nt!(Year, 99);
+define_nt!(Month, 12);
+define_nt!(Day, 31);
+define_nt!(Hour, 23);
+define_nt!(Minute, 59);
+define_nt!(Second, 59);
 
 fn read_number(reader: &mut Reader<'_>) -> Asn1Result<u8> {
     const ASCII_SHIFT: u8 = 48;

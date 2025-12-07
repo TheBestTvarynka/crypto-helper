@@ -61,26 +61,32 @@
 }
 
 .asn1-button-with-icon {
-    font-size: 0.6em;
-    width: auto;
-    height: 2em;
+    font-size: 0.8em;
+
+    padding: 0.15em;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 0.1em 0.2em 0.1em 0.2em;
+
     border-radius: 0.2em;
-    border: 1px solid transparent;
-    transition: 0.3s;
+    border: 0;
+    background: transparent;
+    transition: 0.2s;
 }
 
-.asn1-button-with-icon>img {
-    height: 90%;
+.asn1-button-with-icon > img {
+    width: 2em;
+    height: 2em;
 }
 
 .asn1-button-with-icon:hover {
     cursor: pointer;
     transition: 0.3s;
+}
+
+.asn1-button-with-icon:focus {
+    box-shadow: 0 0 0 2px #736664;
 }
 
 .asn1-node-options-container {}
@@ -101,7 +107,7 @@
     padding: 0.5em;
     border-radius: 0.3em;
     transition: all 0.4s;
-    box-shadow: 0 5px 6px -2px grey;
+    box-shadow: 0 1px 4px 1px grey;
 }
 
 .asn1-node-options:hover {
@@ -116,4 +122,65 @@
 .asn1-node-options-name {
     cursor: pointer;
     white-space: nowrap;
+}
+
+.asn1-node-edit-options {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(-90%, 50%);
+    z-index: 10;
+}
+
+.asn1-button-add-node {
+    font-size: 0.8em;
+
+    display: none;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    border: 0px;
+    transition: 0.15s;
+    background: transparent;
+}
+
+.asn1-button-add-node-container {
+    /* */
+}
+
+.asn1-button-add-node img {
+    width: 1.5em;
+    height: 1.5em;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+}
+
+.asn1-remove-node-button-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-20%, 0%);
+    z-index: 10;
+}
+
+.ctrl-down {
+    /* only for ctrl button press indication */
+}
+
+body.ctrl-down .asn1-button-add-node {
+    display: flex;
+    opacity: 0;
+    cursor: pointer;
+}
+
+body.ctrl-down .asn1-button-add-node-container:hover .asn1-button-add-node {
+    opacity: 1;
+}
+
+.asn1-button-add-separator {
+    border: 1px solid #403735;
+    width: 1.5em;
+    height: 0;
+    content: " ";
 }

@@ -7,48 +7,43 @@ use crate::writer::Writer;
 use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ExplicitTag<'data> {
+pub struct ExplicitTag {
     tag: u8,
-    inner: Vec<Asn1<'data>>,
+    inner: Vec<Asn1>,
 }
 
-pub type OwnedExplicitTag = ExplicitTag<'static>;
-
-impl<'data> ExplicitTag<'data> {
-    pub fn new(tag: u8, inner: Vec<Asn1<'data>>) -> Self {
+impl ExplicitTag {
+    pub fn new(tag: u8, inner: Vec<Asn1>) -> Self {
         Self {
             tag: tag & 0x1f | 0xa0,
             inner,
         }
     }
 
+    pub fn set_tag_number(&mut self, tag: u8) {
+        self.tag = tag & 0x1f | 0xa0;
+    }
+
     pub fn tag_number(&self) -> u8 {
         self.tag & 0x1f
     }
 
-    pub fn inner(&self) -> &[Asn1<'data>] {
+    pub fn inner(&self) -> &[Asn1] {
         &self.inner
     }
 
-    pub fn to_owned(&self) -> OwnedExplicitTag {
-        OwnedExplicitTag {
-            tag: self.tag,
-            inner: self
-                .inner
-                .iter()
-                .map(|f| f.to_owned_with_asn1(f.inner_asn1().to_owned()))
-                .collect(),
-        }
+    pub fn fields_mut_vec(&mut self) -> &mut Vec<Asn1> {
+        &mut self.inner
     }
 }
 
-impl Taggable for ExplicitTag<'_> {
+impl Taggable for ExplicitTag {
     fn tag(&self) -> Tag {
         Tag(self.tag)
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for ExplicitTag<'data> {
+impl<'data> Asn1ValueDecoder<'data> for ExplicitTag {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let mut inner = Vec::new();
 
@@ -64,7 +59,7 @@ impl<'data> Asn1ValueDecoder<'data> for ExplicitTag<'data> {
     }
 }
 
-impl Asn1Encoder for ExplicitTag<'_> {
+impl Asn1Encoder for ExplicitTag {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.inner.iter().map(|f| f.needed_buf_size()).sum();
 
@@ -81,7 +76,7 @@ impl Asn1Encoder for ExplicitTag<'_> {
     }
 }
 
-impl MetaInfo for ExplicitTag<'_> {
+impl MetaInfo for ExplicitTag {
     fn clear_meta(&mut self) {
         self.inner.iter_mut().for_each(|f| f.clear_meta())
     }

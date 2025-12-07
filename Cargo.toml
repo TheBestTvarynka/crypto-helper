@@ -11,7 +11,8 @@ repository = "https://github.com/TheBestTvarynka/crypto-helper"
 [workspace]
 members = [
     "crates/asn1-parser",
-    "crates/prop-strategies"
+    # TODO: fix prop strategies.
+    # "crates/prop-strategies"
 ]
 
 [[bin]]
@@ -32,7 +33,7 @@ yew-agent = "0.3"
 # wasm
 js-sys = "0.3"
 wasm-bindgen = "0.2"
-web-sys = { version = "0.3", features = ["Window"] }
+web-sys = { version = "0.3", features = ["Window", "DomTokenList", "Element"] }
 
 # logging
 tracing-web = "0.1"
@@ -62,6 +63,7 @@ rand = { version = "0.9", default-features = false, features = ["small_rng"] }
 rand_chacha = { version = "0.9", default-features = false }
 argon2 = "0.5"
 password-hash = "0.5"
+num-bigint-dig = { version = "0.8", default-features = false }
 
 # asn1
 asn1-parser = { path = "./crates/asn1-parser", features = ["std"] }

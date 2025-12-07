@@ -1,4 +1,4 @@
-use asn1_parser::{Asn1, Asn1Entity, Asn1Type, OwnedAsn1, RawAsn1EntityData};
+use asn1_parser::{Asn1, Asn1Entity, Asn1Type, Mutable, RawAsn1EntityData};
 use web_sys::MouseEvent;
 use yew::virtual_dom::VNode;
 use yew::{Callback, Classes, Html, Properties, function_component, html};
@@ -9,7 +9,7 @@ use crate::common::{RcSlice, hex_format_byte};
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct HexViewerProps {
-    pub structure: OwnedAsn1,
+    pub structures: Mutable<Vec<Asn1>>,
 
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
@@ -17,16 +17,32 @@ pub struct HexViewerProps {
 
 #[function_component(HexViewer)]
 pub fn hex_viewer(props: &HexViewerProps) -> Html {
+    let structures = props.structures.get();
+
     html! {
         <div class="asn1-hex-viewer">
-            <div class="asn1-hex-node">
-                {{
-                    let set_cur_node = props.set_cur_node.clone();
-                    let mut bytes = Vec::with_capacity(props.structure.meta().raw_data.len());
-                    build_hex_bytes(&props.structure, &props.cur_node.clone(), set_cur_node, &mut bytes, false);
-                    bytes
-                }}
-            </div>
+        {{
+            structures.iter()
+                .map(|structure| {
+                    html! {
+                        <div class="asn1-hex-node">
+                        {{
+                            let mut bytes = Vec::with_capacity(structure.meta().raw_data.len());
+
+                            build_hex_bytes(
+                                structure,
+                                &props.cur_node.clone(),
+                                props.set_cur_node.clone(),
+                                &mut bytes, false
+                            );
+
+                            bytes
+                        }}
+                        </div>
+                    }
+                })
+                .collect::<Vec<_>>()
+        }}
         </div>
     }
 }
@@ -93,7 +109,7 @@ fn format_bytes(
 }
 
 fn build_hex_bytes(
-    asn1: &Asn1<'_>,
+    asn1: &Asn1,
     cur_node: &Option<u64>,
     set_cur_node: Callback<HighlightAction>,
     bytes: &mut Vec<VNode>,
@@ -159,7 +175,7 @@ fn build_hex_bytes(
 }
 
 fn build_data_bytes(
-    asn1: &Asn1<'_>,
+    asn1: &Asn1,
     raw_bytes: RcSlice,
     asn1_node_id: u64,
     cur_node: &Option<u64>,
@@ -171,7 +187,7 @@ fn build_data_bytes(
         asn1_node_id: u64,
         cur_node: &Option<u64>,
         set_cur_node: Callback<HighlightAction>,
-        asn1: &Asn1<'_>,
+        asn1: &Asn1,
         raw_bytes: RcSlice,
         bytes: &mut Vec<VNode>,
         select_all: bool,
@@ -197,18 +213,26 @@ fn build_data_bytes(
         Asn1Type::Sequence(sequence) => {
             let set_cur_node = set_cur_node.clone();
             sequence
+                .get()
                 .fields()
                 .iter()
                 .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
         Asn1Type::Set(set) => {
             let set_cur_node = set_cur_node.clone();
-            set.fields()
+            set.get()
+                .fields()
                 .iter()
                 .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
-        Asn1Type::OctetString(octet) => match octet.inner() {
-            Some(asn1) => build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all),
+        Asn1Type::OctetString(octet) => match octet.get().inner() {
+            Some(trees) => {
+                let set_cur_node = set_cur_node.clone();
+                trees
+                    .get()
+                    .iter()
+                    .for_each(move |tree| build_hex_bytes(tree, cur_node, set_cur_node.clone(), bytes, select_all));
+            }
             None => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all),
         },
         Asn1Type::Utf8String(_) => {
@@ -233,8 +257,14 @@ fn build_data_bytes(
         Asn1Type::GeneralizedTime(_) => {
             default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all)
         }
-        Asn1Type::BitString(bit) => match bit.inner() {
-            Some(asn1) => build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all),
+        Asn1Type::BitString(bit) => match bit.get().inner() {
+            Some(trees) => {
+                let set_cur_node = set_cur_node.clone();
+                trees
+                    .get()
+                    .iter()
+                    .for_each(move |tree| build_hex_bytes(tree, cur_node, set_cur_node.clone(), bytes, select_all));
+            }
             None => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all),
         },
         Asn1Type::BmpString(_) => {
@@ -252,17 +282,19 @@ fn build_data_bytes(
         Asn1Type::ExplicitTag(explicit) => {
             let set_cur_node = set_cur_node.clone();
             explicit
+                .get()
                 .inner()
                 .iter()
                 .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));
         }
-        Asn1Type::ImplicitTag(implicit) => match implicit.inner_asn1() {
+        Asn1Type::ImplicitTag(implicit) => match implicit.get().inner_asn1() {
             Some(asn1) => build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all),
             None => default_bytes(asn1_node_id, cur_node, set_cur_node, asn1, raw_bytes, bytes, select_all),
         },
         Asn1Type::ApplicationTag(application) => {
             let set_cur_node = set_cur_node.clone();
             application
+                .get()
                 .inner()
                 .iter()
                 .for_each(move |asn1| build_hex_bytes(asn1, cur_node, set_cur_node.clone(), bytes, select_all));

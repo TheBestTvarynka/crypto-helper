@@ -1,13 +1,15 @@
-use asn1_parser::{ObjectIdentifier, OwnedRawAsn1EntityData};
-use yew::{Html, Properties, function_component, html};
+use asn1_parser::{Mutable, ObjectIdentifier, RawAsn1EntityData};
+use yew::{Callback, Html, Properties, function_component, html};
 
+use crate::asn1::editor::StringEditor;
 use crate::asn1::node_options::NodeOptions;
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct ObjectIdentifierProps {
-    pub node: ObjectIdentifier,
-    pub meta: OwnedRawAsn1EntityData,
+    pub node: Mutable<ObjectIdentifier>,
+    pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(ObjectIdentifierNode)]
@@ -16,11 +18,34 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
-    let formatted = props.node.format();
+    let formatted = props.node.get().format();
+
+    let node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |value: String| {
+        if let Ok(oid) = oid::ObjectIdentifier::try_from(value) {
+            node.get_mut().set_oid(oid);
+            re_encode.emit(());
+        }
+    });
 
     html! {
         <div class="terminal-asn1-node">
-            <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={String::from("Object Identifier")}/>
+            <NodeOptions
+                node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                {offset}
+                {length_len}
+                {data_len}
+                name={String::from("Object Identifier")}
+                editor={Some(html! {
+                    <StringEditor
+                        value={formatted.clone()}
+                        {setter}
+                        rows={1}
+                        validator={Callback::from(move |s: String| validate_oid(&s))}
+                    />
+                })}
+            />
             <span class="asn-simple-value">{&formatted}</span>
             {{
                 let (name, url) = oid_name(&formatted);
@@ -30,6 +55,10 @@ pub fn bool(props: &ObjectIdentifierProps) -> Html {
             }}
         </div>
     }
+}
+
+pub fn validate_oid(oid: &str) -> bool {
+    oid::ObjectIdentifier::try_from(oid).is_ok()
 }
 
 fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {

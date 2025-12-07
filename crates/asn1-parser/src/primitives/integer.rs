@@ -1,4 +1,3 @@
-use alloc::borrow::Cow;
 use alloc::vec::Vec;
 
 use num_bigint_dig::BigUint;
@@ -9,11 +8,9 @@ use crate::writer::Writer;
 use crate::{Asn1Encoder, Asn1Result, Asn1ValueDecoder, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Integer<'data>(Cow<'data, [u8]>);
+pub struct Integer(Vec<u8>);
 
-pub type OwnedInteger = Integer<'static>;
-
-impl Integer<'_> {
+impl Integer {
     pub const TAG: Tag = Tag(2);
 
     pub fn raw_data(&self) -> &[u8] {
@@ -30,26 +27,26 @@ impl Integer<'_> {
         })
     }
 
-    pub fn to_owned(&self) -> OwnedInteger {
-        Integer(Cow::Owned(self.0.as_ref().to_vec()))
+    pub fn set(&mut self, bytes: Vec<u8>) {
+        self.0 = bytes;
     }
 }
 
-impl From<Vec<u8>> for OwnedInteger {
+impl From<Vec<u8>> for Integer {
     fn from(bytes: Vec<u8>) -> Self {
-        Self(Cow::Owned(bytes))
+        Self(bytes)
     }
 }
 
-impl Taggable for Integer<'_> {
+impl Taggable for Integer {
     fn tag(&self) -> Tag {
         Self::TAG
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for Integer<'data> {
+impl<'data> Asn1ValueDecoder<'data> for Integer {
     fn decode(_: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
-        Ok(Self(Cow::Borrowed(reader.remaining())))
+        Ok(Self(reader.remaining().to_vec()))
     }
 
     fn compare_tags(tag: Tag) -> bool {
@@ -57,7 +54,7 @@ impl<'data> Asn1ValueDecoder<'data> for Integer<'data> {
     }
 }
 
-impl Asn1Encoder for Integer<'_> {
+impl Asn1Encoder for Integer {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.0.len();
 

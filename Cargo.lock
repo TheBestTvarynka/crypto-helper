@@ -408,6 +408,7 @@ dependencies = [
  "hmac",
  "js-sys",
  "md5",
+ "num-bigint-dig",
  "oid",
  "password-hash",
  "paste",

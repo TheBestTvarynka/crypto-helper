@@ -1,39 +1,103 @@
 use std::str::from_utf8;
 
-use asn1_parser::{OwnedApplicationTag, OwnedExplicitTag, OwnedImplicitTag, OwnedRawAsn1EntityData};
+use asn1_parser::{ApplicationTag, Asn1, Asn1Encoder, ExplicitTag, ImplicitTag, Mutable, RawAsn1EntityData};
 use yew::{Callback, Html, Properties, function_component, html};
 
 use crate::asn1::HighlightAction;
+use crate::asn1::editor::NumberEditor;
 use crate::asn1::node_options::NodeOptions;
-use crate::asn1::scheme::build_asn1_schema;
+use crate::asn1::scheme::{AddNodeButton, build_asn1_schema};
 use crate::common::RcSlice;
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct ExplicitTagProps {
-    pub node: OwnedExplicitTag,
+    pub node: Mutable<ExplicitTag>,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
-    pub meta: OwnedRawAsn1EntityData,
+    pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(ExplicitTagNode)]
 pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
     let set_cur_node = &props.set_cur_node;
-    let inner_components = props
-        .node
-        .inner()
+    let fields = props.node.get();
+    let fields = fields.inner();
+
+    let tag_node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let inner_components = vec![html! {
+        <div style="position: relative;">
+            <AddNodeButton add_node={Callback::from(move |asn1_type| {
+                tag_node.get_mut().fields_mut_vec().insert(0, Asn1::from_asn1_type(asn1_type));
+                re_encode.emit(());
+            })} />
+        </div>
+    }];
+    let inner_components = fields
         .iter()
-        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
-        .collect::<Vec<_>>();
+        .enumerate()
+        .map(|(i, f)| {
+            let re_encode = props.re_encode.clone();
+            let tag_node = props.node.clone();
+            let add_node = Callback::from(move |asn1_type| {
+                tag_node
+                    .get_mut()
+                    .fields_mut_vec()
+                    .insert(i + 1, Asn1::from_asn1_type(asn1_type));
+                re_encode.emit(());
+            });
+
+            let re_encode = props.re_encode.clone();
+            let set_node = props.node.clone();
+            let remove_node = Callback::from(move |_: ()| {
+                set_node.get_mut().fields_mut_vec().remove(i);
+                re_encode.emit(());
+            });
+
+            build_asn1_schema(
+                f,
+                &props.cur_node,
+                set_cur_node,
+                props.re_encode.clone(),
+                add_node,
+                remove_node,
+            )
+        })
+        .fold(inner_components, |mut inner_components, component| {
+            inner_components.push(component);
+            inner_components
+        });
 
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |number| {
+        node.get_mut().set_tag_number(number as u8);
+        re_encode.emit(());
+    });
+
     html! {
         <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
-                <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{}]", props.node.tag_number())}/>
+                <NodeOptions
+                    node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                    {offset}
+                    {length_len}
+                    {data_len}
+                    name={format!("[{}]", props.node.get().tag_number())}
+                    editor={Some(html! {
+                        <NumberEditor
+                            value={isize::from(props.node.get().tag_number())}
+                            {setter}
+                            min={1}
+                            max={30}
+                        />
+                    })}
+                />
             </div>
             <div class="asn1-constructor-body">
                 {inner_components}
@@ -44,30 +108,93 @@ pub fn explicit_tag(props: &ExplicitTagProps) -> Html {
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct ApplicationTagProps {
-    pub node: OwnedApplicationTag,
+    pub node: Mutable<ApplicationTag>,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
-    pub meta: OwnedRawAsn1EntityData,
+    pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(ApplicationTagNode)]
 pub fn application_tag(props: &ApplicationTagProps) -> Html {
     let set_cur_node = &props.set_cur_node;
-    let inner_components = props
-        .node
-        .inner()
+    let fields = props.node.get();
+    let fields = fields.inner();
+
+    let tag_node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let inner_components = vec![html! {
+        <div style="position: relative;">
+            <AddNodeButton add_node={Callback::from(move |asn1_type| {
+                tag_node.get_mut().fields_mut_vec().insert(0, Asn1::from_asn1_type(asn1_type));
+                re_encode.emit(());
+            })} />
+        </div>
+    }];
+    let inner_components = fields
         .iter()
-        .map(|f| build_asn1_schema(f, &props.cur_node, set_cur_node))
-        .collect::<Vec<_>>();
+        .enumerate()
+        .map(|(i, f)| {
+            let re_encode = props.re_encode.clone();
+            let tag_node = props.node.clone();
+            let add_node = Callback::from(move |asn1_type| {
+                tag_node
+                    .get_mut()
+                    .fields_mut_vec()
+                    .insert(i + 1, Asn1::from_asn1_type(asn1_type));
+                re_encode.emit(());
+            });
+
+            let re_encode = props.re_encode.clone();
+            let set_node = props.node.clone();
+            let remove_node = Callback::from(move |_: ()| {
+                set_node.get_mut().fields_mut_vec().remove(i);
+                re_encode.emit(());
+            });
+
+            build_asn1_schema(
+                f,
+                &props.cur_node,
+                set_cur_node,
+                props.re_encode.clone(),
+                add_node,
+                remove_node,
+            )
+        })
+        .fold(inner_components, |mut inner_components, component| {
+            inner_components.push(component);
+            inner_components
+        });
 
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
 
+    let node = props.node.clone();
+    let re_encode = props.re_encode.clone();
+    let setter = Callback::from(move |number| {
+        node.get_mut().set_tag_number(number as u8);
+        re_encode.emit(());
+    });
+
     html! {
         <div style="cursor: crosshair; width: 100%">
             <div class="asn1-constructor-header">
-                <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("Application {}", props.node.tag_number())}/>
+                <NodeOptions
+                    node_bytes={RcSlice::from(props.meta.raw_bytes())}
+                    {offset}
+                    {length_len}
+                    {data_len}
+                    name={format!("Application {}", props.node.get().tag_number())}
+                    editor={Some(html! {
+                        <NumberEditor
+                            value={isize::from(props.node.get().tag_number())}
+                            {setter}
+                            min={1}
+                            max={30}
+                        />
+                    })}
+                />
             </div>
             <div class="asn1-constructor-body">
                 {inner_components}
@@ -77,10 +204,11 @@ pub fn application_tag(props: &ApplicationTagProps) -> Html {
 }
 #[derive(PartialEq, Properties, Clone)]
 pub struct ImplicitTagProps {
-    pub node: OwnedImplicitTag,
+    pub node: Mutable<ImplicitTag>,
     pub cur_node: Option<u64>,
     pub set_cur_node: Callback<HighlightAction>,
-    pub meta: OwnedRawAsn1EntityData,
+    pub meta: RawAsn1EntityData,
+    pub re_encode: Callback<()>,
 }
 
 #[function_component(ImplicitTagNode)]
@@ -88,22 +216,43 @@ pub fn implicit_tag(props: &ImplicitTagProps) -> Html {
     let offset = props.meta.tag_position();
     let length_len = props.meta.length_range().len();
     let data_len = props.meta.data_range().len();
-    let octets = props.node.octets();
+    let node = props.node.get();
+    let octets = node.octets();
 
-    match props.node.inner_asn1() {
-        Some(asn1) => html! {
-            <div style="cursor: crosshair; width: 100%">
-                <div class="asn1-constructor-header">
-                    <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{}] Implicit", props.node.tag_number())}/>
+    match node.inner_asn1() {
+        Some(asn1) => {
+            let asn1_type = asn1.inner_asn1().clone();
+            let global_re_encode = props.re_encode.clone();
+            let node = props.node.clone();
+            let tag_number = node.get().tag_number();
+            let re_encode = Callback::from(move |_| {
+                let mut buf = vec![0; asn1_type.needed_buf_size()];
+                asn1_type.encode_buff(&mut buf).expect("Node encoding should not fail");
+
+                node.get_mut().set_octets(buf);
+                global_re_encode.emit(());
+            });
+            let add_node = Callback::from(move |_asn1_type| {
+                // TODO
+            });
+            let remove_node = Callback::from(move |_| {
+                // TODO
+            });
+
+            html! {
+                <div style="cursor: crosshair; width: 100%">
+                    <div class="asn1-constructor-header">
+                        <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{tag_number}] Implicit")}/>
+                    </div>
+                    <div class="asn1-constructor-body">
+                        {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node, re_encode, add_node, remove_node)}
+                    </div>
                 </div>
-                <div class="asn1-constructor-body">
-                    {build_asn1_schema(asn1, &props.cur_node, &props.set_cur_node)}
-                </div>
-            </div>
-        },
+            }
+        }
         None => html! {
             <div class="terminal-asn1-node">
-                <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{}]", props.node.tag_number())} />
+                <NodeOptions node_bytes={RcSlice::from(props.meta.raw_bytes())} {offset} {length_len} {data_len} name={format!("[{}]", node.tag_number())} />
                 <span class="asn1-node-info-label">{format!("({} bytes)", octets.len())}</span>
                 {if let Ok(s) = from_utf8(octets) { html! {
                     <span class="asn-simple-value">{s}</span>

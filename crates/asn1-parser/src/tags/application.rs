@@ -7,48 +7,43 @@ use crate::writer::Writer;
 use crate::{Asn1Decoder, Asn1Encoder, Asn1Result, Asn1ValueDecoder, MetaInfo, Tag, Taggable};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ApplicationTag<'data> {
+pub struct ApplicationTag {
     tag: u8,
-    inner: Vec<Asn1<'data>>,
+    inner: Vec<Asn1>,
 }
 
-pub type OwnedApplicationTag = ApplicationTag<'static>;
-
-impl<'data> ApplicationTag<'data> {
-    pub fn new(tag: u8, inner: Vec<Asn1<'data>>) -> Self {
+impl ApplicationTag {
+    pub fn new(tag: u8, inner: Vec<Asn1>) -> Self {
         Self {
             tag: tag & 0x1f | 0x60,
             inner,
         }
     }
 
+    pub fn set_tag_number(&mut self, tag: u8) {
+        self.tag = tag & 0x1f | 0x60;
+    }
+
     pub fn tag_number(&self) -> u8 {
         self.tag & 0x1f
     }
 
-    pub fn inner(&self) -> &[Asn1<'data>] {
+    pub fn inner(&self) -> &[Asn1] {
         &self.inner
     }
 
-    pub fn to_owned(&self) -> OwnedApplicationTag {
-        OwnedApplicationTag {
-            tag: self.tag,
-            inner: self
-                .inner
-                .iter()
-                .map(|f| f.to_owned_with_asn1(f.inner_asn1().to_owned()))
-                .collect(),
-        }
+    pub fn fields_mut_vec(&mut self) -> &mut Vec<Asn1> {
+        &mut self.inner
     }
 }
 
-impl Taggable for ApplicationTag<'_> {
+impl Taggable for ApplicationTag {
     fn tag(&self) -> Tag {
         Tag(self.tag)
     }
 }
 
-impl<'data> Asn1ValueDecoder<'data> for ApplicationTag<'data> {
+impl<'data> Asn1ValueDecoder<'data> for ApplicationTag {
     fn decode(tag: Tag, reader: &mut Reader<'data>) -> Asn1Result<Self> {
         let mut inner = Vec::new();
 
@@ -64,7 +59,7 @@ impl<'data> Asn1ValueDecoder<'data> for ApplicationTag<'data> {
     }
 }
 
-impl Asn1Encoder for ApplicationTag<'_> {
+impl Asn1Encoder for ApplicationTag {
     fn needed_buf_size(&self) -> usize {
         let data_len = self.inner.iter().map(|f| f.needed_buf_size()).sum();
 
@@ -81,7 +76,7 @@ impl Asn1Encoder for ApplicationTag<'_> {
     }
 }
 
-impl MetaInfo for ApplicationTag<'_> {
+impl MetaInfo for ApplicationTag {
     fn clear_meta(&mut self) {
         self.inner.iter_mut().for_each(|f| f.clear_meta())
     }
