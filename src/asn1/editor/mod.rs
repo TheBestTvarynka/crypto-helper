@@ -8,9 +8,9 @@ use std::fmt;
 
 use ::time::OffsetDateTime;
 use asn1_parser::{
-    Asn1Type, BitString, BmpString, Bool, Day, ExplicitTag, GeneralString, GeneralizedTime, GtSecond, GtYear, Hour,
-    IA5String, Integer, Minute, Month, Mutable, NumericString, ObjectIdentifier, OctetString, PrintableString, Second,
-    Sequence, Set, UtcTime, Utf8String, VisibleString, Year,
+    Asn1, Asn1Decoder, Asn1Type, BitString, BmpString, Bool, Day, ExplicitTag, GeneralString, GeneralizedTime,
+    GtSecond, GtYear, Hour, IA5String, Integer, Minute, Month, Mutable, NumericString, ObjectIdentifier, OctetString,
+    PrintableString, Second, Sequence, Set, UtcTime, Utf8String, VisibleString, Year,
 };
 use web_sys::HtmlInputElement;
 use yew::{Callback, Html, Properties, TargetCast, UseStateSetter, function_component, html, use_state};
@@ -40,6 +40,7 @@ const BMP_STRING: &str = "bmp string";
 const BIT_STRING: &str = "bit string";
 const OBJECT_IDENTIFIER: &str = "object identifier";
 const BOOL: &str = "bool";
+const RAW: &str = "raw";
 
 const TYPES: &[&str] = &[
     OCTET_STRING,
@@ -59,10 +60,12 @@ const TYPES: &[&str] = &[
     BIT_STRING,
     OBJECT_IDENTIFIER,
     BOOL,
+    RAW,
 ];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asn1NodeValue {
+    Raw(Vec<u8>),
     OctetString(Vec<u8>),
     BitString(Vec<u8>),
     PrintableString(String),
@@ -87,6 +90,12 @@ impl TryFrom<&str> for Asn1NodeValue {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         Ok(match value {
+            RAW => Self::Raw(
+                // Sequence { Utf8String: "TheBestTvarynka" }
+                vec![
+                    48, 17, 12, 15, 84, 104, 101, 66, 101, 115, 116, 84, 118, 97, 114, 121, 110, 107, 97,
+                ],
+            ),
             OCTET_STRING => Self::OctetString(b"tbt".to_vec()),
             BIT_STRING => Self::BitString(b"tbt".to_vec()),
             PRINTABLE_STRING => Self::PrintableString(String::from("tbt")),
@@ -130,6 +139,7 @@ impl TryFrom<&str> for Asn1NodeValue {
 impl From<&Asn1NodeValue> for &str {
     fn from(value: &Asn1NodeValue) -> Self {
         match value {
+            Asn1NodeValue::Raw(_) => RAW,
             Asn1NodeValue::OctetString(_) => OCTET_STRING,
             Asn1NodeValue::BitString(_) => BIT_STRING,
             Asn1NodeValue::PrintableString(_) => PRINTABLE_STRING,
@@ -161,6 +171,15 @@ impl fmt::Display for Asn1NodeValue {
 impl From<Asn1NodeValue> for Asn1Type {
     fn from(value: Asn1NodeValue) -> Self {
         match value {
+            Asn1NodeValue::Raw(data) => Asn1::decode_buff(&data)
+                .map(Asn1::into_inner_asn1)
+                .unwrap_or_else(|err| {
+                    error!(?err, "Failed to parse provided asn1 buffer");
+
+                    Asn1Type::Utf8String(Mutable::new(Utf8String::new(String::from(
+                        "Failed to parse provided asn1 buffer",
+                    ))))
+                }),
             Asn1NodeValue::OctetString(data) => Asn1Type::OctetString(Mutable::new(OctetString::new(data))),
             Asn1NodeValue::BitString(data) => Asn1Type::BitString(Mutable::new(BitString::from(data))),
             Asn1NodeValue::PrintableString(data) => Asn1Type::PrintableString(Mutable::new(PrintableString::new(data))),
@@ -188,6 +207,13 @@ impl From<Asn1NodeValue> for Asn1Type {
 
 fn editor(asn1_node: Asn1NodeValue, asn1_node_setter: UseStateSetter<Asn1NodeValue>) -> Html {
     match asn1_node {
+        Asn1NodeValue::Raw(value) => html! {
+            <IntegerEditor
+                {value}
+                setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Raw(data)))}
+                formats={BYTES_FORMATS}
+            />
+        },
         Asn1NodeValue::Bool(value) => html! {
             <Switch id={"bool_node_creation"} state={value} setter={Callback::from(move |data| asn1_node_setter.set(Asn1NodeValue::Bool(data)))} />
         },

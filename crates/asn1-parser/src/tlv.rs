@@ -34,6 +34,10 @@ impl<A> Tlv<A> {
     pub fn inner_asn1(&self) -> &A {
         &self.asn1
     }
+
+    pub fn into_inner_asn1(self) -> A {
+        self.asn1
+    }
 }
 
 impl<A: MetaInfo> MetaInfo for Tlv<A> {
