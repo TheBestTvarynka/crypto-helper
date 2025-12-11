@@ -1,6 +1,6 @@
 [package]
 name = "crypto-helper"
-version = "0.15.0"
+version = "0.16.0"
 description = "The crypto-helper is an online app that helps to work with the different crypto algorithms."
 edition = "2024"
 authors = ["Pavlo Myroniuk <the.best.tvarynka@gmail.com>"]
@@ -9,6 +9,7 @@ license-file = "LICENSE"
 repository = "https://github.com/TheBestTvarynka/crypto-helper"
 
 [workspace]
+resolver = "2"
 members = [
     "crates/asn1-parser",
     # TODO: fix prop strategies.

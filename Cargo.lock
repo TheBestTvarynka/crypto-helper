@@ -374,7 +374,7 @@ dependencies = [
 
 [[package]]
 name = "crypto-helper"
-version = "0.15.0"
+version = "0.16.0"
 dependencies = [
  "argon2",
  "asn1-parser",
