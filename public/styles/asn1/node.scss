@@ -125,10 +125,6 @@
 }
 
 .asn1-node-edit-options {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    transform: translate(-90%, 50%);
     z-index: 10;
 }
 
@@ -146,7 +142,10 @@
 }
 
 .asn1-button-add-node-container {
-    /* */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(-90%, 50%);
 }
 
 .asn1-button-add-node img {
@@ -161,7 +160,6 @@
     top: 0;
     left: 0;
     transform: translate(-20%, 0%);
-    z-index: 10;
 }
 
 .ctrl-down {
@@ -175,6 +173,10 @@ body.ctrl-down .asn1-button-add-node {
 }
 
 body.ctrl-down .asn1-button-add-node-container:hover .asn1-button-add-node {
+    opacity: 1;
+}
+
+body.ctrl-down .asn1-remove-node-button-container:hover .asn1-button-add-node {
     opacity: 1;
 }
 

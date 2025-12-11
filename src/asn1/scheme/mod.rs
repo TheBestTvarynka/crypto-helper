@@ -67,13 +67,15 @@ pub fn add_node_button(props: &AddNodeButtonProps) -> Html {
                     </div>
                 </button>
             </div>
-            {if *show_panel {html! {
-                <div style="position: relative">
-                    <div class="asn1-node-options">
-                        <NodeValueEditor {add_node} cancel={hide_panel} />
-                    </div>
+            <div style="position: absolute; left: 0; bottom: 0;">
+                <div style="position: relative;">
+                    {if *show_panel {html! {
+                        <div class="asn1-node-options">
+                            <NodeValueEditor {add_node} cancel={hide_panel} />
+                        </div>
+                    }} else {html! {}}}
                 </div>
-            }} else {html! {}}}
+            </div>
         </div>
     }
 }
@@ -107,19 +109,21 @@ pub fn remove_node_button(props: &RemoveNodeButtonProps) -> Html {
     });
 
     html! {
-        <div class="asn1-remove-node-button-container">
-            <div class="asn1-button-add-node-container">
+        <div class="asn1-node-edit-options">
+            <div class="asn1-remove-node-button-container">
                 <button class="asn1-button-add-node" {onclick}>
                     <img src="/public/img/icons/remove.png" />
                 </button>
             </div>
-            {if *show_panel {html! {
+            <div style="position: absolute; left: 0; bottom: 0;">
                 <div style="position: relative" {onmouseleave}>
-                    <div class="asn1-node-options">
-                        <RemoveNodeConfirmation {remove_node} />
-                    </div>
+                    {if *show_panel {html! {
+                        <div class="asn1-node-options">
+                            <RemoveNodeConfirmation {remove_node} />
+                        </div>
+                    }} else {html! {}}}
                 </div>
-            }} else {html! {}}}
+            </div>
         </div>
     }
 }
