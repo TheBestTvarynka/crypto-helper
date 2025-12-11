@@ -125,7 +125,6 @@
 }
 
 .asn1-node-edit-options {
-    position: absolute;
     z-index: 10;
 }
 
@@ -161,7 +160,6 @@
     top: 0;
     left: 0;
     transform: translate(-20%, 0%);
-    z-index: 10;
 }
 
 .ctrl-down {
@@ -170,7 +168,7 @@
 
 body.ctrl-down .asn1-button-add-node {
     display: flex;
-    opacity: 0.3;
+    opacity: 0;
     cursor: pointer;
 }
 
