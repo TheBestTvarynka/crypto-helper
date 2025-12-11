@@ -115,7 +115,7 @@ pub fn remove_node_button(props: &RemoveNodeButtonProps) -> Html {
                     <img src="/public/img/icons/remove.png" />
                 </button>
             </div>
-            <div style="position: absolute; left: 0; bottom: 0;">
+            <div style="position: absolute; left: 0; top: 0;">
                 <div style="position: relative" {onmouseleave}>
                     {if *show_panel {html! {
                         <div class="asn1-node-options">
