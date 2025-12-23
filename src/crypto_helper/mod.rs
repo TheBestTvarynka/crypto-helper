@@ -196,7 +196,7 @@ pub fn crypto_helper() -> Html {
                 <button class="button-with-icon" onclick={share_by_link}>
                     <img src="/public/img/icons/share_by_link.png" />
                 </button>
-                <button class="button-with-icon" onclick={decode_as_asn1}>
+                <button class="button-with-icon" onclick={decode_as_asn1} title="Decode output as ASN1">
                     <img src="/public/img/icons/linking.png" />
                     {"ans1"}
                 </button>

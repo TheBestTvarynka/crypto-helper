@@ -5,7 +5,7 @@ pub fn about() -> Html {
     html! {
         <div class={classes!("vertical", "about-container")}>
             <span>{"Crypto-helper"}</span>
-            <span>{"The crypto-helper is an online app that helps to work with the diferent crypto algorithms:"}</span>
+            <span>{"The crypto-helper is an online app that helps to work with the different crypto algorithms:"}</span>
             <ul>
                 <li>{"Argon2"}</li>
                 <li>{"BCrypt"}</li>
@@ -29,7 +29,7 @@ pub fn about() -> Html {
                     <li>{"ES384"}</li>
                     <li>{"ES512"}</li>
                 </ul>
-                <li>{"ASN1 decoder"}</li>
+                <li>{"ASN1 parser and editor"}</li>
                 <li>{"Diff checker"}</li>
                 <li>{"Ability to share the sample by url"}</li>
             </ul>
