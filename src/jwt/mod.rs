@@ -19,7 +19,7 @@ use crate::jwt::jwt::editor::JwtEditor;
 use crate::jwt::jwt::viewer::JwtViewer;
 use crate::jwt::jwt_utils::JwtUtils;
 use crate::jwt::jwte::Jwte;
-use crate::url_query_params;
+use crate::url_query_params::{self, generate_jwt_link};
 
 const JWT_LOCAL_STORAGE_KEY: &str = "JWT_DATA";
 const TEST_JWT: &str = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY3MDAwNDI1NCwiaWF0IjoxNjcwMDA0MjU0fQ.ZGsN42vr-bM4uxXowtlNl7xRerkdKu6i29VS8DFQ4Tw";
@@ -167,7 +167,7 @@ pub fn jwt() -> Html {
     let notifications = use_notification::<Notification>();
     let clipboard = use_clipboard();
     let share_by_link = Callback::from(move |_| {
-        clipboard.write_text(jwt_to_copy.clone());
+        clipboard.write_text(generate_jwt_link(jwt_to_copy.clone()));
 
         notifications.spawn(Notification::from_description_and_type(
             NotificationType::Info,
