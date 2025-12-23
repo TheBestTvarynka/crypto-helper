@@ -42,17 +42,7 @@ All computations are performed on the client side. _This tool **never** sends th
 * Kerberos HMAC: `HMAC-SHA1-96-AES128`/`HMAC-SHA1-96-AES256`
 * `RSA`
 * Compression: `ZLIB`
-* JWT debugger. Supported signature algorithms:
-  * `none`
-  * `HS256`
-  * `HS384`
-  * `HS512`
-  * `RS256`
-  * `RS384`
-  * `RS512`
-  * `ES256`
-  * `ES384`
-  * `ES512`
+* JWT debugger. Supported signature algorithms: `none`/`HS256`/`HS384`/`HS512`/`RS256`/`RS384`/`RS512`/`ES256`/`ES384`/`ES512`
 * ASN1 Debugger: easily parse and edit ASN1 data structures.
 * Diff checker: the simplest and yet powerful diff checker.
 
