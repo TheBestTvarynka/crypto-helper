@@ -2,7 +2,6 @@ name: Build & Deploy
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_BUCKET: ${{ secrets.GCP_BUCKET }}
-  APP_HOST: ${{ secrets.APP_HOST }}
 on:
   push:
     branches:
