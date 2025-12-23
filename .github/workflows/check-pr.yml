@@ -1,6 +1,4 @@
 name: Check
-env:
-  APP_HOST: ${{ secrets.APP_HOST }}
 on:
   pull_request:
     branches:
