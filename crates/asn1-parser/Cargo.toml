@@ -14,8 +14,8 @@ std = []
 
 [dev-dependencies]
 tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "fmt", "ansi"] }
-prop-strategies = { path = "../prop-strategies" }
-proptest = "1.2"
+# prop-strategies = { path = "../prop-strategies" }
+# proptest = "1.2"
 
 [dependencies]
 tracing = "0.1"
