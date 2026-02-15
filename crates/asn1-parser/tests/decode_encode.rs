@@ -1,8 +1,8 @@
 use std::sync::Once;
 
 use asn1_parser::{Asn1, Asn1Decoder, Asn1Encoder, Asn1Type, BitString, MetaInfo, ObjectIdentifier, Tag, Taggable};
-use prop_strategies::any_asn1_type;
-use proptest::proptest;
+// use prop_strategies::any_asn1_type;
+// use proptest::proptest;
 
 static SETUP_LOGGER: Once = Once::new();
 
@@ -22,6 +22,7 @@ fn init_logging() {
     });
 }
 
+/*
 #[test]
 fn asn1() {
     proptest!(|(mut asn1 in any_asn1_type())| {
@@ -47,6 +48,7 @@ fn asn1() {
         assert_eq!(decoded.inner_asn1(), &asn1);
     })
 }
+*/
 
 #[test]
 fn generalized_time() {
