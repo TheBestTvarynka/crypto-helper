@@ -7,13 +7,13 @@ on:
     branches:
     - 'main'
 jobs:
-  check:
-    name: Check code
+  fmt:
+    name: Format
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: 'Add nightly channel'
       run: 'rustup toolchain install nightly'
@@ -24,8 +24,24 @@ jobs:
     - name: 'Fmt'
       run: 'cargo +nightly fmt --all -- --check'
 
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
     - name: 'Clippy'
       run: 'cargo clippy --all-targets -- -D warnings'
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
 
     - name: 'Tests'
       run: 'cargo test'
@@ -33,7 +49,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: check
+    needs: [fmt, clippy, tests]
 
     permissions:
       contents: 'read'
@@ -41,7 +57,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: 'Trunk Check'
       uses: jetli/trunk-action@v0.4.0
