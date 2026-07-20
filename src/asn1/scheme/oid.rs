@@ -478,6 +478,10 @@ fn oid_name(oid: &'_ str) -> (&'static str, &'static str) {
             "CSPN Certified YubiKey",
             "https://developers.yubico.com/PIV/Introduction/PIV_attestation.html",
         ),
+        "1.3.6.1.5.2.5" => (
+            "IAKerb",
+            "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-spng/8d3325b6-5bea-4394-baae-f1db96177b3a",
+        ),
         _ => ("-", "https://github.com/TheBestTvarynka/crypto-helper/issues/new"),
     }
 }
